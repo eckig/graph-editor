@@ -31,13 +31,13 @@ Download the demo app [here].
 
 Maven coordinates: [coming soon]
 
-Try the tutorials [here](https://github.com/rmfisher/td-graph/wiki).
+Try the tutorials [here](https://github.com/tesis-dynaware/graph-editor/wiki).
 
 ## Build it yourself
 
 Requires [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html), [Git](http://git-scm.com/), & [Maven](http://maven.apache.org/).
 
-    git clone https://github.com/rmfisher/td-graph.git
+    git clone https://github.com/tesis-dynaware/graph-editor.git
     cd td-graph
     mvn clean install
     
