@@ -25,20 +25,20 @@ A library for viewing and editing graph-like diagrams in JavaFX.
 
 ## Demo
 
-Download the demo app [here].
+Download the demo app [here](https://github.com/tesis-dynaware/graph-editor/releases).
 
 ## Use it
 
 Maven coordinates: [coming soon]
 
-Try the tutorials [here](https://github.com/rmfisher/td-graph/wiki).
+Try the tutorials [here](https://github.com/tesis-dynaware/graph-editor/wiki).
 
 ## Build it yourself
 
 Requires [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html), [Git](http://git-scm.com/), & [Maven](http://maven.apache.org/).
 
-    git clone https://github.com/rmfisher/td-graph.git
-    cd td-graph
+    git clone https://github.com/tesis-dynaware/graph-editor.git
+    cd graph-editor
     mvn clean install
     
 The demo jar can be found in ```demo/target/deploy```.
