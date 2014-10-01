@@ -25,7 +25,7 @@ A library for viewing and editing graph-like diagrams in JavaFX.
 
 ## Demo
 
-Download the demo app [here].
+Download the demo app [here](https://github.com/tesis-dynaware/graph-editor/releases).
 
 ## Use it
 
