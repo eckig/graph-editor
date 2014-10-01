@@ -38,7 +38,7 @@ Try the tutorials [here](https://github.com/tesis-dynaware/graph-editor/wiki).
 Requires [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html), [Git](http://git-scm.com/), & [Maven](http://maven.apache.org/).
 
     git clone https://github.com/tesis-dynaware/graph-editor.git
-    cd td-graph
+    cd graph-editor
     mvn clean install
     
 The demo jar can be found in ```demo/target/deploy```.
