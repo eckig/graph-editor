@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>de.tesis.dynaware.grapheditor.model</artifactId>
+	<packaging>bundle</packaging>
+	<parent>
+		<groupId>de.tesis.dynaware</groupId>
+		<artifactId>de.tesis.dynaware.grapheditor</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<name>${component.name}::Model</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore</artifactId>
+			<version>${org.eclipse.emf.ecore.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.common</artifactId>
+			<version>${org.eclipse.emf.common.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<configuration>
+					<instructions>
+						<Require-Bundle>org.eclipse.core.runtime;bundle-version="[3.8.0,4.0.0)",
+							org.eclipse.emf.ecore;visibility:=reexport;bundle-version="[2.8.3,3.0.0)"</Require-Bundle>
+						<Export-Package>de.tesis.dynaware.grapheditor.model,
+							de.tesis.dynaware.grapheditor.model.impl,
+							de.tesis.dynaware.grapheditor.model.util</Export-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

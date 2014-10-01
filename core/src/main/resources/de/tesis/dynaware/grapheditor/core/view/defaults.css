@@ -1,0 +1,201 @@
+.g-editor {
+	-fx-background-color: white;
+}
+
+.g-editor-node-layer {
+	-fx-padding: 15;
+}
+
+.g-editor-connection-layer {
+	-fx-padding: 15;
+}
+
+.g-editor-selection-box {
+	-fx-stroke: deepskyblue;
+	-fx-stroke-type: inside;
+	-fx-fill: rgba(135, 206, 250, 0.2);
+}
+
+.g-node-border {
+	-fx-stroke: darkslategrey;
+	-fx-stroke-type: inside;
+	-fx-stroke-width: 1;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-fill: null;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.g-node-background {
+	-fx-fill: rgb(249,247,250);
+	-fx-opacity: 0.9;
+	-fx-stroke: null;
+	-fx-stroke-type: inside;
+	-fx-stroke-width: 1;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+}
+
+.g-node-background:selected {
+	-fx-fill: derive(rgb(249,247,250), -5%);
+}
+
+.g-node-selection-halo {
+	-fx-stroke: deepskyblue;
+	-fx-stroke-type: inside;
+	-fx-stroke-line-cap: butt;
+	-fx-fill: null;
+}
+
+.g-input-connector {
+	-fx-stroke: darkslategrey;
+	-fx-stroke-type: inside;
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, white, white 40%, black 40%, black);
+	-fx-stroke-width: 1;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180, 0.5), 5, 0, 1, 1);
+}
+
+.g-input-connector:hover, .g-input-connector:pressed, .g-output-connector:hover, .g-output-connector:pressed {
+	-fx-stroke-width: 2;
+}
+
+.g-input-connector:allowed {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, mediumseagreen, mediumseagreen 40%, black 40%, black);
+	-fx-stroke-width: 2;
+}
+
+.g-input-connector:forbidden {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, tomato, tomato 40%, black 40%, black);
+	-fx-stroke-width: 2;
+}
+
+.g-output-connector {
+	-fx-stroke: darkslategrey;
+	-fx-stroke-type: inside;
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, black, black 39%, white 39%, white);
+	-fx-stroke-width: 1;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180, 0.5), 5, 0, 1, 1);
+}
+
+.g-output-connector:allowed {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, black, black 39%, mediumseagreen 39%, mediumseagreen);
+	-fx-stroke-width: 2;
+}
+
+.g-output-connector:forbidden {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, black, black 39%, tomato 39%, tomato);
+	-fx-stroke-width: 2;
+}
+
+.g-connection {
+	-fx-stroke-width: 1;
+	-fx-stroke: darkslategrey;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.g-connection-background {
+	-fx-stroke-width: 7;
+	-fx-stroke: transparent;
+}
+
+.g-connection-hover-effect {
+	-fx-stroke-width: 1;
+	-fx-stroke: darkslategrey;
+	-fx-stroke-dash-array: 8 4;
+	-fx-stroke-dash-offset: 4;
+	-fx-stroke-type: inside;
+	-fx-stroke-line-cap: butt;
+	-fx-fill: transparent;
+	-fx-opacity: 0.5;
+}
+
+.g-connection-hover-effect:pressed {
+	-fx-stroke-width: 1;
+	-fx-stroke: null;
+	-fx-stroke-type: inside;
+	-fx-fill: null;
+}
+
+.g-tail  {
+	-fx-stroke: derive(darkslategrey, 100%);
+	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+}
+
+.g-tail-endpoint-input  {
+	-fx-stroke: derive(darkslategrey, 100%);
+	-fx-stroke-type: inside;
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, white, white 40%, derive(darkslategrey, 100%) 40%, derive(darkslategrey, 100%));
+	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+}
+
+.g-tail-endpoint-output  {
+	-fx-stroke: derive(darkslategrey, 100%);
+	-fx-stroke-type: inside;
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, derive(darkslategrey, 100%), derive(darkslategrey, 100%) 40%, white 40%, white);
+	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+}
+
+.g-joint {
+	/* Invisible by default but make sure it has the exact same dimensions as for hover and pressed effects. */
+	-fx-stroke-width: 1;
+	-fx-stroke: transparent;
+	-fx-stroke-type: inside;
+	-fx-fill: transparent;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+}
+
+.g-joint:hover {
+	-fx-stroke-width: 1;
+	-fx-stroke: derive(darkslategrey, 30%);
+	-fx-stroke-type: inside;
+	-fx-fill: white;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-opacity: 0.7;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.g-joint:pressed {
+	-fx-stroke-width: 1;
+	-fx-stroke: derive(darkslategrey, 30%);
+	-fx-stroke-type: inside;
+	-fx-fill: derive(white, -5%);
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-opacity: 0.7;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.g-joint:selected {
+	-fx-stroke-width: 1;
+	-fx-stroke: derive(darkslategrey, 30%);
+	-fx-stroke-type: inside;
+	-fx-fill: derive(white, -5%);
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-opacity: 0.7;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.g-joint:selected:hover {
+	-fx-stroke-width: 1;
+	-fx-stroke: derive(darkslategrey, 30%);
+	-fx-stroke-type: inside;
+	-fx-fill: white;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-opacity: 0.7;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.g-joint:selected:pressed {
+	-fx-stroke-width: 1;
+	-fx-stroke: derive(darkslategrey, 30%);
+	-fx-stroke-type: inside;
+	-fx-fill: derive(white, -5%);
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-opacity: 0.7;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}

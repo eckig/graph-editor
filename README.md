@@ -1,4 +1,44 @@
-graph-editor
-============
+Graph Editor
+==========
 
-A library for viewing and editing graph-like diagrams in JavaFX
+A library for viewing and editing graph-like diagrams in JavaFX.
+
+![The graph editor's default skins.](screenshot.png)
+
+## Features
+
+**Fully customizable**
++ Customize any visual element of the graph (via CSS or by setting custom skin classes).
++ Specify the connections that are allowed / forbidden.
++ Add your own content inside nodes (text, graphics, forms, other graphs).
+
+**EMF-based**
++ Graph state is stored in an [EMF](http://www.eclipse.org/modeling/emf/ "EMF Project Homepage") model.
++ Undo / redo any action.
++ Serialize graph state easily to / from XML.
+
+**Convenience features**
++ Single & multiple selection.
++ Cut / copy / paste.
++ Alignment & snap-to-grid.
++ Container with a panning mechanism & minimap.
+
+## Demo
+
+Download the demo app [here].
+
+## Use it
+
+Maven coordinates: [coming soon]
+
+Try the tutorials [here](https://github.com/rmfisher/td-graph/wiki).
+
+## Build it yourself
+
+Requires [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html), [Git](http://git-scm.com/), & [Maven](http://maven.apache.org/).
+
+    git clone https://github.com/rmfisher/td-graph.git
+    cd td-graph
+    mvn clean install
+    
+The demo jar can be found in ```demo/target/deploy```.

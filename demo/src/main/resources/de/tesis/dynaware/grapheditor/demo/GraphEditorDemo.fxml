@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import de.tesis.dynaware.grapheditor.GraphEditorContainer?>
+
+<AnchorPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="de.tesis.dynaware.grapheditor.demo.GraphEditorDemoController">
+	<VBox fillWidth="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+		<MenuBar fx:id="menuBar">
+			<menus>
+				<Menu text="File">
+					<items>
+						<MenuItem text="Load File" onAction="#load"/>
+						<Menu text="Load Sample">
+							<items>
+								<MenuItem text="Sample 1" onAction="#loadSample"/>
+								<MenuItem text="Sample 2" onAction="#loadTree"/>
+							</items>
+						</Menu>
+						<MenuItem text="Save" onAction="#save"/>
+						<MenuItem text="Clear All" onAction="#clearAll"/>
+						<SeparatorMenuItem/>
+						<MenuItem text="Exit" onAction="#exit"/>
+					</items>
+				</Menu>
+				<Menu text="Edit">
+					<items>
+						<MenuItem text="Undo" onAction="#undo" accelerator="Shortcut+Z"/>
+						<MenuItem text="Redo" onAction="#redo" accelerator="Shortcut+Y"/>
+						<SeparatorMenuItem/>
+						<MenuItem text="Cut" onAction="#cut" accelerator="Shortcut+X"/>
+						<MenuItem text="Copy" onAction="#copy" accelerator="Shortcut+C"/>
+						<MenuItem text="Paste" onAction="#paste" accelerator="Shortcut+V"/>
+						<SeparatorMenuItem/>
+						<!-- Added blank spaces to force menu to be wider. -->
+						<MenuItem text="Select All          " onAction="#selectAll" accelerator="Shortcut+A"/>
+						<MenuItem text="Delete" onAction="#deleteSelection" accelerator="Delete"/>
+					</items>
+				</Menu>
+				<Menu text="Actions">
+					<items>
+						<MenuItem text="Add Node" onAction="#addNode" accelerator="Shortcut+N"/>
+						<MenuItem fx:id="addInputButton" text="Add Input" onAction="#addInputConnector" accelerator="Shortcut+I"/>
+						<!-- Added blank spaces to force menu to be wider. -->
+						<MenuItem fx:id="addOutputButton" text="Add Output          " onAction="#addOutputConnector" accelerator="Shortcut+O"/>
+					</items>
+				</Menu>
+				<Menu text="Settings">
+					<items>
+						<RadioMenuItem fx:id="showGridButton" text="Show Grid" />
+						<RadioMenuItem fx:id="snapToGridButton" text="Snap to Grid" />
+						<Menu text="Skin Type">
+							<items>
+								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>
+								<RadioMenuItem fx:id="treeSkinButton" text="Tree" onAction="#setTreeSkin"/>
+							</items>
+						</Menu>
+						<!-- Added blank spaces to force menu to be wider. -->
+						<Menu fx:id="intersectionStyle" text="Intersection Style  ">
+							<items>
+								<RadioMenuItem fx:id="gappedStyleButton" text="Gaps" onAction="#setGappedStyle" selected="true"/>
+								<RadioMenuItem fx:id="detouredStyleButton" text="Detours" onAction="#setDetouredStyle"/>
+							</items>
+						</Menu>
+						<Menu text="Zoom Level" fx:id="zoomOptions" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+		<GraphEditorContainer fx:id="graphEditorContainer" minWidth="0" minHeight="0" maxWidth="+Infinity" maxHeight="+Infinity" VBox.vgrow="ALWAYS"/>
+	</VBox>
+	<ToggleButton fx:id="minimapButton" onAction="#toggleMinimap" focusTraversable="false" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="4"/>
+</AnchorPane>

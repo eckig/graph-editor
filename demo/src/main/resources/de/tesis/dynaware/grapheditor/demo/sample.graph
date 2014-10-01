@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+  <nodes x="1159.0" y="859.0" width="101.0" height="201.0">
+    <connectors type="input"/>
+    <connectors type="output" connections="//@connections.0"/>
+    <connectors type="output"/>
+    <connectors type="output"/>
+    <connectors type="input"/>
+    <connectors type="input"/>
+  </nodes>
+  <nodes x="1169.0" y="1159.0" width="301.0" height="201.0">
+    <connectors type="input" connections="//@connections.0"/>
+    <connectors type="output" connections="//@connections.3"/>
+    <connectors type="output" connections="//@connections.2"/>
+  </nodes>
+  <nodes x="1689.0" y="859.0" width="161.0" height="91.0">
+    <connectors type="input" connections="//@connections.2"/>
+    <connectors type="output"/>
+  </nodes>
+  <nodes x="1689.0" y="1029.0" width="161.0" height="171.0">
+    <connectors type="input" connections="//@connections.3"/>
+    <connectors type="output"/>
+  </nodes>
+  <nodes x="1689.0" y="1259.0" width="161.0" height="111.0">
+    <connectors type="input" connections="//@connections.1"/>
+    <connectors type="output"/>
+  </nodes>
+  <nodes x="1399.0" y="879.0" width="111.0">
+    <connectors type="input"/>
+    <connectors type="output" connections="//@connections.1"/>
+  </nodes>
+  <nodes x="239.0" y="159.0">
+    <connectors type="input"/>
+    <connectors type="output" connections="//@connections.4"/>
+  </nodes>
+  <nodes x="159.0" y="319.0">
+    <connectors type="input" connections="//@connections.4"/>
+    <connectors type="output" connections="//@connections.5"/>
+  </nodes>
+  <nodes x="389.0" y="319.0" width="111.0" height="151.0">
+    <connectors type="input" connections="//@connections.5"/>
+    <connectors type="output"/>
+  </nodes>
+  <nodes x="2629.0" y="2059.0">
+    <connectors type="input" connections="//@connections.6"/>
+    <connectors type="output"/>
+  </nodes>
+  <nodes x="2609.0" y="1949.0" width="81.0" height="71.0">
+    <connectors type="input"/>
+    <connectors type="output" connections="//@connections.6"/>
+  </nodes>
+  <nodes x="2529.0" y="2059.0" width="41.0" height="41.0">
+    <connectors type="input"/>
+    <connectors type="output"/>
+  </nodes>
+  <connections source="//@nodes.0/@connectors.1" target="//@nodes.1/@connectors.0">
+    <joints x="1314.0" y="910.0"/>
+    <joints x="1314.0" y="1110.0"/>
+    <joints x="1120.0" y="1110.0"/>
+    <joints x="1120.0" y="1260.0"/>
+  </connections>
+  <connections source="//@nodes.5/@connectors.1" target="//@nodes.4/@connectors.0">
+    <joints x="1570.0" y="930.0"/>
+    <joints x="1570.0" y="1315.0"/>
+  </connections>
+  <connections source="//@nodes.1/@connectors.2" target="//@nodes.2/@connectors.0">
+    <joints x="1550.0" y="1294.0"/>
+    <joints x="1550.0" y="905.0"/>
+  </connections>
+  <connections source="//@nodes.1/@connectors.1" target="//@nodes.3/@connectors.0">
+    <joints x="1520.0" y="1227.0"/>
+    <joints x="1520.0" y="1115.0"/>
+  </connections>
+  <connections source="//@nodes.6/@connectors.1" target="//@nodes.7/@connectors.0">
+    <joints x="420.0" y="210.0"/>
+    <joints x="420.0" y="290.0"/>
+    <joints x="130.0" y="290.0"/>
+    <joints x="130.0" y="370.0"/>
+  </connections>
+  <connections source="//@nodes.8/@connectors.0" target="//@nodes.7/@connectors.1">
+    <joints x="350.0" y="395.0"/>
+    <joints x="350.0" y="370.0"/>
+  </connections>
+  <connections source="//@nodes.9/@connectors.0" target="//@nodes.10/@connectors.1">
+    <joints x="2605.0" y="2110.0"/>
+    <joints x="2605.0" y="2048.0"/>
+    <joints x="2716.0" y="2048.0"/>
+    <joints x="2716.0" y="1985.0"/>
+  </connections>
+</graph:GModel>

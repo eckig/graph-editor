@@ -1,0 +1,26 @@
+.g-minimap {
+	-fx-border-color: rgb(180, 180, 180);
+	-fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgb(180, 180, 180), 5, 0, 0, 0);
+}
+
+.g-minimap-node-default {
+    -fx-stroke: grey;
+    -fx-stroke-type: inside;
+    -fx-stroke-width: 1;
+    -fx-fill: rgb(249, 247, 250);
+}
+
+.g-minimap-node-selected {
+    -fx-stroke: grey;
+    -fx-stroke-type: inside;
+    -fx-stroke-width: 1;
+    -fx-fill: derive(rgb(249,247,250), -5%);
+}
+
+.g-minimap-locator {
+    -fx-stroke: rgba(135, 206, 250, 0.65);
+    -fx-stroke-type: inside;
+    -fx-stroke-width: 1;
+    -fx-fill: rgba(255, 255, 255, 0);
+}
