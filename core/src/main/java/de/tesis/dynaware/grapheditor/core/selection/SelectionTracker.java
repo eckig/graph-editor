@@ -43,6 +43,10 @@ public class SelectionTracker {
 
             final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
 
+            if (nodeSkin.isSelected()) {
+                selectedNodes.add(node);
+            }
+
             nodeSkin.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue && !selectedNodes.contains(node)) {
                     selectedNodes.add(node);
@@ -57,6 +61,10 @@ public class SelectionTracker {
             for (final GJoint joint : connection.getJoints()) {
 
                 final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+
+                if (jointSkin.isSelected()) {
+                    selectedJoints.add(joint);
+                }
 
                 jointSkin.selectedProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue && !selectedJoints.contains(joint)) {
