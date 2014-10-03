@@ -31,13 +31,11 @@ Download the demo app [here](https://github.com/tesis-dynaware/graph-editor/rele
 
 Maven coordinates:
 
-    <dependencies>
-        <dependency>
-            <groupId>de.tesis.dynaware</groupId>
-            <artifactId>de.tesis.dynaware.grapheditor.core</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-    </dependencies>
+    <dependency>
+        <groupId>de.tesis.dynaware</groupId>
+        <artifactId>de.tesis.dynaware.grapheditor.core</artifactId>
+        <version>1.0.0</version>
+    </dependency>
 
 Try the tutorials [here](https://github.com/tesis-dynaware/graph-editor/wiki).
 
