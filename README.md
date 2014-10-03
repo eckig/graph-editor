@@ -1,7 +1,7 @@
 Graph Editor
 ==========
 
-A library for viewing and editing graph-like diagrams in JavaFX.
+A library for creating and editing graph-like diagrams in JavaFX.
 
 ![The graph editor's default skins.](screenshot.png)
 
@@ -29,7 +29,13 @@ Download the demo app [here](https://github.com/tesis-dynaware/graph-editor/rele
 
 ## Use it
 
-Maven coordinates: [coming soon]
+Maven coordinates:
+
+    <dependency>
+        <groupId>de.tesis.dynaware</groupId>
+        <artifactId>de.tesis.dynaware.grapheditor.core</artifactId>
+        <version>1.0.0</version>
+    </dependency>
 
 Try the tutorials [here](https://github.com/tesis-dynaware/graph-editor/wiki).
 
