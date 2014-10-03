@@ -9,10 +9,35 @@
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
+	<description>A library for creating and editing graph-like diagrams in JavaFX</description>
+	<url>https://github.com/tesis-dynaware/graph-editor</url>
+
 	<organization>
 		<name>TESIS DYNAware</name>
 		<url>http://www.tesis-dynaware.com</url>
 	</organization>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License - v 1.0</name>
+			<url>https://www.eclipse.org/legal/epl-v10.html</url>
+		</license>
+	</licenses>
+	
+	<developers>
+		<developer>
+			<name>Robert Fisher</name>
+			<email>rfisher@tesis.de</email>
+			<organization>TESIS Dynaware GmbH</organization>
+			<organizationUrl>http://www.tesis-dynaware.com</organizationUrl>
+		</developer>
+	 </developers>
+	 
+	<scm>
+		<connection>scm:git:git@github.com:tesis-dynaware/graph-editor.git</connection>
+		<developerConnection>scm:git:git@github.com:tesis-dynaware/graph-editor.git</developerConnection>
+		<url>git@github.com:tesis-dynaware/graph-editor.git</url>
+	</scm>
 
 	<properties>
 		<component.name>Graph Editor</component.name>
@@ -50,13 +75,9 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>deployment</id>
-			<url>http://tdl-argon.tesis.de/nexus/content/repositories/argon-snapshots/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
-		<repository>
-			<id>deployment</id>
-			<url>http://tdl-argon.tesis.de/nexus/content/repositories/argon-releases/</url>
-		</repository>
 	</distributionManagement>
 
 	<profiles>
@@ -96,7 +117,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>release-sign-artifacts</id>
+			<id>release</id>
 			<activation>
 				<property>
 					<name>signArtifacts</name>
@@ -196,6 +217,17 @@
 				<configuration>
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<quiet>true</quiet>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
 		</plugins>
