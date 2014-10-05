@@ -135,7 +135,7 @@ public abstract class GJointSkin {
      * Gets the height of the joint.
      *
      * <p>
-     * For robust behaviour this should return the correct width at all times. Note that getRoot().getWidth() does not
+     * For robust behaviour this should return the correct height at all times. Note that getRoot().getHeight() does not
      * meet this condition as it will return 0 until the joint's node is added to the scene graph and layed out.
      * </p>
      *
