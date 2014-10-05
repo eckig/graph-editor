@@ -19,10 +19,12 @@ import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelValidator;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
+import de.tesis.dynaware.grapheditor.events.ConnectionEventHandler;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 
@@ -35,6 +37,7 @@ public class DefaultGraphEditor implements GraphEditor {
 
     private final SkinManager skinManager;
     private final ValidatorManager validatorManager;
+    private final ConnectionEventManager connectionEventManager;
 
     private final GraphEditorController controller;
 
@@ -48,8 +51,9 @@ public class DefaultGraphEditor implements GraphEditor {
         // Skin manager needs 'this' reference so users can access GraphEditor inside their custom skins.
         skinManager = new SkinManager(this);
         validatorManager = new ValidatorManager();
+        connectionEventManager = new ConnectionEventManager();
 
-        controller = new GraphEditorController(skinManager, validatorManager);
+        controller = new GraphEditorController(skinManager, validatorManager, connectionEventManager);
 
         // Create some default layout properties in case the user never sets any.
         setProperties(new GraphEditorProperties());
@@ -130,6 +134,16 @@ public class DefaultGraphEditor implements GraphEditor {
     @Override
     public SelectionManager getSelectionManager() {
         return controller.getSelectionManager();
+    }
+
+    @Override
+    public void setOnConnectionCreated(final ConnectionEventHandler handler) {
+        connectionEventManager.setOnConnectionCreated(handler);
+    }
+
+    @Override
+    public void setOnConnectionRemoved(final ConnectionEventHandler handler) {
+        connectionEventManager.setOnConnectionRemoved(handler);
     }
 
     /**

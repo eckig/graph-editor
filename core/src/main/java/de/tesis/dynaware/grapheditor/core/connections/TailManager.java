@@ -30,7 +30,7 @@ public class TailManager {
      * @param skinLookup the {@link SkinLookup} used to look up connector and tail skins
      * @param view the {@link GraphEditorView} to which tail skins will be added and removed
      */
-    public TailManager(SkinLookup skinLookup, GraphEditorView view) {
+    public TailManager(final SkinLookup skinLookup, final GraphEditorView view) {
         this.skinLookup = skinLookup;
         this.view = view;
     }
@@ -42,7 +42,7 @@ public class TailManager {
      * @param x the cursor x position relative to the connector
      * @param y the cursor y position relative to the connector
      */
-    public void create(GConnector connector, double x, double y) {
+    public void create(final GConnector connector, final double x, final double y) {
 
         // Check if tailSkin already created, because this method may be called multiple times.
         if (tailSkin == null) {
@@ -96,7 +96,7 @@ public class TailManager {
      * @param x the cursor x position relative to this connector
      * @param y the cursor y position relative to this connector
      */
-    public void updatePosition(GConnector connector, double x, double y) {
+    public void updatePosition(final GConnector connector, final double x, final double y) {
 
         if (tailSkin != null && sourcePosition != null) {
 

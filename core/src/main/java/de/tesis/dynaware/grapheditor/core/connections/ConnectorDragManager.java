@@ -15,6 +15,9 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+
+import org.eclipse.emf.common.command.CompoundCommand;
+
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
@@ -42,6 +45,7 @@ public class ConnectorDragManager {
 
     private final SkinLookup skinLookup;
     private final ValidatorManager validatorManager;
+    private final ConnectionEventManager connectionEventManager;
 
     private GModel model;
 
@@ -69,13 +73,15 @@ public class ConnectorDragManager {
      *
      * @param skinLookup the {@link SkinLookup} used to look up connector and tail skins
      * @param validatorManager the {@link ValidatorManager} used to determine which connectors can be connected
+     * @param connectionEventManager the {@link ConnectionEventManager} used to notify users of connection events
      * @param view the {@link GraphEditorView} to which tail skins will be added and removed during drag events
      */
     public ConnectorDragManager(final SkinLookup skinLookup, final ValidatorManager validatorManager,
-            final GraphEditorView view) {
+            final ConnectionEventManager connectionEventManager, final GraphEditorView view) {
 
         this.skinLookup = skinLookup;
         this.validatorManager = validatorManager;
+        this.connectionEventManager = connectionEventManager;
 
         tailManager = new TailManager(skinLookup, view);
     }
@@ -463,7 +469,11 @@ public class ConnectorDragManager {
             joints.add(joint);
         }
 
-        ConnectionCommands.addConnection(model, source, target, type, joints);
+        final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, type, joints);
+
+        // Notify the event manager so additional commands may be appended to this compound command.
+        final GConnection addedConnection = model.getConnections().get(model.getConnections().size() - 1);
+        connectionEventManager.notifyConnectionAdded(addedConnection, command);
     }
 
     /**
@@ -485,7 +495,11 @@ public class ConnectorDragManager {
 
         final GConnection connection = connector.getConnections().get(0);
         tailManager.createFromConnection(connector, connection, event.getX(), event.getY());
-        ConnectionCommands.removeConnection(model, connection);
+
+        final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
+
+        // Notify the event manager so additional commands may be appended to this compound command.
+        connectionEventManager.notifyConnectionRemoved(connection, command);
 
         removalConnector = null;
     }

@@ -49,8 +49,9 @@ public class ConnectionCommands {
      * @param target the target {@link GConnector} of the new connection
      * @param type the type attribute for the new connection
      * @param joints the list of {@link GJoint} instances to be added inside the new connection
+     * @return the newly-executed {@link CompoundCommand} that added the connection
      */
-    public static void addConnection(final GModel model, final GConnector source, final GConnector target,
+    public static CompoundCommand addConnection(final GModel model, final GConnector source, final GConnector target,
             final String type, final List<GJoint> joints) {
 
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
@@ -78,6 +79,10 @@ public class ConnectionCommands {
             if (command.canExecute()) {
                 editingDomain.getCommandStack().execute(command);
             }
+            return command;
+
+        } else {
+            return null;
         }
     }
 
@@ -86,8 +91,9 @@ public class ConnectionCommands {
      *
      * @param model the {@link GModel} from which the connection should be removed
      * @param connection the {@link GConnection} to be removed
+     * @return the newly-executed {@link CompoundCommand} that removed the connection
      */
-    public static void removeConnection(final GModel model, final GConnection connection) {
+    public static CompoundCommand removeConnection(final GModel model, final GConnection connection) {
 
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
 
@@ -104,6 +110,10 @@ public class ConnectionCommands {
             if (command.canExecute()) {
                 editingDomain.getCommandStack().execute(command);
             }
+            return command;
+
+        } else {
+            return null;
         }
     }
 }

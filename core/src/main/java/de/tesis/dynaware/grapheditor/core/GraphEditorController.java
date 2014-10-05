@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.SelectionManager;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectorDragManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelLayoutUpdater;
@@ -62,10 +63,12 @@ public class GraphEditorController {
     /**
      * Creates a new controller instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
-     * @param skinManager the {@link SkinManager} to be used by the controller
-     * @param validatorManager the {@link ValidatorManager} to be used by the controller
+     * @param skinManager the {@link SkinManager} instance
+     * @param validatorManager the {@link ValidatorManager} instance
+     * @param connectionEventManager the {@link ConnectionEventManager} instance
      */
-    public GraphEditorController(final SkinManager skinManager, final ValidatorManager validatorManager) {
+    public GraphEditorController(final SkinManager skinManager, final ValidatorManager validatorManager,
+            final ConnectionEventManager connectionEventManager) {
 
         this.skinManager = skinManager;
 
@@ -76,7 +79,7 @@ public class GraphEditorController {
         modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager);
         modelMemory = new ModelMemory();
         connectionLayouter = new ConnectionLayouter(skinManager);
-        connectorDragManager = new ConnectorDragManager(skinManager, validatorManager, view);
+        connectorDragManager = new ConnectorDragManager(skinManager, validatorManager, connectionEventManager, view);
         selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
 
         view.setConnectionLayouter(connectionLayouter);
