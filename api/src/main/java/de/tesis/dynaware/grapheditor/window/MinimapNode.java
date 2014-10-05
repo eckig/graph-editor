@@ -3,6 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
+import javafx.beans.value.ChangeListener;
+import javafx.css.PseudoClass;
 import javafx.scene.shape.Rectangle;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
@@ -13,8 +15,10 @@ import de.tesis.dynaware.grapheditor.model.GNode;
  */
 public class MinimapNode extends Rectangle {
 
-    private static final String STYLE_CLASS_DEFAULT = "g-minimap-node-default";
-    private static final String STYLE_CLASS_SELECTED = "g-minimap-node-selected";
+    private static final String STYLE_CLASS = "g-minimap-node";
+    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
+
+    private final ChangeListener<? super Boolean> selectionListener = (v, o, n) -> setSelected(n);
 
     /**
      * Creates a new {@link MinimapNode} instance.
@@ -24,27 +28,29 @@ public class MinimapNode extends Rectangle {
      */
     public MinimapNode(final GNode node, final SkinLookup skinLookup) {
 
+        getStyleClass().setAll(STYLE_CLASS);
+
         if (skinLookup != null) {
 
             final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
 
             if (nodeSkin != null) {
-                setStyleClass(nodeSkin.isSelected());
-                nodeSkin.selectedProperty().addListener((observable, oldValue, newValue) -> setStyleClass(newValue));
+                setSelected(nodeSkin.isSelected());
+                nodeSkin.selectedProperty().addListener(selectionListener);
             } else {
-                setStyleClass(false);
+                setSelected(false);
             }
         } else {
-            setStyleClass(false);
+            setSelected(false);
         }
     }
 
     /**
-     * Sets the style class of the minimap node according to whether it's node is selected or not
+     * Sets the style class of the minimap node according to whether its node is selected or not.
      *
      * @param selected {@code true} if the corresponding node is selected
      */
-    private void setStyleClass(final boolean selected) {
-        getStyleClass().setAll(selected ? STYLE_CLASS_SELECTED : STYLE_CLASS_DEFAULT);
+    private void setSelected(final boolean selected) {
+        pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, selected);
     }
 }
