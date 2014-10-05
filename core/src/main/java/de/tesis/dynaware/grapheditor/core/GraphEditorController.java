@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.SelectionManager;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectorDragManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelLayoutUpdater;
 import de.tesis.dynaware.grapheditor.core.model.ModelMemory;

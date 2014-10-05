@@ -20,7 +20,7 @@ import org.junit.Test;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.data.DummyDataFactory;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -104,7 +104,7 @@ public class GraphEditorTest {
         joints.add(GraphFactory.eINSTANCE.createGJoint());
         joints.add(GraphFactory.eINSTANCE.createGJoint());
 
-        Commands.addConnection(model, firstNodeOutput, secondNodeInput, null, joints);
+        ConnectionCommands.addConnection(model, firstNodeOutput, secondNodeInput, null, joints);
 
         assertFalse("A connection should be present.", model.getConnections().isEmpty());
 

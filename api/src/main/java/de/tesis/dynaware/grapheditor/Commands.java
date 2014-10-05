@@ -3,8 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor;
 
-import java.util.List;
-
 import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.Command;
@@ -20,11 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
-import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
 import de.tesis.dynaware.grapheditor.utils.LogMessages;
 
@@ -37,12 +33,12 @@ import de.tesis.dynaware.grapheditor.utils.LogMessages;
  * <pre>
  * <code>GModel model = GraphFactory.eINSTANCE.createGModel();
  * GNode node = GraphFactory.eINSTANCE.createGNode();
- *
+ * 
  * node.setX(100);
  * node.setY(50);
  * node.setWidth(150);
  * node.setHeight(200);
- *
+ * 
  * Commands.addNode(model, node);
  * Commands.undo(model);
  * Commands.redo(model);</code>
@@ -59,13 +55,6 @@ public class Commands {
     private static final EAttribute NODE_Y = GraphPackage.Literals.GNODE__Y;
     private static final EAttribute NODE_WIDTH = GraphPackage.Literals.GNODE__WIDTH;
     private static final EAttribute NODE_HEIGHT = GraphPackage.Literals.GNODE__HEIGHT;
-
-    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
-
-    private static final EAttribute CONNECTION_TYPE = GraphPackage.Literals.GCONNECTION__TYPE;
-    private static final EReference SOURCE = GraphPackage.Literals.GCONNECTION__SOURCE;
-    private static final EReference TARGET = GraphPackage.Literals.GCONNECTION__TARGET;
-    private static final EReference JOINTS = GraphPackage.Literals.GCONNECTION__JOINTS;
 
     private static final EAttribute JOINT_X = GraphPackage.Literals.GJOINT__X;
     private static final EAttribute JOINT_Y = GraphPackage.Literals.GJOINT__Y;
@@ -111,72 +100,6 @@ public class Commands {
 
         if (editingDomain != null) {
             final Command command = RemoveCommand.create(editingDomain, model, NODES, node);
-
-            if (command.canExecute()) {
-                editingDomain.getCommandStack().execute(command);
-            }
-        }
-    }
-
-    /**
-     * Adds a connection to the model.
-     *
-     * @param model the {@link GModel} to which the connection should be added
-     * @param source the source {@link GConnector} of the new connection
-     * @param target the target {@link GConnector} of the new connection
-     * @param type the type attribute for the new connection
-     * @param joints the list of {@link GJoint} instances to be added inside the new connection
-     */
-    public static void addConnection(final GModel model, final GConnector source, final GConnector target,
-            final String type, final List<GJoint> joints) {
-
-        final EditingDomain editingDomain = getEditingDomain(model);
-
-        if (editingDomain != null) {
-            final CompoundCommand command = new CompoundCommand();
-
-            final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
-
-            command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));
-
-            if (type != null) {
-                command.append(SetCommand.create(editingDomain, connection, CONNECTION_TYPE, type));
-            }
-
-            command.append(SetCommand.create(editingDomain, connection, SOURCE, source));
-            command.append(SetCommand.create(editingDomain, connection, TARGET, target));
-            command.append(AddCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
-            command.append(AddCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
-
-            for (final GJoint joint : joints) {
-                command.append(AddCommand.create(editingDomain, connection, JOINTS, joint));
-            }
-
-            if (command.canExecute()) {
-                editingDomain.getCommandStack().execute(command);
-            }
-        }
-    }
-
-    /**
-     * Removes a connection from the model.
-     *
-     * @param model the {@link GModel} from which the connection should be removed
-     * @param connection the {@link GConnection} to be removed
-     */
-    public static void removeConnection(final GModel model, final GConnection connection) {
-
-        final EditingDomain editingDomain = getEditingDomain(model);
-
-        if (editingDomain != null) {
-            final CompoundCommand command = new CompoundCommand();
-
-            final GConnector source = connection.getSource();
-            final GConnector target = connection.getTarget();
-
-            command.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, connection));
-            command.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
-            command.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
 
             if (command.canExecute()) {
                 editingDomain.getCommandStack().execute(command);
@@ -277,6 +200,16 @@ public class Commands {
         }
     }
 
+    /**
+     * Gets the editing domain associated to the model.
+     * 
+     * <p>
+     * Logs an error if none is found.
+     * </p>
+     * 
+     * @param model a {@link GModel} instance
+     * @return the {@link EditingDomain} associated to this model instance
+     */
     private static EditingDomain getEditingDomain(final GModel model) {
 
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
