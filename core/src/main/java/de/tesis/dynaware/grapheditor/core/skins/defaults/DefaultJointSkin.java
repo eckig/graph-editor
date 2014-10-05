@@ -4,7 +4,6 @@
 package de.tesis.dynaware.grapheditor.core.skins.defaults;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.GJointSkin;
@@ -50,29 +49,18 @@ public class DefaultJointSkin extends GJointSkin {
         addSelectionListener();
     }
 
-    @Override
-    public void initialize() {
-
-        getRoot().setLayoutX(getJoint().getX() - SIZE / 2);
-        getRoot().setLayoutY(getJoint().getY() - SIZE / 2);
-    }
-
     /**
      * Adds a listener to react to whether the joint is selected or not and change the CSS classes accordingly.
      */
     private void addSelectionListener() {
 
-        selectedProperty().addListener(new ChangeListener<Boolean>() {
+        selectedProperty().addListener((ChangeListener<Boolean>) (v, o, n) -> {
 
-            @Override
-            public void changed(final ObservableValue<? extends Boolean> v, final Boolean o, final Boolean n) {
-
-                if (n) {
-                    getRoot().getBorderRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-                    getRoot().toFront();
-                } else {
-                    getRoot().getBorderRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-                }
+            if (n) {
+                getRoot().getBorderRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+                getRoot().toFront();
+            } else {
+                getRoot().getBorderRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
             }
         });
     }

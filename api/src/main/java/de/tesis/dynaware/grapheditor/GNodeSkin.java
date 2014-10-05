@@ -124,10 +124,17 @@ public abstract class GNodeSkin {
      * Initializes the node skin.
      *
      * <p>
-     * The skin's layout values, e.g. its x and y position, should be loaded from the {@link GNode} at this point.
+     * The skin's layout values, e.g. its x and y position, are loaded from the {@link GNode} at this point.
      * </p>
      */
-    public abstract void initialize();
+    public void initialize() {
+
+        getRoot().setLayoutX(getNode().getX());
+        getRoot().setLayoutY(getNode().getY());
+
+        getRoot().getBorderRectangle().setWidth(getNode().getWidth());
+        getRoot().getBorderRectangle().setHeight(getNode().getHeight());
+    }
 
     /**
      * Sets the node's connector skins.

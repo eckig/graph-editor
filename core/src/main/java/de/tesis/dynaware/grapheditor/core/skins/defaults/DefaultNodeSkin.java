@@ -67,16 +67,6 @@ public class DefaultNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void initialize() {
-
-        getRoot().setLayoutX(getNode().getX());
-        getRoot().setLayoutY(getNode().getY());
-
-        getRoot().getBorderRectangle().setWidth(getNode().getWidth());
-        getRoot().getBorderRectangle().setHeight(getNode().getHeight());
-    }
-
-    @Override
     public void setConnectorSkins(final List<GConnectorSkin> connectorSkins) {
 
         removeAllConnectors();

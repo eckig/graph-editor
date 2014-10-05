@@ -110,10 +110,14 @@ public abstract class GJointSkin {
      * Initializes the joint skin.
      *
      * <p>
-     * The skin's layout values, e.g. its x and y position, should be loaded from the {@link GJoint} at this point.
+     * The skin's layout values are loaded from the {@link GJoint} at this point.
      * </p>
      */
-    public abstract void initialize();
+    public void initialize() {
+
+        getRoot().setLayoutX(getJoint().getX() - getWidth() / 2);
+        getRoot().setLayoutY(getJoint().getY() - getHeight() / 2);
+    }
 
     /**
      * Gets the width of the joint.
