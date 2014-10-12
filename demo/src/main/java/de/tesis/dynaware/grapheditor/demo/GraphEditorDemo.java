@@ -21,6 +21,7 @@ public class GraphEditorDemo extends Application {
     private static final String APPLICATION_TITLE = "Graph Editor Demo";
     private static final String DEMO_STYLESHEET = "demo.css";
     private static final String TREE_SKIN_STYLESHEET = "treeskins.css";
+    private static final String TITLED_SKIN_STYLESHEET = "titledskins.css";
     private static final String FONT_AWESOME = "fontawesome.ttf";
 
     @Override
@@ -35,6 +36,7 @@ public class GraphEditorDemo extends Application {
 
         scene.getStylesheets().add(getClass().getResource(DEMO_STYLESHEET).toExternalForm());
         scene.getStylesheets().add(getClass().getResource(TREE_SKIN_STYLESHEET).toExternalForm());
+        scene.getStylesheets().add(getClass().getResource(TITLED_SKIN_STYLESHEET).toExternalForm());
         Font.loadFont(getClass().getResource(FONT_AWESOME).toExternalForm(), 12);
 
         stage.setScene(scene);

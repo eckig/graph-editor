@@ -14,7 +14,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -29,12 +28,17 @@ import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
+import de.tesis.dynaware.grapheditor.demo.titled.TitledConnectorSkin;
+import de.tesis.dynaware.grapheditor.demo.titled.TitledTailSkin;
+import de.tesis.dynaware.grapheditor.demo.titled.TitledNodeSkin;
+import de.tesis.dynaware.grapheditor.demo.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeTailSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.validators.TreeConnectorValidator;
+import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -47,15 +51,14 @@ import de.tesis.dynaware.grapheditor.window.WindowPosition;
  */
 public class GraphEditorDemoController {
 
+    private static final String STYLE_CLASS_TITLED = "titled";
+
     private static final String DEFAULT_INPUT_CONNECTOR_TYPE = "input";
     private static final String DEFAULT_OUTPUT_CONNECTOR_TYPE = "output";
     private static final int MAX_CONNECTOR_COUNT = 5;
 
     private static final int NODE_INITIAL_X = 19;
     private static final int NODE_INITIAL_Y = 19;
-
-    private static final String STYLE_CLASS_ICON = "icon";
-    private static final int MINIMAP_ICON = 0xf03e;
 
     @FXML
     private AnchorPane root;
@@ -73,6 +76,8 @@ public class GraphEditorDemoController {
     private RadioMenuItem defaultSkinButton;
     @FXML
     private RadioMenuItem treeSkinButton;
+    @FXML
+    private RadioMenuItem titledSkinButton;
     @FXML
     private Menu intersectionStyle;
     @FXML
@@ -94,7 +99,8 @@ public class GraphEditorDemoController {
     private double currentZoomFactor = 1;
 
     private boolean isMinimapVisible;
-    private boolean treeSkinActivated;
+
+    private SkinType activeSkinType = SkinType.DEFAULT;
 
     /**
      * Called by JavaFX when FXML is loaded.
@@ -112,7 +118,7 @@ public class GraphEditorDemoController {
         graphEditor.getView().getTransforms().add(scaleTransform);
 
         final ToggleGroup skinToggleGroup = new ToggleGroup();
-        skinToggleGroup.getToggles().addAll(defaultSkinButton, treeSkinButton);
+        skinToggleGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton);
 
         final ToggleGroup connectionStyleToggleGroup = new ToggleGroup();
         connectionStyleToggleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
@@ -120,8 +126,9 @@ public class GraphEditorDemoController {
         graphEditor.getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
         graphEditor.getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
 
+        minimapButton.setGraphic(AwesomeIcon.MAP.node());
+
         initializeZoomOptions();
-        initializeMinimapButton();
         setCustomSkins();
     }
 
@@ -208,12 +215,13 @@ public class GraphEditorDemoController {
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(NODE_INITIAL_Y + windowYOffset);
 
-        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
-        node.getConnectors().add(output);
-
-        if (!treeSkinActivated) {
+        switch (activeSkinType) {
+        case DEFAULT:
 
             // Default node.
+            final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+            node.getConnectors().add(output);
+
             final GConnector input = GraphFactory.eINSTANCE.createGConnector();
             node.getConnectors().add(input);
 
@@ -222,17 +230,39 @@ public class GraphEditorDemoController {
             input.setType(DEFAULT_INPUT_CONNECTOR_TYPE);
             output.setType(DEFAULT_OUTPUT_CONNECTOR_TYPE);
 
-        } else {
+            break;
+
+        case TREE:
 
             // Tree root-node.
+            final GConnector treeOutput = GraphFactory.eINSTANCE.createGConnector();
+            node.getConnectors().add(treeOutput);
+
             final double initialX = graphEditorContainer.getWidth() / (2 * currentZoomFactor) - node.getWidth() / 2;
             node.setX(Math.floor(initialX) + windowXOffset);
 
             node.setType(TreeSkinConstants.TREE_NODE);
-            output.setType(TreeSkinConstants.TREE_OUTPUT);
+            treeOutput.setType(TreeSkinConstants.TREE_OUTPUT);
 
             // This allows multiple connections to be created from the output.
-            output.setConnectionDetachedOnDrag(false);
+            treeOutput.setConnectionDetachedOnDrag(false);
+
+            break;
+
+        case TITLED:
+
+            node.setType(TitledSkinConstants.TITLED_NODE);
+            node.setX(NODE_INITIAL_X + windowXOffset);
+
+            final GConnector squareInput = GraphFactory.eINSTANCE.createGConnector();
+            node.getConnectors().add(squareInput);
+            squareInput.setType(TitledSkinConstants.SQUARE_INPUT);
+
+            final GConnector squareOutput = GraphFactory.eINSTANCE.createGConnector();
+            node.getConnectors().add(squareOutput);
+            squareOutput.setType(TitledSkinConstants.SQUARE_OUTPUT);
+
+            break;
         }
 
         Commands.addNode(graphEditor.getModel(), node);
@@ -251,16 +281,17 @@ public class GraphEditorDemoController {
     @FXML
     public void setDefaultSkin() {
 
-        if (treeSkinActivated) {
+        if (!activeSkinType.equals(SkinType.DEFAULT)) {
 
-            treeSkinActivated = false;
+            activeSkinType = SkinType.DEFAULT;
 
-            // Tree skins are not intended to be mixed with default skins. Therefore clear everything.
+            // The custom skins are not intended to be mixed with other skins. Therefore clear everything.
             clearAll();
             flushCommandStack();
 
             // Set connector validator to null so that default will be used.
             graphEditor.setConnectorValidator(null);
+            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED);
 
             disableDefaultSkinSpecificOptions(false);
         }
@@ -269,15 +300,33 @@ public class GraphEditorDemoController {
     @FXML
     public void setTreeSkin() {
 
-        if (!treeSkinActivated) {
+        if (!activeSkinType.equals(SkinType.TREE)) {
 
-            treeSkinActivated = true;
+            activeSkinType = SkinType.TREE;
 
-            // Tree skins are not intended to be mixed with default skins. Therefore clear everything.
+            // The custom skins are not intended to be mixed with other skins. Therefore clear everything.
             clearAll();
             flushCommandStack();
 
             graphEditor.setConnectorValidator(TreeConnectorValidator.class);
+
+            disableDefaultSkinSpecificOptions(true);
+        }
+    }
+
+    @FXML
+    public void setTitledSkin() {
+
+        if (!activeSkinType.equals(SkinType.TITLED)) {
+
+            activeSkinType = SkinType.TITLED;
+
+            // The custom skins are not intended to be mixed with other skins. Therefore clear everything.
+            clearAll();
+            flushCommandStack();
+
+            graphEditor.setConnectorValidator(null);
+            graphEditor.getView().getStyleClass().add(STYLE_CLASS_TITLED);
 
             disableDefaultSkinSpecificOptions(true);
         }
@@ -311,17 +360,6 @@ public class GraphEditorDemoController {
      */
     public void panToCenter() {
         graphEditorContainer.panTo(WindowPosition.CENTER);
-    }
-
-    /**
-     * Initializes the toggle-button that shows/hides the minimap.
-     */
-    private void initializeMinimapButton() {
-
-        final Text icon = new Text(String.valueOf((char) MINIMAP_ICON));
-        icon.getStyleClass().add(STYLE_CLASS_ICON);
-
-        minimapButton.setGraphic(icon);
     }
 
     /**
@@ -359,6 +397,12 @@ public class GraphEditorDemoController {
         graphEditor.setConnectionSkin(TreeSkinConstants.TREE_CONNECTION, TreeConnectionSkin.class);
         graphEditor.setTailSkin(TreeSkinConstants.TREE_INPUT, TreeTailSkin.class);
         graphEditor.setTailSkin(TreeSkinConstants.TREE_OUTPUT, TreeTailSkin.class);
+
+        graphEditor.setNodeSkin(TitledSkinConstants.TITLED_NODE, TitledNodeSkin.class);
+        graphEditor.setConnectorSkin(TitledSkinConstants.SQUARE_INPUT, TitledConnectorSkin.class);
+        graphEditor.setConnectorSkin(TitledSkinConstants.SQUARE_OUTPUT, TitledConnectorSkin.class);
+        graphEditor.setTailSkin(TitledSkinConstants.SQUARE_INPUT, TitledTailSkin.class);
+        graphEditor.setTailSkin(TitledSkinConstants.SQUARE_OUTPUT, TitledTailSkin.class);
     }
 
     /**
@@ -479,22 +523,31 @@ public class GraphEditorDemoController {
 
             if (TreeSkinConstants.TREE_NODE.equals(type)) {
 
-                treeSkinActivated = true;
+                activeSkinType = SkinType.TREE;
                 graphEditor.setConnectorValidator(TreeConnectorValidator.class);
-
                 disableDefaultSkinSpecificOptions(true);
-
                 treeSkinButton.setSelected(true);
+
+            } else if (TitledSkinConstants.TITLED_NODE.equals(type)) {
+
+                activeSkinType = SkinType.TITLED;
+                graphEditor.setConnectorValidator(null);
+                disableDefaultSkinSpecificOptions(true);
+                titledSkinButton.setSelected(true);
+                graphEditor.getView().getStyleClass().add(STYLE_CLASS_TITLED);
 
             } else {
 
-                treeSkinActivated = false;
+                activeSkinType = SkinType.DEFAULT;
                 graphEditor.setConnectorValidator(null);
-
                 disableDefaultSkinSpecificOptions(false);
-
                 defaultSkinButton.setSelected(true);
+                graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED);
             }
         }
+    }
+
+    private enum SkinType {
+        DEFAULT, TREE, TITLED;
     }
 }

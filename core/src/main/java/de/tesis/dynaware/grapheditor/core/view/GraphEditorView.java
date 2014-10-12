@@ -34,11 +34,13 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
  */
 public class GraphEditorView extends Region {
 
-    private static final String STYLESHEET = "defaults.css";
+    private static final String STYLESHEET_VIEW = "view.css";
+    private static final String STYLESHEET_DEFAULTS = "defaults.css";
 
-    private static final String STYLE_CLASS = "g-editor";
-    private static final String STYLE_CLASS_NODE_LAYER = "g-editor-node-layer";
-    private static final String STYLE_CLASS_CONNECTION_LAYER = "g-editor-connection-layer";
+    private static final String STYLE_CLASS = "graph-editor";
+    private static final String STYLE_CLASS_DEFAULTS = "default";
+    private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
+    private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
 
     private static final String NODE_LAYER_ID = "nodeLayer";
     private static final String CONNECTION_LAYER_ID = "connectionLayer";
@@ -58,8 +60,10 @@ public class GraphEditorView extends Region {
      */
     public GraphEditorView() {
 
-        getStylesheets().add(GraphEditorView.class.getResource(STYLESHEET).toExternalForm());
-        getStyleClass().addAll(STYLE_CLASS);
+        getStylesheets().add(GraphEditorView.class.getResource(STYLESHEET_VIEW).toExternalForm());
+        getStylesheets().add(GraphEditorView.class.getResource(STYLESHEET_DEFAULTS).toExternalForm());
+
+        getStyleClass().addAll(STYLE_CLASS, STYLE_CLASS_DEFAULTS);
 
         setMaxWidth(GraphEditorProperties.DEFAULT_MAX_WIDTH);
         setMaxHeight(GraphEditorProperties.DEFAULT_MAX_HEIGHT);

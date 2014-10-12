@@ -13,7 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -24,6 +23,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
+import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
@@ -44,7 +44,6 @@ public class TreeNodeSkin extends GNodeSkin {
     private static final String STYLE_CLASS_BACKGROUND = "tree-node-background";
     private static final String STYLE_CLASS_SELECTION_HALO = "tree-node-selection-halo";
     private static final String STYLE_CLASS_BUTTON = "tree-node-button";
-    private static final String STYLE_CLASS_ICON = "icon";
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
@@ -56,8 +55,6 @@ public class TreeNodeSkin extends GNodeSkin {
 
     // Child nodes will be added this far below their parent.
     private static final double CHILD_Y_OFFSET = 80;
-
-    private static final int PLUS_ICON = 0xf067;
 
     private static final EReference NODES = GraphPackage.Literals.GMODEL__NODES;
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
@@ -232,10 +229,7 @@ public class TreeNodeSkin extends GNodeSkin {
         addChildButton.setCursor(Cursor.DEFAULT);
         addChildButton.setPickOnBounds(false);
 
-        final Text icon = new Text(String.valueOf((char) PLUS_ICON));
-        icon.getStyleClass().setAll(STYLE_CLASS_ICON);
-
-        addChildButton.setGraphic(icon);
+        addChildButton.setGraphic(AwesomeIcon.PLUS.node());
         addChildButton.setOnAction(event -> addChildNode());
 
         getRoot().getChildren().add(addChildButton);

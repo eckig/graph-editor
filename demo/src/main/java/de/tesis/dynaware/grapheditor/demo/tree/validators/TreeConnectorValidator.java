@@ -48,7 +48,12 @@ public class TreeConnectorValidator implements GConnectorValidator {
     }
 
     @Override
-    public String createType(final GConnector source, final GConnector target) {
+    public String createConnectionType(final GConnector source, final GConnector target) {
         return TreeSkinConstants.TREE_CONNECTION;
+    }
+
+    @Override
+    public String createJointType(final GConnector source, final GConnector target) {
+        return null;
     }
 }

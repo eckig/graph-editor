@@ -19,7 +19,7 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
  */
 public class DefaultJointSkin extends GJointSkin {
 
-    private static final String STYLE_CLASS = "g-joint";
+    private static final String STYLE_CLASS = "default-joint";
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 

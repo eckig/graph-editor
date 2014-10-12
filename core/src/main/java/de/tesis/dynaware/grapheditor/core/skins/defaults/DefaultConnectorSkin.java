@@ -20,8 +20,8 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
  */
 public class DefaultConnectorSkin extends GConnectorSkin {
 
-    private static final String STYLE_CLASS_INPUT = "g-input-connector";
-    private static final String STYLE_CLASS_OUTPUT = "g-output-connector";
+    private static final String STYLE_CLASS_INPUT = "default-input-connector";
+    private static final String STYLE_CLASS_OUTPUT = "default-output-connector";
 
     private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed");
     private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden");

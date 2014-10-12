@@ -1,69 +1,60 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.core.skins.defaults;
+package de.tesis.dynaware.grapheditor.demo.titled;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.css.PseudoClass;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
-import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 
-/**
- * The default node skin. Uses a {@link ResizableBox}.
- *
- * <p>
- * Input connectors are drawn on the left and output connectors are drawn on the right.
- * </p>
- */
-public class DefaultNodeSkin extends GNodeSkin {
+public class TitledNodeSkin extends GNodeSkin {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultNodeSkin.class);
-
-    private static final String STYLE_CLASS_BORDER = "default-node-border";
-    private static final String STYLE_CLASS_BACKGROUND = "default-node-background";
-    private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
-
+    private static final String STYLE_CLASS_BORDER = "titled-node-border";
+    private static final String STYLE_CLASS_BACKGROUND = "titled-node-background";
+    private static final String STYLE_CLASS_SELECTION_HALO = "titled-node-selection-halo";
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
     private static final double HALO_OFFSET = 5;
     private static final double HALO_CORNER_SIZE = 10;
 
-    private static final double MIN_WIDTH = 41;
-    private static final double MIN_HEIGHT = 41;
+    private static final double MIN_WIDTH = 81;
+    private static final double MIN_HEIGHT = 81;
+
+    private static final int BORDER_WIDTH = 1;
+    private static final int HEADER_HEIGHT = 10;
 
     private final Rectangle selectionHalo = new Rectangle();
+
+    private TitledNodeController contentController;
+    private VBox contentRoot;
 
     private final List<GConnectorSkin> inputConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> outputConnectorSkins = new ArrayList<>();
 
-    /**
-     * Creates a new default node skin instance.
-     *
-     * @param node the {@link GNode} the skin is being created for
-     */
-    public DefaultNodeSkin(final GNode node) {
+    public TitledNodeSkin(final GNode node) {
 
         super(node);
 
-        getRoot().getBorderRectangle().getStyleClass().setAll(STYLE_CLASS_BORDER);
-        getRoot().getBackgroundRectangle().getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
+        getRoot().getBorderRectangle().getStyleClass().add(STYLE_CLASS_BORDER);
+        getRoot().getBackgroundRectangle().setVisible(false);
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
 
         addSelectionHalo();
         addSelectionListener();
+
+        createContent();
     }
 
     @Override
@@ -77,11 +68,8 @@ public class DefaultNodeSkin extends GNodeSkin {
         if (connectorSkins != null) {
             for (final GConnectorSkin connectorSkin : connectorSkins) {
 
-                final String inputType = DefaultSkinConstants.INPUT_TYPE;
-                final String outputType = DefaultSkinConstants.OUTPUT_TYPE;
-
-                final boolean isInput = inputType.equals(connectorSkin.getConnector().getType());
-                final boolean isOutput = outputType.equals(connectorSkin.getConnector().getType());
+                final boolean isInput = connectorSkin.getConnector().getType().contains("input");
+                final boolean isOutput = connectorSkin.getConnector().getType().contains("output");
 
                 if (isInput) {
                     inputConnectorSkins.add(connectorSkin);
@@ -91,8 +79,6 @@ public class DefaultNodeSkin extends GNodeSkin {
 
                 if (isInput || isOutput) {
                     getRoot().getChildren().add(connectorSkin.getRoot());
-                } else {
-                    LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, connectorSkin.getConnector().getType());
                 }
             }
         }
@@ -115,45 +101,82 @@ public class DefaultNodeSkin extends GNodeSkin {
         return new Point2D(x, y);
     }
 
-    /**
-     * Lays out the node's connectors. Inputs on the left, outputs on the right.
-     */
+    private void createContent() {
+
+        try {
+
+            final FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("TitledNode.fxml"));
+
+            contentRoot = loader.load();
+            contentController = loader.getController();
+            contentController.setNode(getNode());
+
+            getRoot().getChildren().add(contentRoot);
+
+            final DoubleProperty width = getRoot().getBorderRectangle().widthProperty();
+            final DoubleProperty height = getRoot().getBorderRectangle().heightProperty();
+
+            contentRoot.minWidthProperty().bind(width);
+            contentRoot.prefWidthProperty().bind(width);
+            contentRoot.maxWidthProperty().bind(width);
+            contentRoot.minHeightProperty().bind(height);
+            contentRoot.prefHeightProperty().bind(height);
+            contentRoot.maxHeightProperty().bind(height);
+
+            contentRoot.setLayoutX(BORDER_WIDTH);
+            contentRoot.setLayoutY(BORDER_WIDTH);
+
+            contentRoot.getStyleClass().add(STYLE_CLASS_BACKGROUND);
+
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void layoutLeftAndRightConnectors() {
 
         final int inputCount = inputConnectorSkins.size();
-        final double inputOffsetY = getRoot().getHeight() / (inputCount + 1);
+        final double inputOffsetY = (getRoot().getHeight() - HEADER_HEIGHT) / (inputCount + 1);
 
         for (int i = 0; i < inputCount; i++) {
 
             final GConnectorSkin inputSkin = inputConnectorSkins.get(i);
             final Node connectorRoot = inputSkin.getRoot();
 
-            final double layoutX = GeometryUtils.moveOnPixel(0 - inputSkin.getWidth() / 2) + 2;
-            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * inputOffsetY - inputSkin.getHeight() / 2);
+            final double layoutX = GeometryUtils.moveOnPixel(0 - inputSkin.getWidth() / 2);
+            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * inputOffsetY - inputSkin.getHeight() / 2)
+                    + HEADER_HEIGHT;
 
-            connectorRoot.setLayoutX(layoutX);
+            if (inputSkin.getConnector().getType().contains("triangle")) {
+                connectorRoot.setLayoutX(layoutX + 1);
+            } else {
+                connectorRoot.setLayoutX(layoutX);
+            }
             connectorRoot.setLayoutY(layoutY);
         }
 
         final int outputCount = outputConnectorSkins.size();
-        final double outputOffsetY = getRoot().getHeight() / (outputCount + 1);
+        final double outputOffsetY = (getRoot().getHeight() - HEADER_HEIGHT) / (outputCount + 1);
 
         for (int i = 0; i < outputCount; i++) {
 
             final GConnectorSkin outputSkin = outputConnectorSkins.get(i);
             final Node connectorRoot = outputSkin.getRoot();
 
-            final double layoutX = GeometryUtils.moveOnPixel(getRoot().getWidth() - outputSkin.getWidth() / 2) + 2;
-            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * outputOffsetY - outputSkin.getHeight() / 2);
+            final double layoutX = GeometryUtils.moveOnPixel(getRoot().getWidth() - outputSkin.getWidth() / 2);
+            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * outputOffsetY - outputSkin.getHeight() / 2)
+                    + HEADER_HEIGHT;
 
-            connectorRoot.setLayoutX(layoutX);
+            if (outputSkin.getConnector().getType().contains("triangle")) {
+                connectorRoot.setLayoutX(layoutX + 1);
+            } else {
+                connectorRoot.setLayoutX(layoutX);
+            }
             connectorRoot.setLayoutY(layoutY);
         }
     }
 
-    /**
-     * Adds the selection halo and initializes some of its values.
-     */
     private void addSelectionHalo() {
 
         getRoot().getChildren().add(selectionHalo);
@@ -168,9 +191,6 @@ public class DefaultNodeSkin extends GNodeSkin {
         selectionHalo.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
     }
 
-    /**
-     * Lays out the selection halo based on the current width and height of the node skin region.
-     */
     private void layoutSelectionHalo() {
 
         if (selectionHalo.isVisible()) {
@@ -189,9 +209,6 @@ public class DefaultNodeSkin extends GNodeSkin {
         }
     }
 
-    /**
-     * Adds a listener to react to whether the node is selected or not and change the CSS classes accordingly.
-     */
     private void addSelectionListener() {
 
         selectedProperty().addListener((v, o, n) -> {
@@ -199,18 +216,15 @@ public class DefaultNodeSkin extends GNodeSkin {
             if (n) {
                 selectionHalo.setVisible(true);
                 layoutSelectionHalo();
-                getRoot().getBackgroundRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+                contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
                 getRoot().toFront();
             } else {
                 selectionHalo.setVisible(false);
-                getRoot().getBackgroundRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+                contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
             }
         });
     }
 
-    /**
-     * Removes all connectors from the list of children.
-     */
     private void removeAllConnectors() {
 
         for (final GConnectorSkin connectorSkin : inputConnectorSkins) {
