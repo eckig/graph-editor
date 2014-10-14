@@ -11,6 +11,7 @@ package de.tesis.dynaware.grapheditor.model;
  * <p>
  * The following features are supported:
  * <ul>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getId <em>Id</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getType <em>Type</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getX <em>X</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getY <em>Y</em>}</li>
@@ -25,6 +26,32 @@ package de.tesis.dynaware.grapheditor.model;
  * @generated
  */
 public interface GNode extends GConnectable {
+    /**
+     * Returns the value of the '<em><b>Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Id</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Id</em>' attribute.
+     * @see #setId(String)
+     * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGNode_Id()
+     * @model id="true"
+     * @generated
+     */
+    String getId();
+
+    /**
+     * Sets the value of the '{@link de.tesis.dynaware.grapheditor.model.GNode#getId <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Id</em>' attribute.
+     * @see #getId()
+     * @generated
+     */
+    void setId(String value);
+
     /**
      * Returns the value of the '<em><b>Type</b></em>' attribute.
      * <!-- begin-user-doc -->

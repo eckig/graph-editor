@@ -204,7 +204,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGNode_Type() {
+    public EAttribute getGNode_Id() {
         return (EAttribute)gNodeEClass.getEStructuralFeatures().get(0);
     }
 
@@ -213,7 +213,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGNode_X() {
+    public EAttribute getGNode_Type() {
         return (EAttribute)gNodeEClass.getEStructuralFeatures().get(1);
     }
 
@@ -222,7 +222,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGNode_Y() {
+    public EAttribute getGNode_X() {
         return (EAttribute)gNodeEClass.getEStructuralFeatures().get(2);
     }
 
@@ -231,7 +231,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGNode_Width() {
+    public EAttribute getGNode_Y() {
         return (EAttribute)gNodeEClass.getEStructuralFeatures().get(3);
     }
 
@@ -240,7 +240,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGNode_Height() {
+    public EAttribute getGNode_Width() {
         return (EAttribute)gNodeEClass.getEStructuralFeatures().get(4);
     }
 
@@ -249,8 +249,17 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
+    public EAttribute getGNode_Height() {
+        return (EAttribute)gNodeEClass.getEStructuralFeatures().get(5);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EReference getGNode_Subgraph() {
-        return (EReference)gNodeEClass.getEStructuralFeatures().get(5);
+        return (EReference)gNodeEClass.getEStructuralFeatures().get(6);
     }
 
     /**
@@ -464,6 +473,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
         createEReference(gConnectableEClass, GCONNECTABLE__CONNECTORS);
 
         gNodeEClass = createEClass(GNODE);
+        createEAttribute(gNodeEClass, GNODE__ID);
         createEAttribute(gNodeEClass, GNODE__TYPE);
         createEAttribute(gNodeEClass, GNODE__X);
         createEAttribute(gNodeEClass, GNODE__Y);
@@ -536,6 +546,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
         initEReference(getGConnectable_Connectors(), this.getGConnector(), this.getGConnector_Parent(), "connectors", null, 0, -1, GConnectable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(gNodeEClass, GNode.class, "GNode", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getGNode_Id(), ecorePackage.getEString(), "id", null, 0, 1, GNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGNode_Type(), ecorePackage.getEString(), "type", null, 0, 1, GNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGNode_X(), ecorePackage.getEDouble(), "x", "0", 1, 1, GNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGNode_Y(), ecorePackage.getEDouble(), "y", "0", 1, 1, GNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

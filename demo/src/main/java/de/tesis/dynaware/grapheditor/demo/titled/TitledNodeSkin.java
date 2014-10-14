@@ -3,27 +3,40 @@
  */
 package de.tesis.dynaware.grapheditor.demo.titled;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.css.PseudoClass;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 public class TitledNodeSkin extends GNodeSkin {
 
+    private static final String TITLE_TEXT = "Node ";
+
     private static final String STYLE_CLASS_BORDER = "titled-node-border";
     private static final String STYLE_CLASS_BACKGROUND = "titled-node-background";
     private static final String STYLE_CLASS_SELECTION_HALO = "titled-node-selection-halo";
+    private static final String STYLE_CLASS_HEADER = "titled-node-header";
+    private static final String STYLE_CLASS_TITLE = "titled-node-title";
+    private static final String STYLE_CLASS_BUTTON = "titled-node-close-button";
+
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
     private static final double HALO_OFFSET = 5;
@@ -37,8 +50,8 @@ public class TitledNodeSkin extends GNodeSkin {
 
     private final Rectangle selectionHalo = new Rectangle();
 
-    private TitledNodeController contentController;
-    private VBox contentRoot;
+    private VBox contentRoot = new VBox();
+    private Label title = new Label();
 
     private final List<GConnectorSkin> inputConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> outputConnectorSkins = new ArrayList<>();
@@ -55,6 +68,12 @@ public class TitledNodeSkin extends GNodeSkin {
         addSelectionListener();
 
         createContent();
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        title.setText(TITLE_TEXT + getNode().getId());
     }
 
     @Override
@@ -103,35 +122,40 @@ public class TitledNodeSkin extends GNodeSkin {
 
     private void createContent() {
 
-        try {
+        final HBox header = new HBox();
+        header.getStyleClass().add(STYLE_CLASS_HEADER);
+        header.setAlignment(Pos.CENTER);
 
-            final FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("TitledNode.fxml"));
+        title.getStyleClass().add(STYLE_CLASS_TITLE);
 
-            contentRoot = loader.load();
-            contentController = loader.getController();
-            contentController.setNode(getNode());
+        final Region filler = new Region();
+        HBox.setHgrow(filler, Priority.ALWAYS);
 
-            getRoot().getChildren().add(contentRoot);
+        final Button closeButton = new Button();
+        closeButton.getStyleClass().add(STYLE_CLASS_BUTTON);
 
-            final DoubleProperty width = getRoot().getBorderRectangle().widthProperty();
-            final DoubleProperty height = getRoot().getBorderRectangle().heightProperty();
+        header.getChildren().addAll(title, filler, closeButton);
+        contentRoot.getChildren().add(header);
+        getRoot().getChildren().add(contentRoot);
 
-            contentRoot.minWidthProperty().bind(width);
-            contentRoot.prefWidthProperty().bind(width);
-            contentRoot.maxWidthProperty().bind(width);
-            contentRoot.minHeightProperty().bind(height);
-            contentRoot.prefHeightProperty().bind(height);
-            contentRoot.maxHeightProperty().bind(height);
+        closeButton.setGraphic(AwesomeIcon.TIMES.node());
+        closeButton.setCursor(Cursor.DEFAULT);
+        closeButton.setOnAction(event -> Commands.removeNode(getGraphEditor().getModel(), getNode()));
 
-            contentRoot.setLayoutX(BORDER_WIDTH);
-            contentRoot.setLayoutY(BORDER_WIDTH);
+        final DoubleProperty width = getRoot().getBorderRectangle().widthProperty();
+        final DoubleProperty height = getRoot().getBorderRectangle().heightProperty();
 
-            contentRoot.getStyleClass().add(STYLE_CLASS_BACKGROUND);
+        contentRoot.minWidthProperty().bind(width);
+        contentRoot.prefWidthProperty().bind(width);
+        contentRoot.maxWidthProperty().bind(width);
+        contentRoot.minHeightProperty().bind(height);
+        contentRoot.prefHeightProperty().bind(height);
+        contentRoot.maxHeightProperty().bind(height);
 
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        contentRoot.setLayoutX(BORDER_WIDTH);
+        contentRoot.setLayoutY(BORDER_WIDTH);
+
+        contentRoot.getStyleClass().add(STYLE_CLASS_BACKGROUND);
     }
 
     private void layoutLeftAndRightConnectors() {

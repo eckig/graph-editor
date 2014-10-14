@@ -31,7 +31,7 @@
 	-fx-background-color: derive(-background-color, -5%);
 }
 
-.title-box {
+.titled-node-header {
 	-fx-padding: 2 5 2 5;
 	-fx-background-color: -title-color;
 	-fx-border-width: 0 0 1 0;
@@ -39,26 +39,26 @@
 	-fx-opacity: 0.9;
 }
 
-.title-label {
+.titled-node-title {
 	-fx-font-size: 11;
 	-fx-text-fill: white;
 }
 
-.close-button {
+.titled-node-close-button {
 	-fx-background-color: null;
 	-fx-border-color: null;
 	-fx-padding: 0 0 0 0;
 }
 
-.close-button .icon {
+.titled-node-close-button .icon {
 	-fx-fill: -background-color;
 }
 
-.close-button:hover .icon {
+.titled-node-close-button:hover .icon {
 	-fx-fill: white;
 }
 
-.close-button:pressed .icon {
+.titled-node-close-button:pressed .icon {
 	-fx-fill: derive(-background-color, -5%);
 }
 

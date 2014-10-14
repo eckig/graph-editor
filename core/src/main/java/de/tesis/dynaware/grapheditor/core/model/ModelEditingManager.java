@@ -107,7 +107,7 @@ public class ModelEditingManager {
      * @param nodesToRemove the nodes to be removed
      * @param connectionsToRemove the connections to be removed
      */
-    public void remove(final List<GNode> nodesToRemove, final List<GConnection> connectionsToRemove) {
+    public CompoundCommand remove(final List<GNode> nodesToRemove, final List<GConnection> connectionsToRemove) {
 
         final CompoundCommand command = new CompoundCommand();
 
@@ -143,6 +143,8 @@ public class ModelEditingManager {
 
             editingDomain.getCommandStack().execute(command);
         }
+
+        return command;
     }
 
     /**

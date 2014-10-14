@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <p>
  * The following features are implemented:
  * <ul>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getId <em>Id</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getType <em>Type</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getX <em>X</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getY <em>Y</em>}</li>
@@ -31,6 +32,26 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * @generated
  */
 public class GNodeImpl extends GConnectableImpl implements GNode {
+    /**
+     * The default value of the '{@link #getId() <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getId()
+     * @generated
+     * @ordered
+     */
+    protected static final String ID_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getId()
+     * @generated
+     * @ordered
+     */
+    protected String id = ID_EDEFAULT;
+
     /**
      * The default value of the '{@link #getType() <em>Type</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -158,6 +179,27 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
     @Override
     protected EClass eStaticClass() {
         return GraphPackage.Literals.GNODE;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setId(String newId) {
+        String oldId = id;
+        id = newId;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GNODE__ID, oldId, id));
     }
 
     /**
@@ -346,6 +388,8 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
+            case GraphPackage.GNODE__ID:
+                return getId();
             case GraphPackage.GNODE__TYPE:
                 return getType();
             case GraphPackage.GNODE__X:
@@ -370,6 +414,9 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
+            case GraphPackage.GNODE__ID:
+                setId((String)newValue);
+                return;
             case GraphPackage.GNODE__TYPE:
                 setType((String)newValue);
                 return;
@@ -400,6 +447,9 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
+            case GraphPackage.GNODE__ID:
+                setId(ID_EDEFAULT);
+                return;
             case GraphPackage.GNODE__TYPE:
                 setType(TYPE_EDEFAULT);
                 return;
@@ -430,6 +480,8 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
+            case GraphPackage.GNODE__ID:
+                return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
             case GraphPackage.GNODE__TYPE:
                 return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
             case GraphPackage.GNODE__X:
@@ -456,7 +508,9 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (type: ");
+        result.append(" (id: ");
+        result.append(id);
+        result.append(", type: ");
         result.append(type);
         result.append(", x: ");
         result.append(x);

@@ -5,7 +5,6 @@ package de.tesis.dynaware.grapheditor;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.Region;
-import de.tesis.dynaware.grapheditor.events.ConnectionEventHandler;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -217,24 +216,24 @@ public interface GraphEditor {
     SelectionManager getSelectionManager();
 
     /**
-     * Sets the handler to be called when a connection is created in the editor.
+     * Sets a method to be called when a connection is created in the editor.
      * 
      * <p>
      * This can be used to append additional commands to the one that created the connection.
      * </p>
      * 
-     * @param handler the {@link ConnectionEventHandler} to be called
+     * @param appender the {@link CommandAppender} to be called
      */
-    void setOnConnectionCreated(ConnectionEventHandler handler);
+    void setOnConnectionCreated(CommandAppender<GConnection> appender);
 
     /**
-     * Sets the handler to be called when a connection is removed in the editor.
+     * Sets a method to be called when a connection is removed in the editor.
      * 
      * <p>
      * This can be used to append additional commands to the one that removed the connection.
      * </p>
      * 
-     * @param handler the {@link ConnectionEventHandler} to be called
+     * @param appender the {@link CommandAppender} to be called
      */
-    void setOnConnectionRemoved(ConnectionEventHandler handler);
+    void setOnConnectionRemoved(CommandAppender<GConnection> appender);
 }

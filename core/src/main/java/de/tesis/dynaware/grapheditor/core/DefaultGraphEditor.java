@@ -10,6 +10,7 @@ import javafx.scene.layout.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
@@ -24,7 +25,7 @@ import de.tesis.dynaware.grapheditor.core.model.ModelValidator;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
-import de.tesis.dynaware.grapheditor.events.ConnectionEventHandler;
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 
@@ -137,13 +138,13 @@ public class DefaultGraphEditor implements GraphEditor {
     }
 
     @Override
-    public void setOnConnectionCreated(final ConnectionEventHandler handler) {
-        connectionEventManager.setOnConnectionCreated(handler);
+    public void setOnConnectionCreated(final CommandAppender<GConnection> appender) {
+        connectionEventManager.setOnConnectionCreated(appender);
     }
 
     @Override
-    public void setOnConnectionRemoved(final ConnectionEventHandler handler) {
-        connectionEventManager.setOnConnectionRemoved(handler);
+    public void setOnConnectionRemoved(final CommandAppender<GConnection> appender) {
+        connectionEventManager.setOnConnectionRemoved(appender);
     }
 
     /**

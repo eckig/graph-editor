@@ -6,6 +6,9 @@ package de.tesis.dynaware.grapheditor.core.selections;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.command.CompoundCommand;
+
+import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -37,8 +40,9 @@ public class SelectionDeleter {
      * Deletes all nodes in the current selection and all attached connections.
      *
      * @param model the {@link GModel} currently being edited
+     * @param handler a {@link CommandAppender} to allow custom commands to be appended to the delete command
      */
-    public void deleteSelection(final GModel model) {
+    public void deleteSelection(final GModel model, final CommandAppender<List<GNode>> handler) {
 
         final List<GNode> nodesToDelete = new ArrayList<>();
         final List<GConnection> connectionsToDelete = new ArrayList<>();
@@ -60,7 +64,12 @@ public class SelectionDeleter {
         }
 
         if (!nodesToDelete.isEmpty() || !connectionsToDelete.isEmpty()) {
-            modelEditingManager.remove(nodesToDelete, connectionsToDelete);
+
+            final CompoundCommand command = modelEditingManager.remove(nodesToDelete, connectionsToDelete);
+
+            if (handler != null) {
+                handler.append(nodesToDelete, command);
+            }
         }
     }
 }

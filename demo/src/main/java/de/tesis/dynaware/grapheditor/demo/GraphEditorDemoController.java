@@ -3,7 +3,10 @@
  */
 package de.tesis.dynaware.grapheditor.demo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,9 +19,12 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
@@ -29,9 +35,9 @@ import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.titled.TitledConnectorSkin;
-import de.tesis.dynaware.grapheditor.demo.titled.TitledTailSkin;
 import de.tesis.dynaware.grapheditor.demo.titled.TitledNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.titled.TitledSkinConstants;
+import de.tesis.dynaware.grapheditor.demo.titled.TitledTailSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeNodeSkin;
@@ -193,7 +199,12 @@ public class GraphEditorDemoController {
 
     @FXML
     public void paste() {
-        graphEditor.getSelectionManager().paste().size();
+
+        if (activeSkinType.equals(SkinType.TITLED)) {
+            graphEditor.getSelectionManager().paste((nodes, command) -> allocateIds(nodes, command));
+        } else {
+            graphEditor.getSelectionManager().paste();
+        }
     }
 
     @FXML
@@ -253,6 +264,7 @@ public class GraphEditorDemoController {
 
             node.setType(TitledSkinConstants.TITLED_NODE);
             node.setX(NODE_INITIAL_X + windowXOffset);
+            node.setId(allocateNewId());
 
             final GConnector squareInput = GraphFactory.eINSTANCE.createGConnector();
             node.getConnectors().add(squareInput);
@@ -328,7 +340,7 @@ public class GraphEditorDemoController {
             graphEditor.setConnectorValidator(null);
             graphEditor.getView().getStyleClass().add(STYLE_CLASS_TITLED);
 
-            disableDefaultSkinSpecificOptions(true);
+            disableDefaultSkinSpecificOptions(false);
         }
     }
 
@@ -532,18 +544,59 @@ public class GraphEditorDemoController {
 
                 activeSkinType = SkinType.TITLED;
                 graphEditor.setConnectorValidator(null);
-                disableDefaultSkinSpecificOptions(true);
-                titledSkinButton.setSelected(true);
                 graphEditor.getView().getStyleClass().add(STYLE_CLASS_TITLED);
+                disableDefaultSkinSpecificOptions(false);
+                titledSkinButton.setSelected(true);
 
             } else {
 
                 activeSkinType = SkinType.DEFAULT;
                 graphEditor.setConnectorValidator(null);
+                graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED);
                 disableDefaultSkinSpecificOptions(false);
                 defaultSkinButton.setSelected(true);
-                graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED);
             }
+        }
+    }
+
+    private void allocateIds(final List<GNode> nodes, final CompoundCommand command) {
+
+        final EditingDomain domain = AdapterFactoryEditingDomain.getEditingDomainFor(graphEditor.getModel());
+        final EAttribute feature = GraphPackage.Literals.GNODE__ID;
+
+        for (final GNode node : nodes) {
+
+            if (checkNeedsNewId(node, nodes)) {
+
+                final String id = allocateNewId();
+                final Command setCommand = SetCommand.create(domain, node, feature, id);
+
+                if (setCommand.canExecute()) {
+                    command.appendAndExecute(setCommand);
+                }
+
+                graphEditor.getSkinLookup().lookupNode(node).initialize();
+            }
+        }
+    }
+
+    private boolean checkNeedsNewId(final GNode node, final List<GNode> pastedNodes) {
+
+        final List<GNode> nodes = new ArrayList<>(graphEditor.getModel().getNodes());
+        nodes.removeAll(pastedNodes);
+
+        return nodes.stream().anyMatch(other -> other.getId().equals(node.getId()));
+    }
+
+    private String allocateNewId() {
+
+        final List<GNode> nodes = graphEditor.getModel().getNodes();
+        final OptionalInt max = nodes.stream().mapToInt(node -> Integer.parseInt(node.getId())).max();
+
+        if (max.isPresent()) {
+            return Integer.toString(max.getAsInt() + 1);
+        } else {
+            return "1";
         }
     }
 
