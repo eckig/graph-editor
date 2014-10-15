@@ -15,6 +15,7 @@
 							<items>
 								<MenuItem text="Sample 1" onAction="#loadSample"/>
 								<MenuItem text="Sample 2" onAction="#loadTree"/>
+								<MenuItem text="Sample 3" onAction="#loadGrey"/>
 							</items>
 						</Menu>
 						<MenuItem text="Save" onAction="#save"/>

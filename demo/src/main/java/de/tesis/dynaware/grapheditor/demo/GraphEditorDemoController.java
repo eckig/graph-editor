@@ -125,6 +125,13 @@ public class GraphEditorDemoController {
     }
 
     @FXML
+    public void loadGrey() {
+        greySkinButton.setSelected(true);
+        setGreySkin();
+        graphEditorPersistence.loadGrey(graphEditor);
+    }
+
+    @FXML
     public void save() {
         graphEditorPersistence.saveToFile(graphEditor);
     }

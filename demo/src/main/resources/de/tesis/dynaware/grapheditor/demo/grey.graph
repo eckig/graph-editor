@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+  <nodes id="1" type="grey-node" x="1299.0" y="949.0">
+    <connectors type="grey-input"/>
+    <connectors type="grey-output" connections="//@connections.0"/>
+  </nodes>
+  <nodes id="2" type="grey-node" x="1299.0" y="1129.0" width="191.0" height="141.0">
+    <connectors type="grey-input" connections="//@connections.0"/>
+    <connectors type="grey-output" connections="//@connections.1"/>
+  </nodes>
+  <nodes id="3" type="grey-node" x="1589.0" y="1029.0" height="160.0">
+    <connectors type="grey-input" connections="//@connections.1"/>
+    <connectors type="grey-output"/>
+  </nodes>
+  <connections source="//@nodes.0/@connectors.1" target="//@nodes.1/@connectors.0">
+    <joints x="1490.0" y="1010.0"/>
+    <joints x="1490.0" y="1090.0"/>
+    <joints x="1260.0" y="1090.0"/>
+    <joints x="1260.0" y="1210.0"/>
+  </connections>
+  <connections source="//@nodes.1/@connectors.1" target="//@nodes.2/@connectors.0">
+    <joints x="1540.0" y="1210.0"/>
+    <joints x="1540.0" y="1119.0"/>
+  </connections>
+</graph:GModel>
