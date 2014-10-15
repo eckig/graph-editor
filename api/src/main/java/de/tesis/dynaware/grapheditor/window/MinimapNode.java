@@ -15,7 +15,7 @@ import de.tesis.dynaware.grapheditor.model.GNode;
  */
 public class MinimapNode extends Rectangle {
 
-    private static final String STYLE_CLASS = "g-minimap-node";
+    private static final String STYLE_CLASS = "minimap-node";
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
     private final ChangeListener<? super Boolean> selectionListener = (v, o, n) -> setSelected(n);

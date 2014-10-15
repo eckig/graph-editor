@@ -5,7 +5,7 @@
 	-title-color:  linear-gradient(to bottom, rgb(0, 50, 60), rgb(0, 80, 80));
 }
 
-.titled-node-border {
+.grey-node-border {
 	-fx-stroke: -border-color;
 	-fx-stroke-width: 1;
 	-fx-stroke-type: inside;
@@ -13,7 +13,7 @@
 	-fx-effect: dropshadow(gaussian, rgb(150, 150, 150), 5, 0, 1, 1);
 }
 
-.titled-node-selection-halo {
+.grey-node-selection-halo {
 	-fx-stroke: -halo-color;
 	-fx-opacity: 0.6;
 	-fx-stroke-type: inside;
@@ -21,17 +21,17 @@
 	-fx-fill: null;
 }
 
-.titled-node-background {
+.grey-node-background {
 	-fx-background-color: -background-color;
 	-fx-background-insets: 1;
 	-fx-border-width: 0;
 }
 
-.titled-node-background:selected {
+.grey-node-background:selected {
 	-fx-background-color: derive(-background-color, -5%);
 }
 
-.titled-node-header {
+.grey-node-header {
 	-fx-padding: 2 5 2 5;
 	-fx-background-color: -title-color;
 	-fx-border-width: 0 0 1 0;
@@ -39,30 +39,30 @@
 	-fx-opacity: 0.9;
 }
 
-.titled-node-title {
+.grey-node-title {
 	-fx-font-size: 11;
 	-fx-text-fill: white;
 }
 
-.titled-node-close-button {
+.grey-node-close-button {
 	-fx-background-color: null;
 	-fx-border-color: null;
 	-fx-padding: 0 0 0 0;
 }
 
-.titled-node-close-button .icon {
+.grey-node-close-button .icon {
 	-fx-fill: -background-color;
 }
 
-.titled-node-close-button:hover .icon {
+.grey-node-close-button:hover .icon {
 	-fx-fill: white;
 }
 
-.titled-node-close-button:pressed .icon {
+.grey-node-close-button:pressed .icon {
 	-fx-fill: derive(-background-color, -5%);
 }
 
-.titled-connector {
+.grey-connector {
 	-fx-stroke: -border-color;
 	-fx-stroke-width: 1;
 	-fx-stroke-type: inside;
@@ -71,40 +71,40 @@
 	-fx-effect: dropshadow(gaussian, rgba(80, 80, 80, 0.2), 5, 0, 1, 1);
 }
 
-.titled-connector:hover, .titled-connector:pressed, .titled-connector:allowed, .titled-connector:forbidden {
+.grey-connector:hover, .grey-connector:pressed, .grey-connector:allowed, .grey-connector:forbidden {
 	-fx-opacity: 1;
 }
 
-.titled-connector-forbidden-graphic {
+.grey-connector-forbidden-graphic {
 	-fx-stroke: -border-color;
 	-fx-stroke-width: 1;
 	-fx-fill: null;
 }
 
-.titled-tail  {
+.grey-tail  {
 	-fx-stroke: derive(-border-color, 50%);
 	-fx-effect: dropshadow(one-pass-box, rgb(220, 220, 220), 5, 0, 1, 1);
 }
 
-.titled-tail-endpoint  {
+.grey-tail-endpoint  {
 	-fx-stroke: derive(-border-color, 50%);
 	-fx-stroke-type: inside;
 	-fx-fill: derive(-background-color, 50%);
 	-fx-effect: dropshadow(one-pass-box, rgb(220, 220, 220), 5, 0, 1, 1);
 }
 
-.titled .default-connection {
+.grey-skins .default-connection {
 	-fx-stroke-width: 1;
 	-fx-stroke: -border-color;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.titled .default-connection-background {
+.grey-skins .default-connection-background {
 	-fx-stroke-width: 7;
 	-fx-stroke: transparent;
 }
 
-.titled .default-connection-hover-effect {
+.grey-skins .default-connection-hover-effect {
 	-fx-stroke-width: 1;
 	-fx-stroke: -border-color;
 	-fx-stroke-dash-array: 8 4;
@@ -114,14 +114,14 @@
 	-fx-fill: transparent;
 }
 
-.titled .default-connection-hover-effect:pressed {
+.grey-skins .default-connection-hover-effect:pressed {
 	-fx-stroke-width: 1;
 	-fx-stroke: null;
 	-fx-stroke-type: inside;
 	-fx-fill: null;
 }
 
-.titled .default-joint {
+.grey-skins .default-joint {
 	/* Invisible by default but make sure it has the exact same dimensions as for hover and pressed effects. */
 	-fx-stroke-width: 1;
 	-fx-stroke: transparent;
@@ -131,7 +131,7 @@
 	-fx-arc-height: 0;
 }
 
-.titled .default-joint:selected, .titled .default-joint:pressed, .titled .default-joint:selected:pressed {
+.grey-skins .default-joint:selected, .grey-skins .default-joint:pressed, .grey-skins .default-joint:selected:pressed {
 	-fx-stroke-width: 1;
 	-fx-stroke: -border-color;
 	-fx-stroke-type: inside;
@@ -140,7 +140,7 @@
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.titled .default-joint:hover, .titled .default-joint:selected:hover {
+.grey-skins .default-joint:hover, .grey-skins .default-joint:selected:hover {
 	-fx-stroke-width: 1;
 	-fx-stroke: -border-color;
 	-fx-stroke-type: inside;

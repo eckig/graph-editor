@@ -1,4 +1,4 @@
-package de.tesis.dynaware.grapheditor.demo.tree.skins;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;

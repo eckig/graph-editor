@@ -23,7 +23,7 @@ public class PanningWindowMinimap extends Region {
     protected static final double MINIMAP_PADDING = 5;
 
     private static final String STYLESHEET = "minimap.css";
-    private static final String STYLE_CLASS = "g-minimap";
+    private static final String STYLE_CLASS = "minimap";
 
     private final MinimapLocator locator = new MinimapLocator(MINIMAP_PADDING);
 

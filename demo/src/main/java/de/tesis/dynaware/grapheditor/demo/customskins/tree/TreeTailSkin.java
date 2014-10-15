@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.tree.skins;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class TreeTailSkin extends GTailSkin {
 
     private void drawArrow(final Point2D start, final Point2D end) {
 
-        if (getConnector().getType().equals(TreeSkinConstants.TREE_OUTPUT)) {
+        if (getConnector().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
             ArrowUtils.draw(arrow, start, end, OFFSET_DISTANCE);
         } else {
             ArrowUtils.draw(arrow, end, start, OFFSET_DISTANCE);

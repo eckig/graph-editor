@@ -3,9 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
+import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-import javafx.scene.layout.Region;
 
 /**
  * The minimap-representation of the currently-visible region of the graph editor.
@@ -17,7 +17,7 @@ import javafx.scene.layout.Region;
  */
 public class MinimapLocator extends DraggableBox {
 
-    private static final String STYLE_CLASS_LOCATOR = "g-minimap-locator";
+    private static final String STYLE_CLASS_LOCATOR = "minimap-locator";
 
     private final double minimapPadding;
 

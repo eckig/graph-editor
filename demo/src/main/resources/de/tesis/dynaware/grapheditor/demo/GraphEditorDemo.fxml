@@ -53,7 +53,7 @@
 							<items>
 								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>
 								<RadioMenuItem fx:id="treeSkinButton" text="Tree" onAction="#setTreeSkin"/>
-								<RadioMenuItem fx:id="titledSkinButton" text="Titled" onAction="#setTitledSkin"/>
+								<RadioMenuItem fx:id="greySkinButton" text="Grey" onAction="#setGreySkin"/>
 							</items>
 						</Menu>
 						<!-- Added blank spaces to force menu to be wider. -->

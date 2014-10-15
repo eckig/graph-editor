@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.tree.skins;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import java.util.List;
 
@@ -96,10 +96,10 @@ public class TreeNodeSkin extends GNodeSkin {
         }
 
         for (final GConnectorSkin skin : connectorSkins) {
-            if (TreeSkinConstants.TREE_OUTPUT.equals(skin.getConnector().getType())) {
+            if (TreeSkinConstants.TREE_OUTPUT_CONNECTOR.equals(skin.getConnector().getType())) {
                 outputConnectorSkin = skin;
                 getRoot().getChildren().add(skin.getRoot());
-            } else if (TreeSkinConstants.TREE_INPUT.equals(skin.getConnector().getType())) {
+            } else if (TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(skin.getConnector().getType())) {
                 inputConnectorSkin = skin;
                 getRoot().getChildren().add(skin.getRoot());
             }
@@ -256,8 +256,8 @@ public class TreeNodeSkin extends GNodeSkin {
         final GConnector input = GraphFactory.eINSTANCE.createGConnector();
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();
 
-        input.setType(TreeSkinConstants.TREE_INPUT);
-        output.setType(TreeSkinConstants.TREE_OUTPUT);
+        input.setType(TreeSkinConstants.TREE_INPUT_CONNECTOR);
+        output.setType(TreeSkinConstants.TREE_OUTPUT_CONNECTOR);
 
         childNode.getConnectors().add(input);
         childNode.getConnectors().add(output);

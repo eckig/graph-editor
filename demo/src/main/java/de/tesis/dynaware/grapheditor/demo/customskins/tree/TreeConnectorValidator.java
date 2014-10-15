@@ -1,11 +1,10 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.tree.validators;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
-import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
@@ -38,9 +37,9 @@ public class TreeConnectorValidator implements GConnectorValidator {
             return false;
         } else if (source.getType().equals(target.getType())) {
             return false;
-        } else if (source.getType().equals(TreeSkinConstants.TREE_INPUT) && !source.getConnections().isEmpty()) {
+        } else if (source.getType().equals(TreeSkinConstants.TREE_INPUT_CONNECTOR) && !source.getConnections().isEmpty()) {
             return false;
-        } else if (target.getType().equals(TreeSkinConstants.TREE_INPUT) && !target.getConnections().isEmpty()) {
+        } else if (target.getType().equals(TreeSkinConstants.TREE_INPUT_CONNECTOR) && !target.getConnections().isEmpty()) {
             return false;
         }
 
