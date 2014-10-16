@@ -3,7 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.demo.customskins.grey;
 
-
 /**
  * Some constants used by the grey skins.
  */

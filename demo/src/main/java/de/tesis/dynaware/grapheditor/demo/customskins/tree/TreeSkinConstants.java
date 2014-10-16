@@ -3,7 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
-
 /**
  * Some constants used by the tree skins.
  */
