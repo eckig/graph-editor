@@ -60,7 +60,7 @@ public class GreyNodeSkin extends GNodeSkin {
 
         super(node);
 
-        getRoot().getBorderRectangle().getStyleClass().add(STYLE_CLASS_BORDER);
+        getRoot().getBorderRectangle().getStyleClass().setAll(STYLE_CLASS_BORDER);
         getRoot().getBackgroundRectangle().setVisible(false);
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
 
@@ -101,6 +101,8 @@ public class GreyNodeSkin extends GNodeSkin {
                 }
             }
         }
+
+        setConnectorsSelected(isSelected());
     }
 
     @Override
@@ -123,16 +125,16 @@ public class GreyNodeSkin extends GNodeSkin {
     private void createContent() {
 
         final HBox header = new HBox();
-        header.getStyleClass().add(STYLE_CLASS_HEADER);
+        header.getStyleClass().setAll(STYLE_CLASS_HEADER);
         header.setAlignment(Pos.CENTER);
 
-        title.getStyleClass().add(STYLE_CLASS_TITLE);
+        title.getStyleClass().setAll(STYLE_CLASS_TITLE);
 
         final Region filler = new Region();
         HBox.setHgrow(filler, Priority.ALWAYS);
 
         final Button closeButton = new Button();
-        closeButton.getStyleClass().add(STYLE_CLASS_BUTTON);
+        closeButton.getStyleClass().setAll(STYLE_CLASS_BUTTON);
 
         header.getChildren().addAll(title, filler, closeButton);
         contentRoot.getChildren().add(header);
@@ -155,7 +157,7 @@ public class GreyNodeSkin extends GNodeSkin {
         contentRoot.setLayoutX(BORDER_WIDTH);
         contentRoot.setLayoutY(BORDER_WIDTH);
 
-        contentRoot.getStyleClass().add(STYLE_CLASS_BACKGROUND);
+        contentRoot.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
     }
 
     private void layoutLeftAndRightConnectors() {
@@ -246,6 +248,8 @@ public class GreyNodeSkin extends GNodeSkin {
                 selectionHalo.setVisible(false);
                 contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
             }
+
+            setConnectorsSelected(n);
         });
     }
 
@@ -257,6 +261,21 @@ public class GreyNodeSkin extends GNodeSkin {
 
         for (final GConnectorSkin connectorSkin : outputConnectorSkins) {
             getRoot().getChildren().remove(connectorSkin.getRoot());
+        }
+    }
+
+    private void setConnectorsSelected(final boolean isSelected) {
+
+        for (final GConnectorSkin skin : inputConnectorSkins) {
+            if (skin instanceof GreyConnectorSkin) {
+                ((GreyConnectorSkin) skin).setSelected(isSelected);
+            }
+        }
+
+        for (final GConnectorSkin skin : outputConnectorSkins) {
+            if (skin instanceof GreyConnectorSkin) {
+                ((GreyConnectorSkin) skin).setSelected(isSelected);
+            }
         }
     }
 }

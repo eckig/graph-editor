@@ -5,6 +5,16 @@
 	-title-color:  linear-gradient(to bottom, rgb(0, 50, 60), rgb(0, 80, 80));
 }
 
+.grey-node-background {
+	-fx-background-color: -background-color;
+	-fx-background-insets: 1;
+	-fx-border-width: 0;	
+}
+
+.grey-node-background:selected {
+	-fx-background-color: derive(-background-color, -5%);
+}
+
 .grey-node-border {
 	-fx-stroke: -border-color;
 	-fx-stroke-width: 1;
@@ -19,16 +29,6 @@
 	-fx-stroke-type: inside;
 	-fx-stroke-line-cap: butt;
 	-fx-fill: null;
-}
-
-.grey-node-background {
-	-fx-background-color: -background-color;
-	-fx-background-insets: 1;
-	-fx-border-width: 0;
-}
-
-.grey-node-background:selected {
-	-fx-background-color: derive(-background-color, -5%);
 }
 
 .grey-node-header {
@@ -63,16 +63,27 @@
 }
 
 .grey-connector {
-	-fx-stroke: -border-color;
-	-fx-stroke-width: 1;
+	-fx-border-color: -border-color;
+	-fx-border-width: 1;
 	-fx-stroke-type: inside;
-	-fx-fill: rgb(240,235,242);
+	-fx-background-color: white;
 	-fx-opacity: 0;
-	-fx-effect: dropshadow(gaussian, rgba(80, 80, 80, 0.2), 5, 0, 1, 1);
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.grey-connector:hover, .grey-connector:pressed, .grey-connector:allowed, .grey-connector:forbidden {
-	-fx-opacity: 1;
+.grey-connector:selected {
+	-fx-background-color: derive(white, -4%);
+	-fx-opacity: 0.6;
+}
+
+.grey-connector:hover, .grey-connector:allowed, .grey-connector:forbidden, .grey-connector:selected:hover {
+	-fx-background-color: white;
+	-fx-opacity: 0.6;
+}
+
+.grey-connector:pressed {
+	-fx-background-color: derive(white, -2%);
+	-fx-opacity: 0.6;
 }
 
 .grey-connector-forbidden-graphic {
