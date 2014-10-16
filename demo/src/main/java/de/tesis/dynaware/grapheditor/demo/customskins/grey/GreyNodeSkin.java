@@ -26,6 +26,9 @@ import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
+/**
+ * A grey node with a navy title-bar for the 'grey-skins' theme.
+ */
 public class GreyNodeSkin extends GNodeSkin {
 
     private static final String TITLE_TEXT = "Node ";
@@ -56,6 +59,11 @@ public class GreyNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> inputConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> outputConnectorSkins = new ArrayList<>();
 
+    /**
+     * Creates a new {@link GreyNodeSkin} instance.
+     *
+     * @param node the {link GNode} this skin is representing
+     */
     public GreyNodeSkin(final GNode node) {
 
         super(node);
@@ -119,9 +127,17 @@ public class GreyNodeSkin extends GNodeSkin {
         final double x = connectorRoot.getLayoutX() + connectorSkin.getWidth() / 2;
         final double y = connectorRoot.getLayoutY() + connectorSkin.getHeight() / 2;
 
-        return new Point2D(x, y);
+        if (inputConnectorSkins.contains(connectorSkin)) {
+            return new Point2D(x, y);
+        } else {
+            // Subtract 1 to align start-of-connection correctly. Compensation for rounding errors?
+            return new Point2D(x - 1, y);
+        }
     }
 
+    /**
+     * Creates the content of the node skin - header, title, close button, etc.
+     */
     private void createContent() {
 
         final HBox header = new HBox();
@@ -160,6 +176,9 @@ public class GreyNodeSkin extends GNodeSkin {
         contentRoot.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
     }
 
+    /**
+     * Lays out all connectors.
+     */
     private void layoutLeftAndRightConnectors() {
 
         final int inputCount = inputConnectorSkins.size();
@@ -171,15 +190,10 @@ public class GreyNodeSkin extends GNodeSkin {
             final Node connectorRoot = inputSkin.getRoot();
 
             final double layoutX = GeometryUtils.moveOnPixel(0 - inputSkin.getWidth() / 2);
-            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * inputOffsetY - inputSkin.getHeight() / 2)
-                    + HEADER_HEIGHT;
+            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * inputOffsetY - inputSkin.getHeight() / 2);
 
-            if (inputSkin.getConnector().getType().contains("triangle")) {
-                connectorRoot.setLayoutX(layoutX + 1);
-            } else {
-                connectorRoot.setLayoutX(layoutX);
-            }
-            connectorRoot.setLayoutY(layoutY);
+            connectorRoot.setLayoutX(layoutX);
+            connectorRoot.setLayoutY(layoutY + HEADER_HEIGHT);
         }
 
         final int outputCount = outputConnectorSkins.size();
@@ -191,18 +205,16 @@ public class GreyNodeSkin extends GNodeSkin {
             final Node connectorRoot = outputSkin.getRoot();
 
             final double layoutX = GeometryUtils.moveOnPixel(getRoot().getWidth() - outputSkin.getWidth() / 2);
-            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * outputOffsetY - outputSkin.getHeight() / 2)
-                    + HEADER_HEIGHT;
+            final double layoutY = GeometryUtils.moveOnPixel((i + 1) * outputOffsetY - outputSkin.getHeight() / 2);
 
-            if (outputSkin.getConnector().getType().contains("triangle")) {
-                connectorRoot.setLayoutX(layoutX + 1);
-            } else {
-                connectorRoot.setLayoutX(layoutX);
-            }
-            connectorRoot.setLayoutY(layoutY);
+            connectorRoot.setLayoutX(layoutX);
+            connectorRoot.setLayoutY(layoutY + HEADER_HEIGHT);
         }
     }
 
+    /**
+     * Adds the selection halo and initializes some of its values.
+     */
     private void addSelectionHalo() {
 
         getRoot().getChildren().add(selectionHalo);
@@ -217,6 +229,9 @@ public class GreyNodeSkin extends GNodeSkin {
         selectionHalo.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
     }
 
+    /**
+     * Lays out the selection halo based on the current width and height of the node skin region.
+     */
     private void layoutSelectionHalo() {
 
         if (selectionHalo.isVisible()) {
@@ -235,6 +250,9 @@ public class GreyNodeSkin extends GNodeSkin {
         }
     }
 
+    /**
+     * Adds a listener to react to whether the node is selected or not and change the style accordingly.
+     */
     private void addSelectionListener() {
 
         selectedProperty().addListener((v, o, n) -> {
@@ -253,6 +271,9 @@ public class GreyNodeSkin extends GNodeSkin {
         });
     }
 
+    /**
+     * Removes any input and output connectors from the list of children, if they exist.
+     */
     private void removeAllConnectors() {
 
         for (final GConnectorSkin connectorSkin : inputConnectorSkins) {
@@ -264,6 +285,11 @@ public class GreyNodeSkin extends GNodeSkin {
         }
     }
 
+    /**
+     * Adds or removes the 'selected' pseudo-class from all connectors belonging to this node.
+     * 
+     * @param isSelected {@code true} to add the 'selected' pseudo-class, {@code false} to remove it
+     */
     private void setConnectorsSelected(final boolean isSelected) {
 
         for (final GConnectorSkin skin : inputConnectorSkins) {

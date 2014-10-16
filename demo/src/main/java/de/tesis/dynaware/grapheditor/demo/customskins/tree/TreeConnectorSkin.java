@@ -9,15 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
-import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
  * Connector skin for the 'tree-like' graph.
- *
- * <p>
- * Not part of the graph editor library, only used in the {@link GraphEditorDemo} application.
- * </p>
  */
 public class TreeConnectorSkin extends GConnectorSkin {
 

@@ -12,11 +12,26 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 
-public class TreeSkinManager extends DefaultSkinManager {
+/**
+ * Responsible for tree-skin specific logic in the graph editor demo.
+ */
+public class TreeSkinController implements SkinController {
 
-    public TreeSkinManager(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+    protected static final int TREE_NODE_INITIAL_Y = 19;
 
-        super(graphEditor, graphEditorContainer);
+    private final GraphEditor graphEditor;
+    private final GraphEditorContainer graphEditorContainer;
+
+    /**
+     * Creates a new {@link TreeSkinController} instance.
+     * 
+     * @param graphEditor the graph editor on display in this demo
+     * @param graphEditorContainer the graph editor container on display in this demo
+     */
+    public TreeSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+
+        this.graphEditor = graphEditor;
+        this.graphEditorContainer = graphEditorContainer;
 
         graphEditor.setNodeSkin(TreeSkinConstants.TREE_NODE, TreeNodeSkin.class);
         graphEditor.setConnectorSkin(TreeSkinConstants.TREE_INPUT_CONNECTOR, TreeConnectorSkin.class);
@@ -33,7 +48,7 @@ public class TreeSkinManager extends DefaultSkinManager {
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
-        node.setY(NODE_INITIAL_Y + windowYOffset);
+        node.setY(TREE_NODE_INITIAL_Y + windowYOffset);
 
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(output);
@@ -48,5 +63,20 @@ public class TreeSkinManager extends DefaultSkinManager {
         output.setConnectionDetachedOnDrag(false);
 
         Commands.addNode(graphEditor.getModel(), node);
+    }
+
+    @Override
+    public void addInputConnector() {
+        // Not implemented for tree nodes.
+    }
+
+    @Override
+    public void addOutputConnector() {
+        // Not implemented for tree nodes.
+    }
+
+    @Override
+    public void handlePaste() {
+        graphEditor.getSelectionManager().paste();
     }
 }

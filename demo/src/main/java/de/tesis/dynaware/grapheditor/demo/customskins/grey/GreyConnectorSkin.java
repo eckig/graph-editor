@@ -12,6 +12,9 @@ import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
+/**
+ * A square-shaped connector skin for the 'grey-skins' theme.
+ */
 public class GreyConnectorSkin extends GConnectorSkin {
 
     private static final String STYLE_CLASS = "grey-connector";
@@ -86,6 +89,11 @@ public class GreyConnectorSkin extends GConnectorSkin {
         }
     }
 
+    /**
+     * Sets the 'selected' pseudo-class based on the given boolean.
+     * 
+     * @param isSelected {@code true} to add the selected pseudo-class, {@code false} to remove it
+     */
     public void setSelected(final boolean isSelected) {
         if (isSelected) {
             root.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
@@ -94,6 +102,11 @@ public class GreyConnectorSkin extends GConnectorSkin {
         }
     }
 
+    /**
+     * Creates a graphic to display a 'forbidden' effect in the connector.
+     * 
+     * @return the new graphic
+     */
     private Group createForbiddenGraphic() {
 
         final Group group = new Group();

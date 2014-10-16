@@ -10,16 +10,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
-import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 
 /**
  * Connection skin for the 'tree-like' graph. Pretty much just an arrow.
- *
- * <p>
- * Not part of the graph editor library, only used in the {@link GraphEditorDemo} application.
- * </p>
  */
 public class TreeConnectionSkin extends GConnectionSkin {
 

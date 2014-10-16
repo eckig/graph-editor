@@ -3,14 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor.demo.customskins.grey;
 
-import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
 
 /**
  * Some constants used by the grey skins.
- *
- * <p>
- * Not part of the graph editor library, only used in the {@link GraphEditorDemo} application.
- * </p>
  */
 public class GreySkinConstants {
 

@@ -16,7 +16,10 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
 
-public class DefaultSkinManager {
+/**
+ * Responsible for default-skin specific logic in the graph editor demo.
+ */
+public class DefaultSkinController implements SkinController {
 
     protected static final int NODE_INITIAL_X = 19;
     protected static final int NODE_INITIAL_Y = 19;
@@ -24,17 +27,24 @@ public class DefaultSkinManager {
     protected static final String INPUT_CONNECTOR_TYPE = "input";
     protected static final String OUTPUT_CONNECTOR_TYPE = "output";
 
-    protected static final int MAX_CONNECTOR_COUNT = 5;
-
     protected final GraphEditor graphEditor;
     protected final GraphEditorContainer graphEditorContainer;
 
-    public DefaultSkinManager(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+    private static final int MAX_CONNECTOR_COUNT = 5;
+
+    /**
+     * Creates a new {@link DefaultSkinController} instance.
+     * 
+     * @param graphEditor the graph editor on display in this demo
+     * @param graphEditorContainer the graph editor container on display in this demo
+     */
+    public DefaultSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
 
         this.graphEditor = graphEditor;
         this.graphEditorContainer = graphEditorContainer;
     }
 
+    @Override
     public void addNode(final double currentZoomFactor) {
 
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
@@ -57,12 +67,19 @@ public class DefaultSkinManager {
         Commands.addNode(graphEditor.getModel(), node);
     }
 
+    @Override
     public void addInputConnector() {
         addConnector(INPUT_CONNECTOR_TYPE);
     }
 
+    @Override
     public void addOutputConnector() {
         addConnector(OUTPUT_CONNECTOR_TYPE);
+    }
+
+    @Override
+    public void handlePaste() {
+        graphEditor.getSelectionManager().paste();
     }
 
     /**

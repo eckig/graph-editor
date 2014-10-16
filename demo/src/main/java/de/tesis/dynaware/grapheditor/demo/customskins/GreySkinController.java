@@ -23,9 +23,18 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
 
-public class GreySkinManager extends DefaultSkinManager {
+/**
+ * Responsible for grey-skin specific logic in the graph editor demo.
+ */
+public class GreySkinController extends DefaultSkinController {
 
-    public GreySkinManager(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+    /**
+     * Creates a new {@link GreySkinController} instance.
+     * 
+     * @param graphEditor the graph editor on display in this demo
+     * @param graphEditorContainer the graph editor container on display in this demo
+     */
+    public GreySkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
 
         super(graphEditor, graphEditorContainer);
 
@@ -70,10 +79,17 @@ public class GreySkinManager extends DefaultSkinManager {
         addConnector(GreySkinConstants.GREY_OUTPUT_CONNECTOR);
     }
 
+    @Override
     public void handlePaste() {
         graphEditor.getSelectionManager().paste((nodes, command) -> allocateIds(nodes, command));
     }
 
+    /**
+     * Allocates ID's to recently pasted nodes.
+     * 
+     * @param nodes the recently pasted nodes
+     * @param command the command responsible for adding the nodes
+     */
     private void allocateIds(final List<GNode> nodes, final CompoundCommand command) {
 
         final EditingDomain domain = AdapterFactoryEditingDomain.getEditingDomainFor(graphEditor.getModel());
@@ -95,6 +111,12 @@ public class GreySkinManager extends DefaultSkinManager {
         }
     }
 
+    /**
+     * Check the given node needs a new ID, i.e. that it's not already in use.
+     * 
+     * @param node the nodes to check
+     * @param pastedNodes the recently-pasted nodes
+     */
     private boolean checkNeedsNewId(final GNode node, final List<GNode> pastedNodes) {
 
         final List<GNode> nodes = new ArrayList<>(graphEditor.getModel().getNodes());
@@ -103,6 +125,11 @@ public class GreySkinManager extends DefaultSkinManager {
         return nodes.stream().anyMatch(other -> other.getId().equals(node.getId()));
     }
 
+    /**
+     * Allocates a new ID corresponding to the largest existing ID + 1.
+     * 
+     * @return the new ID
+     */
     private String allocateNewId() {
 
         final List<GNode> nodes = graphEditor.getModel().getNodes();
