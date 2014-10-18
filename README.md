@@ -3,7 +3,7 @@ Graph Editor
 
 A library for creating and editing graph-like diagrams in JavaFX.
 
-![The graph editor's default skins.](http://i.imgur.com/EfwWQnq.png)
+![The graph editor's default skins.](screenshot.png)
 
 ## Features
 
