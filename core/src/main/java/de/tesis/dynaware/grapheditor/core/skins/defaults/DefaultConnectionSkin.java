@@ -63,10 +63,15 @@ public class DefaultConnectionSkin extends GConnectionSkin {
      */
     public static final String SHOW_DETOURS_KEY = "default-connection-skin-show-detours";
 
+    // The following are protected to allow subclasses to set their own CSS styleclasses on them.
+    protected final Path connectionPath = new Path();
+    protected final Path backgroundPath = new Path();
+    protected final JointCreator jointCreator;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionSkin.class);
 
-    private static final String STYLE_CLASS = "g-connection";
-    private static final String STYLE_CLASS_BACKGROUND = "g-connection-background";
+    private static final String STYLE_CLASS = "default-connection";
+    private static final String STYLE_CLASS_BACKGROUND = "default-connection-background";
 
     private static final int MIN_NUMBER_OF_JOINTS_SUPPORTED = 2;
 
@@ -74,13 +79,10 @@ public class DefaultConnectionSkin extends GConnectionSkin {
 
     private final IntersectionFinder intersectionFinder;
     private final CursorOffsetCalculator cursorOffsetCalculator;
-    private final JointCreator jointCreator;
     private final JointCleaner jointCleaner;
     private final JointAlignmentManager jointAlignmentManager;
 
     private final Group root = new Group();
-    private final Path connectionPath = new Path();
-    private final Path backgroundPath = new Path();
 
     private List<GJointSkin> jointSkins;
 

@@ -454,7 +454,8 @@ public class ConnectorDragManager {
      */
     private void addConnection(final GConnector source, final GConnector target) {
 
-        final String type = validatorManager.getConnectorValidator().createType(source, target);
+        final String connectionType = validatorManager.getConnectorValidator().createConnectionType(source, target);
+        final String jointType = validatorManager.getConnectorValidator().createJointType(source, target);
         final List<Point2D> jointPositions = skinLookup.lookupTail(source).allocateJointPositions();
 
         final List<GJoint> joints = new ArrayList<>();
@@ -464,12 +465,12 @@ public class ConnectorDragManager {
             final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
             joint.setX(position.getX());
             joint.setY(position.getY());
-            joint.setType(type);
+            joint.setType(jointType);
 
             joints.add(joint);
         }
 
-        final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, type, joints);
+        final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, connectionType, joints);
 
         // Notify the event manager so additional commands may be appended to this compound command.
         final GConnection addedConnection = model.getConnections().get(model.getConnections().size() - 1);

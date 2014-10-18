@@ -32,9 +32,9 @@ public class DefaultNodeSkin extends GNodeSkin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultNodeSkin.class);
 
-    private static final String STYLE_CLASS_BORDER = "g-node-border";
-    private static final String STYLE_CLASS_BACKGROUND = "g-node-background";
-    private static final String STYLE_CLASS_SELECTION_HALO = "g-node-selection-halo";
+    private static final String STYLE_CLASS_BORDER = "default-node-border";
+    private static final String STYLE_CLASS_BACKGROUND = "default-node-background";
+    private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 

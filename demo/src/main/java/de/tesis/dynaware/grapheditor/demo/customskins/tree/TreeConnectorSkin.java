@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.tree.skins;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
@@ -9,15 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
-import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
  * Connector skin for the 'tree-like' graph.
- *
- * <p>
- * Not part of the graph editor library, only used in the {@link GraphEditorDemo} application.
- * </p>
  */
 public class TreeConnectorSkin extends GConnectorSkin {
 
@@ -50,7 +45,7 @@ public class TreeConnectorSkin extends GConnectorSkin {
         circle.setManaged(false);
         circle.resizeRelocate(0, 0, 2 * RADIUS, 2 * RADIUS);
 
-        if (TreeSkinConstants.TREE_INPUT.equals(connector.getType())) {
+        if (TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(connector.getType())) {
             circle.getStyleClass().setAll(STYLE_CLASS_INPUT);
         } else {
             circle.getStyleClass().setAll(STYLE_CLASS_OUTPUT);

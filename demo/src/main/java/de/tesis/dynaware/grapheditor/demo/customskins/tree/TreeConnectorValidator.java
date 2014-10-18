@@ -1,19 +1,13 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.tree.validators;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
-import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
-import de.tesis.dynaware.grapheditor.demo.tree.skins.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
  * Validation rules for how connectors can be connected for the 'tree-like' graph.
- *
- * <p>
- * Not part of the graph editor library, only used in the {@link GraphEditorDemo} application.
- * </p>
  */
 public class TreeConnectorValidator implements GConnectorValidator {
 
@@ -38,9 +32,11 @@ public class TreeConnectorValidator implements GConnectorValidator {
             return false;
         } else if (source.getType().equals(target.getType())) {
             return false;
-        } else if (source.getType().equals(TreeSkinConstants.TREE_INPUT) && !source.getConnections().isEmpty()) {
+        } else if (source.getType().equals(TreeSkinConstants.TREE_INPUT_CONNECTOR)
+                && !source.getConnections().isEmpty()) {
             return false;
-        } else if (target.getType().equals(TreeSkinConstants.TREE_INPUT) && !target.getConnections().isEmpty()) {
+        } else if (target.getType().equals(TreeSkinConstants.TREE_INPUT_CONNECTOR)
+                && !target.getConnections().isEmpty()) {
             return false;
         }
 
@@ -48,7 +44,12 @@ public class TreeConnectorValidator implements GConnectorValidator {
     }
 
     @Override
-    public String createType(final GConnector source, final GConnector target) {
+    public String createConnectionType(final GConnector source, final GConnector target) {
         return TreeSkinConstants.TREE_CONNECTION;
+    }
+
+    @Override
+    public String createJointType(final GConnector source, final GConnector target) {
+        return null;
     }
 }

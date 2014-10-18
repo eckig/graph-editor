@@ -51,5 +51,15 @@ public interface GConnectorValidator {
      *
      * @return a {@link String} specifying the type for the new connection
      */
-    String createType(GConnector source, GConnector target);
+    String createConnectionType(GConnector source, GConnector target);
+
+    /**
+     * Creates the 'type' string to be used in the joints inside a new connection.
+     *
+     * @param source the {@link GConnector} that was dragged
+     * @param target the {@link GConnector} that was dragged-over
+     *
+     * @return a {@link String} specifying the type for the new connection
+     */
+    String createJointType(GConnector source, GConnector target);
 }

@@ -42,7 +42,12 @@ public class DefaultConnectorValidator implements GConnectorValidator {
     }
 
     @Override
-    public String createType(final GConnector source, final GConnector target) {
+    public String createConnectionType(final GConnector source, final GConnector target) {
+        return null;
+    }
+
+    @Override
+    public String createJointType(final GConnector source, final GConnector target) {
         return null;
     }
 }

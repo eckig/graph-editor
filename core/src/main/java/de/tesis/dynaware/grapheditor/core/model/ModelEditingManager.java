@@ -4,21 +4,16 @@
 package de.tesis.dynaware.grapheditor.core.model;
 
 import java.util.List;
-import java.util.Map;
-
-import javafx.geometry.Point2D;
 
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.edit.command.RemoveCommand;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
@@ -32,7 +27,6 @@ import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
@@ -44,13 +38,8 @@ public class ModelEditingManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelEditingManager.class);
 
-    private static final EAttribute JOINT_X = GraphPackage.Literals.GJOINT__X;
-    private static final EAttribute JOINT_Y = GraphPackage.Literals.GJOINT__Y;
-
     private static final EReference NODES = GraphPackage.Literals.GMODEL__NODES;
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
-    private static final EReference JOINTS = GraphPackage.Literals.GCONNECTION__JOINTS;
-
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
     private static final URI DEFAULT_URI = URI.createFileURI("");
@@ -109,23 +98,16 @@ public class ModelEditingManager {
     }
 
     /**
-     * Removes all specified nodes, connections, and joints from the model in a single compound command.
+     * Removes all specified nodes and connections from the model in a single compound command.
      *
      * <p>
      * All references to the removed elements are also removed.
      * </p>
      *
-     * <p>
-     * Additionally, joints may be repositioned within the same compound command.
-     * </p>
-     *
      * @param nodesToRemove the nodes to be removed
      * @param connectionsToRemove the connections to be removed
-     * @param jointsToRemove the joints to be removed
-     * @param jointsToReposition the joints that are <b>not</b> removed but need to be repositioned
      */
-    public void remove(final List<GNode> nodesToRemove, final List<GConnection> connectionsToRemove,
-            final List<GJoint> jointsToRemove, final Map<GJoint, Point2D> jointsToReposition) {
+    public CompoundCommand remove(final List<GNode> nodesToRemove, final List<GConnection> connectionsToRemove) {
 
         final CompoundCommand command = new CompoundCommand();
 
@@ -148,19 +130,6 @@ public class ModelEditingManager {
             }
         }
 
-        for (final GJoint joint : jointsToRemove) {
-            command.append(RemoveCommand.create(editingDomain, joint.getConnection(), JOINTS, joint));
-        }
-
-        for (final GJoint joint : jointsToReposition.keySet()) {
-
-            final double x = jointsToReposition.get(joint).getX();
-            final double y = jointsToReposition.get(joint).getY();
-
-            command.append(SetCommand.create(editingDomain, joint, JOINT_X, x));
-            command.append(SetCommand.create(editingDomain, joint, JOINT_Y, y));
-        }
-
         if (command.canExecute()) {
 
             if (LOGGER.isTraceEnabled()) {
@@ -174,6 +143,8 @@ public class ModelEditingManager {
 
             editingDomain.getCommandStack().execute(command);
         }
+
+        return command;
     }
 
     /**

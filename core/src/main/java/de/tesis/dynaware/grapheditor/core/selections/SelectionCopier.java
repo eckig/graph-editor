@@ -17,6 +17,7 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
+import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.utils.GModelUtils;
@@ -86,15 +87,17 @@ public class SelectionCopier {
 
     /**
      * Cuts the current selection and stores it in memory.
+     * 
+     * @param handler a {@link CommandAppender} to allow custom commands to be appended to the cut command
      */
-    public void cut() {
+    public void cut(final CommandAppender<List<GNode>> handler) {
 
         if (selectionTracker.getSelectedNodes().isEmpty()) {
             return;
         }
 
         copy();
-        selectionDeleter.deleteSelection(model);
+        selectionDeleter.deleteSelection(model, handler);
     }
 
     /**
@@ -111,15 +114,17 @@ public class SelectionCopier {
 
         final Map<GNode, GNode> copyStorage = new HashMap<>();
 
-        for (final GNode node : selectionTracker.getSelectedNodes()) {
+        // Don't iterate directly over selectionTracker.getSelectedNodes() because that will not preserve ordering.
+        for (final GNode node : model.getNodes()) {
+            if (selectionTracker.getSelectedNodes().contains(node)) {
 
-            final GNode copiedNode = EcoreUtil.copy(node);
-            copiedNodes.add(copiedNode);
-            copyStorage.put(node, copiedNode);
+                final GNode copiedNode = EcoreUtil.copy(node);
+                copiedNodes.add(copiedNode);
+                copyStorage.put(node, copiedNode);
+            }
         }
 
         copiedConnections.addAll(GModelUtils.copyConnections(copyStorage));
-
         saveParentPositionInScene();
     }
 
@@ -130,9 +135,10 @@ public class SelectionCopier {
      * After the paste operation, the newly-pasted elements will be selected.
      * </p>
      *
+     * @param handler a {@link CommandAppender} to allow custom commands to be appended to the paste command
      * @return the list of new {@link GNode} instances created by the paste operation
      */
-    public List<GNode> paste() {
+    public List<GNode> paste(final CommandAppender<List<GNode>> handler) {
 
         final List<GNode> pastedNodes = new ArrayList<>();
         final List<GConnection> pastedConnections = new ArrayList<>();
@@ -140,7 +146,7 @@ public class SelectionCopier {
         preparePastedElements(pastedNodes, pastedConnections);
         addPasteOffset(pastedNodes, pastedConnections);
         checkWithinBounds(pastedNodes, pastedConnections);
-        addPastedElements(pastedNodes, pastedConnections);
+        addPastedElements(pastedNodes, pastedConnections, handler);
 
         selectionCreator.deselectAll();
 
@@ -257,8 +263,10 @@ public class SelectionCopier {
      *
      * @param pastedNodes the pasted nodes to be added
      * @param pastedConnections the pasted connections to be added
+     * @param handler a {@link CommandAppender} to allow custom commands to be appended to the paste command
      */
-    private void addPastedElements(final List<GNode> pastedNodes, final List<GConnection> pastedConnections) {
+    private void addPastedElements(final List<GNode> pastedNodes, final List<GConnection> pastedConnections,
+            final CommandAppender<List<GNode>> handler) {
 
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
         final CompoundCommand command = new CompoundCommand();
@@ -274,6 +282,11 @@ public class SelectionCopier {
         if (command.canExecute()) {
             editingDomain.getCommandStack().execute(command);
         }
+
+        if (handler != null) {
+            handler.append(pastedNodes, command);
+        }
+
     }
 
     /**

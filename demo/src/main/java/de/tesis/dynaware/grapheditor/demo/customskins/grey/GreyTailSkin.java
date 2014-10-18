@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.core.skins.defaults;
+package de.tesis.dynaware.grapheditor.demo.customskins.grey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,35 +9,24 @@ import java.util.List;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
-import javafx.scene.shape.StrokeType;
+import javafx.scene.shape.Rectangle;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
-/**
- * The default tail skin.
- *
- * <p>
- * The styling is intended to match with the default connector and connection skins. See those classes for more
- * information.
- * </p>
- */
-public class DefaultTailSkin extends GTailSkin {
+public class GreyTailSkin extends GTailSkin {
 
-    private static final String STYLE_CLASS = "default-tail";
-    private static final String STYLE_CLASS_ENDPOINT_INPUT = "default-tail-endpoint-input";
-    private static final String STYLE_CLASS_ENDPOINT_OUTPUT = "default-tail-endpoint-output";
+    private static final String STYLE_CLASS = "grey-tail";
+    private static final String STYLE_CLASS_ENDPOINT = "grey-tail-endpoint";
 
-    private static final double ENDPOINT_WIDTH = 25;
-    private static final double ENDPOINT_HEIGHT = 25;
+    private static final double SIZE = 16;
 
-    private static final double MINIMUM_START_SEGMENT = 23;
-    private static final double MINIMUM_END_SEGMENT = 27;
+    private static final double MINIMUM_START_SEGMENT = 20;
+    private static final double MINIMUM_END_SEGMENT = 20;
 
     private final Polyline line = new Polyline();
-    private final Polygon endpoint = new Polygon();
+    private final Rectangle endpoint = new Rectangle(SIZE, SIZE);
     private final Group group = new Group(line, endpoint);
 
     /**
@@ -45,21 +34,12 @@ public class DefaultTailSkin extends GTailSkin {
      *
      * @param connector the {@link GConnector} the skin is being created for
      */
-    public DefaultTailSkin(final GConnector connector) {
+    public GreyTailSkin(final GConnector connector) {
 
         super(connector);
 
         line.getStyleClass().setAll(STYLE_CLASS);
-
-        // Tails coming from an 'input' connector have an 'output' endpoint and vice versa.
-        if (DefaultSkinConstants.INPUT_TYPE.equals(connector.getType())) {
-            endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT_OUTPUT);
-        } else if (DefaultSkinConstants.OUTPUT_TYPE.equals(connector.getType())) {
-            endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT_INPUT);
-        }
-
-        endpoint.getPoints().addAll(new Double[] { 0D, 0D, ENDPOINT_WIDTH, ENDPOINT_HEIGHT / 2, 0D, ENDPOINT_HEIGHT });
-        endpoint.setStrokeType(StrokeType.INSIDE);
+        endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT);
 
         group.setManaged(false);
     }
@@ -79,11 +59,12 @@ public class DefaultTailSkin extends GTailSkin {
         final double endY = end.getY();
 
         line.getPoints().clear();
-
         line.getPoints().addAll(GeometryUtils.moveOffPixel(startX), GeometryUtils.moveOffPixel(startY));
 
-        final boolean isInput = getConnector().getType().equals(DefaultSkinConstants.INPUT_TYPE);
-        final boolean isOutput = getConnector().getType().equals(DefaultSkinConstants.OUTPUT_TYPE);
+        final String type = getConnector().getType();
+
+        final boolean isInput = type != null && type.contains("input");
+        final boolean isOutput = type != null && type.contains("output");
 
         final boolean bendsBackward = isOutput && endX < startX + MINIMUM_START_SEGMENT + MINIMUM_END_SEGMENT;
         final boolean bendsForward = isInput && endX > startX - MINIMUM_START_SEGMENT - MINIMUM_END_SEGMENT;
@@ -98,8 +79,8 @@ public class DefaultTailSkin extends GTailSkin {
 
         line.getPoints().addAll(GeometryUtils.moveOffPixel(endX), GeometryUtils.moveOffPixel(endY));
 
-        endpoint.setLayoutX(GeometryUtils.moveOffPixel(endX) - ENDPOINT_WIDTH / 2);
-        endpoint.setLayoutY(GeometryUtils.moveOffPixel(endY) - ENDPOINT_HEIGHT / 2);
+        endpoint.setLayoutX(GeometryUtils.moveOnPixel(endX) - SIZE / 2);
+        endpoint.setLayoutY(GeometryUtils.moveOnPixel(endY) - SIZE / 2);
     }
 
     @Override
@@ -127,8 +108,8 @@ public class DefaultTailSkin extends GTailSkin {
         line.getPoints().addAll(GeometryUtils.moveOffPixel(lastJointX), GeometryUtils.moveOffPixel(endY));
         line.getPoints().addAll(GeometryUtils.moveOffPixel(endX), GeometryUtils.moveOffPixel(endY));
 
-        endpoint.setLayoutX(GeometryUtils.moveOffPixel(endX) - ENDPOINT_WIDTH / 2);
-        endpoint.setLayoutY(GeometryUtils.moveOffPixel(endY) - ENDPOINT_HEIGHT / 2);
+        endpoint.setLayoutX(GeometryUtils.moveOnPixel(endX) - SIZE / 2);
+        endpoint.setLayoutY(GeometryUtils.moveOnPixel(endY) - SIZE / 2);
     }
 
     @Override
@@ -166,8 +147,8 @@ public class DefaultTailSkin extends GTailSkin {
      */
     private void drawDirect(final double startX, final double endX, final double startY, final double endY) {
 
-        // The -2 is because default connector skins are offset by +2.
-        final double middleX = (startX + endX) / 2 - 2;
+        // The -1 is because shaped connector skins are offset by +1.
+        final double middleX = (startX + endX) / 2 - 1;
 
         line.getPoints().addAll(GeometryUtils.moveOffPixel(middleX), GeometryUtils.moveOffPixel(startY));
         line.getPoints().addAll(GeometryUtils.moveOffPixel(middleX), GeometryUtils.moveOffPixel(endY));

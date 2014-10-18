@@ -1,0 +1,13 @@
+.graph-editor {
+	-fx-background-color: white;
+}
+
+.graph-editor-node-layer, .graph-editor-connection-layer {
+	-fx-padding: 15;
+}
+
+.graph-editor-selection-box {
+	-fx-stroke: deepskyblue;
+	-fx-stroke-type: inside;
+	-fx-fill: rgba(135, 206, 250, 0.2);
+}

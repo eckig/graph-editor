@@ -6,6 +6,7 @@ package de.tesis.dynaware.grapheditor.core;
 import java.util.List;
 
 import javafx.collections.ObservableList;
+import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -98,7 +99,12 @@ public class DefaultSelectionManager implements SelectionManager {
 
     @Override
     public void deleteSelection() {
-        selectionDeleter.deleteSelection(model);
+        selectionDeleter.deleteSelection(model, null);
+    }
+
+    @Override
+    public void deleteSelection(final CommandAppender<List<GNode>> handler) {
+        selectionDeleter.deleteSelection(model, handler);
     }
 
     @Override
@@ -113,7 +119,12 @@ public class DefaultSelectionManager implements SelectionManager {
 
     @Override
     public void cut() {
-        selectionCopier.cut();
+        selectionCopier.cut(null);
+    }
+
+    @Override
+    public void cut(final CommandAppender<List<GNode>> handler) {
+        selectionCopier.cut(handler);
     }
 
     @Override
@@ -122,7 +133,12 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public List<GNode> paste() {
-        return selectionCopier.paste();
+    public void paste() {
+        selectionCopier.paste(null);
+    }
+
+    @Override
+    public void paste(final CommandAppender<List<GNode>> handler) {
+        selectionCopier.paste(handler);
     }
 }

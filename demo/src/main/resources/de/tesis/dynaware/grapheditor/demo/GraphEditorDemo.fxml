@@ -15,6 +15,7 @@
 							<items>
 								<MenuItem text="Sample 1" onAction="#loadSample"/>
 								<MenuItem text="Sample 2" onAction="#loadTree"/>
+								<MenuItem text="Sample 3" onAction="#loadGrey"/>
 							</items>
 						</Menu>
 						<MenuItem text="Save" onAction="#save"/>
@@ -53,6 +54,7 @@
 							<items>
 								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>
 								<RadioMenuItem fx:id="treeSkinButton" text="Tree" onAction="#setTreeSkin"/>
+								<RadioMenuItem fx:id="greySkinButton" text="Grey" onAction="#setGreySkin"/>
 							</items>
 						</Menu>
 						<!-- Added blank spaces to force menu to be wider. -->

@@ -1,15 +1,10 @@
-package de.tesis.dynaware.grapheditor.demo.tree.skins;
+package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import javafx.geometry.Point2D;
-import de.tesis.dynaware.grapheditor.demo.GraphEditorDemo;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 
 /**
  * Utils for drawing arrows. Used by connection and tail skins.
- *
- * <p>
- * Not part of the graph editor library, only used in the {@link GraphEditorDemo} application.
- * </p>
  */
 public class ArrowUtils {
 

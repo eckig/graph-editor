@@ -20,6 +20,8 @@
         eType="#//GConnector" containment="true" eOpposite="#//GConnector/parent"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GNode" eSuperTypes="#//GConnectable">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="x" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"
         defaultValueLiteral="0"/>

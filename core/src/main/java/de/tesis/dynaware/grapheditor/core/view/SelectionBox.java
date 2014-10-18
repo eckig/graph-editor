@@ -10,7 +10,7 @@ import javafx.stage.Window;
  */
 public class SelectionBox extends Rectangle {
 
-    private static final String STYLE_CLASS_SELECTION_BOX = "g-editor-selection-box";
+    private static final String STYLE_CLASS_SELECTION_BOX = "graph-editor-selection-box";
 
     private ChangeListener<Scene> sceneListener;
     private ChangeListener<Window> windowListener;

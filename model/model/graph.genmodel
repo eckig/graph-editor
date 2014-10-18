@@ -21,6 +21,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GConnectable/connectors"/>
     </genClasses>
     <genClasses ecoreClass="graph.ecore#//GNode">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/x"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/y"/>

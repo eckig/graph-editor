@@ -31,6 +31,7 @@ public class GraphEditorPersistence {
 
     private static final String SAMPLE_FILE = "sample" + FILE_EXTENSION;
     private static final String TREE_FILE = "tree" + FILE_EXTENSION;
+    private static final String GREY_FILE = "grey" + FILE_EXTENSION;
 
     private File initialDirectory = null;
 
@@ -88,6 +89,15 @@ public class GraphEditorPersistence {
      */
     public void loadTree(final GraphEditor graphEditor) {
         loadSample(TREE_FILE, graphEditor);
+    }
+
+    /**
+     * Loads the sample saved in the <b>tree.graph</b> file.
+     *
+     * @param graphEditor the graph editor in which the loaded model will be set
+     */
+    public void loadGrey(final GraphEditor graphEditor) {
+        loadSample(GREY_FILE, graphEditor);
     }
 
     /**

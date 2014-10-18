@@ -2,8 +2,7 @@ package de.tesis.dynaware.grapheditor.core.connections;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 
-import de.tesis.dynaware.grapheditor.events.ConnectionEvent;
-import de.tesis.dynaware.grapheditor.events.ConnectionEventHandler;
+import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
@@ -11,29 +10,29 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
  */
 public class ConnectionEventManager {
 
-    private ConnectionEventHandler connectionCreatedHandler;
-    private ConnectionEventHandler connectionRemovedHandler;
+    private CommandAppender<GConnection> connectionCreatedHandler;
+    private CommandAppender<GConnection> connectionRemovedHandler;
 
     /**
-     * Sets the handler to be notified when connections are created.
+     * Sets the handler to be called when connections are created.
      * 
-     * @param connectionCreatedHandler the handler to be notified when connections are created
+     * @param connectionCreatedHandler the handler to be called when connections are created
      */
-    public void setOnConnectionCreated(final ConnectionEventHandler connectionCreatedHandler) {
+    public void setOnConnectionCreated(final CommandAppender<GConnection> connectionCreatedHandler) {
         this.connectionCreatedHandler = connectionCreatedHandler;
     }
 
     /**
-     * Sets the handler to be notified when connections are removed.
+     * Sets the handler to be called when connections are removed.
      * 
-     * @param connectionRemovedHandler the handler to be notified when connections are removed
+     * @param connectionRemovedHandler the handler to be called when connections are removed
      */
-    public void setOnConnectionRemoved(final ConnectionEventHandler connectionRemovedHandler) {
+    public void setOnConnectionRemoved(final CommandAppender<GConnection> connectionRemovedHandler) {
         this.connectionRemovedHandler = connectionRemovedHandler;
     }
 
     /**
-     * Notifies the connection-created handler (if it exists) that a connection was created.
+     * Calls the connection-created handler (if it exists) after a connection was created.
      * 
      * @param connection the connection that was created
      * @param command the compound command that created it
@@ -41,13 +40,12 @@ public class ConnectionEventManager {
     public void notifyConnectionAdded(final GConnection connection, final CompoundCommand command) {
 
         if (connectionCreatedHandler != null) {
-            final ConnectionEvent event = new ConnectionEvent(connection, command);
-            connectionCreatedHandler.handle(event);
+            connectionCreatedHandler.append(connection, command);
         }
     }
 
     /**
-     * Notifies the connection-removed handler (if it exists) that a connection was removed.
+     * Calls the connection-removed handler (if it exists) after a connection was removed.
      * 
      * @param connection the connection that was removed
      * @param command the compound command that removed it
@@ -55,8 +53,7 @@ public class ConnectionEventManager {
     public void notifyConnectionRemoved(final GConnection connection, final CompoundCommand command) {
 
         if (connectionRemovedHandler != null) {
-            final ConnectionEvent event = new ConnectionEvent(connection, command);
-            connectionRemovedHandler.handle(event);
+            connectionRemovedHandler.append(connection, command);
         }
     }
 }

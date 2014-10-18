@@ -37,21 +37,41 @@ public interface SelectionManager {
     ObservableList<GJoint> getSelectedJoints();
 
     /**
-     * Cuts the current selection. Saves cut nodes and the connections bewteen them to memory to be pasted later.
+     * Cuts the current selection. Saves cut nodes and the connections between them to memory to be pasted later.
      */
     void cut();
 
     /**
-     * Copies the current selection. Saves copied nodes and the connections bewteen them to memory to be pasted later.
+     * Cuts the current selection. Saves cut nodes and the connections between them to memory to be pasted later.
+     * 
+     * <p>
+     * Additionally calls the given handler method for the compound command that removed the nodes.
+     * </p>
+     * 
+     * @param appender a {@link CommandAppender} to be called
+     */
+    void cut(CommandAppender<List<GNode>> appender);
+
+    /**
+     * Copies the current selection. Saves copied nodes and the connections between them to memory to be pasted later.
      */
     void copy();
 
     /**
-     * Pastes the previously cut / copied selection.
-     *
-     * @return the list of pasted nodes
+     * Pastes the recently cut or copied selection.
      */
-    List<GNode> paste();
+    void paste();
+
+    /**
+     * Pastes the recently cut or copied selection.
+     * 
+     * <p>
+     * Additionally calls the given method for the compound command that pasted the nodes.
+     * </p>
+     * 
+     * @param appender a {@link CommandAppender} to be called
+     */
+    void paste(CommandAppender<List<GNode>> appender);
 
     /**
      * Selects all 'selectable' elements (i.e. nodes and joints) in the editor.
@@ -59,9 +79,20 @@ public interface SelectionManager {
     void selectAll();
 
     /**
-     * Deletes all elements that are currently selected.
+     * Deletes all nodes that are currently selected.
      */
     void deleteSelection();
+
+    /**
+     * Deletes all nodes that are currently selected.
+     * 
+     * <p>
+     * Additionally calls the given method for the compound command that did the deletion.
+     * </p>
+     * 
+     * @param handler a {@link CommandAppender} to be called
+     */
+    void deleteSelection(CommandAppender<List<GNode>> handler);
 
     /**
      * Backs up the selection state, i.e. what nodes and joints are currently selected.

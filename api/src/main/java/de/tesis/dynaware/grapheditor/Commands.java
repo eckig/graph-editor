@@ -3,6 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.Command;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -56,6 +60,8 @@ public class Commands {
     private static final EAttribute NODE_WIDTH = GraphPackage.Literals.GNODE__WIDTH;
     private static final EAttribute NODE_HEIGHT = GraphPackage.Literals.GNODE__HEIGHT;
 
+    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
+
     private static final EAttribute JOINT_X = GraphPackage.Literals.GJOINT__X;
     private static final EAttribute JOINT_Y = GraphPackage.Literals.GJOINT__Y;
 
@@ -90,6 +96,10 @@ public class Commands {
 
     /**
      * Removes a node from the model.
+     * 
+     * <p>
+     * Also removes any connections that were attached to the node.
+     * </p>
      *
      * @param model the {@link GModel} from which the node should be removed
      * @param node the {@link GNode} to remove from the model
@@ -99,7 +109,35 @@ public class Commands {
         final EditingDomain editingDomain = getEditingDomain(model);
 
         if (editingDomain != null) {
-            final Command command = RemoveCommand.create(editingDomain, model, NODES, node);
+
+            final CompoundCommand command = new CompoundCommand();
+            command.append(RemoveCommand.create(editingDomain, model, NODES, node));
+
+            final List<GConnection> connectionsToDelete = new ArrayList<>();
+
+            for (final GConnector connector : node.getConnectors()) {
+                for (final GConnection connection : connector.getConnections()) {
+
+                    if (connection != null && !connectionsToDelete.contains(connection)) {
+                        connectionsToDelete.add(connection);
+                    }
+                }
+            }
+
+            for (final GConnection connection : connectionsToDelete) {
+                command.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, connection));
+
+                final GConnector source = connection.getSource();
+                final GConnector target = connection.getTarget();
+
+                if (!node.equals(source.getParent())) {
+                    command.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
+                }
+
+                if (!node.equals(target.getParent())) {
+                    command.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
+                }
+            }
 
             if (command.canExecute()) {
                 editingDomain.getCommandStack().execute(command);
