@@ -5,7 +5,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 /**
- * Icons from the FontAwesome font.
+ * A few icons.
+ * 
+ * <p>
+ * Uses Font Awesome by Dave Gandy - http://fontawesome.io.
+ * </p>
  */
 public enum AwesomeIcon {
 
