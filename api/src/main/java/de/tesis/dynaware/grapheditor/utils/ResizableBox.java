@@ -45,7 +45,7 @@ public class ResizableBox extends DraggableBox {
 
         addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
             if (!event.isPrimaryButtonDown()) {
-                setCursor(Cursor.DEFAULT);
+                setCursor(null);
             }
         });
     }
@@ -167,7 +167,7 @@ public class ResizableBox extends DraggableBox {
         if (!(getParent() instanceof Region)) {
             return;
         } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
-            setCursor(Cursor.DEFAULT);
+            setCursor(null);
             return;
         }
 
@@ -180,7 +180,7 @@ public class ResizableBox extends DraggableBox {
         if (!(getParent() instanceof Region)) {
             return;
         } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
-            setCursor(Cursor.DEFAULT);
+            setCursor(null);
             return;
         }
 
@@ -530,10 +530,11 @@ public class ResizableBox extends DraggableBox {
             setCursor(Cursor.W_RESIZE);
             break;
         case INSIDE:
-            setCursor(Cursor.DEFAULT);
+            // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
+            setCursor(null);
             break;
         case OUTSIDE:
-            setCursor(Cursor.DEFAULT);
+            setCursor(null);
             break;
         }
     }

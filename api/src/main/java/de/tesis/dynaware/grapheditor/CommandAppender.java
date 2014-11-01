@@ -9,7 +9,7 @@ import org.eclipse.emf.common.command.CompoundCommand;
 public interface CommandAppender<T> {
 
     /**
-     * Appends existing commands to a recently-executed compound command.
+     * Appends commands to a recently-executed compound command.
      * 
      * @param object the graph object that was modified as a result of the command
      * @param command the {@link CompoundCommand} that was executed

@@ -10,8 +10,8 @@ import java.util.Map;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -243,7 +243,11 @@ public class ConnectorDragManager {
      */
     private void handleMouseEntered(final MouseEvent event, final GConnector connector) {
 
-        skinLookup.lookupConnector(connector).getRoot().setCursor(Cursor.DEFAULT);
+        final Parent parent = skinLookup.lookupConnector(connector).getRoot().getParent();
+        if (parent != null) {
+            parent.setCursor(null);
+        }
+
         hoveredConnector = connector;
         event.consume();
     }
@@ -256,7 +260,6 @@ public class ConnectorDragManager {
      */
     private void handleMouseExited(final MouseEvent event, final GConnector connector) {
 
-        skinLookup.lookupConnector(connector).getRoot().setCursor(Cursor.DEFAULT);
         hoveredConnector = null;
         event.consume();
     }

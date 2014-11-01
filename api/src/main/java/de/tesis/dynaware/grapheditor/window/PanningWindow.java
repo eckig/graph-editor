@@ -9,6 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -264,6 +265,8 @@ public class PanningWindow extends Region {
                 return;
             }
 
+            setCursor(Cursor.MOVE);
+
             if (cacheWhilePanning) {
                 content.setCache(true);
             }
@@ -298,6 +301,8 @@ public class PanningWindow extends Region {
             if (!event.getButton().equals(MouseButton.SECONDARY)) {
                 return;
             }
+
+            setCursor(null);
 
             if (cacheWhilePanning) {
                 content.setCache(false);
