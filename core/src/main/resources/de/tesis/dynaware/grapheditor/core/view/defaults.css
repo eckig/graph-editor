@@ -119,65 +119,24 @@
 
 .default-joint {
 	/* Invisible by default but make sure it has the exact same dimensions as for hover and pressed effects. */
-	-fx-stroke-width: 1;
-	-fx-stroke: transparent;
-	-fx-stroke-type: inside;
-	-fx-fill: transparent;
-	-fx-arc-width: 6;
-	-fx-arc-height: 6;
+	-fx-border-width: 1;
+	-fx-border-color: transparent;
+	-fx-border-style: solid inside;
+	-fx-background-color: transparent;
+	-fx-border-radius: 2;
+	-fx-background-radius: 2;
 }
 
-.default-joint:hover {
-	-fx-stroke-width: 1;
-	-fx-stroke: derive(darkslategrey, 30%);
-	-fx-stroke-type: inside;
-	-fx-fill: white;
-	-fx-arc-width: 6;
-	-fx-arc-height: 6;
+.default-joint:hover, .default-joint:selected:hover {
+	-fx-border-color: derive(darkslategrey, 30%);
+	-fx-background-color: white;
 	-fx-opacity: 0.7;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.default-joint:pressed {
-	-fx-stroke-width: 1;
-	-fx-stroke: derive(darkslategrey, 30%);
-	-fx-stroke-type: inside;
-	-fx-fill: derive(white, -5%);
-	-fx-arc-width: 6;
-	-fx-arc-height: 6;
-	-fx-opacity: 0.7;
-	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
-}
-
-.default-joint:selected {
-	-fx-stroke-width: 1;
-	-fx-stroke: derive(darkslategrey, 30%);
-	-fx-stroke-type: inside;
-	-fx-fill: derive(white, -5%);
-	-fx-arc-width: 6;
-	-fx-arc-height: 6;
-	-fx-opacity: 0.7;
-	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
-}
-
-.default-joint:selected:hover {
-	-fx-stroke-width: 1;
-	-fx-stroke: derive(darkslategrey, 30%);
-	-fx-stroke-type: inside;
-	-fx-fill: white;
-	-fx-arc-width: 6;
-	-fx-arc-height: 6;
-	-fx-opacity: 0.7;
-	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
-}
-
-.default-joint:selected:pressed {
-	-fx-stroke-width: 1;
-	-fx-stroke: derive(darkslategrey, 30%);
-	-fx-stroke-type: inside;
-	-fx-fill: derive(white, -5%);
-	-fx-arc-width: 6;
-	-fx-arc-height: 6;
+.default-joint:pressed, .default-joint:selected, .default-joint:selected:pressed {
+	-fx-border-color: derive(darkslategrey, 30%);
+	-fx-background-color: derive(white, -5%);
 	-fx-opacity: 0.7;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }

@@ -12,18 +12,17 @@ import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 
 /**
  * A draggable box that can display children.
  *
  * <p>
- * Consists of background and border {@link Rectangle} classes inside a {@link StackPane}. For the purposes of laying
- * out children, it behaves like a StackPane. The size of the draggable box should <b>always</b> be set via its border
- * rectangle.
+ * This is a subclass of {@link StackPane} and will lay out its children accordingly. The size of the box should be set
+ * via {@code resize(width, height)}, and will not be affected by parent layout.
  * </p>
  */
 public class DraggableBox extends StackPane {
@@ -54,10 +53,6 @@ public class DraggableBox extends StackPane {
 
     private double alignmentThreshold = DEFAULT_ALIGNMENT_THRESHOLD;
 
-    // Border and background are separated into 2 rectangles so they can have different effects applied to them.
-    private final Rectangle border;
-    private final Rectangle background;
-
     private final BooleanProperty dragEnabledXProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty dragEnabledYProperty = new SimpleBooleanProperty(true);
 
@@ -71,100 +66,15 @@ public class DraggableBox extends StackPane {
      */
     public DraggableBox() {
 
-        border = new Rectangle();
-        background = new Rectangle();
-
-        background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
-        background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
-
-        prefWidthProperty().bind(border.widthProperty());
-        maxWidthProperty().bind(border.widthProperty());
-
-        prefHeightProperty().bind(border.heightProperty());
-        maxHeightProperty().bind(border.heightProperty());
-
-        getChildren().addAll(border, background);
-
         setPickOnBounds(false);
         setCache(cacheWhenStationary);
 
         // Must be default or quality for re-rasterization to occur after a scale transform.
         cacheHintProperty().set(CacheHint.DEFAULT);
 
-        setOnMousePressed(event -> {
-
-            if (!event.getButton().equals(MouseButton.PRIMARY)) {
-                return;
-            }
-
-            if (cacheWhenStationary) {
-                setCache(false);
-            }
-
-            storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
-
-            dragActive = true;
-
-            event.consume();
-        });
-
-        setOnMouseDragged(event -> {
-
-            if (!event.getButton().equals(MouseButton.PRIMARY)) {
-                return;
-            }
-
-            if (!dragActive) {
-                storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
-            }
-
-            handleDrag(event.getSceneX(), event.getSceneY());
-
-            dragActive = true;
-
-            event.consume();
-        });
-
-        setOnMouseReleased(event -> {
-
-            if (!event.getButton().equals(MouseButton.PRIMARY)) {
-                return;
-            }
-
-            dragActive = false;
-
-            if (cacheWhenStationary) {
-                setCache(true);
-            }
-
-            event.consume();
-        });
-    }
-
-    /**
-     * Gets the border {@link Rectangle}.
-     *
-     * <p>
-     * The width and height of the draggable box should be set via this rectangle.
-     * </p>
-     *
-     * @return the border {@link Rectangle}
-     */
-    public Rectangle getBorderRectangle() {
-        return border;
-    }
-
-    /**
-     * Gets the background {@link Rectangle}.
-     *
-     * <p>
-     * The size of this rectangle is bound. Do not try to change it.
-     * </p>
-     *
-     * @return the background {@link Rectangle}
-     */
-    public Rectangle getBackgroundRectangle() {
-        return background;
+        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
+        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
+        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
     }
 
     /**
@@ -358,6 +268,71 @@ public class DraggableBox extends StackPane {
     public void setCacheWhenStationary(final boolean cacheWhenStationary) {
         this.cacheWhenStationary = cacheWhenStationary;
         setCache(cacheWhenStationary);
+    }
+
+    @Override
+    public boolean isResizable() {
+        return false;
+    }
+
+    /**
+     * Handles mouse-pressed events.
+     * 
+     * @param event a {@link MouseEvent}
+     */
+    protected void handleMousePressed(final MouseEvent event) {
+
+        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+            return;
+        }
+
+        if (cacheWhenStationary) {
+            setCache(false);
+        }
+
+        storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
+        dragActive = true;
+        event.consume();
+    }
+
+    /**
+     * Handles mouse-dragged events.
+     * 
+     * @param event {@link MouseEvent}
+     */
+    protected void handleMouseDragged(final MouseEvent event) {
+
+        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+            return;
+        }
+
+        if (!dragActive) {
+            storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
+        }
+
+        handleDrag(event.getSceneX(), event.getSceneY());
+        dragActive = true;
+        event.consume();
+    }
+
+    /**
+     * Handles mouse-released events.
+     * 
+     * @param event {@link MouseEvent}
+     */
+    protected void handleMouseReleased(final MouseEvent event) {
+
+        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+            return;
+        }
+
+        dragActive = false;
+
+        if (cacheWhenStationary) {
+            setCache(true);
+        }
+
+        event.consume();
     }
 
     /**

@@ -134,28 +134,24 @@
 
 .grey-skins .default-joint {
 	/* Invisible by default but make sure it has the exact same dimensions as for hover and pressed effects. */
-	-fx-stroke-width: 1;
-	-fx-stroke: transparent;
-	-fx-stroke-type: inside;
-	-fx-fill: transparent;
-	-fx-arc-width: 0;
-	-fx-arc-height: 0;
+	-fx-border-width: 1;
+	-fx-border-color: transparent;
+	-fx-border-style: solid inside;
+	-fx-background-color: transparent;
+	-fx-border-radius: 0;
+	-fx-background-radius: 0;
 }
 
-.grey-skins .default-joint:selected, .grey-skins .default-joint:pressed, .grey-skins .default-joint:selected:pressed {
-	-fx-stroke-width: 1;
-	-fx-stroke: -border-color;
-	-fx-stroke-type: inside;
-	-fx-fill: derive(white, -4%);
+.grey-skins .default-joint:hover, .grey-skins .default-joint:selected:hover {
+	-fx-border-color: -border-color;
+	-fx-background-color: white;
 	-fx-opacity: 0.6;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.grey-skins .default-joint:hover, .grey-skins .default-joint:selected:hover {
-	-fx-stroke-width: 1;
-	-fx-stroke: -border-color;
-	-fx-stroke-type: inside;
-	-fx-fill: white;
+.grey-skins .default-joint:pressed, .grey-skins .default-joint:selected, .grey-skins .default-joint:selected:pressed {
+	-fx-border-color: -border-color;
+	-fx-background-color: derive(white, -4%);
 	-fx-opacity: 0.6;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }

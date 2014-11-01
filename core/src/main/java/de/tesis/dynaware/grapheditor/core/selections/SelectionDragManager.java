@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
@@ -22,7 +21,7 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 
 /**
- * Responsible for how a selection of multiple elements behaves during a drag operation.
+ * Handles how a selection of multiple objects is dragged.
  */
 public class SelectionDragManager {
 
@@ -218,10 +217,10 @@ public class SelectionDragManager {
         if (slave.isDragEnabledX()) {
 
             final double masterX = master.getLayoutX();
-            final double masterWidth = master.getBorderRectangle().getWidth();
+            final double masterWidth = master.getWidth();
 
             final double slaveX = slave.getLayoutX();
-            final double slaveWidth = slave.getBorderRectangle().getWidth();
+            final double slaveWidth = slave.getWidth();
 
             final double westOffset = masterX - slaveX;
             maxOffsets.westOffset = Math.max(maxOffsets.westOffset, westOffset);
@@ -233,10 +232,10 @@ public class SelectionDragManager {
         if (slave.isDragEnabledY()) {
 
             final double masterY = master.getLayoutY();
-            final double masterHeight = master.getBorderRectangle().getHeight();
+            final double masterHeight = master.getHeight();
 
             final double slaveY = slave.getLayoutY();
-            final double slaveHeight = slave.getBorderRectangle().getHeight();
+            final double slaveHeight = slave.getHeight();
 
             final double northOffset = master.getLayoutY() - slave.getLayoutY();
             maxOffsets.northOffset = Math.max(maxOffsets.northOffset, northOffset);
@@ -266,65 +265,57 @@ public class SelectionDragManager {
         // Remove old listeners just in case there are any.
         removePositionListeners(master);
 
-        currentLayoutXListener = new ChangeListener<Number>() {
+        currentLayoutXListener = (v, o, n) -> {
 
-            @Override
-            public void changed(final ObservableValue<? extends Number> v, final Number o, final Number n) {
+            for (final GNode node : model.getNodes()) {
 
-                for (final GNode node : model.getNodes()) {
+                final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
 
-                    final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+                if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
 
-                    if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
-
-                        final Region slave = nodeSkin.getRoot();
-                        slave.setLayoutX((Double) n + nodeLayoutXOffsets.get(node));
-                    }
+                    final Region slave1 = nodeSkin.getRoot();
+                    slave1.setLayoutX((Double) n + nodeLayoutXOffsets.get(node));
                 }
+            }
 
-                for (final GConnection connection : model.getConnections()) {
+            for (final GConnection connection : model.getConnections()) {
 
-                    for (final GJoint joint : connection.getJoints()) {
+                for (final GJoint joint : connection.getJoints()) {
 
-                        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                    final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
 
-                        if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
+                    if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
 
-                            final Region slave = jointSkin.getRoot();
-                            slave.setLayoutX((Double) n + jointLayoutXOffsets.get(joint));
-                        }
+                        final Region slave2 = jointSkin.getRoot();
+                        slave2.setLayoutX((Double) n + jointLayoutXOffsets.get(joint));
                     }
                 }
             }
         };
 
-        currentLayoutYListener = new ChangeListener<Number>() {
+        currentLayoutYListener = (v, o, n) -> {
 
-            @Override
-            public void changed(final ObservableValue<? extends Number> v, final Number o, final Number n) {
+            for (final GNode node : model.getNodes()) {
 
-                for (final GNode node : model.getNodes()) {
+                final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
 
-                    final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+                if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
 
-                    if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
-
-                        final Region slave = nodeSkin.getRoot();
-                        slave.setLayoutY((Double) n + nodeLayoutYOffsets.get(node));
-                    }
+                    final Region slave1 = nodeSkin.getRoot();
+                    slave1.setLayoutY((Double) n + nodeLayoutYOffsets.get(node));
                 }
+            }
 
-                for (final GConnection connection : model.getConnections()) {
+            for (final GConnection connection : model.getConnections()) {
 
-                    for (final GJoint joint : connection.getJoints()) {
+                for (final GJoint joint : connection.getJoints()) {
 
-                        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                    final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
 
-                        if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
+                    if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
 
-                            final Region slave = jointSkin.getRoot();
-                            slave.setLayoutY((Double) n + jointLayoutYOffsets.get(joint));
-                        }
+                        final Region slave2 = jointSkin.getRoot();
+                        slave2.setLayoutY((Double) n + jointLayoutYOffsets.get(joint));
                     }
                 }
             }

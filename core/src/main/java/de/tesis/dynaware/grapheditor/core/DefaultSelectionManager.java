@@ -141,4 +141,9 @@ public class DefaultSelectionManager implements SelectionManager {
     public void paste(final CommandAppender<List<GNode>> handler) {
         selectionCopier.paste(handler);
     }
+
+    @Override
+    public void clearMemory() {
+        selectionCopier.clearMemory();
+    }
 }

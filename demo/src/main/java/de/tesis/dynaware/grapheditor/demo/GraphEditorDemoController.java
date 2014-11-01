@@ -371,6 +371,7 @@ public class GraphEditorDemoController {
         clearAll();
         flushCommandStack();
         checkConnectorButtonsToDisable();
+        graphEditor.getSelectionManager().clearMemory();
     }
 
     /**

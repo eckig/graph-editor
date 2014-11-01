@@ -17,9 +17,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import de.tesis.dynaware.grapheditor.utils.DraggableBox;
-import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-
 public class DraggableBoxTest {
 
     @ClassRule
@@ -48,8 +45,7 @@ public class DraggableBoxTest {
         properties.setSouthBoundValue(BOUNDARY_INDENT);
         properties.setSnapToGrid(false);
 
-        box.getBorderRectangle().setWidth(BOX_WIDTH);
-        box.getBorderRectangle().setHeight(BOX_HEIGHT);
+        box.resize(BOX_WIDTH, BOX_HEIGHT);
         box.setLayoutX(BOX_INITIAL_X);
         box.setLayoutY(BOX_INITIAL_Y);
         box.setAlignmentTargetsX(null);

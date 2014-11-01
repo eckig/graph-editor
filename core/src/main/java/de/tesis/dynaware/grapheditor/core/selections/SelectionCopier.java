@@ -164,6 +164,14 @@ public class SelectionCopier {
     }
 
     /**
+     * Clears the memory of what was cut / copied. Future paste operations will do nothing.
+     */
+    public void clearMemory() {
+        copiedNodes.clear();
+        copiedConnections.clear();
+    }
+
+    /**
      * Prepares the lists of pasted nodes and connections.
      *
      * @param pastedNodes an empty list to be filled with pasted nodes

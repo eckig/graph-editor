@@ -30,8 +30,7 @@ public class MinimapLocator extends DraggableBox {
 
         this.minimapPadding = minimapPadding;
 
-        getBorderRectangle().getStyleClass().addAll(STYLE_CLASS_LOCATOR);
-        getBackgroundRectangle().setVisible(false);
+        getStyleClass().addAll(STYLE_CLASS_LOCATOR);
 
         final GraphEditorProperties locatorProperties = new GraphEditorProperties();
 
@@ -60,7 +59,7 @@ public class MinimapLocator extends DraggableBox {
 
         setLayoutX(x + minimapPadding);
         setLayoutY(y + minimapPadding);
-        getBorderRectangle().setWidth(width);
-        getBorderRectangle().setHeight(height);
+        setWidth(width);
+        setHeight(height);
     }
 }

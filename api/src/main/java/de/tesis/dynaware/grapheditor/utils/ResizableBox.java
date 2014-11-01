@@ -5,7 +5,6 @@ package de.tesis.dynaware.grapheditor.utils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -41,66 +40,14 @@ public class ResizableBox extends DraggableBox {
      */
     public ResizableBox() {
 
-        final EventHandler<? super MouseEvent> existingMousePressedHandler = getOnMousePressed();
+        addEventHandler(MouseEvent.MOUSE_ENTERED, this::processMousePosition);
+        addEventHandler(MouseEvent.MOUSE_MOVED, this::processMousePosition);
 
-        setOnMousePressed(event -> {
-
-            existingMousePressedHandler.handle(event);
-
-            if (!(getParent() instanceof Region)) {
-                return;
-            } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
-                setCursor(Cursor.DEFAULT);
-                return;
-            }
-
-            storeClickValuesForResize(event.getX(), event.getY());
-        });
-
-        final EventHandler<? super MouseEvent> existingMouseDraggedHandler = getOnMouseDragged();
-
-        setOnMouseDragged(event -> {
-
-            if (!(getParent() instanceof Region)) {
-                return;
-            } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
-                setCursor(Cursor.DEFAULT);
-                return;
-            }
-
-            if (!dragActive) {
-                storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
-                storeClickValuesForResize(event.getX(), event.getY());
-            }
-
-            if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE)) {
-                existingMouseDraggedHandler.handle(event);
-            } else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)) {
-                handleResize(event.getSceneX(), event.getSceneY());
-            }
-
-            dragActive = true;
-
-            event.consume();
-        });
-
-        setOnMouseEntered(event -> processMousePosition(event));
-
-        setOnMouseExited(event -> {
+        addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
             if (!event.isPrimaryButtonDown()) {
                 setCursor(Cursor.DEFAULT);
             }
         });
-
-        setOnMouseReleased(event -> {
-
-            if (event.getButton().equals(MouseButton.PRIMARY)) {
-                processMousePosition(event);
-                dragActive = false;
-            }
-        });
-
-        setOnMouseMoved(event -> processMousePosition(event));
     }
 
     /**
@@ -212,6 +159,55 @@ public class ResizableBox extends DraggableBox {
         return mouseInPositionForResize;
     }
 
+    @Override
+    protected void handleMousePressed(final MouseEvent event) {
+
+        super.handleMousePressed(event);
+
+        if (!(getParent() instanceof Region)) {
+            return;
+        } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
+            setCursor(Cursor.DEFAULT);
+            return;
+        }
+
+        storeClickValuesForResize(event.getX(), event.getY());
+    }
+
+    @Override
+    protected void handleMouseDragged(final MouseEvent event) {
+
+        if (!(getParent() instanceof Region)) {
+            return;
+        } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
+            setCursor(Cursor.DEFAULT);
+            return;
+        }
+
+        if (!dragActive) {
+            storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
+            storeClickValuesForResize(event.getX(), event.getY());
+        }
+
+        if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE)) {
+            super.handleMouseDragged(event);
+        } else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)) {
+            handleResize(event.getSceneX(), event.getSceneY());
+        }
+
+        dragActive = true;
+        event.consume();
+    }
+
+    @Override
+    protected void handleMouseReleased(final MouseEvent event) {
+
+        super.handleMouseReleased(event);
+        if (event.getButton().equals(MouseButton.PRIMARY)) {
+            processMousePosition(event);
+        }
+    }
+
     /**
      * Processes the current mouse position, updating the cursor accordingly.
      *
@@ -242,8 +238,8 @@ public class ResizableBox extends DraggableBox {
      */
     private void storeClickValuesForResize(final double x, final double y) {
 
-        lastWidth = getBorderRectangle().getWidth();
-        lastHeight = getBorderRectangle().getHeight();
+        lastWidth = getWidth();
+        lastHeight = getHeight();
 
         lastMouseRegion = getMouseRegion(x, y);
     }
@@ -332,7 +328,7 @@ public class ResizableBox extends DraggableBox {
         }
 
         setLayoutY(newLayoutY);
-        getBorderRectangle().setHeight(newHeight);
+        setHeight(newHeight);
     }
 
     /**
@@ -369,7 +365,7 @@ public class ResizableBox extends DraggableBox {
             newHeight = minResizeHeight;
         }
 
-        getBorderRectangle().setHeight(newHeight);
+        setHeight(newHeight);
     }
 
     /**
@@ -406,7 +402,7 @@ public class ResizableBox extends DraggableBox {
             newWidth = minResizeWidth;
         }
 
-        getBorderRectangle().setWidth(newWidth);
+        setWidth(newWidth);
     }
 
     /**
@@ -449,7 +445,7 @@ public class ResizableBox extends DraggableBox {
         }
 
         setLayoutX(newLayoutX);
-        getBorderRectangle().setWidth(newWidth);
+        setWidth(newWidth);
     }
 
     /**
@@ -462,8 +458,8 @@ public class ResizableBox extends DraggableBox {
      */
     private RectangleMouseRegion getMouseRegion(final double x, final double y) {
 
-        final double width = getBorderRectangle().getWidth();
-        final double height = getBorderRectangle().getHeight();
+        final double width = getWidth();
+        final double height = getHeight();
 
         if (x < 0 || y < 0 || x > width || y > height) {
             return RectangleMouseRegion.OUTSIDE;

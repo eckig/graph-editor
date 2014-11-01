@@ -16,8 +16,8 @@
 }
 
 .minimap-locator {
-    -fx-stroke: rgba(135, 206, 250, 0.65);
-    -fx-stroke-type: inside;
-    -fx-stroke-width: 1;
-    -fx-fill: rgba(255, 255, 255, 0);
+    -fx-border-color: rgba(135, 206, 250, 0.65);
+    -fx-border-style: solid inside;
+    -fx-border-width: 1;
+    -fx-background-color: rgba(255, 255, 255, 0);
 }

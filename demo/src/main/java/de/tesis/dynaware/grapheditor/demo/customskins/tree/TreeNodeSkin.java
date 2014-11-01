@@ -63,6 +63,10 @@ public class TreeNodeSkin extends GNodeSkin {
     private GConnectorSkin inputConnectorSkin;
     private GConnectorSkin outputConnectorSkin;
 
+    // Border and background are separated into 2 rectangles so they can have different effects applied to them.
+    private final Rectangle border = new Rectangle();
+    private final Rectangle background = new Rectangle();
+
     /**
      * Creates a new {@link TreeNodeSkin} instance.
      *
@@ -72,8 +76,16 @@ public class TreeNodeSkin extends GNodeSkin {
 
         super(node);
 
-        getRoot().getBorderRectangle().getStyleClass().setAll(STYLE_CLASS_BORDER);
-        getRoot().getBackgroundRectangle().getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
+        background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
+        background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
+
+        border.widthProperty().bind(getRoot().widthProperty());
+        border.heightProperty().bind(getRoot().heightProperty());
+
+        border.getStyleClass().setAll(STYLE_CLASS_BORDER);
+        background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
+
+        getRoot().getChildren().addAll(border, background);
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
 
         addSelectionHalo();
@@ -166,8 +178,6 @@ public class TreeNodeSkin extends GNodeSkin {
 
         if (selectionHalo.isVisible()) {
 
-            final Rectangle border = getRoot().getBorderRectangle();
-
             selectionHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
             selectionHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
 
@@ -188,12 +198,12 @@ public class TreeNodeSkin extends GNodeSkin {
         selectedProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue) {
-                getRoot().getBackgroundRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
                 selectionHalo.setVisible(true);
                 layoutSelectionHalo();
                 getRoot().toFront();
             } else {
-                getRoot().getBackgroundRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
                 selectionHalo.setVisible(false);
             }
         });

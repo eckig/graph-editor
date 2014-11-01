@@ -6,7 +6,6 @@ package de.tesis.dynaware.grapheditor.demo.customskins.grey;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -59,6 +58,8 @@ public class GreyNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> inputConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> outputConnectorSkins = new ArrayList<>();
 
+    private final Rectangle border = new Rectangle();
+
     /**
      * Creates a new {@link GreyNodeSkin} instance.
      *
@@ -68,8 +69,11 @@ public class GreyNodeSkin extends GNodeSkin {
 
         super(node);
 
-        getRoot().getBorderRectangle().getStyleClass().setAll(STYLE_CLASS_BORDER);
-        getRoot().getBackgroundRectangle().setVisible(false);
+        border.getStyleClass().setAll(STYLE_CLASS_BORDER);
+        border.widthProperty().bind(getRoot().widthProperty());
+        border.heightProperty().bind(getRoot().heightProperty());
+
+        getRoot().getChildren().add(border);
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
 
         addSelectionHalo();
@@ -160,15 +164,12 @@ public class GreyNodeSkin extends GNodeSkin {
         closeButton.setCursor(Cursor.DEFAULT);
         closeButton.setOnAction(event -> Commands.removeNode(getGraphEditor().getModel(), getNode()));
 
-        final DoubleProperty width = getRoot().getBorderRectangle().widthProperty();
-        final DoubleProperty height = getRoot().getBorderRectangle().heightProperty();
-
-        contentRoot.minWidthProperty().bind(width);
-        contentRoot.prefWidthProperty().bind(width);
-        contentRoot.maxWidthProperty().bind(width);
-        contentRoot.minHeightProperty().bind(height);
-        contentRoot.prefHeightProperty().bind(height);
-        contentRoot.maxHeightProperty().bind(height);
+        contentRoot.minWidthProperty().bind(getRoot().widthProperty());
+        contentRoot.prefWidthProperty().bind(getRoot().widthProperty());
+        contentRoot.maxWidthProperty().bind(getRoot().widthProperty());
+        contentRoot.minHeightProperty().bind(getRoot().heightProperty());
+        contentRoot.prefHeightProperty().bind(getRoot().heightProperty());
+        contentRoot.maxHeightProperty().bind(getRoot().heightProperty());
 
         contentRoot.setLayoutX(BORDER_WIDTH);
         contentRoot.setLayoutY(BORDER_WIDTH);
@@ -236,14 +237,12 @@ public class GreyNodeSkin extends GNodeSkin {
 
         if (selectionHalo.isVisible()) {
 
-            final Rectangle border = getRoot().getBorderRectangle();
-
-            selectionHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
-            selectionHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
+            selectionHalo.setWidth(getRoot().getWidth() + 2 * HALO_OFFSET);
+            selectionHalo.setHeight(getRoot().getHeight() + 2 * HALO_OFFSET);
 
             final double cornerLength = 2 * HALO_CORNER_SIZE;
-            final double xGap = border.getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
-            final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double xGap = getRoot().getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = getRoot().getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
 
             selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
             selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);

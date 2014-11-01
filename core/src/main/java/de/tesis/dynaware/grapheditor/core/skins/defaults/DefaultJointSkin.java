@@ -35,13 +35,8 @@ public class DefaultJointSkin extends GJointSkin {
 
         super(joint);
 
-        // Make background invisible and style everything with border since we don't care about drop-shadow interfering
-        // with transparency for joints.
-        getRoot().getBackgroundRectangle().setVisible(false);
-
-        getRoot().getBorderRectangle().setWidth(SIZE);
-        getRoot().getBorderRectangle().setHeight(SIZE);
-        getRoot().getBorderRectangle().getStyleClass().setAll(STYLE_CLASS);
+        getRoot().resize(SIZE, SIZE);
+        getRoot().getStyleClass().setAll(STYLE_CLASS);
 
         getRoot().setPickOnBounds(false);
         getRoot().setSnapToGridOffset(new Point2D(SNAP_OFFSET, SNAP_OFFSET));
@@ -57,10 +52,10 @@ public class DefaultJointSkin extends GJointSkin {
         selectedProperty().addListener((ChangeListener<Boolean>) (v, o, n) -> {
 
             if (n) {
-                getRoot().getBorderRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+                getRoot().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
                 getRoot().toFront();
             } else {
-                getRoot().getBorderRectangle().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+                getRoot().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
             }
         });
     }

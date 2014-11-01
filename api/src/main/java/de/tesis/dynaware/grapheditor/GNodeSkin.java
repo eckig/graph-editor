@@ -132,8 +132,7 @@ public abstract class GNodeSkin {
         getRoot().setLayoutX(getNode().getX());
         getRoot().setLayoutY(getNode().getY());
 
-        getRoot().getBorderRectangle().setWidth(getNode().getWidth());
-        getRoot().getBorderRectangle().setHeight(getNode().getHeight());
+        getRoot().resize(getNode().getWidth(), getNode().getHeight());
     }
 
     /**

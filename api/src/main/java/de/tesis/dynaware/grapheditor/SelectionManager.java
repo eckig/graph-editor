@@ -45,7 +45,7 @@ public interface SelectionManager {
      * Cuts the current selection. Saves cut nodes and the connections between them to memory to be pasted later.
      * 
      * <p>
-     * Additionally calls the given handler method for the compound command that removed the nodes.
+     * Additionally calls the given method for the compound command that removed the nodes.
      * </p>
      * 
      * @param appender a {@link CommandAppender} to be called
@@ -72,6 +72,11 @@ public interface SelectionManager {
      * @param appender a {@link CommandAppender} to be called
      */
     void paste(CommandAppender<List<GNode>> appender);
+
+    /**
+     * Clears the memory of what was cut / copied, so that future paste calls will do nothing.
+     */
+    void clearMemory();
 
     /**
      * Selects all 'selectable' elements (i.e. nodes and joints) in the editor.
