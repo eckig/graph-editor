@@ -4,6 +4,7 @@
 package de.tesis.dynaware.grapheditor;
 
 import javafx.beans.value.ChangeListener;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.window.GraphEditorMinimap;
@@ -23,9 +24,9 @@ import de.tesis.dynaware.grapheditor.window.PanningWindow;
  * <pre>
  * <code>GraphEditorContainer graphEditorContainer = new GraphEditorContainer();
  * GraphEditor graphEditor = new DefaultGraphEditor();
- *
+ * 
  * graphEditorContainer.setGraphEditor(graphEditor);
- * graphEditorContainer.setMinimapVisible(true);</code>
+ * graphEditorContainer.getMinimap().setVisible(true);</code>
  * </pre>
  *
  * The graph editor container is a {@link Region} and can be added to the JavaFX scene graph in the usual way.
@@ -97,12 +98,16 @@ public class GraphEditorContainer extends PanningWindow {
     }
 
     /**
-     * Shows or hides the minimap.
+     * Gets the {@link Pane} representing the graph editor minimap.
+     * 
+     * <p>
+     * <b>Note:</b> customisation of the minimap's content and layout has not been extensively tested.
+     * </p>
      *
-     * @param isVisible {@code true} to show the minimap, {@code false} to hide it
+     * @param the graph editor minimap
      */
-    public void setMinimapVisible(final boolean isVisible) {
-        minimap.setVisible(isVisible);
+    public Pane getMinimap() {
+        return minimap;
     }
 
     /**

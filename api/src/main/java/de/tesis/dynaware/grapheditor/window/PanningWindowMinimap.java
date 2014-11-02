@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Transform;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
@@ -18,7 +19,7 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
  * Also provides mechanisms for navigating the window to other parts of the content by clicking or dragging.
  * </p>
  */
-public class PanningWindowMinimap extends Region {
+public class PanningWindowMinimap extends Pane {
 
     protected static final double MINIMAP_PADDING = 5;
 

@@ -83,7 +83,6 @@ public class GraphEditorDemoController {
 
     private Scale scaleTransform;
     private double currentZoomFactor = 1;
-    private boolean isMinimapVisible;
 
     private DefaultSkinController defaultSkinController;
     private TreeSkinController treeSkinController;
@@ -239,9 +238,7 @@ public class GraphEditorDemoController {
 
     @FXML
     public void toggleMinimap() {
-
-        isMinimapVisible = !isMinimapVisible;
-        graphEditorContainer.setMinimapVisible(isMinimapVisible);
+        graphEditorContainer.getMinimap().visibleProperty().bind(minimapButton.selectedProperty());
     }
 
     /**
