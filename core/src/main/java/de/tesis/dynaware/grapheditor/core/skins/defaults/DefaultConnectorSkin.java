@@ -41,9 +41,8 @@ public class DefaultConnectorSkin extends GConnectorSkin {
 
         super(connector);
 
-        root.setMinSize(WIDTH, HEIGHT);
-        root.setPrefSize(WIDTH, HEIGHT);
-        root.setMaxSize(WIDTH, HEIGHT);
+        root.setManaged(false);
+        root.resize(WIDTH, HEIGHT);
         root.setPickOnBounds(false);
 
         triangle.setManaged(false);
