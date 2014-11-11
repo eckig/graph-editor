@@ -30,6 +30,11 @@ public class DefaultTailSkin extends GTailSkin {
     private static final String STYLE_CLASS_ENDPOINT_INPUT = "default-tail-endpoint-input";
     private static final String STYLE_CLASS_ENDPOINT_OUTPUT = "default-tail-endpoint-output";
 
+    private static final String TOP_SIDE = "top";
+    private static final String RIGHT_SIDE = "right";
+    private static final String BOTTOM_SIDE = "bottom";
+    private static final String LEFT_SIDE = "left";
+
     private static final double ENDPOINT_WIDTH = 25;
     private static final double ENDPOINT_HEIGHT = 25;
 
@@ -49,12 +54,14 @@ public class DefaultTailSkin extends GTailSkin {
 
         super(connector);
 
+        performChecks();
+
         line.getStyleClass().setAll(STYLE_CLASS);
 
         // Tails coming from an 'input' connector have an 'output' endpoint and vice versa.
-        if (DefaultSkinConstants.INPUT_TYPE.equals(connector.getType())) {
+        if (connector.getType().contains(LEFT_SIDE)) {
             endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT_OUTPUT);
-        } else if (DefaultSkinConstants.OUTPUT_TYPE.equals(connector.getType())) {
+        } else if (connector.getType().contains(RIGHT_SIDE)) {
             endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT_INPUT);
         }
 
@@ -82,8 +89,8 @@ public class DefaultTailSkin extends GTailSkin {
 
         line.getPoints().addAll(GeometryUtils.moveOffPixel(startX), GeometryUtils.moveOffPixel(startY));
 
-        final boolean isInput = getConnector().getType().equals(DefaultSkinConstants.INPUT_TYPE);
-        final boolean isOutput = getConnector().getType().equals(DefaultSkinConstants.OUTPUT_TYPE);
+        final boolean isInput = getConnector().getType().contains(LEFT_SIDE);
+        final boolean isOutput = getConnector().getType().contains(RIGHT_SIDE);
 
         final boolean bendsBackward = isOutput && endX < startX + MINIMUM_START_SEGMENT + MINIMUM_END_SEGMENT;
         final boolean bendsForward = isInput && endX > startX - MINIMUM_START_SEGMENT - MINIMUM_END_SEGMENT;
@@ -212,5 +219,12 @@ public class DefaultTailSkin extends GTailSkin {
         line.getPoints().addAll(GeometryUtils.moveOffPixel(leftX), GeometryUtils.moveOffPixel(middleY));
         line.getPoints().addAll(GeometryUtils.moveOffPixel(rightX), GeometryUtils.moveOffPixel(middleY));
         line.getPoints().addAll(GeometryUtils.moveOffPixel(rightX), GeometryUtils.moveOffPixel(endY));
+    }
+
+    /**
+     * Checks that the connector has the correct values to use this skin.
+     */
+    private void performChecks() {
+
     }
 }

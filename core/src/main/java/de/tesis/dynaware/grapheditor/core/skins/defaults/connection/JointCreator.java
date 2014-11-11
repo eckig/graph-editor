@@ -70,7 +70,7 @@ public class JointCreator {
 
     /**
      * Returns the hover effect rectangle.
-     * 
+     *
      * @return the rectangle used to display hover effects over the connection
      */
     public Rectangle getHoverEffect() {
@@ -87,9 +87,7 @@ public class JointCreator {
         root.getChildren().add(hoverEffect);
 
         root.setOnMouseEntered(event -> updateHoverEffectPosition(event, root));
-
         root.setOnMouseMoved(event -> updateHoverEffectPosition(event, root));
-
         root.setOnMouseExited(event -> hoverEffect.setVisible(false));
 
         root.setOnMouseDragged(event -> {
@@ -211,7 +209,7 @@ public class JointCreator {
 
         final Point2D clickPositionInParent = root.localToParent(event.getX(), event.getY());
 
-        if (index % 2 == 0) {
+        if (RectangularConnectionUtils.isSegmentHorizontal(connection, index)) {
             newJointX = GeometryUtils.moveOnPixel(clickPositionInParent.getX());
             newJointY = GeometryUtils.moveOnPixel(adjacentJointY);
         } else {

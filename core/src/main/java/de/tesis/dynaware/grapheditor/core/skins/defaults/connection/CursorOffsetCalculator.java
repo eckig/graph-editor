@@ -13,6 +13,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.VLineTo;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 /**
@@ -20,7 +21,8 @@ import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
  */
 public class CursorOffsetCalculator {
 
-    private final Path connectionPath;
+    private final GConnection connection;
+    private final Path path;
     private final Path backgroundPath;
     private final List<ConnectionSegment> connectionSegments;
 
@@ -33,14 +35,15 @@ public class CursorOffsetCalculator {
     /**
      * Creates a new cursor offset calculator instance for a default connection skin.
      *
-     * @param connectionPath the connection's path
+     * @param path the connection's path
      * @param backgroundPath the connection's background path
      * @param connectionSegments the connection's list of segments
      */
-    public CursorOffsetCalculator(final Path connectionPath, final Path backgroundPath,
+    public CursorOffsetCalculator(final GConnection connection, final Path path, final Path backgroundPath,
             final List<ConnectionSegment> connectionSegments) {
 
-        this.connectionPath = connectionPath;
+        this.connection = connection;
+        this.path = path;
         this.backgroundPath = backgroundPath;
         this.connectionSegments = connectionSegments;
     }
@@ -63,12 +66,12 @@ public class CursorOffsetCalculator {
         minOffsetX = offsetBound + 1;
         minOffsetY = offsetBound + 1;
 
-        currentX = ((MoveTo) connectionPath.getElements().get(0)).getX();
-        currentY = ((MoveTo) connectionPath.getElements().get(0)).getY();
+        currentX = ((MoveTo) path.getElements().get(0)).getX();
+        currentY = ((MoveTo) path.getElements().get(0)).getY();
 
-        for (int i = 1; i < connectionPath.getElements().size(); i++) {
+        for (int i = 1; i < path.getElements().size(); i++) {
 
-            final PathElement pathElement = connectionPath.getElements().get(i);
+            final PathElement pathElement = path.getElements().get(i);
 
             calculateOffset(pathElement, cursorSceneX, cursorSceneY, offsetBound);
         }
@@ -96,10 +99,10 @@ public class CursorOffsetCalculator {
 
         for (int i = 0; i < connectionSegments.size(); i++) {
 
-            final Point2D start = connectionPath.localToScene(connectionSegments.get(i).getStart());
-            final Point2D end = connectionPath.localToScene(connectionSegments.get(i).getEnd());
+            final Point2D start = path.localToScene(connectionSegments.get(i).getStart());
+            final Point2D end = path.localToScene(connectionSegments.get(i).getEnd());
 
-            if (i % 2 == 0) {
+            if (RectangularConnectionUtils.isSegmentHorizontal(connection, i)) {
 
                 final boolean inRangeX = GeometryUtils.checkInRange(start.getX(), end.getX(), cursorX);
                 final double distanceY = Math.abs(start.getY() - cursorY);
@@ -138,14 +141,14 @@ public class CursorOffsetCalculator {
     private void calculateOffset(final PathElement pathElement, final double cursorSceneX, final double cursorSceneY,
             final double offsetBound) {
 
-        final double currentSceneX = connectionPath.localToScene(currentX, currentY).getX();
-        final double currentSceneY = connectionPath.localToScene(currentX, currentY).getY();
+        final double currentSceneX = path.localToScene(currentX, currentY).getX();
+        final double currentSceneY = path.localToScene(currentX, currentY).getY();
 
         if (pathElement instanceof HLineTo) {
 
             final HLineTo hLineTo = (HLineTo) pathElement;
 
-            final double nextSceneX = connectionPath.localToScene(hLineTo.getX(), currentY).getX();
+            final double nextSceneX = path.localToScene(hLineTo.getX(), currentY).getX();
             final double possibleMinOffsetY = currentSceneY - cursorSceneY;
 
             final boolean inRangeX = GeometryUtils.checkInRange(currentSceneX, nextSceneX, cursorSceneX);
@@ -169,7 +172,7 @@ public class CursorOffsetCalculator {
 
             final VLineTo vLineTo = (VLineTo) pathElement;
 
-            final double nextSceneY = connectionPath.localToScene(currentX, vLineTo.getY()).getY();
+            final double nextSceneY = path.localToScene(currentX, vLineTo.getY()).getY();
             final double possibleMinOffsetX = currentSceneX - cursorSceneX;
 
             final boolean cursorInRangeY = GeometryUtils.checkInRange(currentSceneY, nextSceneY, cursorSceneY);

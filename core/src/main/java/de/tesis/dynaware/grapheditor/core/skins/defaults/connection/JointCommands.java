@@ -14,10 +14,7 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
@@ -27,8 +24,6 @@ import de.tesis.dynaware.grapheditor.model.GraphPackage;
  * A set of helper methods to add and remove joints from the default connection skin using EMF commands.
  */
 public class JointCommands {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JointCommands.class);
 
     private static final EReference JOINTS = GraphPackage.Literals.GCONNECTION__JOINTS;
 
@@ -65,11 +60,6 @@ public class JointCommands {
         }
 
         if (command.canExecute()) {
-
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(LogMessages.UPDATING_JOINTS, connection.hashCode());
-            }
-
             editingDomain.getCommandStack().execute(command);
         }
     }

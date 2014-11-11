@@ -58,7 +58,7 @@ public class IntersectionFinder {
 
             List<Double> segmentIntersections = null;
 
-            if (i % 2 == 0) {
+            if (RectangularConnectionUtils.isSegmentHorizontal(connection, i)) {
 
                 for (final GConnection otherConnection : allPoints.keySet()) {
 
@@ -70,19 +70,21 @@ public class IntersectionFinder {
 
                     final List<Point2D> otherPoints = allPoints.get(otherConnection);
 
-                    for (int j = 1; j < otherPoints.size() - 2; j = j + 2) {
+                    for (int j = 0; j < otherPoints.size() - 1; j++) {
 
-                        final Point2D a = points.get(i);
-                        final Point2D b = points.get(i + 1);
-                        final Point2D c = otherPoints.get(j);
-                        final Point2D d = otherPoints.get(j + 1);
+                        if (!RectangularConnectionUtils.isSegmentHorizontal(otherConnection, j)) {
+                            final Point2D a = points.get(i);
+                            final Point2D b = points.get(i + 1);
+                            final Point2D c = otherPoints.get(j);
+                            final Point2D d = otherPoints.get(j + 1);
 
-                        if (GeometryUtils.checkIntersection(a, b, c, d)) {
+                            if (GeometryUtils.checkIntersection(a, b, c, d)) {
 
-                            if (segmentIntersections == null) {
-                                segmentIntersections = new ArrayList<>();
+                                if (segmentIntersections == null) {
+                                    segmentIntersections = new ArrayList<>();
+                                }
+                                segmentIntersections.add(c.getX());
                             }
-                            segmentIntersections.add(c.getX());
                         }
                     }
                 }
@@ -108,20 +110,22 @@ public class IntersectionFinder {
 
                     final List<Point2D> otherPoints = allPoints.get(otherConnection);
 
-                    for (int j = 0; j < otherPoints.size() - 1; j = j + 2) {
+                    for (int j = 0; j < otherPoints.size() - 1; j++) {
 
-                        final Point2D a = otherPoints.get(j);
-                        final Point2D b = otherPoints.get(j + 1);
-                        final Point2D c = points.get(i);
-                        final Point2D d = points.get(i + 1);
+                        if (RectangularConnectionUtils.isSegmentHorizontal(otherConnection, j)) {
+                            final Point2D a = otherPoints.get(j);
+                            final Point2D b = otherPoints.get(j + 1);
+                            final Point2D c = points.get(i);
+                            final Point2D d = points.get(i + 1);
 
-                        if (GeometryUtils.checkIntersection(a, b, c, d)) {
+                            if (GeometryUtils.checkIntersection(a, b, c, d)) {
 
-                            if (segmentIntersections == null) {
-                                segmentIntersections = new ArrayList<>();
+                                if (segmentIntersections == null) {
+                                    segmentIntersections = new ArrayList<>();
+                                }
+
+                                segmentIntersections.add(a.getY());
                             }
-
-                            segmentIntersections.add(a.getY());
                         }
                     }
                 }

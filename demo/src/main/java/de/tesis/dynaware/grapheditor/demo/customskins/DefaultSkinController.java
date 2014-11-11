@@ -10,6 +10,7 @@ import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -23,9 +24,6 @@ public class DefaultSkinController implements SkinController {
 
     protected static final int NODE_INITIAL_X = 19;
     protected static final int NODE_INITIAL_Y = 19;
-
-    protected static final String INPUT_CONNECTOR_TYPE = "input";
-    protected static final String OUTPUT_CONNECTOR_TYPE = "output";
 
     protected final GraphEditor graphEditor;
     protected final GraphEditorContainer graphEditorContainer;
@@ -53,28 +51,28 @@ public class DefaultSkinController implements SkinController {
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(NODE_INITIAL_Y + windowYOffset);
 
-        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
-        node.getConnectors().add(output);
+        final GConnector rightOutput = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(rightOutput);
 
-        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
-        node.getConnectors().add(input);
+        final GConnector leftInput = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(leftInput);
 
         node.setX(NODE_INITIAL_X + windowXOffset);
 
-        input.setType(INPUT_CONNECTOR_TYPE);
-        output.setType(OUTPUT_CONNECTOR_TYPE);
+        rightOutput.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+        leftInput.setType(DefaultConnectorTypes.LEFT_INPUT);
 
         Commands.addNode(graphEditor.getModel(), node);
     }
 
     @Override
     public void addInputConnector() {
-        addConnector(INPUT_CONNECTOR_TYPE);
+        addConnector(DefaultConnectorTypes.LEFT_INPUT);
     }
 
     @Override
     public void addOutputConnector() {
-        addConnector(OUTPUT_CONNECTOR_TYPE);
+        addConnector(DefaultConnectorTypes.RIGHT_OUTPUT);
     }
 
     @Override

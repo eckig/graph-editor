@@ -18,13 +18,10 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory.Descriptor.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
@@ -35,8 +32,6 @@ import de.tesis.dynaware.grapheditor.model.GraphPackage;
  * Provides utility methods to edit the graph model via EMF commands.
  */
 public class ModelEditingManager {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelEditingManager.class);
 
     private static final EReference NODES = GraphPackage.Literals.GMODEL__NODES;
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
@@ -86,11 +81,6 @@ public class ModelEditingManager {
         editingDomain.getCommandStack().removeCommandStackListener(commandStackListener);
 
         if (command.canExecute()) {
-
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(LogMessages.UPDATING_LAYOUT);
-            }
-
             editingDomain.getCommandStack().execute(command);
         }
 
@@ -131,16 +121,6 @@ public class ModelEditingManager {
         }
 
         if (command.canExecute()) {
-
-            if (LOGGER.isTraceEnabled()) {
-
-                if (nodesToRemove.size() == 1) {
-                    LOGGER.trace(LogMessages.REMOVING_NODE, nodesToRemove.get(0).hashCode());
-                } else {
-                    LOGGER.trace(LogMessages.REMOVING_NODES, nodesToRemove.size());
-                }
-            }
-
             editingDomain.getCommandStack().execute(command);
         }
 
@@ -167,10 +147,6 @@ public class ModelEditingManager {
 
         if (newModel.eResource() == null) {
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(LogMessages.CREATING_RESOURCE, newModel.hashCode());
-            }
-
             final XMIResourceFactoryImpl resourceFactory = new XMIResourceFactoryImpl();
             final Resource resource = resourceFactory.createResource(DEFAULT_URI);
             resource.getContents().add(newModel);
@@ -179,10 +155,6 @@ public class ModelEditingManager {
         editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(newModel);
 
         if (editingDomain == null) {
-
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(LogMessages.CREATING_EDITING_DOMAIN, newModel.hashCode());
-            }
 
             final Registry registry = ComposedAdapterFactory.Descriptor.Registry.INSTANCE;
             final AdapterFactory adapterFactory = new ComposedAdapterFactory(registry);

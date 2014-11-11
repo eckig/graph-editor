@@ -6,10 +6,6 @@ package de.tesis.dynaware.grapheditor.core;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -23,7 +19,6 @@ import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelValidator;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
@@ -33,8 +28,6 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
  * Default implementation of the {@link GraphEditor}.
  */
 public class DefaultGraphEditor implements GraphEditor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultGraphEditor.class);
 
     private final SkinManager skinManager;
     private final ValidatorManager validatorManager;
@@ -153,11 +146,6 @@ public class DefaultGraphEditor implements GraphEditor {
     private void addModelPropertyListener() {
 
         modelProperty.addListener((observable, oldValue, newValue) -> {
-
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(LogMessages.SETTING_NEW_MODEL, newValue.hashCode());
-            }
-
             ModelValidator.validate(newValue);
             controller.setModel(newValue);
         });

@@ -29,44 +29,57 @@
 	-fx-fill: null;
 }
 
-.default-input-connector {
+.default-connector {
 	-fx-stroke: darkslategrey;
 	-fx-stroke-type: inside;
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, white, white 40%, black 40%, black);
 	-fx-stroke-width: 1;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180, 0.5), 5, 0, 1, 1);
+	-inside-fill: derive(rgb(249,247,250), -20%);
+	-outside-fill: white;
 }
 
-.default-input-connector:hover, .default-input-connector:pressed, .default-output-connector:hover, .default-output-connector:pressed {
+.default-connector:hover, .default-connector:pressed, .default-connector:allowed, .default-connector:forbidden {
 	-fx-stroke-width: 2;
 }
 
-.default-input-connector:allowed {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, mediumseagreen, mediumseagreen 40%, black 40%, black);
-	-fx-stroke-width: 2;
+.default-connector:allowed {
+	-outside-fill: mediumseagreen;
 }
 
-.default-input-connector:forbidden {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, tomato, tomato 40%, black 40%, black);
-	-fx-stroke-width: 2;
+.default-connector:forbidden {
+	-outside-fill: tomato;
 }
 
-.default-output-connector {
-	-fx-stroke: darkslategrey;
-	-fx-stroke-type: inside;
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, black, black 39%, white 39%, white);
-	-fx-stroke-width: 1;
-	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180, 0.5), 5, 0, 1, 1);
+.left-input {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 40%, darkslategrey 40%, darkslategrey 44%, -inside-fill 44%, -inside-fill);
 }
 
-.default-output-connector:allowed {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, black, black 39%, mediumseagreen 39%, mediumseagreen);
-	-fx-stroke-width: 2;
+.left-output {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 60%, darkslategrey 60%, darkslategrey 64%, -inside-fill 64%, -inside-fill);
 }
 
-.default-output-connector:forbidden {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, black, black 39%, tomato 39%, tomato);
-	-fx-stroke-width: 2;
+.right-input {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 56%, darkslategrey 56%, darkslategrey 60%, -outside-fill 60%, -outside-fill);
+}
+
+.right-output {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 36%, darkslategrey 36%, darkslategrey 40%, -outside-fill 40%, -outside-fill);
+}
+
+.top-input {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 40%, darkslategrey 40%, darkslategrey 44%, -inside-fill 44%, -inside-fill);
+}
+
+.top-output {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 60%, darkslategrey 60%, darkslategrey 64%, -inside-fill 64%, -inside-fill);
+}
+
+.bottom-input {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 56%, darkslategrey 56%, darkslategrey 60%, -outside-fill 60%, -outside-fill);
+}
+
+.bottom-output {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 36%, darkslategrey 36%, darkslategrey 40%, -outside-fill 40%, -outside-fill);
 }
 
 .default-connection {

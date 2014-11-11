@@ -20,15 +20,12 @@ import javafx.scene.layout.Region;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
@@ -39,13 +36,10 @@ import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
  */
 public class JointCleaner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JointCleaner.class);
-
     private final GConnection connection;
+    private final Map<GJoint, EventHandler<MouseEvent>> cleaningHandlers = new HashMap<>();
 
     private GraphEditor graphEditor;
-
-    private final Map<GJoint, EventHandler<MouseEvent>> cleaningHandlers = new HashMap<>();
 
     /**
      * Creates a new joint cleaner.
@@ -86,49 +80,40 @@ public class JointCleaner {
                 jointRegion.removeEventHandler(MouseEvent.MOUSE_RELEASED, oldHandler);
             }
 
-            final EventHandler<MouseEvent> newHandler = new EventHandler<MouseEvent>() {
+            final EventHandler<MouseEvent> newHandler = event -> {
 
-                @Override
-                public void handle(final MouseEvent event) {
+                final Parent parent = jointRegion.getParent();
 
-                    final Parent parent = jointRegion.getParent();
-
-                    if (jointSkins.size() == 2 || !event.getButton().equals(MouseButton.PRIMARY)) {
-                        return;
-                    }
-
-                    final List<Point2D> jointPositions = GeometryUtils.getJointPositions(jointSkins);
-                    final Set<Integer> jointsToCleanUp = findJointsToCleanUp(jointPositions);
-
-                    if (!jointsToCleanUp.isEmpty()) {
-
-                        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(connection);
-                        final CompoundCommand command = new CompoundCommand();
-
-                        final GModel model = graphEditor.getModel();
-                        final SkinLookup skinLookup = graphEditor.getSkinLookup();
-
-                        JointCommands.removeJoints(command, jointsToCleanUp, connection);
-                        Commands.updateLayoutValues(command, model, skinLookup);
-
-                        final SelectionManager selectionManager = graphEditor.getSelectionManager();
-
-                        selectionManager.backup();
-
-                        if (command.canExecute()) {
-
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(LogMessages.REMOVING_JOINTS, jointsToCleanUp.size(), connection.hashCode());
-                            }
-
-                            editingDomain.getCommandStack().execute(command);
-                        }
-
-                        selectionManager.restore();
-                    }
-
-                    parent.layout();
+                if (jointSkins.size() == 2 || !event.getButton().equals(MouseButton.PRIMARY)) {
+                    return;
                 }
+
+                final List<Point2D> jointPositions = GeometryUtils.getJointPositions(jointSkins);
+                final Set<Integer> jointsToCleanUp = findJointsToCleanUp(jointPositions);
+
+                if (!jointsToCleanUp.isEmpty()) {
+
+                    final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(connection);
+                    final CompoundCommand command = new CompoundCommand();
+
+                    final GModel model = graphEditor.getModel();
+                    final SkinLookup skinLookup = graphEditor.getSkinLookup();
+
+                    JointCommands.removeJoints(command, jointsToCleanUp, connection);
+                    Commands.updateLayoutValues(command, model, skinLookup);
+
+                    final SelectionManager selectionManager = graphEditor.getSelectionManager();
+
+                    selectionManager.backup();
+
+                    if (command.canExecute()) {
+                        editingDomain.getCommandStack().execute(command);
+                    }
+
+                    selectionManager.restore();
+                }
+
+                parent.layout();
             };
 
             jointRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, newHandler);

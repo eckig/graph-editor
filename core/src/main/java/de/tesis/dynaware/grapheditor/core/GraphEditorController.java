@@ -8,8 +8,6 @@ import java.util.List;
 import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.CommandStackListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
@@ -18,7 +16,6 @@ import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelLayoutUpdater;
 import de.tesis.dynaware.grapheditor.core.model.ModelMemory;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
@@ -42,8 +39,6 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
  * </p>
  */
 public class GraphEditorController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphEditorController.class);
 
     private final SkinManager skinManager;
     private final GraphEditorView view;
@@ -150,10 +145,6 @@ public class GraphEditorController {
      * Initializes everything for the current model.
      */
     public void initializeAll() {
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(LogMessages.REINITIALIZING_MODEL);
-        }
 
         modelMemory.setNewModelState(model);
         reloadView();
