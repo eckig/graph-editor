@@ -1,5 +1,7 @@
 package de.tesis.dynaware.grapheditor.demo.customskins;
 
+import javafx.geometry.Side;
+
 /**
  * Responsible for skin-specific logic in the graph editor demo.
  */
@@ -13,14 +15,17 @@ public interface SkinController {
     void addNode(final double currentZoomFactor);
 
     /**
-     * Adds an input connector to all selected nodes.
+     * Adds a connector of the given type to all selected nodes.
+     * 
+     * @param position the currently selected connector position
+     * @param input {@code true} for input, {@code false} for output
      */
-    void addInputConnector();
+    void addConnector(Side position, boolean input);
 
     /**
-     * Adds an output connector to all selected nodes.
+     * Clears all connectors from all selected nodes.
      */
-    void addOutputConnector();
+    void clearConnectors();
 
     /**
      * Handles the paste operation.

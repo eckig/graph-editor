@@ -3,6 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.core.skins.defaults.utils;
 
+import javafx.geometry.Side;
+
 /**
  * This class defines 8 connector types. The connectors can be:
  * 
@@ -57,6 +59,35 @@ public class DefaultConnectorTypes {
     public static final String LEFT_OUTPUT = "left-output";
 
     /**
+     * Returns true if the type is one of the 8 types defined in this class.
+     * 
+     * @param type a connector's type string
+     * @return {@code true} if the type is one of the 8 types defined in this class
+     */
+    public static boolean isValid(final String type) {
+        return type != null && (isTop(type) || isRight(type) || isBottom(type) || isLeft(type));
+    }
+
+    /**
+     * Gets the side corresponding to the given connector type.
+     * 
+     * @param type one of the 8 valid connector types
+     * @return the {@link Side} the connector type is on
+     */
+    public static Side getSide(final String type) {
+
+        if (isTop(type)) {
+            return Side.TOP;
+        } else if (isRight(type)) {
+            return Side.RIGHT;
+        } else if (isBottom(type)) {
+            return Side.BOTTOM;
+        } else {
+            return Side.LEFT;
+        }
+    }
+
+    /**
      * Returns true if the type corresponds to a connector positioned at the top of a node.
      * 
      * @param type a connector's type string
@@ -97,12 +128,16 @@ public class DefaultConnectorTypes {
     }
 
     /**
-     * Returns true if the type is one of the 8 types defined in this class.
+     * Returns true if the type corresponds to an input connector.
      * 
      * @param type a connector's type string
-     * @return {@code true} if the type is one of the 8 types defined in this class
+     * @return {@code true} if the connector is any kind of input
      */
-    public static boolean isValid(final String type) {
-        return type != null && (isTop(type) || isRight(type) || isBottom(type) || isLeft(type));
+    public static boolean isInput(final String type) {
+
+        final boolean leftOrRight = type.equals(LEFT_INPUT) || type.equals(RIGHT_INPUT);
+        final boolean topOrBottom = type.equals(TOP_INPUT) || type.equals(BOTTOM_INPUT);
+
+        return leftOrRight || topOrBottom;
     }
 }

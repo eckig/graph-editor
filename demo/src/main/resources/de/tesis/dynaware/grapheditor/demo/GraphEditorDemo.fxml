@@ -41,9 +41,22 @@
 				<Menu text="Actions">
 					<items>
 						<MenuItem text="Add Node" onAction="#addNode" accelerator="Shortcut+N"/>
-						<MenuItem fx:id="addInputButton" text="Add Input" onAction="#addInputConnector" accelerator="Shortcut+I"/>
-						<!-- Added blank spaces to force menu to be wider. -->
-						<MenuItem fx:id="addOutputButton" text="Add Output          " onAction="#addOutputConnector" accelerator="Shortcut+O"/>
+						<MenuItem text="Add Connector" fx:id="addConnectorButton" onAction="#addConnector" accelerator="Shortcut+E"/>
+						<MenuItem text="Clear Connectors" fx:id="clearConnectorsButton" onAction="#clearConnectors" accelerator="Shortcut+W"/>
+						<Menu fx:id="connectorTypeMenu" text="Connector Type">
+							<items>
+								<RadioMenuItem fx:id="inputConnectorTypeButton" text="Input" selected="true" accelerator="Shortcut+I"/>
+								<RadioMenuItem fx:id="outputConnectorTypeButton" text="Output       " accelerator="Shortcut+O"/>
+							</items>
+						</Menu>
+						<Menu fx:id="connectorPositionMenu" text="Connector Position">
+							<items>
+								<RadioMenuItem fx:id="leftConnectorPositionButton" text="Left" selected="true" accelerator="Shortcut+L"/>
+								<RadioMenuItem fx:id="rightConnectorPositionButton" text="Right" accelerator="Shortcut+R"/>
+								<RadioMenuItem fx:id="topConnectorPositionButton" text="Top" accelerator="Shortcut+T"/>
+								<RadioMenuItem fx:id="bottomConnectorPositionButton" text="Bottom       " accelerator="Shortcut+B"/>
+							</items>
+						</Menu>
 					</items>
 				</Menu>
 				<Menu text="Settings">

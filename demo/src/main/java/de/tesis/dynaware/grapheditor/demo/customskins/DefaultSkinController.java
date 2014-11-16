@@ -1,5 +1,7 @@
 package de.tesis.dynaware.grapheditor.demo.customskins;
 
+import javafx.geometry.Side;
+
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -65,27 +67,15 @@ public class DefaultSkinController implements SkinController {
         Commands.addNode(graphEditor.getModel(), node);
     }
 
-    @Override
-    public void addInputConnector() {
-        addConnector(DefaultConnectorTypes.LEFT_INPUT);
-    }
-
-    @Override
-    public void addOutputConnector() {
-        addConnector(DefaultConnectorTypes.RIGHT_OUTPUT);
-    }
-
-    @Override
-    public void handlePaste() {
-        graphEditor.getSelectionManager().paste();
-    }
-
     /**
      * Adds a connector of the given type to all nodes that are currently selected.
      *
      * @param type the type for the new connector
      */
-    protected void addConnector(final String type) {
+    @Override
+    public void addConnector(final Side position, final boolean input) {
+
+        final String type = getType(position, input);
 
         final GModel model = graphEditor.getModel();
         final SkinLookup skinLookup = graphEditor.getSkinLookup();
@@ -95,7 +85,7 @@ public class DefaultSkinController implements SkinController {
         for (final GNode node : model.getNodes()) {
 
             if (skinLookup.lookupNode(node).isSelected()) {
-                if (countConnectors(node, type) < MAX_CONNECTOR_COUNT) {
+                if (countConnectors(node, position) < MAX_CONNECTOR_COUNT) {
 
                     final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
                     connector.setType(type);
@@ -107,30 +97,76 @@ public class DefaultSkinController implements SkinController {
         }
 
         if (command.canExecute()) {
-            graphEditor.getSelectionManager().backup();
             editingDomain.getCommandStack().execute(command);
-            graphEditor.getSelectionManager().restore();
         }
+    }
+
+    @Override
+    public void clearConnectors() {
+        Commands.clearConnectors(graphEditor.getModel(), graphEditor.getSelectionManager().getSelectedNodes());
+    }
+
+    @Override
+    public void handlePaste() {
+        graphEditor.getSelectionManager().paste();
     }
 
     /**
      * Counts the number of connectors the given node currently has of the given type.
      *
      * @param node a {@link GNode} instance
-     * @param type a type String
-     * @return the number of connectors this node has of the given type
+     * @param side the {@link Side} the connector is on
+     * @return the number of connectors this node has on the given side
      */
-    private int countConnectors(final GNode node, final String type) {
+    private int countConnectors(final GNode node, final Side side) {
 
         int count = 0;
 
         for (final GConnector connector : node.getConnectors()) {
-            if (connector.getType() == null && type == null || connector.getType() != null
-                    && connector.getType().equals(type)) {
+            if (side.equals(DefaultConnectorTypes.getSide(connector.getType()))) {
                 count++;
             }
         }
 
         return count;
+    }
+
+    /**
+     * Gets the connector type string corresponding to the given position and input values.
+     * 
+     * @param position a {@link Side} value
+     * @param input {@code true} for input, {@code false} for output
+     * @return the connector type corresponding to these values
+     */
+    private String getType(final Side position, final boolean input) {
+
+        switch (position) {
+        case TOP:
+            if (input) {
+                return DefaultConnectorTypes.TOP_INPUT;
+            } else {
+                return DefaultConnectorTypes.TOP_OUTPUT;
+            }
+        case RIGHT:
+            if (input) {
+                return DefaultConnectorTypes.RIGHT_INPUT;
+            } else {
+                return DefaultConnectorTypes.RIGHT_OUTPUT;
+            }
+        case BOTTOM:
+            if (input) {
+                return DefaultConnectorTypes.BOTTOM_INPUT;
+            } else {
+                return DefaultConnectorTypes.BOTTOM_OUTPUT;
+            }
+        case LEFT:
+            if (input) {
+                return DefaultConnectorTypes.LEFT_INPUT;
+            } else {
+                return DefaultConnectorTypes.LEFT_OUTPUT;
+            }
+        }
+
+        return null;
     }
 }

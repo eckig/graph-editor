@@ -4,7 +4,9 @@
 package de.tesis.dynaware.grapheditor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javafx.scene.layout.Region;
 
@@ -59,6 +61,7 @@ public class Commands {
     private static final EAttribute NODE_Y = GraphPackage.Literals.GNODE__Y;
     private static final EAttribute NODE_WIDTH = GraphPackage.Literals.GNODE__WIDTH;
     private static final EAttribute NODE_HEIGHT = GraphPackage.Literals.GNODE__HEIGHT;
+    private static final EReference NODE_CONNECTORS = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
 
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
@@ -155,13 +158,62 @@ public class Commands {
         final EditingDomain editingDomain = getEditingDomain(model);
 
         if (editingDomain != null) {
-            final CompoundCommand compoundCommand = new CompoundCommand();
+            final CompoundCommand command = new CompoundCommand();
 
-            compoundCommand.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, model.getConnections()));
-            compoundCommand.append(RemoveCommand.create(editingDomain, model, NODES, model.getNodes()));
+            command.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, model.getConnections()));
+            command.append(RemoveCommand.create(editingDomain, model, NODES, model.getNodes()));
 
-            if (compoundCommand.canExecute()) {
-                editingDomain.getCommandStack().execute(compoundCommand);
+            if (command.canExecute()) {
+                editingDomain.getCommandStack().execute(command);
+            }
+        }
+    }
+
+    /**
+     * Removes all connectors from the given nodes, and all connections attached to them.
+     * 
+     * @param model the {@link GModel} being edited
+     * @param nodes a list of {@link GNode} instances whose connectors should be removed
+     */
+    public static void clearConnectors(final GModel model, final List<GNode> nodes) {
+
+        final EditingDomain editingDomain = getEditingDomain(model);
+
+        if (editingDomain != null) {
+
+            final CompoundCommand command = new CompoundCommand();
+
+            final Set<GConnection> connectionsToRemove = new HashSet<>();
+            final Set<GConnector> connectorsToRemove = new HashSet<>();
+
+            for (final GNode node : nodes) {
+
+                command.append(RemoveCommand.create(editingDomain, node, NODE_CONNECTORS, node.getConnectors()));
+                connectorsToRemove.addAll(node.getConnectors());
+
+                for (final GConnector connector : node.getConnectors()) {
+                    connectionsToRemove.addAll(connector.getConnections());
+                }
+            }
+
+            for (final GConnection connection : connectionsToRemove) {
+
+                final GConnector source = connection.getSource();
+                final GConnector target = connection.getTarget();
+
+                if (!connectorsToRemove.contains(source)) {
+                    command.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
+                }
+
+                if (!connectorsToRemove.contains(target)) {
+                    command.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
+                }
+            }
+
+            command.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, connectionsToRemove));
+
+            if (command.canExecute()) {
+                editingDomain.getCommandStack().execute(command);
             }
         }
     }

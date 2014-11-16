@@ -116,17 +116,10 @@
 	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
 }
 
-.default-tail-endpoint-input  {
-	-fx-stroke: derive(darkslategrey, 100%);
-	-fx-stroke-type: inside;
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, white, white 40%, derive(darkslategrey, 100%) 40%, derive(darkslategrey, 100%));
-	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
-}
-
-.default-tail-endpoint-output  {
-	-fx-stroke: derive(darkslategrey, 100%);
-	-fx-stroke-type: inside;
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, derive(darkslategrey, 100%), derive(darkslategrey, 100%) 40%, white 40%, white);
+.default-tail-endpoint  {
+	-fx-background-radius: 8;
+	-fx-background-insets: 0, 4;
+	-fx-background-color: transparent, derive(darkslategrey, 100%);
 	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
 }
 

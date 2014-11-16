@@ -9,10 +9,10 @@ import java.util.List;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.shape.Polygon;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Polyline;
-import javafx.scene.shape.StrokeType;
 import de.tesis.dynaware.grapheditor.GTailSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
@@ -27,22 +27,15 @@ import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 public class DefaultTailSkin extends GTailSkin {
 
     private static final String STYLE_CLASS = "default-tail";
-    private static final String STYLE_CLASS_ENDPOINT_INPUT = "default-tail-endpoint-input";
-    private static final String STYLE_CLASS_ENDPOINT_OUTPUT = "default-tail-endpoint-output";
+    private static final String STYLE_CLASS_ENDPOINT = "default-tail-endpoint";
 
-    private static final String TOP_SIDE = "top";
-    private static final String RIGHT_SIDE = "right";
-    private static final String BOTTOM_SIDE = "bottom";
-    private static final String LEFT_SIDE = "left";
-
-    private static final double ENDPOINT_WIDTH = 25;
-    private static final double ENDPOINT_HEIGHT = 25;
+    private static final double ENDPOINT_SIZE = 17;
 
     private static final double MINIMUM_START_SEGMENT = 23;
     private static final double MINIMUM_END_SEGMENT = 27;
 
     private final Polyline line = new Polyline();
-    private final Polygon endpoint = new Polygon();
+    private final Region endpoint = new Region();
     private final Group group = new Group(line, endpoint);
 
     /**
@@ -57,16 +50,9 @@ public class DefaultTailSkin extends GTailSkin {
         performChecks();
 
         line.getStyleClass().setAll(STYLE_CLASS);
-
-        // Tails coming from an 'input' connector have an 'output' endpoint and vice versa.
-        if (connector.getType().contains(LEFT_SIDE)) {
-            endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT_OUTPUT);
-        } else if (connector.getType().contains(RIGHT_SIDE)) {
-            endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT_INPUT);
-        }
-
-        endpoint.getPoints().addAll(new Double[] { 0D, 0D, ENDPOINT_WIDTH, ENDPOINT_HEIGHT / 2, 0D, ENDPOINT_HEIGHT });
-        endpoint.setStrokeType(StrokeType.INSIDE);
+        endpoint.getStyleClass().setAll(STYLE_CLASS_ENDPOINT);
+        endpoint.setManaged(false);
+        endpoint.resize(ENDPOINT_SIZE, ENDPOINT_SIZE);
 
         group.setManaged(false);
     }
@@ -89,10 +75,9 @@ public class DefaultTailSkin extends GTailSkin {
 
         line.getPoints().addAll(GeometryUtils.moveOffPixel(startX), GeometryUtils.moveOffPixel(startY));
 
-        final boolean isInput = getConnector().getType().contains(LEFT_SIDE);
-        final boolean isOutput = getConnector().getType().contains(RIGHT_SIDE);
+        final boolean isInput = DefaultConnectorTypes.isInput(getConnector().getType());
 
-        final boolean bendsBackward = isOutput && endX < startX + MINIMUM_START_SEGMENT + MINIMUM_END_SEGMENT;
+        final boolean bendsBackward = !isInput && endX < startX + MINIMUM_START_SEGMENT + MINIMUM_END_SEGMENT;
         final boolean bendsForward = isInput && endX > startX - MINIMUM_START_SEGMENT - MINIMUM_END_SEGMENT;
 
         if (bendsBackward) {
@@ -105,8 +90,8 @@ public class DefaultTailSkin extends GTailSkin {
 
         line.getPoints().addAll(GeometryUtils.moveOffPixel(endX), GeometryUtils.moveOffPixel(endY));
 
-        endpoint.setLayoutX(GeometryUtils.moveOffPixel(endX) - ENDPOINT_WIDTH / 2);
-        endpoint.setLayoutY(GeometryUtils.moveOffPixel(endY) - ENDPOINT_HEIGHT / 2);
+        endpoint.setLayoutX(GeometryUtils.moveOffPixel(endX) - ENDPOINT_SIZE / 2);
+        endpoint.setLayoutY(GeometryUtils.moveOffPixel(endY) - ENDPOINT_SIZE / 2);
     }
 
     @Override
@@ -134,8 +119,8 @@ public class DefaultTailSkin extends GTailSkin {
         line.getPoints().addAll(GeometryUtils.moveOffPixel(lastJointX), GeometryUtils.moveOffPixel(endY));
         line.getPoints().addAll(GeometryUtils.moveOffPixel(endX), GeometryUtils.moveOffPixel(endY));
 
-        endpoint.setLayoutX(GeometryUtils.moveOffPixel(endX) - ENDPOINT_WIDTH / 2);
-        endpoint.setLayoutY(GeometryUtils.moveOffPixel(endY) - ENDPOINT_HEIGHT / 2);
+        endpoint.setLayoutX(GeometryUtils.moveOffPixel(endX) - ENDPOINT_SIZE / 2);
+        endpoint.setLayoutY(GeometryUtils.moveOffPixel(endY) - ENDPOINT_SIZE / 2);
     }
 
     @Override

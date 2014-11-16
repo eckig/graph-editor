@@ -48,6 +48,9 @@ public class DefaultNodeSkin extends GNodeSkin {
     private static final double HALO_OFFSET = 5;
     private static final double HALO_CORNER_SIZE = 10;
 
+    private static final double MINOR_POSITIVE_OFFSET = 2;
+    private static final double MINOR_NEGATIVE_OFFSET = -3;
+
     private static final double MIN_WIDTH = 41;
     private static final double MIN_HEIGHT = 41;
 
@@ -94,8 +97,10 @@ public class DefaultNodeSkin extends GNodeSkin {
 
         removeAllConnectors();
 
-        leftConnectorSkins.clear();
+        topConnectorSkins.clear();
         rightConnectorSkins.clear();
+        bottomConnectorSkins.clear();
+        leftConnectorSkins.clear();
 
         if (connectorSkins != null) {
             for (final GConnectorSkin connectorSkin : connectorSkins) {
@@ -115,6 +120,8 @@ public class DefaultNodeSkin extends GNodeSkin {
                 getRoot().getChildren().add(connectorSkin.getRoot());
             }
         }
+
+        layoutConnectors();
     }
 
     @Override
@@ -253,13 +260,10 @@ public class DefaultNodeSkin extends GNodeSkin {
      */
     private void removeAllConnectors() {
 
-        for (final GConnectorSkin connectorSkin : leftConnectorSkins) {
-            getRoot().getChildren().remove(connectorSkin.getRoot());
-        }
-
-        for (final GConnectorSkin connectorSkin : rightConnectorSkins) {
-            getRoot().getChildren().remove(connectorSkin.getRoot());
-        }
+        topConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        rightConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        bottomConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        leftConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
     }
 
     /**
@@ -274,9 +278,9 @@ public class DefaultNodeSkin extends GNodeSkin {
         final String type = connector.getType();
 
         if (type.equals(DefaultConnectorTypes.LEFT_INPUT) || type.equals(DefaultConnectorTypes.RIGHT_OUTPUT)) {
-            return 2;
+            return MINOR_POSITIVE_OFFSET;
         } else {
-            return -3;
+            return MINOR_NEGATIVE_OFFSET;
         }
     }
 
@@ -292,9 +296,9 @@ public class DefaultNodeSkin extends GNodeSkin {
         final String type = connector.getType();
 
         if (type.equals(DefaultConnectorTypes.TOP_INPUT) || type.equals(DefaultConnectorTypes.BOTTOM_OUTPUT)) {
-            return 2;
+            return MINOR_POSITIVE_OFFSET;
         } else {
-            return -3;
+            return MINOR_NEGATIVE_OFFSET;
         }
     }
 }

@@ -70,16 +70,6 @@ public class GreySkinController extends DefaultSkinController {
     }
 
     @Override
-    public void addInputConnector() {
-        addConnector(GreySkinConstants.GREY_INPUT_CONNECTOR);
-    }
-
-    @Override
-    public void addOutputConnector() {
-        addConnector(GreySkinConstants.GREY_OUTPUT_CONNECTOR);
-    }
-
-    @Override
     public void handlePaste() {
         graphEditor.getSelectionManager().paste((nodes, command) -> allocateIds(nodes, command));
     }

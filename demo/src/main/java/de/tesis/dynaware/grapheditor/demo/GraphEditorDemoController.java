@@ -10,6 +10,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -52,9 +53,25 @@ public class GraphEditorDemoController {
     @FXML
     private MenuBar menuBar;
     @FXML
-    private MenuItem addInputButton;
+    private MenuItem addConnectorButton;
     @FXML
-    private MenuItem addOutputButton;
+    private MenuItem clearConnectorsButton;
+    @FXML
+    private Menu connectorTypeMenu;
+    @FXML
+    private Menu connectorPositionMenu;
+    @FXML
+    private RadioMenuItem inputConnectorTypeButton;
+    @FXML
+    private RadioMenuItem outputConnectorTypeButton;
+    @FXML
+    private RadioMenuItem leftConnectorPositionButton;
+    @FXML
+    private RadioMenuItem rightConnectorPositionButton;
+    @FXML
+    private RadioMenuItem topConnectorPositionButton;
+    @FXML
+    private RadioMenuItem bottomConnectorPositionButton;
     @FXML
     private RadioMenuItem showGridButton;
     @FXML
@@ -197,13 +214,13 @@ public class GraphEditorDemoController {
     }
 
     @FXML
-    public void addInputConnector() {
-        activeSkinController.get().addInputConnector();
+    public void addConnector() {
+        activeSkinController.get().addConnector(getSelectedConnectorPosition(), inputConnectorTypeButton.isSelected());
     }
 
     @FXML
-    public void addOutputConnector() {
-        activeSkinController.get().addOutputConnector();
+    public void clearConnectors() {
+        activeSkinController.get().clearConnectors();
     }
 
     @FXML
@@ -262,11 +279,18 @@ public class GraphEditorDemoController {
 
         graphEditor.getView().getTransforms().add(scaleTransform);
 
-        final ToggleGroup skinToggleGroup = new ToggleGroup();
-        skinToggleGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, greySkinButton);
+        final ToggleGroup skinGroup = new ToggleGroup();
+        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, greySkinButton);
 
-        final ToggleGroup connectionStyleToggleGroup = new ToggleGroup();
-        connectionStyleToggleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
+        final ToggleGroup connectionStyleGroup = new ToggleGroup();
+        connectionStyleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
+
+        final ToggleGroup connectorTypeGroup = new ToggleGroup();
+        connectorTypeGroup.getToggles().addAll(inputConnectorTypeButton, outputConnectorTypeButton);
+
+        final ToggleGroup positionGroup = new ToggleGroup();
+        positionGroup.getToggles().addAll(leftConnectorPositionButton, rightConnectorPositionButton);
+        positionGroup.getToggles().addAll(topConnectorPositionButton, bottomConnectorPositionButton);
 
         graphEditor.getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
         graphEditor.getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
@@ -398,8 +422,9 @@ public class GraphEditorDemoController {
 
         final boolean nothingSelected = graphEditor.getSelectionManager().getSelectedNodes().isEmpty();
         final boolean treeSkinActive = treeSkinController.equals(activeSkinController.get());
+        final boolean greySkinActive = greySkinController.equals(activeSkinController.get());
 
-        if (treeSkinActive || nothingSelected) {
+        if (greySkinActive || treeSkinActive || nothingSelected) {
             disableConnectorButtons(true);
         } else {
             disableConnectorButtons(false);
@@ -414,8 +439,10 @@ public class GraphEditorDemoController {
      * @param disable {@code true} to disable the buttons
      */
     private void disableConnectorButtons(final boolean disable) {
-        addInputButton.setDisable(disable);
-        addOutputButton.setDisable(disable);
+        addConnectorButton.setDisable(disable);
+        clearConnectorsButton.setDisable(disable);
+        connectorTypeMenu.setDisable(disable);
+        connectorPositionMenu.setDisable(disable);
     }
 
     /**
@@ -426,6 +453,24 @@ public class GraphEditorDemoController {
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(graphEditor.getModel());
         if (editingDomain != null) {
             editingDomain.getCommandStack().flush();
+        }
+    }
+
+    /**
+     * Gets the side corresponding to the currently selected connector position in the menu.
+     * 
+     * @return the {@link Side} corresponding to the currently selected connector position
+     */
+    private Side getSelectedConnectorPosition() {
+
+        if (leftConnectorPositionButton.isSelected()) {
+            return Side.LEFT;
+        } else if (rightConnectorPositionButton.isSelected()) {
+            return Side.RIGHT;
+        } else if (topConnectorPositionButton.isSelected()) {
+            return Side.TOP;
+        } else {
+            return Side.BOTTOM;
         }
     }
 }

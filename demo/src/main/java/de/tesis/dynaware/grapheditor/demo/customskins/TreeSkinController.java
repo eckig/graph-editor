@@ -1,5 +1,6 @@
 package de.tesis.dynaware.grapheditor.demo.customskins;
 
+import javafx.geometry.Side;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
@@ -66,12 +67,12 @@ public class TreeSkinController implements SkinController {
     }
 
     @Override
-    public void addInputConnector() {
+    public void addConnector(final Side position, final boolean input) {
         // Not implemented for tree nodes.
     }
 
     @Override
-    public void addOutputConnector() {
+    public void clearConnectors() {
         // Not implemented for tree nodes.
     }
 
