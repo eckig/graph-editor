@@ -35,6 +35,8 @@
         containment="true" eOpposite="#//GModel/supergraph"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GConnection" eSuperTypes="#//GConnectable">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
         eType="#//GConnector"/>
@@ -44,6 +46,8 @@
         eType="#//GJoint" containment="true" eOpposite="#//GJoint/connection"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GConnector">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
         eType="#//GConnectable" eOpposite="#//GConnectable/connectors"/>
@@ -56,6 +60,8 @@
         defaultValueLiteral="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GJoint">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="connection" lowerBound="1"
         eType="#//GConnection" eOpposite="#//GConnection/joints"/>

@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <p>
  * The following features are implemented:
  * <ul>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getId <em>Id</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getType <em>Type</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getSource <em>Source</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getTarget <em>Target</em>}</li>
@@ -35,6 +36,26 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * @generated
  */
 public class GConnectionImpl extends GConnectableImpl implements GConnection {
+    /**
+     * The default value of the '{@link #getId() <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getId()
+     * @generated
+     * @ordered
+     */
+    protected static final String ID_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getId()
+     * @generated
+     * @ordered
+     */
+    protected String id = ID_EDEFAULT;
+
     /**
      * The default value of the '{@link #getType() <em>Type</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -102,6 +123,27 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
     @Override
     protected EClass eStaticClass() {
         return GraphPackage.Literals.GCONNECTION;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setId(String newId) {
+        String oldId = id;
+        id = newId;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GCONNECTION__ID, oldId, id));
     }
 
     /**
@@ -250,6 +292,8 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
+            case GraphPackage.GCONNECTION__ID:
+                return getId();
             case GraphPackage.GCONNECTION__TYPE:
                 return getType();
             case GraphPackage.GCONNECTION__SOURCE:
@@ -273,6 +317,9 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
+            case GraphPackage.GCONNECTION__ID:
+                setId((String)newValue);
+                return;
             case GraphPackage.GCONNECTION__TYPE:
                 setType((String)newValue);
                 return;
@@ -298,6 +345,9 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
+            case GraphPackage.GCONNECTION__ID:
+                setId(ID_EDEFAULT);
+                return;
             case GraphPackage.GCONNECTION__TYPE:
                 setType(TYPE_EDEFAULT);
                 return;
@@ -322,6 +372,8 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
+            case GraphPackage.GCONNECTION__ID:
+                return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
             case GraphPackage.GCONNECTION__TYPE:
                 return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
             case GraphPackage.GCONNECTION__SOURCE:
@@ -344,7 +396,9 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (type: ");
+        result.append(" (id: ");
+        result.append(id);
+        result.append(", type: ");
         result.append(type);
         result.append(')');
         return result.toString();

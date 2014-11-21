@@ -10,6 +10,7 @@
   <genPackages prefix="Graph" basePackage="de.tesis.dynaware.grapheditor" disposableProviderFactory="true"
       ecorePackage="graph.ecore#/">
     <genClasses ecoreClass="graph.ecore#//GModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GJoint/id"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GModel/nodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GModel/connections"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GModel/type"/>
@@ -30,12 +31,14 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GNode/subgraph"/>
     </genClasses>
     <genClasses ecoreClass="graph.ecore#//GConnection">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GConnection/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GConnection/type"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GConnection/source"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GConnection/target"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GConnection/joints"/>
     </genClasses>
     <genClasses image="false" ecoreClass="graph.ecore#//GConnector">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GConnector/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GConnector/type"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GConnector/parent"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GConnector/connections"/>
@@ -44,6 +47,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GConnector/connectionDetachedOnDrag"/>
     </genClasses>
     <genClasses ecoreClass="graph.ecore#//GJoint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GJoint/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GJoint/type"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GJoint/connection"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GJoint/x"/>

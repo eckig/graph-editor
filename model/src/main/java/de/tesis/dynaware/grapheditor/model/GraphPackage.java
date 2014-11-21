@@ -305,13 +305,22 @@ public interface GraphPackage extends EPackage {
     int GCONNECTION__CONNECTORS = GCONNECTABLE__CONNECTORS;
 
     /**
+     * The feature id for the '<em><b>Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GCONNECTION__ID = GCONNECTABLE_FEATURE_COUNT + 0;
+
+    /**
      * The feature id for the '<em><b>Type</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int GCONNECTION__TYPE = GCONNECTABLE_FEATURE_COUNT + 0;
+    int GCONNECTION__TYPE = GCONNECTABLE_FEATURE_COUNT + 1;
 
     /**
      * The feature id for the '<em><b>Source</b></em>' reference.
@@ -320,7 +329,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTION__SOURCE = GCONNECTABLE_FEATURE_COUNT + 1;
+    int GCONNECTION__SOURCE = GCONNECTABLE_FEATURE_COUNT + 2;
 
     /**
      * The feature id for the '<em><b>Target</b></em>' reference.
@@ -329,7 +338,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTION__TARGET = GCONNECTABLE_FEATURE_COUNT + 2;
+    int GCONNECTION__TARGET = GCONNECTABLE_FEATURE_COUNT + 3;
 
     /**
      * The feature id for the '<em><b>Joints</b></em>' containment reference list.
@@ -338,7 +347,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTION__JOINTS = GCONNECTABLE_FEATURE_COUNT + 3;
+    int GCONNECTION__JOINTS = GCONNECTABLE_FEATURE_COUNT + 4;
 
     /**
      * The number of structural features of the '<em>GConnection</em>' class.
@@ -347,7 +356,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTION_FEATURE_COUNT = GCONNECTABLE_FEATURE_COUNT + 4;
+    int GCONNECTION_FEATURE_COUNT = GCONNECTABLE_FEATURE_COUNT + 5;
 
     /**
      * The number of operations of the '<em>GConnection</em>' class.
@@ -359,13 +368,22 @@ public interface GraphPackage extends EPackage {
     int GCONNECTION_OPERATION_COUNT = GCONNECTABLE_OPERATION_COUNT + 0;
 
     /**
+     * The feature id for the '<em><b>Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GCONNECTOR__ID = 0;
+
+    /**
      * The feature id for the '<em><b>Type</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int GCONNECTOR__TYPE = 0;
+    int GCONNECTOR__TYPE = 1;
 
     /**
      * The feature id for the '<em><b>Parent</b></em>' container reference.
@@ -374,7 +392,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTOR__PARENT = 1;
+    int GCONNECTOR__PARENT = 2;
 
     /**
      * The feature id for the '<em><b>Connections</b></em>' reference list.
@@ -383,7 +401,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTOR__CONNECTIONS = 2;
+    int GCONNECTOR__CONNECTIONS = 3;
 
     /**
      * The feature id for the '<em><b>X</b></em>' attribute.
@@ -392,7 +410,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTOR__X = 3;
+    int GCONNECTOR__X = 4;
 
     /**
      * The feature id for the '<em><b>Y</b></em>' attribute.
@@ -401,7 +419,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTOR__Y = 4;
+    int GCONNECTOR__Y = 5;
 
     /**
      * The feature id for the '<em><b>Connection Detached On Drag</b></em>' attribute.
@@ -410,7 +428,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTOR__CONNECTION_DETACHED_ON_DRAG = 5;
+    int GCONNECTOR__CONNECTION_DETACHED_ON_DRAG = 6;
 
     /**
      * The number of structural features of the '<em>GConnector</em>' class.
@@ -419,7 +437,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GCONNECTOR_FEATURE_COUNT = 6;
+    int GCONNECTOR_FEATURE_COUNT = 7;
 
     /**
      * The number of operations of the '<em>GConnector</em>' class.
@@ -441,13 +459,22 @@ public interface GraphPackage extends EPackage {
     int GJOINT = 5;
 
     /**
+     * The feature id for the '<em><b>Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GJOINT__ID = 0;
+
+    /**
      * The feature id for the '<em><b>Type</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int GJOINT__TYPE = 0;
+    int GJOINT__TYPE = 1;
 
     /**
      * The feature id for the '<em><b>Connection</b></em>' container reference.
@@ -456,7 +483,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GJOINT__CONNECTION = 1;
+    int GJOINT__CONNECTION = 2;
 
     /**
      * The feature id for the '<em><b>X</b></em>' attribute.
@@ -465,7 +492,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GJOINT__X = 2;
+    int GJOINT__X = 3;
 
     /**
      * The feature id for the '<em><b>Y</b></em>' attribute.
@@ -474,7 +501,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GJOINT__Y = 3;
+    int GJOINT__Y = 4;
 
     /**
      * The number of structural features of the '<em>GJoint</em>' class.
@@ -483,7 +510,7 @@ public interface GraphPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GJOINT_FEATURE_COUNT = 4;
+    int GJOINT_FEATURE_COUNT = 5;
 
     /**
      * The number of operations of the '<em>GJoint</em>' class.
@@ -669,6 +696,17 @@ public interface GraphPackage extends EPackage {
     EClass getGConnector();
 
     /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GConnector#getId <em>Id</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Id</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GConnector#getId()
+     * @see #getGConnector()
+     * @generated
+     */
+    EAttribute getGConnector_Id();
+
+    /**
      * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GConnector#getType <em>Type</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -745,6 +783,17 @@ public interface GraphPackage extends EPackage {
     EClass getGConnection();
 
     /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GConnection#getId <em>Id</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Id</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GConnection#getId()
+     * @see #getGConnection()
+     * @generated
+     */
+    EAttribute getGConnection_Id();
+
+    /**
      * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GConnection#getType <em>Type</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -797,6 +846,17 @@ public interface GraphPackage extends EPackage {
      * @generated
      */
     EClass getGJoint();
+
+    /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GJoint#getId <em>Id</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Id</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GJoint#getId()
+     * @see #getGJoint()
+     * @generated
+     */
+    EAttribute getGJoint_Id();
 
     /**
      * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GJoint#getType <em>Type</em>}'.
@@ -1021,6 +1081,14 @@ public interface GraphPackage extends EPackage {
         EClass GCONNECTOR = eINSTANCE.getGConnector();
 
         /**
+         * The meta object literal for the '<em><b>Id</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GCONNECTOR__ID = eINSTANCE.getGConnector_Id();
+
+        /**
          * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -1079,6 +1147,14 @@ public interface GraphPackage extends EPackage {
         EClass GCONNECTION = eINSTANCE.getGConnection();
 
         /**
+         * The meta object literal for the '<em><b>Id</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GCONNECTION__ID = eINSTANCE.getGConnection_Id();
+
+        /**
          * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -1119,6 +1195,14 @@ public interface GraphPackage extends EPackage {
          * @generated
          */
         EClass GJOINT = eINSTANCE.getGJoint();
+
+        /**
+         * The meta object literal for the '<em><b>Id</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GJOINT__ID = eINSTANCE.getGJoint_Id();
 
         /**
          * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
