@@ -359,11 +359,12 @@ public class ConnectorDragManager {
 
         if (event.getButton().equals(MouseButton.PRIMARY) && validator.prevalidate(sourceConnector, connector)) {
 
-            tailManager.snapPosition(sourceConnector, connector);
+            final boolean valid = validator.validate(sourceConnector, connector);
+            tailManager.snapPosition(sourceConnector, connector, valid);
 
             repositionAllowed = false;
 
-            if (validator.validate(sourceConnector, connector)) {
+            if (valid) {
                 skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DRAG_OVER_ALLOWED);
             } else {
                 skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DRAG_OVER_FORBIDDEN);
@@ -390,6 +391,7 @@ public class ConnectorDragManager {
         if (event.isPrimaryButtonDown() && validator.prevalidate(sourceConnector, connector)) {
             skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
             repositionAllowed = true;
+            tailManager.updatePosition(connector, event.getX(), event.getY());
         }
 
         event.consume();

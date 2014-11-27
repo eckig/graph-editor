@@ -58,20 +58,32 @@ public class DefaultConnectorTypes {
      */
     public static final String LEFT_OUTPUT = "left-output";
 
+    private static final String LEFT_SIDE = "left";
+    private static final String RIGHT_SIDE = "right";
+    private static final String TOP_SIDE = "top";
+    private static final String BOTTOM_SIDE = "bottom";
+
+    private static final String INPUT = "input";
+    private static final String OUTPUT = "output";
+
     /**
-     * Returns true if the type is one of the 8 types defined in this class.
+     * Returns true if the type is supported by the default skins.
      * 
      * @param type a connector's type string
-     * @return {@code true} if the type is one of the 8 types defined in this class
+     * @return {@code true} if the type is supported by the default skins
      */
     public static boolean isValid(final String type) {
-        return type != null && (isTop(type) || isRight(type) || isBottom(type) || isLeft(type));
+
+        final boolean hasSide = type != null && (isTop(type) || isRight(type) || isBottom(type) || isLeft(type));
+        final boolean inputOrOutput = type != null && (isInput(type) || isOutput(type));
+
+        return hasSide && inputOrOutput;
     }
 
     /**
      * Gets the side corresponding to the given connector type.
      * 
-     * @param type one of the 8 valid connector types
+     * @param type a non-null connector type
      * @return the {@link Side} the connector type is on
      */
     public static Side getSide(final String type) {
@@ -82,8 +94,10 @@ public class DefaultConnectorTypes {
             return Side.RIGHT;
         } else if (isBottom(type)) {
             return Side.BOTTOM;
-        } else {
+        } else if (isLeft(type)) {
             return Side.LEFT;
+        } else {
+            return null;
         }
     }
 
@@ -94,7 +108,7 @@ public class DefaultConnectorTypes {
      * @return {@code true} if the connector will be positioned at the top of a node
      */
     public static boolean isTop(final String type) {
-        return type.equals(TOP_INPUT) || type.equals(TOP_OUTPUT);
+        return type.contains(TOP_SIDE);
     }
 
     /**
@@ -104,7 +118,7 @@ public class DefaultConnectorTypes {
      * @return {@code true} if the connector will be positioned on the right side of a node
      */
     public static boolean isRight(final String type) {
-        return type.equals(RIGHT_INPUT) || type.equals(RIGHT_OUTPUT);
+        return type.contains(RIGHT_SIDE);
     }
 
     /**
@@ -114,7 +128,7 @@ public class DefaultConnectorTypes {
      * @return {@code true} if the connector will be positioned at the bottom of a node
      */
     public static boolean isBottom(final String type) {
-        return type.equals(BOTTOM_INPUT) || type.equals(BOTTOM_OUTPUT);
+        return type.contains(BOTTOM_SIDE);
     }
 
     /**
@@ -124,7 +138,7 @@ public class DefaultConnectorTypes {
      * @return {@code true} if the connector will be positioned on the left side of a node
      */
     public static boolean isLeft(final String type) {
-        return type.equals(LEFT_INPUT) || type.equals(LEFT_OUTPUT);
+        return type.contains(LEFT_SIDE);
     }
 
     /**
@@ -134,10 +148,27 @@ public class DefaultConnectorTypes {
      * @return {@code true} if the connector is any kind of input
      */
     public static boolean isInput(final String type) {
+        return type.contains(INPUT);
+    }
 
-        final boolean leftOrRight = type.equals(LEFT_INPUT) || type.equals(RIGHT_INPUT);
-        final boolean topOrBottom = type.equals(TOP_INPUT) || type.equals(BOTTOM_INPUT);
+    /**
+     * Returns true if the type corresponds to an output connector.
+     * 
+     * @param type a connector's type string
+     * @return {@code true} if the connector is any kind of output
+     */
+    public static boolean isOutput(final String type) {
+        return type.contains(OUTPUT);
+    }
 
-        return leftOrRight || topOrBottom;
+    /**
+     * Returns true if the two given types are on the same side of a node.
+     * 
+     * @param firstType the first connector type
+     * @param secondType the second connector type
+     * @return {@code true} if the connectors are on the same side of a node
+     */
+    public static boolean isSameSide(final String firstType, final String secondType) {
+        return getSide(firstType) != null && getSide(firstType).equals(getSide(secondType));
     }
 }

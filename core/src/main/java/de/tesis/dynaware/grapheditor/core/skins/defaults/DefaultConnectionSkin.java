@@ -5,6 +5,9 @@ package de.tesis.dynaware.grapheditor.core.skins.defaults;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.CursorOffsetCalculator;
@@ -12,6 +15,8 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.JointAlignme
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.JointCleaner;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.JointCreator;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
+import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
@@ -22,6 +27,8 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
  * </p>
  */
 public class DefaultConnectionSkin extends SimpleConnectionSkin {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionSkin.class);
 
     private final JointCreator jointCreator;
     private final JointCleaner jointCleaner;
@@ -36,6 +43,8 @@ public class DefaultConnectionSkin extends SimpleConnectionSkin {
     public DefaultConnectionSkin(final GConnection connection) {
 
         super(connection);
+
+        performChecks();
 
         cursorOffsetCalculator = new CursorOffsetCalculator(connection, path, backgroundPath, connectionSegments);
         jointCreator = new JointCreator(connection, cursorOffsetCalculator);
@@ -62,5 +71,20 @@ public class DefaultConnectionSkin extends SimpleConnectionSkin {
 
         jointCleaner.addCleaningHandlers(jointSkins);
         jointAlignmentManager.addAlignmentHandlers(jointSkins);
+    }
+
+    /**
+     * Checks that the connection has the correct values to be displayed using this skin.
+     */
+    private void performChecks() {
+
+        if (getConnection().getSource() == null || getConnection().getTarget() == null) {
+            LOGGER.error(LogMessages.CONNECTOR_MISSING);
+            return;
+        }
+
+        if (!RectangularConnectionUtils.checkJointCount(getConnection())) {
+            LOGGER.error(LogMessages.UNSUPPORTED_JOINT_COUNT);
+        }
     }
 }

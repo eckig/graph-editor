@@ -33,5 +33,10 @@ public final class LogMessages {
     /**
      * Shown when the default connection skin is told to show a connection with the wrong number of joints.
      */
-    public static final String UNSUPPORTED_JOINT_COUNT = "Default connection skin requires an even number of joints, with a minimum of 2.";
+    public static final String UNSUPPORTED_JOINT_COUNT = "Joint count not compatible with source and target connector types.";
+
+    /**
+     * Shown when the default connection skin is told to show a connection without a source and target connector.
+     */
+    public static final String CONNECTOR_MISSING = "Connection must have non-null source and target connectors.";
 }

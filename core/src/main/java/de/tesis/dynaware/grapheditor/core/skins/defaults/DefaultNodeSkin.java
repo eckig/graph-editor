@@ -8,6 +8,7 @@ import java.util.List;
 
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 
@@ -135,8 +136,23 @@ public class DefaultNodeSkin extends GNodeSkin {
 
         final Node connectorRoot = connectorSkin.getRoot();
 
-        final double x = connectorRoot.getLayoutX() + connectorSkin.getWidth() / 2;
-        final double y = connectorRoot.getLayoutY() + connectorSkin.getHeight() / 2;
+        final Side side = DefaultConnectorTypes.getSide(connectorSkin.getConnector().getType());
+
+        // The following logic is required because the connectors are offset slightly from the node edges.
+        final double x, y;
+        if (side.equals(Side.LEFT)) {
+            x = 0;
+            y = connectorRoot.getLayoutY() + connectorSkin.getHeight() / 2;
+        } else if (side.equals(Side.RIGHT)) {
+            x = getRoot().getWidth();
+            y = connectorRoot.getLayoutY() + connectorSkin.getHeight() / 2;
+        } else if (side.equals(Side.TOP)) {
+            x = connectorRoot.getLayoutX() + connectorSkin.getWidth() / 2;
+            y = 0;
+        } else {
+            x = connectorRoot.getLayoutX() + connectorSkin.getWidth() / 2;
+            y = getRoot().getHeight();
+        }
 
         return new Point2D(x, y);
     }

@@ -9,6 +9,6 @@ package de.tesis.dynaware.grapheditor.demo.customskins.grey;
 public class GreySkinConstants {
 
     public static final String GREY_NODE = "grey-node";
-    public static final String GREY_INPUT_CONNECTOR = "grey-input";
-    public static final String GREY_OUTPUT_CONNECTOR = "grey-output";
+    public static final String GREY_INPUT_CONNECTOR = "grey-left-input";
+    public static final String GREY_OUTPUT_CONNECTOR = "grey-right-output";
 }

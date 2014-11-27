@@ -1,17 +1,15 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.core.skins.defaults.connection;
+package de.tesis.dynaware.grapheditor.core.skins.defaults.utils;
 
+import javafx.geometry.Side;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
- * Helper methods for rectangular-shaped connections.
+ * Miscellaneous helper methods for rectangular-shaped connections.
  */
 public class RectangularConnectionUtils {
-
-    private static final String LEFT_SIDE = "left";
-    private static final String RIGHT_SIDE = "right";
 
     /**
      * Returns true if the segment beginning at index i is horizontal.
@@ -28,30 +26,31 @@ public class RectangularConnectionUtils {
     public static boolean isSegmentHorizontal(final GConnection connection, final int i) {
 
         final String sourceType = connection.getSource().getType();
-        final boolean sourceIsLeft = sourceType.contains(LEFT_SIDE);
-        final boolean sourceIsRight = sourceType.contains(RIGHT_SIDE);
+        final boolean sourceIsLeft = DefaultConnectorTypes.isLeft(sourceType);
+        final boolean sourceIsRight = DefaultConnectorTypes.isRight(sourceType);
         final boolean firstSegmentHorizontal = sourceIsLeft || sourceIsRight;
 
         return firstSegmentHorizontal == ((i & 1) == 0);
     }
 
     /**
-     * Calculates the minimum number of joints allowed by a rectangular connection.
+     * Checks that the given connection has a workable number of joints.
      * 
      * @param connection a {@link GConnection} that should be rectangular
-     * @return the minimum nzmber of joints allowed by this connection
+     * @return {@code true} if the joint count is correct
      */
-    public static int calculateMinJointNumber(final GConnection connection) {
+    public static boolean checkJointCount(final GConnection connection) {
 
-        final boolean sourceOnLeft = connection.getSource().getType().contains(LEFT_SIDE);
-        final boolean sourceOnRight = connection.getSource().getType().equals(RIGHT_SIDE);
-        final boolean targetOnLeft = connection.getTarget().getType().equals(LEFT_SIDE);
-        final boolean targetOnRight = connection.getTarget().getType().equals(RIGHT_SIDE);
+        final Side sourceSide = DefaultConnectorTypes.getSide(connection.getSource().getType());
+        final Side targetSide = DefaultConnectorTypes.getSide(connection.getTarget().getType());
 
-        if ((sourceOnLeft || sourceOnRight) && (targetOnLeft || targetOnRight)) {
-            return 2;
+        final boolean bothHorizontal = sourceSide.isHorizontal() && targetSide.isHorizontal();
+        final boolean bothVertical = sourceSide.isVertical() && targetSide.isVertical();
+
+        if (bothHorizontal || bothVertical) {
+            return (connection.getJoints().size() & 1) == 0;
         } else {
-            return 1;
+            return (connection.getJoints().size() & 1) == 1;
         }
     }
 }

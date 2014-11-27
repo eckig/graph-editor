@@ -1,46 +1,21 @@
 <?xml version="1.0" encoding="ASCII"?>
 <graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
-  <nodes type="tree-node" x="1419.0" y="849.0">
-    <connectors type="tree-output" connections="//@connections.0 //@connections.3 //@connections.4" connectionDetachedOnDrag="false"/>
+  <nodes type="tree-node" x="1403.0" y="923.0" width="157.0">
+    <connectors type="tree-output" connections="//@connections.0 //@connections.1 //@connections.2" connectionDetachedOnDrag="false"/>
   </nodes>
-  <nodes type="tree-node" x="1439.0" y="1009.0" width="111.0" height="91.0">
+  <nodes type="tree-node" x="1427.0" y="1163.0" width="109.0" height="97.0">
     <connectors type="tree-input" connections="//@connections.0"/>
-    <connectors type="tree-output" connections="//@connections.1 //@connections.2" connectionDetachedOnDrag="false"/>
+    <connectors type="tree-output" connectionDetachedOnDrag="false"/>
   </nodes>
-  <nodes type="tree-node" x="1339.0" y="1169.0">
+  <nodes type="tree-node" x="1595.0" y="1127.0" width="133.0" height="109.0">
     <connectors type="tree-input" connections="//@connections.1"/>
     <connectors type="tree-output" connectionDetachedOnDrag="false"/>
   </nodes>
-  <nodes type="tree-node" x="1499.0" y="1169.0">
+  <nodes type="tree-node" x="1271.0" y="1127.0" width="97.0" height="85.0">
     <connectors type="tree-input" connections="//@connections.2"/>
     <connectors type="tree-output" connectionDetachedOnDrag="false"/>
   </nodes>
-  <nodes type="tree-node" x="1599.0" y="1009.0">
-    <connectors type="tree-input" connections="//@connections.3"/>
-    <connectors type="tree-output" connections="//@connections.6 //@connections.7" connectionDetachedOnDrag="false"/>
-  </nodes>
-  <nodes type="tree-node" x="1289.0" y="1009.0" width="101.0" height="71.0">
-    <connectors type="tree-input" connections="//@connections.4"/>
-    <connectors type="tree-output" connections="//@connections.5" connectionDetachedOnDrag="false"/>
-  </nodes>
-  <nodes type="tree-node" x="1149.0" y="1169.0">
-    <connectors type="tree-input" connections="//@connections.5"/>
-    <connectors type="tree-output" connectionDetachedOnDrag="false"/>
-  </nodes>
-  <nodes type="tree-node" x="1599.0" y="1309.0" height="71.0">
-    <connectors type="tree-input" connections="//@connections.6"/>
-    <connectors type="tree-output" connectionDetachedOnDrag="false"/>
-  </nodes>
-  <nodes type="tree-node" x="1699.0" y="1169.0">
-    <connectors type="tree-input" connections="//@connections.7"/>
-    <connectors type="tree-output" connectionDetachedOnDrag="false"/>
-  </nodes>
   <connections type="tree-connection" source="//@nodes.0/@connectors.0" target="//@nodes.1/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.1/@connectors.1" target="//@nodes.2/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.1/@connectors.1" target="//@nodes.3/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.0/@connectors.0" target="//@nodes.4/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.0/@connectors.0" target="//@nodes.5/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.5/@connectors.1" target="//@nodes.6/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.4/@connectors.1" target="//@nodes.7/@connectors.0"/>
-  <connections type="tree-connection" source="//@nodes.4/@connectors.1" target="//@nodes.8/@connectors.0"/>
+  <connections type="tree-connection" source="//@nodes.0/@connectors.0" target="//@nodes.2/@connectors.0"/>
+  <connections type="tree-connection" source="//@nodes.0/@connectors.0" target="//@nodes.3/@connectors.0"/>
 </graph:GModel>

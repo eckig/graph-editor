@@ -199,6 +199,10 @@ public class PanningWindow extends Region {
      * <p>
      * If this is set to true, large graphs will pan more smoothly but require more memory.
      * </p>
+     * 
+     * <p>
+     * <em>Warning:</em> currently works like crap if the content has a scale transform applied to it.
+     * </p>
      *
      * @param cacheWhilePanning {@code true} if the content will be cached while panning is active
      */

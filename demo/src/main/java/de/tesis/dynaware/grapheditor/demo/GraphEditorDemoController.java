@@ -347,6 +347,13 @@ public class GraphEditorDemoController {
         final double currentCenterX = graphEditorContainer.windowXProperty().get();
         final double currentCenterY = graphEditorContainer.windowYProperty().get();
 
+        if (zoomFactor != 1) {
+            // Cache-while-panning is sometimes very sluggish when zoomed in.
+            graphEditorContainer.setCacheWhilePanning(false);
+        } else {
+            graphEditorContainer.setCacheWhilePanning(true);
+        }
+
         scaleTransform.setX(zoomFactor);
         graphEditorContainer.panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);
         currentZoomFactor = zoomFactor;
@@ -421,28 +428,42 @@ public class GraphEditorDemoController {
     private void checkConnectorButtonsToDisable() {
 
         final boolean nothingSelected = graphEditor.getSelectionManager().getSelectedNodes().isEmpty();
+
         final boolean treeSkinActive = treeSkinController.equals(activeSkinController.get());
         final boolean greySkinActive = greySkinController.equals(activeSkinController.get());
 
-        if (greySkinActive || treeSkinActive || nothingSelected) {
-            disableConnectorButtons(true);
+        if (greySkinActive || treeSkinActive) {
+            disableAllConnectorButtons(true);
+        } else if (nothingSelected) {
+            disableConnectorActionButtons(true);
         } else {
-            disableConnectorButtons(false);
+            disableAllConnectorButtons(false);
         }
 
         intersectionStyle.setDisable(treeSkinActive);
     }
 
     /**
-     * Sets the 'disable' state of the connector buttons to the given boolean.
+     * Sets the 'disable' state of all connector buttons to the given boolean.
      * 
      * @param disable {@code true} to disable the buttons
      */
-    private void disableConnectorButtons(final boolean disable) {
-        addConnectorButton.setDisable(disable);
-        clearConnectorsButton.setDisable(disable);
+    private void disableAllConnectorButtons(final boolean disable) {
+
+        disableConnectorActionButtons(disable);
         connectorTypeMenu.setDisable(disable);
         connectorPositionMenu.setDisable(disable);
+    }
+
+    /**
+     * Sets the 'disable' state of the connector action buttons to the given boolean.
+     * 
+     * @param disable {@code true} to disable the buttons
+     */
+    private void disableConnectorActionButtons(final boolean disable) {
+
+        addConnectorButton.setDisable(disable);
+        clearConnectorsButton.setDisable(disable);
     }
 
     /**

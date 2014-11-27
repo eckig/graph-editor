@@ -70,7 +70,8 @@ public class DefaultSkinController implements SkinController {
     /**
      * Adds a connector of the given type to all nodes that are currently selected.
      *
-     * @param type the type for the new connector
+     * @param position the position of the new connector
+     * @param input {@code true} for input, {@code false} for output
      */
     @Override
     public void addConnector(final Side position, final boolean input) {

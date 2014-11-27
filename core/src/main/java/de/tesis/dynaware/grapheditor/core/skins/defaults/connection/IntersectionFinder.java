@@ -12,6 +12,7 @@ import java.util.Map;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 

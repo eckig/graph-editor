@@ -88,8 +88,21 @@ public abstract class GTailSkin {
     public abstract void draw(Point2D start, Point2D end);
 
     /**
-     * Updates the position of the tail according to the specified start and end points, and the specified list of joint
-     * positions of a connection.
+     * Updates the position of the tail according to the specified start and end points.
+     *
+     * <p>
+     * This method will be called when a tail is snapped to the target connector that the mouse is hovering over.
+     * </p>
+     *
+     * @param start a {@link Point2D} containing the start x and y values
+     * @param end a {@link Point2D} containing the end x and y values
+     * @param target the target connector that the tail is snapping to
+     * @param valid {@code true} if the connection is valid, {@code false} if invalid
+     */
+    public abstract void draw(Point2D start, Point2D end, GConnector target, boolean valid);
+
+    /**
+     * Updates the position of the tail according to the specified start points, end points, and joint positions.
      *
      * <p>
      * This method will be called when an existing connection is repositioned. The tail skin may use the position of the
@@ -102,6 +115,21 @@ public abstract class GTailSkin {
     public abstract void draw(Point2D start, Point2D end, List<Point2D> jointPositions);
 
     /**
+     * Updates the position of the tail according to the specified start points, end points, and joint positions.
+     *
+     * <p>
+     * This method will be called when an existing connection is repositioned and the stail is snapped to a target
+     * connector.
+     * </p>
+     *
+     * @param start a {@link Point2D} containing the start x and y values
+     * @param end a {@link Point2D} containing the end x and y values
+     * @param target the target connector that the tail is snapping to
+     * @param valid {@code true} if the connection is valid, {@code false} if invalid
+     */
+    public abstract void draw(Point2D start, Point2D end, List<Point2D> jointPositions, GConnector target, boolean valid);
+
+    /**
      * Allocates a list of joint positions for a new connection.
      *
      * <p>
@@ -112,16 +140,4 @@ public abstract class GTailSkin {
      * @return a list of {@code Point2D} objects containing x and y values for a newly-created connection
      */
     public abstract List<Point2D> allocateJointPositions();
-
-    /**
-     * Shows or hides the endpoint of the tail.
-     *
-     * <p>
-     * This method exists so that, if the tail has an endpoint, it can be hidden when it is dragged over a target
-     * connector. If your custom tail has no endpoint, this method should do nothing.
-     * </p>
-     *
-     * @param visible {@code true} if the endpoint should be visible, {@code false} if not
-     */
-    public abstract void setEndpointVisible(boolean visible);
 }

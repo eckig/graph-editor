@@ -13,6 +13,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.VLineTo;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 

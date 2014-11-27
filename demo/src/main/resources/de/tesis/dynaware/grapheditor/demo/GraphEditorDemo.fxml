@@ -45,16 +45,16 @@
 						<MenuItem text="Clear Connectors" fx:id="clearConnectorsButton" onAction="#clearConnectors" accelerator="Shortcut+W"/>
 						<Menu fx:id="connectorTypeMenu" text="Connector Type">
 							<items>
-								<RadioMenuItem fx:id="inputConnectorTypeButton" text="Input" selected="true" accelerator="Shortcut+I"/>
-								<RadioMenuItem fx:id="outputConnectorTypeButton" text="Output       " accelerator="Shortcut+O"/>
+								<RadioMenuItem fx:id="inputConnectorTypeButton" text="Input" selected="true"/>
+								<RadioMenuItem fx:id="outputConnectorTypeButton" text="Output"/>
 							</items>
 						</Menu>
 						<Menu fx:id="connectorPositionMenu" text="Connector Position">
 							<items>
-								<RadioMenuItem fx:id="leftConnectorPositionButton" text="Left" selected="true" accelerator="Shortcut+L"/>
-								<RadioMenuItem fx:id="rightConnectorPositionButton" text="Right" accelerator="Shortcut+R"/>
-								<RadioMenuItem fx:id="topConnectorPositionButton" text="Top" accelerator="Shortcut+T"/>
-								<RadioMenuItem fx:id="bottomConnectorPositionButton" text="Bottom       " accelerator="Shortcut+B"/>
+								<RadioMenuItem fx:id="leftConnectorPositionButton" text="Left" selected="true"/>
+								<RadioMenuItem fx:id="rightConnectorPositionButton" text="Right"/>
+								<RadioMenuItem fx:id="topConnectorPositionButton" text="Top"/>
+								<RadioMenuItem fx:id="bottomConnectorPositionButton" text="Bottom"/>
 							</items>
 						</Menu>
 					</items>

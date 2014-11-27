@@ -37,7 +37,7 @@ public class GraphEditorProperties {
     public static final double DEFAULT_MAX_HEIGHT = Double.MAX_VALUE;
 
     private static final double DEFAULT_BOUND_VALUE = 15;
-    private static final double DEFAULT_GRID_SPACING = 10;
+    private static final double DEFAULT_GRID_SPACING = 12;
 
     // Not currently configurable.
     private final boolean northBoundActive = true;

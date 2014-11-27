@@ -20,7 +20,6 @@ import de.tesis.dynaware.grapheditor.core.data.skins.CustomConnectorSkin;
 import de.tesis.dynaware.grapheditor.core.data.skins.CustomJointSkin;
 import de.tesis.dynaware.grapheditor.core.data.skins.CustomNodeSkin;
 import de.tesis.dynaware.grapheditor.core.data.skins.CustomTailSkin;
-import de.tesis.dynaware.grapheditor.core.skins.SkinFactory;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultJointSkin;
@@ -87,6 +86,8 @@ public class SkinFactoryTest {
         CONNECTOR.setType(CONNECTOR_TYPE);
 
         assertTrue(skinFactory.createConnectorSkin(CONNECTOR) instanceof DefaultConnectorSkin);
+
+        CONNECTOR.setType(CONNECTOR_TYPE);
 
         skinFactory.setConnectorSkin(CONNECTOR_TYPE, CustomConnectorSkin.class);
 
@@ -168,6 +169,8 @@ public class SkinFactoryTest {
         CONNECTOR.setType(CONNECTOR_TYPE);
 
         assertTrue(skinFactory.createTailSkin(CONNECTOR) instanceof DefaultTailSkin);
+
+        CONNECTOR.setType(CONNECTOR_TYPE);
 
         skinFactory.setTailSkin(CONNECTOR_TYPE, CustomTailSkin.class);
 

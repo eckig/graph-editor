@@ -13,19 +13,14 @@ import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.DetouredConnectionSegment;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.GappedConnectionSegment;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
@@ -61,8 +56,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
 
     protected final List<ConnectionSegment> connectionSegments = new ArrayList<>();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionSkin.class);
-
     private static final String STYLE_CLASS = "default-connection";
     private static final String STYLE_CLASS_BACKGROUND = "default-connection-background";
 
@@ -71,8 +64,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     private List<GJointSkin> jointSkins;
     private List<Point2D> points;
     private Map<Integer, List<Double>> intersections;
-
-    private int minNumberOfJointsSupported;
 
     /**
      * Creates a new simple connection skin instance.
@@ -95,8 +86,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
 
         backgroundPath.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
         path.getStyleClass().setAll(STYLE_CLASS);
-
-        minNumberOfJointsSupported = RectangularConnectionUtils.calculateMinJointNumber(getConnection());
     }
 
     @Override
@@ -121,7 +110,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
         this.jointSkins = jointSkins;
 
         addRectangularConstraints();
-        checkJointCount();
     }
 
     @Override
@@ -167,6 +155,14 @@ public class SimpleConnectionSkin extends GConnectionSkin {
                 thisJoint.layoutYProperty().unbindBidirectional(nextJoint.layoutYProperty());
             }
         }
+
+        for (final GJointSkin jointSkin : jointSkins) {
+
+            jointSkin.getRoot().dragEnabledXProperty().unbind();
+            jointSkin.getRoot().dragEnabledYProperty().unbind();
+            jointSkin.getRoot().setDragEnabledX(true);
+            jointSkin.getRoot().setDragEnabledY(true);
+        }
     }
 
     /**
@@ -195,26 +191,23 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      */
     private void restrictFirstAndLastJoints() {
 
-        if (jointSkins.size() >= minNumberOfJointsSupported) {
+        final GNode sourceNode = (GNode) getConnection().getSource().getParent();
+        final GNodeSkin sourceNodeSkin = getGraphEditor().getSkinLookup().lookupNode(sourceNode);
 
-            final GNode sourceNode = (GNode) getConnection().getSource().getParent();
-            final GNodeSkin sourceNodeSkin = getGraphEditor().getSkinLookup().lookupNode(sourceNode);
+        if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), 0)) {
+            jointSkins.get(0).getRoot().dragEnabledYProperty().bind(sourceNodeSkin.selectedProperty());
+        } else {
+            jointSkins.get(0).getRoot().dragEnabledXProperty().bind(sourceNodeSkin.selectedProperty());
+        }
 
-            if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), 0)) {
-                jointSkins.get(0).getRoot().dragEnabledYProperty().bind(sourceNodeSkin.selectedProperty());
-            } else {
-                jointSkins.get(0).getRoot().dragEnabledXProperty().bind(sourceNodeSkin.selectedProperty());
-            }
+        final GNode targetNode = (GNode) getConnection().getTarget().getParent();
+        final GNodeSkin targetNodeSkin = getGraphEditor().getSkinLookup().lookupNode(targetNode);
+        final int lastIndex = jointSkins.size() - 1;
 
-            final GNode targetNode = (GNode) getConnection().getTarget().getParent();
-            final GNodeSkin targetNodeSkin = getGraphEditor().getSkinLookup().lookupNode(targetNode);
-            final int lastIndex = jointSkins.size() - 1;
-
-            if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), jointSkins.size())) {
-                jointSkins.get(lastIndex).getRoot().dragEnabledYProperty().bind(targetNodeSkin.selectedProperty());
-            } else {
-                jointSkins.get(lastIndex).getRoot().dragEnabledXProperty().bind(targetNodeSkin.selectedProperty());
-            }
+        if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), jointSkins.size())) {
+            jointSkins.get(lastIndex).getRoot().dragEnabledYProperty().bind(targetNodeSkin.selectedProperty());
+        } else {
+            jointSkins.get(lastIndex).getRoot().dragEnabledXProperty().bind(targetNodeSkin.selectedProperty());
         }
     }
 
@@ -326,20 +319,5 @@ public class SimpleConnectionSkin extends GConnectionSkin {
         }
 
         return showDetours;
-    }
-
-    /**
-     * Checks the number of joints is even and that there are at least two joints.
-     */
-    private boolean checkJointCount() {
-
-        final int count = getConnection().getJoints().size();
-
-        if (count < 2 || count % 2 != 0) {
-            LOGGER.error(LogMessages.UNSUPPORTED_JOINT_COUNT);
-            return false;
-        }
-
-        return true;
     }
 }

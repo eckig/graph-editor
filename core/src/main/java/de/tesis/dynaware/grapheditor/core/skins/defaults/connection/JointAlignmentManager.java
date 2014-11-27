@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnectable;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -25,9 +26,7 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 public class JointAlignmentManager {
 
     private final Map<GJointSkin, EventHandler<MouseEvent>> alignmentHandlers = new HashMap<>();
-
     private final GConnection connection;
-
     private SkinLookup skinLookup;
 
     /**
@@ -152,160 +151,81 @@ public class JointAlignmentManager {
     }
 
     /**
-     * Checks whether the vertical horizontal segment of the connection will remain stationary when the current joint is
-     * dragged.
+     * Checks whether the previous vertical horizontal segment will remain stationary when the current joint is dragged.
      *
      * @param index the index of the current joint
      * @param jointSkins the list of joint skins for the joint's connection
      *
-     * @return {@code true} if the previous vertical segment of the connection will remain stationary when the current
-     *         joint is dragged
+     * @return {@code true} if the previous vertical segment of the connection will remain stationary
      */
     private boolean isPreviousVerticalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
         final boolean firstSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, 0);
 
-        if (firstSegmentHorizontal) {
-            if (index > 1) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index - 1, index - 2, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index - 2, index - 3, jointSkins);
-                }
-            }
+        if (!firstSegmentHorizontal && (index == 1 || index == 2)) {
+            return isNodeStationary(jointSkins.get(index), true);
         } else {
-            if (index == 1 || index == 2) {
-                return isNodeStationary(jointSkins.get(index), true);
-            } else if (index > 2) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index - 2, index - 3, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index - 1, index - 2, jointSkins);
-                }
-            }
+            return isJointPairStationary(index, false, false, jointSkins);
         }
-
-        return false;
     }
 
     /**
-     * Checks whether the next vertical segment of the connection will remain stationary when the current joint is
-     * dragged.
+     * Checks whether the next vertical segment will remain stationary when the current joint is dragged.
      *
      * @param currentIndex the index of the current joint
      * @param jointSkins the list of joint skins for the joint's connection
      *
-     * @return {@code true} if the next vertical segment of the connection will remaing stationary when the current
-     *         joint is dragged
+     * @return {@code true} if the next vertical segment of the connection will remain stationary
      */
     private boolean isNextVerticalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
         final int count = jointSkins.size();
         final boolean lastSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, count);
 
-        if (lastSegmentHorizontal) {
-            if (index < count - 2) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index + 2, index + 3, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index + 1, index + 2, jointSkins);
-                }
-            }
+        if (!lastSegmentHorizontal && (index >= 0 && (index == count - 2 || index == count - 3))) {
+            return isNodeStationary(jointSkins.get(index), false);
         } else {
-
-            if (index > 0 && (index == count - 2 || index == count - 3)) {
-                return isNodeStationary(jointSkins.get(index), false);
-            } else if (index < count - 3) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index + 1, index + 2, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index + 2, index + 3, jointSkins);
-                }
-            }
+            return isJointPairStationary(index, false, true, jointSkins);
         }
-
-        return false;
     }
 
     /**
-     * Checks whether the previous horizontal segment of the connection will remain stationary when the current joint is
-     * dragged.
-     *
-     * <p>
-     * This is done by checking if the previous joints or source node are selected. If they are selected, they will move
-     * too when the current joint is dragged.
-     * </p>
+     * Checks whether the previous horizontal segment will remain stationary when the current joint is dragged.
      *
      * @param index the index of the current joint
      * @param jointSkins the list of joint skins for the joint's connection
      *
-     * @return {@code true} if the previous horizontal segment of the connection will remaing stationary when the
-     *         current joint is dragged
+     * @return {@code true} if the previous horizontal segment of the connection will remain stationary
      */
     private boolean isPreviousHorizontalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
         final boolean firstSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, 0);
 
-        if (!firstSegmentHorizontal) {
-            if (index > 1) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index - 1, index - 2, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index - 2, index - 3, jointSkins);
-                }
-            }
+        if (firstSegmentHorizontal && (index == 1 || index == 2)) {
+            return isNodeStationary(jointSkins.get(index), true);
         } else {
-            if (index == 1 || index == 2) {
-                return isNodeStationary(jointSkins.get(index), true);
-            } else if (index > 2) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index - 2, index - 3, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index - 1, index - 2, jointSkins);
-                }
-            }
+            return isJointPairStationary(index, true, false, jointSkins);
         }
-
-        return false;
     }
 
     /**
-     * Checks whether the next horizontal segment of the connection will remain stationary when the current joint is
-     * dragged.
+     * Checks whether the next horizontal segment will remain stationary when the current joint is dragged.
      *
      * @param index the index of the current joint
      * @param jointSkins the list of joint skins for the joint's connection
      *
-     * @return {@code true} if the next horizontal segment of the connection will remaing stationary when the current
-     *         joint is dragged
+     * @return {@code true} if the next horizontal segment of the connection will remain stationary
      */
     private boolean isNextHorizontalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
         final int count = jointSkins.size();
         final boolean lastSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, count);
 
-        if (!lastSegmentHorizontal) {
-            if (index < count - 2) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index + 2, index + 3, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index + 1, index + 2, jointSkins);
-                }
-            }
+        if (lastSegmentHorizontal && (index >= 0 && (index == count - 2 || index == count - 3))) {
+            return isNodeStationary(jointSkins.get(index), false);
         } else {
-
-            if (index > 0 && (index == count - 2 || index == count - 3)) {
-                return isNodeStationary(jointSkins.get(index), false);
-            } else if (index < count - 3) {
-                if ((index & 1) == 0) {
-                    return checkJointPairStationary(index, index + 1, index + 2, jointSkins);
-                } else {
-                    return checkJointPairStationary(index, index + 2, index + 3, jointSkins);
-                }
-            }
+            return isJointPairStationary(index, true, true, jointSkins);
         }
-
-        return false;
     }
 
     /**
@@ -333,24 +253,38 @@ public class JointAlignmentManager {
     }
 
     /**
-     * Checks if a pair of adjacent joints will be stationary during a drag operation.
+     * Checks if the previous or next horizontal or vertical joint pair will remain stationary.
      * 
-     * <p>
-     * This is evaluated based on whether or not the joints are selected.
-     * </p>
-     * 
-     * @param draggged the index of the dragged joint
-     * @param first the index of the first joint
-     * @param second the index of the second joint
+     * @param index the dragged joint index in the list of joint skins
+     * @param horizontal {@code true} for horizontal segment, {@code false} for vertical
+     * @param next {@code true} for next segment, {@code false} for previous
      * @param jointSkins the list of joint skins
-     * @return {@code true} if both joints will be stationary
+     * @return {@code true} if the joint pair will remain stationary when the joint is dragged
      */
-    private boolean checkJointPairStationary(final int dragged, final int first, final int second,
+    private boolean isJointPairStationary(final int index, final boolean horizontal, final boolean next,
             final List<GJointSkin> jointSkins) {
 
-        final boolean pairNotSelected = !jointSkins.get(first).isSelected() && !jointSkins.get(second).isSelected();
-        final boolean draggedNotSelected = !jointSkins.get(dragged).isSelected();
+        final boolean segmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, index + 1);
 
-        return pairNotSelected || draggedNotSelected;
+        final int jump;
+        if (segmentHorizontal == (horizontal == next)) {
+            jump = 2;
+        } else {
+            jump = 1;
+        }
+
+        final int firstIndex = next ? index + jump : index - jump;
+        final int secondIndex = next ? index + jump + 1 : index - jump - 1;
+
+        if (secondIndex >= 0 && secondIndex < jointSkins.size()) {
+
+            final boolean firstNotSelected = !jointSkins.get(firstIndex).isSelected();
+            final boolean secondNotSelected = !jointSkins.get(secondIndex).isSelected();
+            final boolean draggedNotSelected = !jointSkins.get(index).isSelected();
+
+            return (firstNotSelected && secondNotSelected) || draggedNotSelected;
+        } else {
+            return false;
+        }
     }
 }

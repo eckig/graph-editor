@@ -107,8 +107,6 @@ public class TailManager {
             } else {
                 tailSkin.draw(sourcePosition, cursorPosition);
             }
-
-            tailSkin.setEndpointVisible(true);
         }
     }
 
@@ -117,8 +115,9 @@ public class TailManager {
      * 
      * @param source the source connector
      * @param target the target connector
+     * @param valid {@code true} if the connection is valid, {@code false} if invalid
      */
-    public void snapPosition(final GConnector source, final GConnector target) {
+    public void snapPosition(final GConnector source, final GConnector target, final boolean valid) {
 
         if (tailSkin != null) {
 
@@ -126,11 +125,10 @@ public class TailManager {
             final Point2D targetPosition = GeometryUtils.getConnectorPosition(target, skinLookup);
 
             if (jointPositions != null) {
-                tailSkin.draw(sourcePosition, targetPosition, jointPositions);
+                tailSkin.draw(sourcePosition, targetPosition, jointPositions, target, valid);
             } else {
-                tailSkin.draw(sourcePosition, targetPosition);
+                tailSkin.draw(sourcePosition, targetPosition, target, valid);
             }
-            tailSkin.setEndpointVisible(false);
         }
     }
 

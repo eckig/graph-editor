@@ -36,6 +36,9 @@
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180, 0.5), 5, 0, 1, 1);
 	-inside-fill: derive(rgb(249,247,250), -20%);
 	-outside-fill: white;
+	/* The following are overridden by animated colors and are only here to prevent CSS-resolution warnings. */
+	-animated-color-allowed: white;
+	-animated-color-forbidden: white;
 }
 
 .default-connector:hover, .default-connector:pressed, .default-connector:allowed, .default-connector:forbidden {
@@ -43,43 +46,43 @@
 }
 
 .default-connector:allowed {
-	-outside-fill: mediumseagreen;
+	-outside-fill: -animated-color-allowed;
 }
 
 .default-connector:forbidden {
-	-outside-fill: tomato;
+	-outside-fill: -animated-color-forbidden;
 }
 
 .left-input {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 40%, darkslategrey 40%, darkslategrey 44%, -inside-fill 44%, -inside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 40%, -fx-stroke 40%, -fx-stroke 44%, -inside-fill 44%, -inside-fill);
 }
 
 .left-output {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 60%, darkslategrey 60%, darkslategrey 64%, -inside-fill 64%, -inside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 60%, -fx-stroke 60%, -fx-stroke 64%, -inside-fill 64%, -inside-fill);
 }
 
 .right-input {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 56%, darkslategrey 56%, darkslategrey 60%, -outside-fill 60%, -outside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 56%, -fx-stroke 56%, -fx-stroke 60%, -outside-fill 60%, -outside-fill);
 }
 
 .right-output {
-	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 36%, darkslategrey 36%, darkslategrey 40%, -outside-fill 40%, -outside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 36%, -fx-stroke 36%, -fx-stroke 40%, -outside-fill 40%, -outside-fill);
 }
 
 .top-input {
-	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 40%, darkslategrey 40%, darkslategrey 44%, -inside-fill 44%, -inside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 40%, -fx-stroke 40%, -fx-stroke 44%, -inside-fill 44%, -inside-fill);
 }
 
 .top-output {
-	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 60%, darkslategrey 60%, darkslategrey 64%, -inside-fill 64%, -inside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 60%, -fx-stroke 60%, -fx-stroke 64%, -inside-fill 64%, -inside-fill);
 }
 
 .bottom-input {
-	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 56%, darkslategrey 56%, darkslategrey 60%, -outside-fill 60%, -outside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 56%, -fx-stroke 56%, -fx-stroke 60%, -outside-fill 60%, -outside-fill);
 }
 
 .bottom-output {
-	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 36%, darkslategrey 36%, darkslategrey 40%, -outside-fill 40%, -outside-fill);
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 36%, -fx-stroke 36%, -fx-stroke 40%, -outside-fill 40%, -outside-fill);
 }
 
 .default-connection {
@@ -112,15 +115,17 @@
 }
 
 .default-tail  {
-	-fx-stroke: derive(darkslategrey, 100%);
-	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+	-fx-stroke: derive(darkslategrey, 130%);
+	-fx-effect: dropshadow(one-pass-box, derive(lightgrey, 50%), 5, 0, 1, 1);
 }
 
 .default-tail-endpoint  {
-	-fx-background-radius: 8;
-	-fx-background-insets: 0, 4;
-	-fx-background-color: transparent, derive(darkslategrey, 100%);
-	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+	-fx-stroke: derive(darkslategrey, 130%);
+	-fx-stroke-type: inside;
+	-fx-stroke-width: 1;
+	-fx-effect: dropshadow(one-pass-box,  derive(lightgrey, 50%), 5, 0, 1, 1);
+	-inside-fill: rgb(249,247,250);
+	-outside-fill: white;
 }
 
 .default-joint {

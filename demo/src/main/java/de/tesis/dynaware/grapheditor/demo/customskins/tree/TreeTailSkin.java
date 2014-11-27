@@ -45,14 +45,27 @@ public class TreeTailSkin extends GTailSkin {
     }
 
     @Override
+    public void draw(final Point2D start, final Point2D end, final GConnector target, final boolean valid) {
+        drawArrow(start, end);
+    }
+
+    @Override
+    public void draw(final Point2D start, final Point2D end, final List<Point2D> jointPositions,
+            final GConnector target, final boolean valid) {
+        drawArrow(start, end);
+    }
+
+    @Override
     public List<Point2D> allocateJointPositions() {
         return new ArrayList<Point2D>();
     }
 
-    @Override
-    public void setEndpointVisible(final boolean visible) {
-    }
-
+    /**
+     * Draws an arrow from the start to end point.
+     * 
+     * @param start the start point of the arrow
+     * @param end the end point (tip) of the arrow
+     */
     private void drawArrow(final Point2D start, final Point2D end) {
 
         if (getConnector().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
