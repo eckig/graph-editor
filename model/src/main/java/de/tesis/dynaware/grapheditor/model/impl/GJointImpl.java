@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * <p>
  * The following features are implemented:
  * <ul>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GJointImpl#getId <em>Id</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GJointImpl#getType <em>Type</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GJointImpl#getConnection <em>Connection</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GJointImpl#getX <em>X</em>}</li>
@@ -31,6 +32,26 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * @generated
  */
 public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
+    /**
+     * The default value of the '{@link #getId() <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getId()
+     * @generated
+     * @ordered
+     */
+    protected static final String ID_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getId()
+     * @generated
+     * @ordered
+     */
+    protected String id = ID_EDEFAULT;
+
     /**
      * The default value of the '{@link #getType() <em>Type</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -108,6 +129,27 @@ public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
     @Override
     protected EClass eStaticClass() {
         return GraphPackage.Literals.GJOINT;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setId(String newId) {
+        String oldId = id;
+        id = newId;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GJOINT__ID, oldId, id));
     }
 
     /**
@@ -266,6 +308,8 @@ public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
+            case GraphPackage.GJOINT__ID:
+                return getId();
             case GraphPackage.GJOINT__TYPE:
                 return getType();
             case GraphPackage.GJOINT__CONNECTION:
@@ -286,6 +330,9 @@ public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
+            case GraphPackage.GJOINT__ID:
+                setId((String)newValue);
+                return;
             case GraphPackage.GJOINT__TYPE:
                 setType((String)newValue);
                 return;
@@ -310,6 +357,9 @@ public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
+            case GraphPackage.GJOINT__ID:
+                setId(ID_EDEFAULT);
+                return;
             case GraphPackage.GJOINT__TYPE:
                 setType(TYPE_EDEFAULT);
                 return;
@@ -334,6 +384,8 @@ public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
+            case GraphPackage.GJOINT__ID:
+                return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
             case GraphPackage.GJOINT__TYPE:
                 return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
             case GraphPackage.GJOINT__CONNECTION:
@@ -356,7 +408,9 @@ public class GJointImpl extends MinimalEObjectImpl.Container implements GJoint {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (type: ");
+        result.append(" (id: ");
+        result.append(id);
+        result.append(", type: ");
         result.append(type);
         result.append(", x: ");
         result.append(x);

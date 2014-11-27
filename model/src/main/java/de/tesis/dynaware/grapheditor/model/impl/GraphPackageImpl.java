@@ -276,7 +276,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGConnector_Type() {
+    public EAttribute getGConnector_Id() {
         return (EAttribute)gConnectorEClass.getEStructuralFeatures().get(0);
     }
 
@@ -285,8 +285,8 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getGConnector_Parent() {
-        return (EReference)gConnectorEClass.getEStructuralFeatures().get(1);
+    public EAttribute getGConnector_Type() {
+        return (EAttribute)gConnectorEClass.getEStructuralFeatures().get(1);
     }
 
     /**
@@ -294,7 +294,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getGConnector_Connections() {
+    public EReference getGConnector_Parent() {
         return (EReference)gConnectorEClass.getEStructuralFeatures().get(2);
     }
 
@@ -303,8 +303,8 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGConnector_X() {
-        return (EAttribute)gConnectorEClass.getEStructuralFeatures().get(3);
+    public EReference getGConnector_Connections() {
+        return (EReference)gConnectorEClass.getEStructuralFeatures().get(3);
     }
 
     /**
@@ -312,7 +312,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGConnector_Y() {
+    public EAttribute getGConnector_X() {
         return (EAttribute)gConnectorEClass.getEStructuralFeatures().get(4);
     }
 
@@ -321,8 +321,17 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGConnector_ConnectionDetachedOnDrag() {
+    public EAttribute getGConnector_Y() {
         return (EAttribute)gConnectorEClass.getEStructuralFeatures().get(5);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getGConnector_ConnectionDetachedOnDrag() {
+        return (EAttribute)gConnectorEClass.getEStructuralFeatures().get(6);
     }
 
     /**
@@ -339,7 +348,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGConnection_Type() {
+    public EAttribute getGConnection_Id() {
         return (EAttribute)gConnectionEClass.getEStructuralFeatures().get(0);
     }
 
@@ -348,8 +357,8 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getGConnection_Source() {
-        return (EReference)gConnectionEClass.getEStructuralFeatures().get(1);
+    public EAttribute getGConnection_Type() {
+        return (EAttribute)gConnectionEClass.getEStructuralFeatures().get(1);
     }
 
     /**
@@ -357,7 +366,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getGConnection_Target() {
+    public EReference getGConnection_Source() {
         return (EReference)gConnectionEClass.getEStructuralFeatures().get(2);
     }
 
@@ -366,8 +375,17 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getGConnection_Joints() {
+    public EReference getGConnection_Target() {
         return (EReference)gConnectionEClass.getEStructuralFeatures().get(3);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getGConnection_Joints() {
+        return (EReference)gConnectionEClass.getEStructuralFeatures().get(4);
     }
 
     /**
@@ -384,7 +402,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGJoint_Type() {
+    public EAttribute getGJoint_Id() {
         return (EAttribute)gJointEClass.getEStructuralFeatures().get(0);
     }
 
@@ -393,8 +411,17 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * <!-- end-user-doc -->
      * @generated
      */
+    public EAttribute getGJoint_Type() {
+        return (EAttribute)gJointEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EReference getGJoint_Connection() {
-        return (EReference)gJointEClass.getEStructuralFeatures().get(1);
+        return (EReference)gJointEClass.getEStructuralFeatures().get(2);
     }
 
     /**
@@ -403,7 +430,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * @generated
      */
     public EAttribute getGJoint_X() {
-        return (EAttribute)gJointEClass.getEStructuralFeatures().get(2);
+        return (EAttribute)gJointEClass.getEStructuralFeatures().get(3);
     }
 
     /**
@@ -412,7 +439,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
      * @generated
      */
     public EAttribute getGJoint_Y() {
-        return (EAttribute)gJointEClass.getEStructuralFeatures().get(3);
+        return (EAttribute)gJointEClass.getEStructuralFeatures().get(4);
     }
 
     /**
@@ -482,12 +509,14 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
         createEReference(gNodeEClass, GNODE__SUBGRAPH);
 
         gConnectionEClass = createEClass(GCONNECTION);
+        createEAttribute(gConnectionEClass, GCONNECTION__ID);
         createEAttribute(gConnectionEClass, GCONNECTION__TYPE);
         createEReference(gConnectionEClass, GCONNECTION__SOURCE);
         createEReference(gConnectionEClass, GCONNECTION__TARGET);
         createEReference(gConnectionEClass, GCONNECTION__JOINTS);
 
         gConnectorEClass = createEClass(GCONNECTOR);
+        createEAttribute(gConnectorEClass, GCONNECTOR__ID);
         createEAttribute(gConnectorEClass, GCONNECTOR__TYPE);
         createEReference(gConnectorEClass, GCONNECTOR__PARENT);
         createEReference(gConnectorEClass, GCONNECTOR__CONNECTIONS);
@@ -496,6 +525,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
         createEAttribute(gConnectorEClass, GCONNECTOR__CONNECTION_DETACHED_ON_DRAG);
 
         gJointEClass = createEClass(GJOINT);
+        createEAttribute(gJointEClass, GJOINT__ID);
         createEAttribute(gJointEClass, GJOINT__TYPE);
         createEReference(gJointEClass, GJOINT__CONNECTION);
         createEAttribute(gJointEClass, GJOINT__X);
@@ -555,12 +585,14 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
         initEReference(getGNode_Subgraph(), this.getGModel(), this.getGModel_Supergraph(), "subgraph", null, 0, 1, GNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(gConnectionEClass, GConnection.class, "GConnection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getGConnection_Id(), ecorePackage.getEString(), "id", null, 0, 1, GConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGConnection_Type(), ecorePackage.getEString(), "type", null, 0, 1, GConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGConnection_Source(), this.getGConnector(), null, "source", null, 1, 1, GConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGConnection_Target(), this.getGConnector(), null, "target", null, 1, 1, GConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGConnection_Joints(), this.getGJoint(), this.getGJoint_Connection(), "joints", null, 0, -1, GConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(gConnectorEClass, GConnector.class, "GConnector", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getGConnector_Id(), ecorePackage.getEString(), "id", null, 0, 1, GConnector.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGConnector_Type(), ecorePackage.getEString(), "type", null, 0, 1, GConnector.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGConnector_Parent(), this.getGConnectable(), this.getGConnectable_Connectors(), "parent", null, 1, 1, GConnector.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGConnector_Connections(), this.getGConnection(), null, "connections", null, 0, -1, GConnector.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -569,6 +601,7 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
         initEAttribute(getGConnector_ConnectionDetachedOnDrag(), ecorePackage.getEBoolean(), "connectionDetachedOnDrag", "true", 1, 1, GConnector.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(gJointEClass, GJoint.class, "GJoint", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getGJoint_Id(), ecorePackage.getEString(), "id", null, 0, 1, GJoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGJoint_Type(), ecorePackage.getEString(), "type", null, 0, 1, GJoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGJoint_Connection(), this.getGConnection(), this.getGConnection_Joints(), "connection", null, 1, 1, GJoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getGJoint_X(), ecorePackage.getEDouble(), "x", "0", 1, 1, GJoint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
