@@ -27,7 +27,7 @@ import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.GreySkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
@@ -241,7 +241,7 @@ public class GraphEditorDemoController {
     @FXML
     public void setGappedStyle() {
 
-        graphEditor.getProperties().getCustomProperties().remove(DefaultConnectionSkin.SHOW_DETOURS_KEY);
+        graphEditor.getProperties().getCustomProperties().remove(SimpleConnectionSkin.SHOW_DETOURS_KEY);
         graphEditor.reload();
     }
 
@@ -249,7 +249,7 @@ public class GraphEditorDemoController {
     public void setDetouredStyle() {
 
         final Map<String, String> customProperties = graphEditor.getProperties().getCustomProperties();
-        customProperties.put(DefaultConnectionSkin.SHOW_DETOURS_KEY, Boolean.toString(true));
+        customProperties.put(SimpleConnectionSkin.SHOW_DETOURS_KEY, Boolean.toString(true));
         graphEditor.reload();
     }
 
@@ -433,37 +433,23 @@ public class GraphEditorDemoController {
         final boolean greySkinActive = greySkinController.equals(activeSkinController.get());
 
         if (greySkinActive || treeSkinActive) {
-            disableAllConnectorButtons(true);
+            addConnectorButton.setDisable(true);
+            clearConnectorsButton.setDisable(true);
+            connectorTypeMenu.setDisable(true);
+            connectorPositionMenu.setDisable(true);
         } else if (nothingSelected) {
-            disableConnectorActionButtons(true);
+            addConnectorButton.setDisable(true);
+            clearConnectorsButton.setDisable(true);
+            connectorTypeMenu.setDisable(false);
+            connectorPositionMenu.setDisable(false);
         } else {
-            disableAllConnectorButtons(false);
+            addConnectorButton.setDisable(false);
+            clearConnectorsButton.setDisable(false);
+            connectorTypeMenu.setDisable(false);
+            connectorPositionMenu.setDisable(false);
         }
 
         intersectionStyle.setDisable(treeSkinActive);
-    }
-
-    /**
-     * Sets the 'disable' state of all connector buttons to the given boolean.
-     * 
-     * @param disable {@code true} to disable the buttons
-     */
-    private void disableAllConnectorButtons(final boolean disable) {
-
-        disableConnectorActionButtons(disable);
-        connectorTypeMenu.setDisable(disable);
-        connectorPositionMenu.setDisable(disable);
-    }
-
-    /**
-     * Sets the 'disable' state of the connector action buttons to the given boolean.
-     * 
-     * @param disable {@code true} to disable the buttons
-     */
-    private void disableConnectorActionButtons(final boolean disable) {
-
-        addConnectorButton.setDisable(disable);
-        clearConnectorsButton.setDisable(disable);
     }
 
     /**
@@ -479,7 +465,7 @@ public class GraphEditorDemoController {
 
     /**
      * Gets the side corresponding to the currently selected connector position in the menu.
-     * 
+     *
      * @return the {@link Side} corresponding to the currently selected connector position
      */
     private Side getSelectedConnectorPosition() {
