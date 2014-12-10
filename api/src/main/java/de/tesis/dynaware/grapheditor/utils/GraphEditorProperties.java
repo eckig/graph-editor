@@ -8,8 +8,11 @@ import java.util.Map;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.paint.Color;
 
 /**
  * General properties for the graph editor.
@@ -51,9 +54,10 @@ public class GraphEditorProperties {
     private double westBoundValue = DEFAULT_BOUND_VALUE;
 
     // Off by default.
-    private final BooleanProperty gridVisibleProperty = new SimpleBooleanProperty(this, "gridVisible");
-    private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty(this, "snapToGrid");
-    private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING);
+    private final BooleanProperty gridVisibleProperty = new SimpleBooleanProperty();
+    private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty();
+    private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(DEFAULT_GRID_SPACING);
+    private final ObjectProperty<Color> gridColorProperty = new SimpleObjectProperty<>();
 
     private final Map<String, String> customProperties = new HashMap<>();
 
@@ -85,6 +89,7 @@ public class GraphEditorProperties {
         gridVisibleProperty.set(editorProperties.isGridVisible());
         snapToGridProperty.set(editorProperties.isSnapToGridOn());
         gridSpacingProperty.set(editorProperties.getGridSpacing());
+        gridColorProperty.set(editorProperties.getGridColor());
     }
 
     /**
@@ -296,6 +301,33 @@ public class GraphEditorProperties {
      */
     public DoubleProperty gridSpacingProperty() {
         return gridSpacingProperty;
+    }
+
+    /**
+     * Gets the grid color.
+     * 
+     * @return the grid color, or null if nothing was set
+     */
+    public Color getGridColor() {
+        return gridColorProperty.get();
+    }
+
+    /**
+     * Sets the new grid color.
+     * 
+     * @param gridColor the new grid {@link Color}
+     */
+    public void setGridColor(final Color gridColor) {
+        gridColorProperty.set(gridColor);
+    }
+
+    /**
+     * Gets the grid color property.
+     * 
+     * @return the grid color {@link ObjectProperty}
+     */
+    public ObjectProperty<Color> gridColorProperty() {
+        return gridColorProperty;
     }
 
     /**
