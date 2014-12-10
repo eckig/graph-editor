@@ -51,9 +51,9 @@ public class GraphEditorProperties {
     private double westBoundValue = DEFAULT_BOUND_VALUE;
 
     // Off by default.
-    private final BooleanProperty gridVisibleProperty = new SimpleBooleanProperty(this, "gridVisible");
-    private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty(this, "snapToGrid");
-    private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING);
+    private final BooleanProperty gridVisibleProperty = new SimpleBooleanProperty();
+    private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty();
+    private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(DEFAULT_GRID_SPACING);
 
     private final Map<String, String> customProperties = new HashMap<>();
 
