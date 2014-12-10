@@ -3,7 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
-import com.sun.javafx.css.converters.PaintConverter;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javafx.css.CssMetaData;
+import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
@@ -132,7 +132,7 @@ public class GraphEditorGrid extends Group {
     private static class StyleableProperties {
 
         private static final CssMetaData<GraphEditorGrid, Paint> GRID_COLOR = new CssMetaData<GraphEditorGrid, Paint>(
-            "-graph-grid-color", PaintConverter.getInstance()) {
+            "-graph-grid-color", StyleConverter.getPaintConverter()) {
 
             @Override
             public boolean isSettable(GraphEditorGrid node) {
