@@ -17,7 +17,6 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
-import de.tesis.dynaware.grapheditor.core.model.ModelValidator;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -146,7 +145,6 @@ public class DefaultGraphEditor implements GraphEditor {
     private void addModelPropertyListener() {
 
         modelProperty.addListener((observable, oldValue, newValue) -> {
-            ModelValidator.validate(newValue);
             controller.setModel(newValue);
         });
     }

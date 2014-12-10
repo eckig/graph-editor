@@ -15,6 +15,7 @@ import de.tesis.dynaware.grapheditor.core.connections.ConnectorDragManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelLayoutUpdater;
 import de.tesis.dynaware.grapheditor.core.model.ModelMemory;
+import de.tesis.dynaware.grapheditor.core.model.ModelSanityChecker;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
@@ -145,6 +146,8 @@ public class GraphEditorController {
      * Initializes everything for the current model.
      */
     public void initializeAll() {
+
+        ModelSanityChecker.validate(model);
 
         modelMemory.setNewModelState(model);
         reloadView();

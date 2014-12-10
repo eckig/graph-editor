@@ -87,6 +87,7 @@ public class TailManager {
 
         tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
         view.add(tailSkin);
+        tailSkin.getRoot().toBack();
     }
 
     /**
