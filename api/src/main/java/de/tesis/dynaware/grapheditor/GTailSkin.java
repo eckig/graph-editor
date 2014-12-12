@@ -111,6 +111,7 @@ public abstract class GTailSkin {
      *
      * @param start a {@link Point2D} containing the start x and y values
      * @param end a {@link Point2D} containing the end x and y values
+     * @param jointPositions the positions of the joints at the time the connection was removed
      */
     public abstract void draw(Point2D start, Point2D end, List<Point2D> jointPositions);
 

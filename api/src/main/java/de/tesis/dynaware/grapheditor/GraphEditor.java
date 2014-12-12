@@ -212,27 +212,29 @@ public interface GraphEditor {
      * <p>
      * This provides access to actions like 'select all', 'delete selection', cut, copy, paste, and so on.
      * </p>
+     *
+     * @return the {@link SelectionManager}
      */
     SelectionManager getSelectionManager();
 
     /**
      * Sets a method to be called when a connection is created in the editor.
-     * 
+     *
      * <p>
      * This can be used to append additional commands to the one that created the connection.
      * </p>
-     * 
+     *
      * @param appender the {@link CommandAppender} to be called
      */
     void setOnConnectionCreated(CommandAppender<GConnection> appender);
 
     /**
      * Sets a method to be called when a connection is removed in the editor.
-     * 
+     *
      * <p>
      * This can be used to append additional commands to the one that removed the connection.
      * </p>
-     * 
+     *
      * @param appender the {@link CommandAppender} to be called
      */
     void setOnConnectionRemoved(CommandAppender<GConnection> appender);
