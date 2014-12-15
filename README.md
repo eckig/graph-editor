@@ -34,7 +34,7 @@ Maven coordinates:
     <dependency>
         <groupId>de.tesis.dynaware</groupId>
         <artifactId>de.tesis.dynaware.grapheditor.core</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </dependency>
 
 Try the tutorials [here](https://github.com/tesis-dynaware/graph-editor/wiki).
