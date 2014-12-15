@@ -3,10 +3,14 @@
  */
 package de.tesis.dynaware.grapheditor.core;
 
+import java.util.function.BiConsumer;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;
-import de.tesis.dynaware.grapheditor.CommandAppender;
+
+import org.eclipse.emf.common.command.CompoundCommand;
+
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
@@ -130,13 +134,13 @@ public class DefaultGraphEditor implements GraphEditor {
     }
 
     @Override
-    public void setOnConnectionCreated(final CommandAppender<GConnection> appender) {
-        connectionEventManager.setOnConnectionCreated(appender);
+    public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> consumer) {
+        connectionEventManager.setOnConnectionCreated(consumer);
     }
 
     @Override
-    public void setOnConnectionRemoved(final CommandAppender<GConnection> appender) {
-        connectionEventManager.setOnConnectionRemoved(appender);
+    public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> consumer) {
+        connectionEventManager.setOnConnectionRemoved(consumer);
     }
 
     /**
