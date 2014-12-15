@@ -6,6 +6,7 @@ package de.tesis.dynaware.grapheditor.core.skins;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -47,6 +48,20 @@ public class SkinFactoryTest {
 
     private static final GJoint JOINT = GraphFactory.eINSTANCE.createGJoint();
     private static final String JOINT_TYPE = "apricot";
+
+    @Before
+    public void initialize() {
+
+        final GConnector source = GraphFactory.eINSTANCE.createGConnector();
+        final GConnector target = GraphFactory.eINSTANCE.createGConnector();
+
+        source.setType("right-output");
+        target.setType("left-input");
+
+        // Dummy source and target to prevent NPE's
+        CONNECTION.setSource(source);
+        CONNECTION.setTarget(target);
+    }
 
     @Test
     public void testCreateNodeSkin() {
