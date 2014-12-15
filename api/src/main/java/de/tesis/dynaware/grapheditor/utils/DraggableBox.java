@@ -15,7 +15,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import de.tesis.dynaware.grapheditor.GraphEditor;
 
 /**
  * A draggable box that can display children.
@@ -44,7 +43,6 @@ public class DraggableBox extends StackPane {
     protected double absoluteMaxWidth;
     protected double absoluteMaxHeight;
 
-    // Todo: store own properties and not depend on this object.
     protected GraphEditorProperties editorProperties = new GraphEditorProperties();
 
     // Note that ResizableBox subclass currently pays no attention to alignment targets!
@@ -82,7 +80,7 @@ public class DraggableBox extends StackPane {
      *
      * <p>
      * This method is called by the framework. Custom skins should <b>not</b> call it. Editor properties should instead
-     * be set via the {@link GraphEditor} instance.
+     * be set via the graph editor instance.
      * </p>
      *
      * @param editorProperties the {@link GraphEditorProperties} instance for the graph editor
@@ -277,7 +275,7 @@ public class DraggableBox extends StackPane {
 
     /**
      * Handles mouse-pressed events.
-     * 
+     *
      * @param event a {@link MouseEvent}
      */
     protected void handleMousePressed(final MouseEvent event) {
@@ -297,7 +295,7 @@ public class DraggableBox extends StackPane {
 
     /**
      * Handles mouse-dragged events.
-     * 
+     *
      * @param event {@link MouseEvent}
      */
     protected void handleMouseDragged(final MouseEvent event) {
@@ -317,7 +315,7 @@ public class DraggableBox extends StackPane {
 
     /**
      * Handles mouse-released events.
-     * 
+     *
      * @param event {@link MouseEvent}
      */
     protected void handleMouseReleased(final MouseEvent event) {

@@ -4,8 +4,12 @@
 package de.tesis.dynaware.grapheditor;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import javafx.collections.ObservableList;
+
+import org.eclipse.emf.common.command.CompoundCommand;
+
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
 
@@ -48,9 +52,9 @@ public interface SelectionManager {
      * Additionally calls the given method for the compound command that removed the nodes.
      * </p>
      * 
-     * @param appender a {@link CommandAppender} to be called
+     * @param consumer a consumer to append additional commands to this one
      */
-    void cut(CommandAppender<List<GNode>> appender);
+    void cut(BiConsumer<List<GNode>, CompoundCommand> consumer);
 
     /**
      * Copies the current selection. Saves copied nodes and the connections between them to memory to be pasted later.
@@ -69,9 +73,9 @@ public interface SelectionManager {
      * Additionally calls the given method for the compound command that pasted the nodes.
      * </p>
      * 
-     * @param appender a {@link CommandAppender} to be called
+     * @param consumer a consumer to append additional commands to this one
      */
-    void paste(CommandAppender<List<GNode>> appender);
+    void paste(BiConsumer<List<GNode>, CompoundCommand> consumer);
 
     /**
      * Clears the memory of what was cut / copied, so that future paste calls will do nothing.
@@ -95,9 +99,9 @@ public interface SelectionManager {
      * Additionally calls the given method for the compound command that did the deletion.
      * </p>
      * 
-     * @param handler a {@link CommandAppender} to be called
+     * @param consumer a consumer to append additional commands to this one
      */
-    void deleteSelection(CommandAppender<List<GNode>> handler);
+    void deleteSelection(BiConsumer<List<GNode>, CompoundCommand> consumer);
 
     /**
      * Backs up the selection state, i.e. what nodes and joints are currently selected.

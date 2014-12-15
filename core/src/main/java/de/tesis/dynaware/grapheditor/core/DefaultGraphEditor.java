@@ -3,10 +3,14 @@
  */
 package de.tesis.dynaware.grapheditor.core;
 
+import java.util.function.BiConsumer;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;
-import de.tesis.dynaware.grapheditor.CommandAppender;
+
+import org.eclipse.emf.common.command.CompoundCommand;
+
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
@@ -17,7 +21,6 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
-import de.tesis.dynaware.grapheditor.core.model.ModelValidator;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -131,13 +134,13 @@ public class DefaultGraphEditor implements GraphEditor {
     }
 
     @Override
-    public void setOnConnectionCreated(final CommandAppender<GConnection> appender) {
-        connectionEventManager.setOnConnectionCreated(appender);
+    public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> consumer) {
+        connectionEventManager.setOnConnectionCreated(consumer);
     }
 
     @Override
-    public void setOnConnectionRemoved(final CommandAppender<GConnection> appender) {
-        connectionEventManager.setOnConnectionRemoved(appender);
+    public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> consumer) {
+        connectionEventManager.setOnConnectionRemoved(consumer);
     }
 
     /**
@@ -146,7 +149,6 @@ public class DefaultGraphEditor implements GraphEditor {
     private void addModelPropertyListener() {
 
         modelProperty.addListener((observable, oldValue, newValue) -> {
-            ModelValidator.validate(newValue);
             controller.setModel(newValue);
         });
     }

@@ -3,8 +3,13 @@
  */
 package de.tesis.dynaware.grapheditor;
 
+import java.util.function.BiConsumer;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.Region;
+
+import org.eclipse.emf.common.command.CompoundCommand;
+
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -212,28 +217,30 @@ public interface GraphEditor {
      * <p>
      * This provides access to actions like 'select all', 'delete selection', cut, copy, paste, and so on.
      * </p>
+     *
+     * @return the {@link SelectionManager}
      */
     SelectionManager getSelectionManager();
 
     /**
      * Sets a method to be called when a connection is created in the editor.
-     * 
+     *
      * <p>
      * This can be used to append additional commands to the one that created the connection.
      * </p>
-     * 
-     * @param appender the {@link CommandAppender} to be called
+     *
+     * @param consumer a consumer to append additional commands
      */
-    void setOnConnectionCreated(CommandAppender<GConnection> appender);
+    void setOnConnectionCreated(BiConsumer<GConnection, CompoundCommand> consumer);
 
     /**
      * Sets a method to be called when a connection is removed in the editor.
-     * 
+     *
      * <p>
      * This can be used to append additional commands to the one that removed the connection.
      * </p>
-     * 
-     * @param appender the {@link CommandAppender} to be called
+     *
+     * @param consumer a consumer to append additional commands
      */
-    void setOnConnectionRemoved(CommandAppender<GConnection> appender);
+    void setOnConnectionRemoved(BiConsumer<GConnection, CompoundCommand> consumer);
 }

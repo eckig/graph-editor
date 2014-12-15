@@ -4,9 +4,12 @@
 package de.tesis.dynaware.grapheditor.core;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import javafx.collections.ObservableList;
-import de.tesis.dynaware.grapheditor.CommandAppender;
+
+import org.eclipse.emf.common.command.CompoundCommand;
+
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -103,8 +106,8 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void deleteSelection(final CommandAppender<List<GNode>> handler) {
-        selectionDeleter.deleteSelection(model, handler);
+    public void deleteSelection(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+        selectionDeleter.deleteSelection(model, consumer);
     }
 
     @Override
@@ -123,8 +126,8 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void cut(final CommandAppender<List<GNode>> handler) {
-        selectionCopier.cut(handler);
+    public void cut(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+        selectionCopier.cut(consumer);
     }
 
     @Override
@@ -138,8 +141,8 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void paste(final CommandAppender<List<GNode>> handler) {
-        selectionCopier.paste(handler);
+    public void paste(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+        selectionCopier.paste(consumer);
     }
 
     @Override

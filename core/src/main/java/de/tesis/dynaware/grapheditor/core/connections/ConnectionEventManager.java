@@ -1,8 +1,9 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
+import java.util.function.BiConsumer;
+
 import org.eclipse.emf.common.command.CompoundCommand;
 
-import de.tesis.dynaware.grapheditor.CommandAppender;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
@@ -10,15 +11,15 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
  */
 public class ConnectionEventManager {
 
-    private CommandAppender<GConnection> connectionCreatedHandler;
-    private CommandAppender<GConnection> connectionRemovedHandler;
+    private BiConsumer<GConnection, CompoundCommand> connectionCreatedHandler;
+    private BiConsumer<GConnection, CompoundCommand> connectionRemovedHandler;
 
     /**
      * Sets the handler to be called when connections are created.
      * 
      * @param connectionCreatedHandler the handler to be called when connections are created
      */
-    public void setOnConnectionCreated(final CommandAppender<GConnection> connectionCreatedHandler) {
+    public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> connectionCreatedHandler) {
         this.connectionCreatedHandler = connectionCreatedHandler;
     }
 
@@ -27,7 +28,7 @@ public class ConnectionEventManager {
      * 
      * @param connectionRemovedHandler the handler to be called when connections are removed
      */
-    public void setOnConnectionRemoved(final CommandAppender<GConnection> connectionRemovedHandler) {
+    public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> connectionRemovedHandler) {
         this.connectionRemovedHandler = connectionRemovedHandler;
     }
 
@@ -40,7 +41,7 @@ public class ConnectionEventManager {
     public void notifyConnectionAdded(final GConnection connection, final CompoundCommand command) {
 
         if (connectionCreatedHandler != null) {
-            connectionCreatedHandler.append(connection, command);
+            connectionCreatedHandler.accept(connection, command);
         }
     }
 
@@ -53,7 +54,7 @@ public class ConnectionEventManager {
     public void notifyConnectionRemoved(final GConnection connection, final CompoundCommand command) {
 
         if (connectionRemovedHandler != null) {
-            connectionRemovedHandler.append(connection, command);
+            connectionRemovedHandler.accept(connection, command);
         }
     }
 }

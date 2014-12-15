@@ -78,11 +78,6 @@ public class DefaultConnectionSkin extends SimpleConnectionSkin {
      */
     private void performChecks() {
 
-        if (getConnection().getSource() == null || getConnection().getTarget() == null) {
-            LOGGER.error(LogMessages.CONNECTOR_MISSING);
-            return;
-        }
-
         if (!RectangularConnectionUtils.checkJointCount(getConnection())) {
             LOGGER.error(LogMessages.UNSUPPORTED_JOINT_COUNT);
         }
