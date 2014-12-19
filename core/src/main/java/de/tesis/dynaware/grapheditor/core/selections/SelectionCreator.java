@@ -239,7 +239,6 @@ public class SelectionCreator {
         }
 
         selectionDragManager.unbindPositions(node);
-
         event.consume();
     }
 
@@ -290,7 +289,6 @@ public class SelectionCreator {
         }
 
         selectionDragManager.bindPositions(joint, model);
-
         event.consume();
     }
 
@@ -307,7 +305,6 @@ public class SelectionCreator {
         }
 
         selectionDragManager.unbindPositions(joint);
-
         event.consume();
     }
 
@@ -355,13 +352,6 @@ public class SelectionCreator {
         }
 
         selectionBoxStart = new Point2D(event.getX(), event.getY());
-
-        final double scaleFactor = view.getLocalToSceneTransform().getMxx();
-
-        if (scaleFactor == 1) {
-            // If no scale transform present the selection box is drawn much more often than the view, so we cache it.
-            view.setContentCache(true);
-        }
     }
 
     /**
@@ -386,11 +376,9 @@ public class SelectionCreator {
         }
 
         selectionBoxEnd = new Point2D(event.getX(), event.getY());
-
         evaluateSelectionBoxParameters();
 
         view.drawSelectionBox(selection.x, selection.y, selection.width, selection.height);
-
         updateSelection(event.isControlDown());
     }
 
@@ -406,9 +394,6 @@ public class SelectionCreator {
         }
 
         selectionBoxStart = null;
-
-        // Important to deactivate cache after drag, because it slows down redrawing of view content.
-        view.setContentCache(false);
         view.hideSelectionBox();
     }
 
