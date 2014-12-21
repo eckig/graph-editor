@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -120,8 +121,7 @@ public class SelectionCreator {
 
         for (final GNode node : model.getNodes()) {
 
-            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-            final Region nodeRegion = nodeSkin.getRoot();
+            final Region nodeRegion = skinLookup.lookupNode(node).getRoot();
 
             final EventHandler<MouseEvent> oldNodePressedHandler = nodePressedHandlers.get(node);
             final EventHandler<MouseEvent> oldNodeReleasedHandler = nodeReleasedHandlers.get(node);
@@ -164,11 +164,10 @@ public class SelectionCreator {
 
             for (final GJoint joint : connection.getJoints()) {
 
-                final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-                final Region jointRegion = jointSkin.getRoot();
+                final Region jointRegion = skinLookup.lookupJoint(joint).getRoot();
 
-                final EventHandler<MouseEvent> oldJointPressedHandler = nodePressedHandlers.get(joint);
-                final EventHandler<MouseEvent> oldJointReleasedHandler = nodeReleasedHandlers.get(joint);
+                final EventHandler<MouseEvent> oldJointPressedHandler = jointPressedHandlers.get(joint);
+                final EventHandler<MouseEvent> oldJointReleasedHandler = jointReleasedHandlers.get(joint);
 
                 if (oldJointPressedHandler != null) {
                     jointRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, oldJointPressedHandler);
@@ -194,7 +193,7 @@ public class SelectionCreator {
      * Handles mouse-pressed events on the given node.
      *
      * @param event a mouse-pressed event
-     * @param node the {@link GNode} on which this event occured
+     * @param node the {@link GNode} on which this event occurred
      */
     private void handleNodePressed(final MouseEvent event, final GNode node) {
 
