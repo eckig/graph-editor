@@ -4,3 +4,5 @@
 .pmd
 .checkstyle
 target/
+.idea/
+**.iml
