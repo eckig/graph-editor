@@ -1,7 +1,3 @@
-.context-menu {
-	-fx-border-color: white rgb(205, 205, 205) rgb(205, 205, 205) rgb(205, 205, 205);
-}
-
 #minimapButton {
 	-fx-background-color: null;
 	-fx-background-insets: 0;
