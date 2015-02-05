@@ -382,15 +382,10 @@ public class ConnectorDragManager {
      */
     private void handleDragExited(final MouseEvent event, final GConnector connector) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
-            return;
-        }
+        skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
+        repositionAllowed = true;
 
-        final GConnectorValidator validator = validatorManager.getConnectorValidator();
-
-        if (event.isPrimaryButtonDown() && validator.prevalidate(sourceConnector, connector)) {
-            skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
-            repositionAllowed = true;
+        if (event.getButton().equals(MouseButton.PRIMARY)) {
             tailManager.updatePosition(connector, event.getX(), event.getY());
         }
 
