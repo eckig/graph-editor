@@ -3,9 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -305,7 +302,7 @@ public class GraphEditorProperties {
      *
      * @return a map of custom properties
      */
-    public Map<String, String> getCustomProperties() {
+    public ObservableMap<String, String> getCustomProperties() {
         return customProperties;
     }
 }
