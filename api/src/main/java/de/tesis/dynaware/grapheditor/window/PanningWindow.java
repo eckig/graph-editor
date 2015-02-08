@@ -45,6 +45,8 @@ public class PanningWindow extends Region {
 
     private boolean panningGestureActive;
     private boolean cacheWhilePanning = true;
+    private boolean cacheWhileMouseOutside;
+    private boolean cacheOnMouseRelease;
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -56,10 +58,14 @@ public class PanningWindow extends Region {
 
         setClip(clip);
 
-        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> checkWindowBounds();
+        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> {
+            checkWindowBounds();
+        };
 
         widthProperty().addListener(windowSizeChangeListener);
         heightProperty().addListener(windowSizeChangeListener);
+
+        initializeCacheWhenMouseOutside();
     }
 
     /**
@@ -106,6 +112,8 @@ public class PanningWindow extends Region {
      * The current width & height values of the window and its content are used in this method. It should therefore be
      * called <em>after</em> the scene has been drawn.
      * </p>
+     *
+     * @param position the {@link WindowPosition} to pan to
      */
     public void panTo(final WindowPosition position) {
 
@@ -199,7 +207,7 @@ public class PanningWindow extends Region {
      * <p>
      * If this is set to true, large graphs will pan more smoothly but require more memory.
      * </p>
-     * 
+     *
      * <p>
      * <em>Warning:</em> currently works like crap if the content has a scale transform applied to it.
      * </p>
@@ -211,12 +219,31 @@ public class PanningWindow extends Region {
     }
 
     /**
-     * Gets the content of the panning window.
+     * Gets whether the content's cache will be set to true when the mouse is outside the panning window.
      *
-     * @return the {@link Region} that stores the content of the panning window, or {@code null}
+     * @return {@code true} if the content will be cached while the mouse is outside the panning window
+     * @see javafx.scene.Node#setCache
      */
-    protected Region getContent() {
-        return content;
+    public boolean isCacheWhileMouseOutside() {
+        return cacheWhileMouseOutside;
+    }
+
+    /**
+     * Sets whether the content's cache will be set to true when the mouse is outside the panning window.
+     *
+     * <p>
+     * If the mouse is dragged outside while the primary mouse button is down, the cache will not be turned on until the
+     * button is released.
+     * </p>
+     *
+     * <p>
+     * Experimental API. False by default.
+     * </p>
+     *
+     * @param cacheWhileMouseOutside {@code true} if the content will be cached while the mouse is outside
+     */
+    public void setCacheWhileMouseOutside(final boolean cacheWhileMouseOutside) {
+        this.cacheWhileMouseOutside = cacheWhileMouseOutside;
     }
 
     /**
@@ -334,5 +361,34 @@ public class PanningWindow extends Region {
         if (mouseReleasedHandler != null) {
             content.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         }
+    }
+
+    /**
+     * Sets up the mechanism to cache the panning window when the mouse is not inside it.
+     */
+    private void initializeCacheWhenMouseOutside() {
+
+        addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (cacheWhileMouseOutside && content != null) {
+                content.setCache(false);
+            }
+        });
+
+        addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+            if (cacheWhileMouseOutside && content != null) {
+                if (!event.isPrimaryButtonDown()) {
+                    content.setCache(true);
+                } else {
+                    cacheOnMouseRelease = true;
+                }
+            }
+        });
+
+        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            if (cacheOnMouseRelease && content != null) {
+                content.setCache(true);
+                cacheOnMouseRelease = false;
+            }
+        });
     }
 }
