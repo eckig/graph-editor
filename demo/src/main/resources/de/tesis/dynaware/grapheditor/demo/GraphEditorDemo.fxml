@@ -13,9 +13,11 @@
 						<MenuItem text="Load File" onAction="#load"/>
 						<Menu text="Load Sample">
 							<items>
-								<MenuItem text="Sample 1" onAction="#loadSample"/>
-								<MenuItem text="Sample 2" onAction="#loadTree"/>
-								<MenuItem text="Sample 3" onAction="#loadGrey"/>
+								<MenuItem text="Default Skins - Small" onAction="#loadSample"/>
+								<MenuItem text="Default Skins - Large" onAction="#loadSampleLarge"/>
+								<SeparatorMenuItem/>
+								<MenuItem text="Tree Skins" onAction="#loadTree"/>
+								<MenuItem text="Titled Skins" onAction="#loadTitled"/>
 							</items>
 						</Menu>
 						<MenuItem text="Save" onAction="#save"/>
@@ -67,14 +69,14 @@
 							<items>
 								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>
 								<RadioMenuItem fx:id="treeSkinButton" text="Tree" onAction="#setTreeSkin"/>
-								<RadioMenuItem fx:id="greySkinButton" text="Grey" onAction="#setGreySkin"/>
+								<RadioMenuItem fx:id="titledSkinButton" text="Titled" onAction="#setTitledSkin"/>
 							</items>
 						</Menu>
 						<!-- Added blank spaces to force menu to be wider. -->
 						<Menu fx:id="intersectionStyle" text="Intersection Style  ">
 							<items>
-								<RadioMenuItem fx:id="gappedStyleButton" text="Gaps" onAction="#setGappedStyle" selected="true"/>
-								<RadioMenuItem fx:id="detouredStyleButton" text="Detours" onAction="#setDetouredStyle"/>
+								<RadioMenuItem fx:id="detouredStyleButton" text="Detours" onAction="#setDetouredStyle" selected="true"/>
+								<RadioMenuItem fx:id="gappedStyleButton" text="Gaps" onAction="#setGappedStyle"/>
 							</items>
 						</Menu>
 						<Menu text="Zoom Level" fx:id="zoomOptions" />

@@ -47,12 +47,12 @@ public class IntersectionFinder {
      *
      * @param allPoints the map of all current points of all connections in the model
      * @param behind {@code true} for intersections with connections behind this one, {@code false} for those in front
+     *
      * @return a map of intersection points for each segment of the connection
      */
     public Map<Integer, List<Double>> find(final Map<GConnection, List<Point2D>> allPoints, final boolean behind) {
 
         final List<Point2D> points = allPoints.get(connection);
-
         Map<Integer, List<Double>> intersections = null;
 
         for (int i = 0; i < points.size() - 1; i++) {
@@ -63,15 +63,17 @@ public class IntersectionFinder {
 
                 for (final GConnection otherConnection : allPoints.keySet()) {
 
-                    final boolean ignoreConnection = checkInFront(otherConnection) ^ behind;
-
-                    if (otherConnection.equals(connection) || ignoreConnection) {
+                    if (!checkIntersectionRelevant(otherConnection, behind)) {
                         continue;
                     }
 
                     final List<Point2D> otherPoints = allPoints.get(otherConnection);
 
                     for (int j = 0; j < otherPoints.size() - 1; j++) {
+
+                        if (connection.equals(otherConnection) && (i > j ^ behind)) {
+                            continue;
+                        }
 
                         if (!RectangularConnectionUtils.isSegmentHorizontal(otherConnection, j)) {
                             final Point2D a = points.get(i);
@@ -91,9 +93,7 @@ public class IntersectionFinder {
                 }
 
                 if (segmentIntersections != null) {
-
                     Collections.sort(segmentIntersections);
-
                     if (points.get(i + 1).getX() < points.get(i).getX()) {
                         Collections.reverse(segmentIntersections);
                     }
@@ -103,15 +103,17 @@ public class IntersectionFinder {
 
                 for (final GConnection otherConnection : allPoints.keySet()) {
 
-                    final boolean ignoreConnection = checkInFront(otherConnection) ^ behind;
-
-                    if (otherConnection.equals(connection) || ignoreConnection) {
+                    if (!checkIntersectionRelevant(otherConnection, behind)) {
                         continue;
                     }
 
                     final List<Point2D> otherPoints = allPoints.get(otherConnection);
 
                     for (int j = 0; j < otherPoints.size() - 1; j++) {
+
+                        if (connection.equals(otherConnection) && (i > j ^ behind)) {
+                            continue;
+                        }
 
                         if (RectangularConnectionUtils.isSegmentHorizontal(otherConnection, j)) {
                             final Point2D a = otherPoints.get(j);
@@ -132,9 +134,7 @@ public class IntersectionFinder {
                 }
 
                 if (segmentIntersections != null) {
-
                     Collections.sort(segmentIntersections);
-
                     if (points.get(i + 1).getY() < points.get(i).getY()) {
                         Collections.reverse(segmentIntersections);
                     }
@@ -150,6 +150,23 @@ public class IntersectionFinder {
         }
 
         return intersections;
+    }
+
+    /**
+     * Checks if another connection should contribute to the intersections, based on which connection is in front.
+     *
+     * @param other another {@link GConnection} instance
+     * @param behind {@code true} if we are interested in connections behind this one, {@code false} for in front
+     *
+     * @return {@code true} if the intersection will be counted
+     */
+    private boolean checkIntersectionRelevant(final GConnection other, final boolean behind) {
+
+        if (connection.equals(other)) {
+            return true;
+        } else {
+            return checkInFront(other) ^ behind;
+        }
     }
 
     /**

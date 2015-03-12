@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.customskins.grey;
+package de.tesis.dynaware.grapheditor.demo.customskins.titled;
 
 import javafx.css.PseudoClass;
 import javafx.scene.Group;
@@ -15,10 +15,10 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 /**
  * A square-shaped connector skin for the 'grey-skins' theme.
  */
-public class GreyConnectorSkin extends GConnectorSkin {
+public class TitledConnectorSkin extends GConnectorSkin {
 
-    private static final String STYLE_CLASS = "grey-connector";
-    private static final String STYLE_CLASS_FORBIDDEN_GRAPHIC = "grey-connector-forbidden-graphic";
+    private static final String STYLE_CLASS = "titled-connector";
+    private static final String STYLE_CLASS_FORBIDDEN_GRAPHIC = "titled-connector-forbidden-graphic";
 
     private static final double SIZE = 15;
 
@@ -31,11 +31,11 @@ public class GreyConnectorSkin extends GConnectorSkin {
     private final Group forbiddenGraphic;
 
     /**
-     * Creates a new {@link GreyConnectorSkin} instance.
+     * Creates a new {@link TitledConnectorSkin} instance.
      *
      * @param connector the {@link GConnector} that this skin is representing
      */
-    public GreyConnectorSkin(final GConnector connector) {
+    public TitledConnectorSkin(final GConnector connector) {
 
         super(connector);
 

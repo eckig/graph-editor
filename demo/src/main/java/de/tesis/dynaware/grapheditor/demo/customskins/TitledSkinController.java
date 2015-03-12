@@ -14,10 +14,10 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
-import de.tesis.dynaware.grapheditor.demo.customskins.grey.GreyConnectorSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.grey.GreyNodeSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.grey.GreySkinConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.grey.GreyTailSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledConnectorSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledNodeSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledTailSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
@@ -26,23 +26,23 @@ import de.tesis.dynaware.grapheditor.model.GraphPackage;
 /**
  * Responsible for grey-skin specific logic in the graph editor demo.
  */
-public class GreySkinController extends DefaultSkinController {
+public class TitledSkinController extends DefaultSkinController {
 
     /**
-     * Creates a new {@link GreySkinController} instance.
+     * Creates a new {@link TitledSkinController} instance.
      * 
      * @param graphEditor the graph editor on display in this demo
      * @param graphEditorContainer the graph editor container on display in this demo
      */
-    public GreySkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+    public TitledSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
 
         super(graphEditor, graphEditorContainer);
 
-        graphEditor.setNodeSkin(GreySkinConstants.GREY_NODE, GreyNodeSkin.class);
-        graphEditor.setConnectorSkin(GreySkinConstants.GREY_INPUT_CONNECTOR, GreyConnectorSkin.class);
-        graphEditor.setConnectorSkin(GreySkinConstants.GREY_OUTPUT_CONNECTOR, GreyConnectorSkin.class);
-        graphEditor.setTailSkin(GreySkinConstants.GREY_INPUT_CONNECTOR, GreyTailSkin.class);
-        graphEditor.setTailSkin(GreySkinConstants.GREY_OUTPUT_CONNECTOR, GreyTailSkin.class);
+        graphEditor.setNodeSkin(TitledSkinConstants.TITLED_NODE, TitledNodeSkin.class);
+        graphEditor.setConnectorSkin(TitledSkinConstants.TITLED_INPUT_CONNECTOR, TitledConnectorSkin.class);
+        graphEditor.setConnectorSkin(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR, TitledConnectorSkin.class);
+        graphEditor.setTailSkin(TitledSkinConstants.TITLED_INPUT_CONNECTOR, TitledTailSkin.class);
+        graphEditor.setTailSkin(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR, TitledTailSkin.class);
     }
 
     @Override
@@ -54,17 +54,17 @@ public class GreySkinController extends DefaultSkinController {
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(NODE_INITIAL_Y + windowYOffset);
 
-        node.setType(GreySkinConstants.GREY_NODE);
+        node.setType(TitledSkinConstants.TITLED_NODE);
         node.setX(NODE_INITIAL_X + windowXOffset);
         node.setId(allocateNewId());
 
         final GConnector input = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(input);
-        input.setType(GreySkinConstants.GREY_INPUT_CONNECTOR);
+        input.setType(TitledSkinConstants.TITLED_INPUT_CONNECTOR);
 
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(output);
-        output.setType(GreySkinConstants.GREY_OUTPUT_CONNECTOR);
+        output.setType(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR);
 
         Commands.addNode(graphEditor.getModel(), node);
     }
