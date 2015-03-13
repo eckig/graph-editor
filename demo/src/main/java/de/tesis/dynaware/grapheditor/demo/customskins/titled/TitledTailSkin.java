@@ -10,8 +10,8 @@ import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 public class TitledTailSkin extends DefaultTailSkin {
 
-    private static final String STYLE_CLASS = "grey-tail";
-    private static final String STYLE_CLASS_ENDPOINT = "grey-tail-endpoint";
+    private static final String STYLE_CLASS = "titled-tail";
+    private static final String STYLE_CLASS_ENDPOINT = "titled-tail-endpoint";
 
     private static final double SIZE = 15;
 
