@@ -9,6 +9,7 @@ import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.CommandStackListener;
 
+import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectorDragManager;
@@ -17,7 +18,6 @@ import de.tesis.dynaware.grapheditor.core.model.ModelLayoutUpdater;
 import de.tesis.dynaware.grapheditor.core.model.ModelMemory;
 import de.tesis.dynaware.grapheditor.core.model.ModelSanityChecker;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
-import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -60,11 +60,9 @@ public class GraphEditorController {
      * Creates a new controller instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
      * @param skinManager the {@link SkinManager} instance
-     * @param validatorManager the {@link ValidatorManager} instance
      * @param connectionEventManager the {@link ConnectionEventManager} instance
      */
-    public GraphEditorController(final SkinManager skinManager, final ValidatorManager validatorManager,
-            final ConnectionEventManager connectionEventManager) {
+    public GraphEditorController(final SkinManager skinManager, final ConnectionEventManager connectionEventManager) {
 
         this.skinManager = skinManager;
 
@@ -75,7 +73,7 @@ public class GraphEditorController {
         modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager);
         modelMemory = new ModelMemory();
         connectionLayouter = new ConnectionLayouter(skinManager);
-        connectorDragManager = new ConnectorDragManager(skinManager, validatorManager, connectionEventManager, view);
+        connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
         selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
 
         view.setConnectionLayouter(connectionLayouter);
@@ -157,6 +155,15 @@ public class GraphEditorController {
         connectionLayouter.initialize(model);
         connectorDragManager.initialize(model);
         selectionManager.initialize(model);
+    }
+
+    /**
+     * Sets the validator that determines what connections can be created.
+     * 
+     * @param validator a {@link GConnectorValidator} implementaiton, or null to use the default
+     */
+    public void setConnectorValidator(final GConnectorValidator validator) {
+        connectorDragManager.setValidator(validator);
     }
 
     /**

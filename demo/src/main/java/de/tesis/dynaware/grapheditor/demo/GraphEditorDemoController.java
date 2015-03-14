@@ -384,7 +384,7 @@ public class GraphEditorDemoController {
 
         if (treeSkinController.equals(activeSkinController.get())) {
 
-            graphEditor.setConnectorValidator(TreeConnectorValidator.class);
+            graphEditor.setConnectorValidator(new TreeConnectorValidator());
             graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             treeSkinButton.setSelected(true);
 
