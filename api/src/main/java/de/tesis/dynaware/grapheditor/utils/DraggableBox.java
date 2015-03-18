@@ -45,6 +45,8 @@ public class DraggableBox extends StackPane {
 
     protected GraphEditorProperties editorProperties = new GraphEditorProperties();
 
+    protected Region container;
+
     // Note that ResizableBox subclass currently pays no attention to alignment targets!
     private List<Double> alignmentTargetsX;
     private List<Double> alignmentTargetsY;
@@ -284,11 +286,14 @@ public class DraggableBox extends StackPane {
             return;
         }
 
+        container = getContainer(this);
+
         if (cacheWhenStationary) {
             setCache(false);
         }
 
-        storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
+        final Point2D cursorPosition = getCursorPositionInContainer(event);
+        storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         dragActive = true;
         event.consume();
     }
@@ -305,10 +310,13 @@ public class DraggableBox extends StackPane {
         }
 
         if (!dragActive) {
-            storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
+            container = getContainer(this);
+            final Point2D cursorPosition = getCursorPositionInContainer(event);
+            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         }
 
-        handleDrag(event.getSceneX(), event.getSceneY());
+        final Point2D cursorPosition = getCursorPositionInContainer(event);
+        handleDrag(cursorPosition.getX(), cursorPosition.getY());
         dragActive = true;
         event.consume();
     }
@@ -336,8 +344,8 @@ public class DraggableBox extends StackPane {
     /**
      * Stores relevant layout values at the time of the last mouse click (mouse-pressed event).
      *
-     * @param x the scene-x position of the click event
-     * @param y the scene-y position of the click event
+     * @param x the container-x position of the click event
+     * @param y the container-y position of the click event
      */
     protected void storeClickValuesForDrag(final double x, final double y) {
 
@@ -346,8 +354,6 @@ public class DraggableBox extends StackPane {
 
         lastMouseX = x;
         lastMouseY = y;
-
-        final Region container = getContainer(this);
 
         if (container != null && container.getWidth() > 0) {
             lastParentWidth = container.getWidth();
@@ -388,10 +394,27 @@ public class DraggableBox extends StackPane {
     }
 
     /**
+     * Gets the position of the cursor from the given mouse-event relative to the container origin.
+     *
+     * @param event a {@link MouseEvent} storing the cursor position
+     * @return the position of the cursor relative to the container origin
+     */
+    protected Point2D getCursorPositionInContainer(final MouseEvent event) {
+
+        final double sceneX = event.getSceneX();
+        final double sceneY = event.getSceneY();
+
+        final double containerSceneX = container.localToScene(0, 0).getX();
+        final double containerSceneY = container.localToScene(0, 0).getY();
+
+        return new Point2D(sceneX - containerSceneX, sceneY - containerSceneY);
+    }
+
+    /**
      * Handles a drag event to the given cursor position.
      *
-     * @param x the cursor x position
-     * @param y the cursor y position
+     * @param x the cursor x position relative to the container
+     * @param y the cursor y position relative to the container
      */
     private void handleDrag(final double x, final double y) {
 
