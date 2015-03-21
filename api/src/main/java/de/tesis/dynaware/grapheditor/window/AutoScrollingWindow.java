@@ -185,7 +185,7 @@ public class AutoScrollingWindow extends PanningWindow {
             dragEventTarget = (Node) event.getTarget();
 
             jumpDistance = getDistanceToJump(event.getX(), event.getY());
-            if (jumpDistance != null && !isScrolling) {
+            if (jumpDistance != null && !isScrolling && isAutoScrollingEnabled()) {
                 startScrolling();
             }
         }
