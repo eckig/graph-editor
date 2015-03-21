@@ -20,7 +20,6 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
-import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeometryUtilsTest {
@@ -67,19 +66,5 @@ public class GeometryUtilsTest {
         // Should return the absolute position of the center of the connector.
         final Point2D target = new Point2D(NODE_X + CONNECTOR_CENTER_X, NODE_Y + CONNECTOR_CENTER_Y);
         assertEquals(GeometryUtils.getConnectorPosition(connector, skinLookup), target);
-    }
-
-    @Test
-    public void testGetCursorPosition() {
-
-        final double localX = 15;
-        final double localY = -2;
-
-        // Should return the absolute position of the cursor.
-        final double targetX = NODE_X + CONNECTOR_CENTER_X - CONNECTOR_WIDTH / 2 + localX;
-        final double targetY = NODE_Y + CONNECTOR_CENTER_Y - CONNECTOR_HEIGHT / 2 + localY;
-        final Point2D target = new Point2D(targetX, targetY);
-
-        assertEquals(GeometryUtils.getCursorPosition(connector, localX, localY, skinLookup), target);
     }
 }

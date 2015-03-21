@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
@@ -39,10 +40,9 @@ public class TailManager {
      * Creates a new tail and adds it to the view.
      * 
      * @param connector the connector where the tail starts from
-     * @param x the cursor x position relative to the connector
-     * @param y the cursor y position relative to the connector
+     * @param the mouse event responsible for creating the tail
      */
-    public void create(final GConnector connector, final double x, final double y) {
+    public void create(final GConnector connector, final MouseEvent event) {
 
         // Check if tailSkin already created, because this method may be called multiple times.
         if (tailSkin == null) {
@@ -50,7 +50,7 @@ public class TailManager {
             tailSkin = skinLookup.lookupTail(connector);
 
             sourcePosition = GeometryUtils.getConnectorPosition(connector, skinLookup);
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(connector, x, y, skinLookup);
+            final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
 
             tailSkin.draw(sourcePosition, cursorPosition);
 
@@ -64,11 +64,9 @@ public class TailManager {
      * 
      * @param connector the connector that the connection was detached from
      * @param connection the connection that was detached
-     * @param x the cursor x position relative to the connector
-     * @param y the cursor y position relative to the connector
+     * @param the mouse event responsible for creating the tail
      */
-    public void createFromConnection(final GConnector connector, final GConnection connection, final double x,
-            final double y) {
+    public void createFromConnection(final GConnector connector, final GConnection connection, final MouseEvent event) {
 
         jointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
 
@@ -83,7 +81,7 @@ public class TailManager {
         tailSkin = skinLookup.lookupTail(newSource);
 
         sourcePosition = GeometryUtils.getConnectorPosition(newSource, skinLookup);
-        final Point2D cursorPosition = GeometryUtils.getCursorPosition(connector, x, y, skinLookup);
+        final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
 
         tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
         view.add(tailSkin);
@@ -91,17 +89,15 @@ public class TailManager {
     }
 
     /**
-     * Updates the tail position based on new cursor x and y values.
+     * Updates the tail position based on new cursor position.
      * 
-     * @param connector the connector where the drag event started
-     * @param x the cursor x position relative to this connector
-     * @param y the cursor y position relative to this connector
+     * @param the mouse event responsible for updating the position
      */
-    public void updatePosition(final GConnector connector, final double x, final double y) {
+    public void updatePosition(final MouseEvent event) {
 
         if (tailSkin != null && sourcePosition != null) {
 
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(connector, x, y, skinLookup);
+            final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
 
             if (jointPositions != null) {
                 tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
@@ -149,5 +145,18 @@ public class TailManager {
             view.remove(tailSkin);
             tailSkin = null;
         }
+    }
+
+    /**
+     * Corrects the cursor position in the case where scale transforms are applied.
+     * 
+     * @param cursorPosition the cursor position calculated assuming scale factor of 1
+     * 
+     * @return the corrected cursor position
+     */
+    private Point2D getScaledPosition(final Point2D cursorPosition) {
+
+        final double scale = view.getLocalToSceneTransform().getMxx();
+        return new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
     }
 }

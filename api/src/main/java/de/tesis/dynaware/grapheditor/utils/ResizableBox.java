@@ -186,7 +186,7 @@ public class ResizableBox extends DraggableBox {
         }
 
         if (!dragActive) {
-            final Point2D cursorPosition = getCursorPositionInContainer(event);
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
             storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
             storeClickValuesForResize(event.getX(), event.getY());
         }
@@ -194,7 +194,7 @@ public class ResizableBox extends DraggableBox {
         if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE)) {
             super.handleMouseDragged(event);
         } else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)) {
-            final Point2D cursorPosition = getCursorPositionInContainer(event);
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
             handleResize(cursorPosition.getX(), cursorPosition.getY());
         }
 

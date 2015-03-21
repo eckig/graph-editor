@@ -25,6 +25,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 /**
  * Responsible for creating selections of nodes and joints in the graph editor.
@@ -113,7 +114,7 @@ public class SelectionCreator {
      * Adds a mechanism to select nodes by clicking on them.
      *
      * <p>
-     * Holding the <b>control</b> key while clicking will add to the existing selection.
+     * Holding the <b>shortcut</b> key while clicking will add to the existing selection.
      * </p>
      */
     private void addClickSelectionMechanism() {
@@ -203,14 +204,14 @@ public class SelectionCreator {
         final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
 
         if (!nodeSkin.isSelected()) {
-            if (!event.isControlDown()) {
+            if (!event.isShortcutDown()) {
                 deselectAll();
             } else {
                 backupSelections();
             }
             nodeSkin.setSelected(true);
         } else {
-            if (event.isControlDown()) {
+            if (event.isShortcutDown()) {
                 nodeSkin.setSelected(false);
             }
         }
@@ -251,7 +252,7 @@ public class SelectionCreator {
             return;
         }
 
-        if (!event.isControlDown()) {
+        if (!event.isShortcutDown()) {
             deselectAll();
         }
 
@@ -273,7 +274,7 @@ public class SelectionCreator {
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
 
         if (!jointSkin.isSelected()) {
-            if (!event.isControlDown()) {
+            if (!event.isShortcutDown()) {
                 deselectAll();
             } else {
                 backupSelections();
@@ -281,7 +282,7 @@ public class SelectionCreator {
             }
             jointSkin.getRoot().toFront();
         } else {
-            if (event.isControlDown()) {
+            if (event.isShortcutDown()) {
                 jointSkin.setSelected(false);
             }
         }
@@ -343,13 +344,16 @@ public class SelectionCreator {
             return;
         }
 
-        if (!event.isControlDown()) {
+        if (!event.isShortcutDown()) {
             deselectAll();
         } else {
             backupSelections();
         }
 
-        selectionBoxStart = new Point2D(event.getX(), event.getY());
+        final double scale = view.getLocalToSceneTransform().getMxx();
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, view);
+
+        selectionBoxStart = new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
     }
 
     /**
@@ -365,19 +369,26 @@ public class SelectionCreator {
 
         if (selectionBoxStart == null) {
 
-            if (!event.isControlDown()) {
+            if (!event.isShortcutDown()) {
                 deselectAll();
             } else {
                 backupSelections();
             }
-            selectionBoxStart = new Point2D(event.getX(), event.getY());
+            final double scale = view.getLocalToSceneTransform().getMxx();
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, view);
+
+            selectionBoxStart = new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
         }
 
-        selectionBoxEnd = new Point2D(event.getX(), event.getY());
+        final double scale = view.getLocalToSceneTransform().getMxx();
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, view);
+
+        selectionBoxEnd = new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
+
         evaluateSelectionBoxParameters();
 
         view.drawSelectionBox(selection.x, selection.y, selection.width, selection.height);
-        updateSelection(event.isControlDown());
+        updateSelection(event.isShortcutDown());
     }
 
     /**
@@ -398,12 +409,12 @@ public class SelectionCreator {
     /**
      * Updates the selection according to what nodes & joints are inside / outside the selection box.
      */
-    private void updateSelection(final boolean isControlDown) {
+    private void updateSelection(final boolean isShortcutDown) {
 
         final List<GNode> selectedNodes = getAllNodesInBox();
         final List<GJoint> selectedJoints = getAllJointsInBox();
 
-        if (isControlDown) {
+        if (isShortcutDown) {
             selectedNodes.addAll(selectedNodesBackup);
             selectedJoints.addAll(selectedJointsBackup);
         }

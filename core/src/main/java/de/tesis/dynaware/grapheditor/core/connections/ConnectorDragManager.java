@@ -316,7 +316,7 @@ public class ConnectorDragManager {
 
             sourceConnector = connector;
             skinLookup.lookupConnector(connector).getRoot().startFullDrag();
-            tailManager.create(connector, event.getX(), event.getY());
+            tailManager.create(connector, event);
 
         } else if (checkRemovable(connector)) {
 
@@ -348,7 +348,7 @@ public class ConnectorDragManager {
         if (removalConnector != null && !removalConnector.equals(hoveredConnector)) {
             detachConnection(event, connector);
         } else {
-            tailManager.updatePosition(connector, event.getX(), event.getY());
+            tailManager.updatePosition(event);
         }
 
         event.consume();
@@ -395,7 +395,7 @@ public class ConnectorDragManager {
         repositionAllowed = true;
 
         if (event.getButton().equals(MouseButton.PRIMARY)) {
-            tailManager.updatePosition(connector, event.getX(), event.getY());
+            tailManager.updatePosition(event);
         }
 
         event.consume();
@@ -503,7 +503,7 @@ public class ConnectorDragManager {
         }
 
         final GConnection connection = connector.getConnections().get(0);
-        tailManager.createFromConnection(connector, connection, event.getX(), event.getY());
+        tailManager.createFromConnection(connector, connection, event);
 
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
 

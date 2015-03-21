@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
@@ -61,25 +63,22 @@ public class GeometryUtils {
     }
 
     /**
-     * Gets the position of the cursor relative to the coordinate system of the view.
+     * Gets the position of the cursor relative to some node.
      *
-     * @param connector a {@link GConnector} instance
-     * @param x the x position of the cursor relative to the given connector's region
-     * @param y the y position of the cursor relative to the given connector's region
-     * @param skinLookup the {@link SkinLookup} instance for this graph editor
-     *
-     * @return the position of the cursor in the view
+     * @param event a {@link MouseEvent} storing the cursor position
+     * @param node some {@link Node}
+     * 
+     * @return the position of the cursor relative to the node origin
      */
-    public static Point2D getCursorPosition(final GConnector connector, final double x, final double y,
-            final SkinLookup skinLookup) {
+    public static Point2D getCursorPosition(final MouseEvent event, final Node node) {
 
-        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        final Point2D connectorPosition = getConnectorPosition(connector, skinLookup);
+        final double sceneX = event.getSceneX();
+        final double sceneY = event.getSceneY();
 
-        final double cursorX = x + connectorPosition.getX() - connectorSkin.getWidth() / 2;
-        final double cursorY = y + connectorPosition.getY() - connectorSkin.getHeight() / 2;
+        final double containerSceneX = node.localToScene(0, 0).getX();
+        final double containerSceneY = node.localToScene(0, 0).getY();
 
-        return new Point2D(cursorX, cursorY);
+        return new Point2D(sceneX - containerSceneX, sceneY - containerSceneY);
     }
 
     /**

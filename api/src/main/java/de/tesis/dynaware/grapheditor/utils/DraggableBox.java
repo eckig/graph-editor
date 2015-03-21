@@ -292,7 +292,7 @@ public class DraggableBox extends StackPane {
             setCache(false);
         }
 
-        final Point2D cursorPosition = getCursorPositionInContainer(event);
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
         storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         dragActive = true;
         event.consume();
@@ -311,11 +311,11 @@ public class DraggableBox extends StackPane {
 
         if (!dragActive) {
             container = getContainer(this);
-            final Point2D cursorPosition = getCursorPositionInContainer(event);
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
             storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         }
 
-        final Point2D cursorPosition = getCursorPositionInContainer(event);
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
         handleDrag(cursorPosition.getX(), cursorPosition.getY());
         dragActive = true;
         event.consume();
@@ -391,23 +391,6 @@ public class DraggableBox extends StackPane {
 
         final double spacing = editorProperties.getGridSpacing();
         return spacing * Math.round(value / spacing);
-    }
-
-    /**
-     * Gets the position of the cursor from the given mouse-event relative to the container origin.
-     *
-     * @param event a {@link MouseEvent} storing the cursor position
-     * @return the position of the cursor relative to the container origin
-     */
-    protected Point2D getCursorPositionInContainer(final MouseEvent event) {
-
-        final double sceneX = event.getSceneX();
-        final double sceneY = event.getSceneY();
-
-        final double containerSceneX = container.localToScene(0, 0).getX();
-        final double containerSceneY = container.localToScene(0, 0).getY();
-
-        return new Point2D(sceneX - containerSceneX, sceneY - containerSceneY);
     }
 
     /**
