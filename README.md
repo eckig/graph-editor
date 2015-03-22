@@ -9,7 +9,7 @@ A library for creating and editing graph-like diagrams in JavaFX.
 
 + Highly customizable
 + Add your own custom skins or restyle existing ones via CSS
-+ 3 skin sets provided:
++ Additional skin examples provided:
 
 ![Examples of skins provided with the graph editor demo.](skinExamples.png)
 
