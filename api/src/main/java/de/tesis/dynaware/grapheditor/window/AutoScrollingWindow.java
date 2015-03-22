@@ -11,15 +11,13 @@ import javafx.util.Duration;
  * An extension of {@link PanningWindow} that adds an auto-scrolling mechanism.
  * 
  * <p>
- * The auto-scrolling occurs when the mouse is dragged to the edge of the window. The scrolling rate increases as the
- * cursor moves further outside the window.
- * </p>
- * 
- * <p>
- * The parameters controlling the scroll-rate can all be tweaked. Do so at your own risk.
+ * The auto-scrolling occurs when the mouse is dragged to the edge of the window. The scrolling rate increases the
+ * longer the cursor is outside the window.
  * </p>
  */
 public class AutoScrollingWindow extends PanningWindow {
+
+    private final AutoScrollingParameters parameters = new AutoScrollingParameters();
 
     private Timeline timeline;
     private MouseEvent currentDragEvent;
@@ -28,11 +26,7 @@ public class AutoScrollingWindow extends PanningWindow {
     private Point2D jumpDistance;
 
     private boolean autoScrollingEnabled = true;
-    private double jumpPeriod = 25;
-    private double baseJumpAmount = 10;
-    private double maxJumpAmount = 50;
-    private double jumpAmountIncreasePerPixel = 0.1;
-    private double insetToBeginScroll = 1;
+    private int jumpsTaken;
 
     /**
      * Creates a new {@link AutoScrollingWindow}.
@@ -61,109 +55,12 @@ public class AutoScrollingWindow extends PanningWindow {
     }
 
     /**
-     * Gets the interval at which auto-scroll 'jumps' occur when the cursor is dragged outside the window.
+     * Gets the parameters that control the auto-scrolling rate.
      * 
-     * @return the jump period in milliseconds
+     * @return the parameters that control the auto-scrolling rate
      */
-    public double getJumpPeriod() {
-        return jumpPeriod;
-    }
-
-    /**
-     * Sets the interval at which auto-scroll 'jumps' occur when the cursor is dragged outside the window.
-     * 
-     * <p>
-     * Defaults to <b>25ms</b>. It shouldn't be necessary to change this unless performance is slow.
-     * </p>
-     * 
-     * @param jumpPeriod a value in milliseconds
-     */
-    public void setJumpPeriod(final double jumpPeriod) {
-        this.jumpPeriod = jumpPeriod;
-    }
-
-    /**
-     * Gets the amount by which the window jumps when the cursor is dragged to the window-edge.
-     * 
-     * @return the jump amount in pixels
-     */
-    public double getBaseJumpAmount() {
-        return baseJumpAmount;
-    }
-
-    /**
-     * Sets the amount by which the window will jump when the cursor is dragged to the window-edge.
-     * 
-     * <p>
-     * Defaults to <b>10 pixels</b>.
-     * </p>
-     * 
-     * @param baseJumpAmount a value in pixels
-     */
-    public void setBaseJumpAmount(final double baseJumpAmount) {
-        this.baseJumpAmount = baseJumpAmount;
-    }
-
-    /**
-     * Gets the maximum amount by which the window will jump when the cursor is dragged far outside the window.
-     * 
-     * @return maxJumpAmount the maximum jump-amount in pixels
-     */
-    public double getMaxJumpAmount() {
-        return maxJumpAmount;
-    }
-
-    /**
-     * Gets the maximum amount by which the window will jump when the cursor is dragged far outside the window.
-     * 
-     * @return maxJumpAmount the maximum jump-amount in pixels
-     */
-    public void setMaxJumpAmount(final double maxJumpAmount) {
-        this.maxJumpAmount = maxJumpAmount;
-    }
-
-    /**
-     * Gets how much the jump-amount increases for each pixel that the cursor is outside the window.
-     * 
-     * @return the jump-amount increase per pixel
-     */
-    public double getJumpAmountIncreasePerPixel() {
-        return jumpAmountIncreasePerPixel;
-    }
-
-    /**
-     * Sets how much the jump-amount increases for each pixel that the cursor is outside the window.
-     * 
-     * <p>
-     * Defaults to <b>0.1</b>.
-     * </p>
-     * 
-     * @param a value in pixels or a fraction of pixels (should be small)
-     */
-    public void setJumpAmountIncreasePerPixel(final double jumpAmountIncreasePerPixel) {
-        this.jumpAmountIncreasePerPixel = jumpAmountIncreasePerPixel;
-    }
-
-    /**
-     * Gets the inset from the window-edge where auto-scrolling will begin.
-     * 
-     * @return the inset from the window-edge where auto-scrolling begins
-     */
-    public double getInsetToBeginScroll() {
-        return insetToBeginScroll;
-    }
-
-    /**
-     * Sets the inset from the window-edge where auto-scrolling will begin.
-     * 
-     * <p>
-     * Defaults to <b>1 pixel</b>. Should not be 0 if the graph-editor can be full-screen.
-     * </p>
-     * 
-     * @param insetToBeginScroll the inset from the window-edge where auto-scrolling begins
-     */
-    public void setInsetToBeginScroll(final double insetToBeginScroll) {
-        this.insetToBeginScroll = insetToBeginScroll;
+    public AutoScrollingParameters getAutoScrollingParameters() {
+        return parameters;
     }
 
     /**
@@ -185,7 +82,10 @@ public class AutoScrollingWindow extends PanningWindow {
             dragEventTarget = (Node) event.getTarget();
 
             jumpDistance = getDistanceToJump(event.getX(), event.getY());
-            if (jumpDistance != null && !isScrolling && isAutoScrollingEnabled()) {
+
+            if (jumpDistance == null) {
+                jumpsTaken = 0;
+            } else if (!isScrolling && isAutoScrollingEnabled()) {
                 startScrolling();
             }
         }
@@ -217,24 +117,20 @@ public class AutoScrollingWindow extends PanningWindow {
         double jumpX = 0;
         double jumpY = 0;
 
-        if (cursorX <= insetToBeginScroll) {
-            final double distanceOutside = insetToBeginScroll - cursorX;
-            jumpX = -baseJumpAmount - distanceOutside * jumpAmountIncreasePerPixel;
-            jumpX = Math.max(jumpX, -maxJumpAmount);
-        } else if (cursorX >= getWidth() - insetToBeginScroll) {
-            final double distanceOutside = cursorX + insetToBeginScroll - getWidth();
-            jumpX = baseJumpAmount + distanceOutside * jumpAmountIncreasePerPixel;
-            jumpX = Math.min(jumpX, maxJumpAmount);
+        final double baseAmount = parameters.getBaseJumpAmount();
+        final double additionalAmount = jumpsTaken + parameters.getJumpAmountIncreasePerJump();
+        final double distance = Math.min(baseAmount + additionalAmount, parameters.getMaxJumpAmount());
+
+        if (cursorX <= parameters.getInsetToBeginScroll()) {
+            jumpX = -distance;
+        } else if (cursorX >= getWidth() - parameters.getInsetToBeginScroll()) {
+            jumpX = distance;
         }
 
-        if (cursorY <= insetToBeginScroll) {
-            final double distanceOutside = insetToBeginScroll - cursorY;
-            jumpY = -baseJumpAmount - distanceOutside * jumpAmountIncreasePerPixel;
-            jumpY = Math.max(jumpY, -maxJumpAmount);
-        } else if (cursorY >= getHeight() - insetToBeginScroll) {
-            final double distanceOutside = cursorY + insetToBeginScroll - getHeight();
-            jumpY = baseJumpAmount + distanceOutside * jumpAmountIncreasePerPixel;
-            jumpY = Math.min(jumpY, maxJumpAmount);
+        if (cursorY <= parameters.getInsetToBeginScroll()) {
+            jumpY = -distance;
+        } else if (cursorY >= getHeight() - parameters.getInsetToBeginScroll()) {
+            jumpY = distance;
         }
 
         if (jumpX == 0 && jumpY == 0) {
@@ -250,11 +146,13 @@ public class AutoScrollingWindow extends PanningWindow {
     private void startScrolling() {
 
         isScrolling = true;
+        jumpsTaken = 0;
 
-        final KeyFrame frame = new KeyFrame(Duration.millis(jumpPeriod), event -> {
+        final KeyFrame frame = new KeyFrame(Duration.millis(parameters.getJumpPeriod()), event -> {
             if (dragEventTarget != null && isScrolling && jumpDistance != null) {
                 panBy(jumpDistance.getX(), jumpDistance.getY());
                 dragEventTarget.fireEvent(currentDragEvent);
+                jumpsTaken++;
             }
         });
 
