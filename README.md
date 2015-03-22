@@ -9,17 +9,17 @@ A library for creating and editing graph-like diagrams in JavaFX.
 
 + Highly customizable
 + Add your own custom skins or restyle existing ones via CSS
-+ 3 skin sets provided:
++ Graphical effects where connections intersect:
 
-![Examples of skins provided with the graph editor demo.](skinExamples.png)
+![Examples of how intersections look in the graph editor demo.](intersectionExamples.png)
 
 + Full undo / redo functionality via EMF commands
 + Selection API & cut / copy / paste
 + Alignment & snap-to-grid
 + Editing of large graphs via a panning mechanism & minimap
-+ Graphical effects where connections intersect:
++ Additional skin examples provided:
 
-![Examples of how intersections look in the graph editor demo.](intersectionExamples.png)
+![Examples of skins provided with the graph editor demo.](skinExamples.png)
 
 ## Demo
 
