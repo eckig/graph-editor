@@ -54,8 +54,10 @@ public class GeometryUtils {
             final double nodeX = nodeSkin.getRoot().getLayoutX();
             final double nodeY = nodeSkin.getRoot().getLayoutY();
 
-            final double connectorX = nodeSkin.getConnectorPosition(connectorSkin).getX();
-            final double connectorY = nodeSkin.getConnectorPosition(connectorSkin).getY();
+            final Point2D connectorPosition = nodeSkin.getConnectorPosition(connectorSkin);
+
+            final double connectorX = connectorPosition.getX();
+            final double connectorY = connectorPosition.getY();
 
             return new Point2D(moveOnPixel(nodeX + connectorX), moveOnPixel(nodeY + connectorY));
         }
@@ -67,7 +69,7 @@ public class GeometryUtils {
      *
      * @param event a {@link MouseEvent} storing the cursor position
      * @param node some {@link Node}
-     * 
+     *
      * @return the position of the cursor relative to the node origin
      */
     public static Point2D getCursorPosition(final MouseEvent event, final Node node) {
