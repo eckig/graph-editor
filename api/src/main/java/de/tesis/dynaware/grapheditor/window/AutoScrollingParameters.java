@@ -8,7 +8,7 @@ public class AutoScrollingParameters {
     private double jumpPeriod = 25;
     private double baseJumpAmount = 1;
     private double maxJumpAmount = 50;
-    private double jumpAmountIncreasePerJump = 0.4;
+    private double jumpAmountIncreasePerJump = 0.5;
     private double insetToBeginScroll = 1;
 
     /**
