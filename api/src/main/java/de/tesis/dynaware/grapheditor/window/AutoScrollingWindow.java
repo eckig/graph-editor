@@ -1,5 +1,6 @@
 package de.tesis.dynaware.grapheditor.window;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
@@ -9,7 +10,7 @@ import javafx.util.Duration;
 
 /**
  * An extension of {@link PanningWindow} that adds an auto-scrolling mechanism.
- * 
+ *
  * <p>
  * The auto-scrolling occurs when the mouse is dragged to the edge of the window. The scrolling rate increases the
  * longer the cursor is outside the window.
@@ -38,7 +39,7 @@ public class AutoScrollingWindow extends PanningWindow {
 
     /**
      * Gets whether auto-scrolling is enabled.
-     * 
+     *
      * @return {@code true} if auto-scrolling is enabled
      */
     public boolean isAutoScrollingEnabled() {
@@ -47,7 +48,7 @@ public class AutoScrollingWindow extends PanningWindow {
 
     /**
      * Sets whether auto-scrolling is enabled
-     * 
+     *
      * @param autoScrollingEnabled {@code true} to enable auto-scrolling, {@code false} to disable it
      */
     public void setAutoScrollingEnabled(final boolean autoScrollingEnabled) {
@@ -56,7 +57,7 @@ public class AutoScrollingWindow extends PanningWindow {
 
     /**
      * Gets the parameters that control the auto-scrolling rate.
-     * 
+     *
      * @return the parameters that control the auto-scrolling rate
      */
     public AutoScrollingParameters getAutoScrollingParameters() {
@@ -65,13 +66,13 @@ public class AutoScrollingWindow extends PanningWindow {
 
     /**
      * Handles mouse-dragged events.
-     * 
+     *
      * <p>
      * The event object is stored to be re-fired later. When we pan the window, we re-fire the previous drag event on
      * its target so that even if the cursor is no longer moving, the dragged-object will continue to move smoothly
      * along as the window auto-scrolls.
      * </p>
-     * 
+     *
      * @param event the mouse-dragged event object
      */
     private void handleMouseDragged(final MouseEvent event) {
@@ -93,7 +94,7 @@ public class AutoScrollingWindow extends PanningWindow {
 
     /**
      * Handles mouse released events.
-     * 
+     *
      * @param event the mouse-released event object
      */
     private void handleMouseReleased(final MouseEvent event) {
@@ -103,11 +104,11 @@ public class AutoScrollingWindow extends PanningWindow {
 
     /**
      * Gets the distance to jump based on the current cursor position.
-     * 
+     *
      * <p>
      * Returns null if the cursor is inside the window and no auto-scrolling should occur.
      * </p>
-     * 
+     *
      * @param cursorX the cursor-x position in this {@link PanningWindow}
      * @param cursorY the cursor-y position in this {@link PanningWindow}
      * @return the distance to jump, or null if no jump should occur
@@ -118,7 +119,7 @@ public class AutoScrollingWindow extends PanningWindow {
         double jumpY = 0;
 
         final double baseAmount = parameters.getBaseJumpAmount();
-        final double additionalAmount = jumpsTaken + parameters.getJumpAmountIncreasePerJump();
+        final double additionalAmount = jumpsTaken * parameters.getJumpAmountIncreasePerJump();
         final double distance = Math.min(baseAmount + additionalAmount, parameters.getMaxJumpAmount());
 
         if (cursorX <= parameters.getInsetToBeginScroll()) {
@@ -157,7 +158,7 @@ public class AutoScrollingWindow extends PanningWindow {
         });
 
         timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setCycleCount(Animation.INDEFINITE);
         timeline.getKeyFrames().add(frame);
         timeline.play();
     }

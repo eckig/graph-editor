@@ -6,14 +6,14 @@ package de.tesis.dynaware.grapheditor.window;
 public class AutoScrollingParameters {
 
     private double jumpPeriod = 25;
-    private double baseJumpAmount = 5;
+    private double baseJumpAmount = 1;
     private double maxJumpAmount = 50;
-    private double jumpAmountIncreasePerJump = 0.5;
+    private double jumpAmountIncreasePerJump = 0.4;
     private double insetToBeginScroll = 1;
 
     /**
      * Gets the interval at which auto-scroll 'jumps' occur when the cursor is dragged outside the window.
-     * 
+     *
      * @return the jump period in milliseconds
      */
     public double getJumpPeriod() {
@@ -22,11 +22,11 @@ public class AutoScrollingParameters {
 
     /**
      * Sets the interval at which auto-scroll 'jumps' occur when the cursor is dragged outside the window.
-     * 
+     *
      * <p>
      * Defaults to <b>25ms</b>. It shouldn't be necessary to change this unless performance is slow.
      * </p>
-     * 
+     *
      * @param jumpPeriod a value in milliseconds
      */
     public void setJumpPeriod(final double jumpPeriod) {
@@ -35,7 +35,7 @@ public class AutoScrollingParameters {
 
     /**
      * Gets the amount by which the window jumps when the cursor is dragged to the window-edge.
-     * 
+     *
      * @return the jump amount in pixels
      */
     public double getBaseJumpAmount() {
@@ -44,11 +44,11 @@ public class AutoScrollingParameters {
 
     /**
      * Sets the amount by which the window will jump when the cursor is dragged to the window-edge.
-     * 
+     *
      * <p>
      * Defaults to <b>10 pixels</b>.
      * </p>
-     * 
+     *
      * @param baseJumpAmount a value in pixels
      */
     public void setBaseJumpAmount(final double baseJumpAmount) {
@@ -57,7 +57,7 @@ public class AutoScrollingParameters {
 
     /**
      * Gets the maximum amount by which the window will jump when the cursor is dragged far outside the window.
-     * 
+     *
      * @return maxJumpAmount the maximum jump-amount in pixels
      */
     public double getMaxJumpAmount() {
@@ -66,7 +66,7 @@ public class AutoScrollingParameters {
 
     /**
      * Gets the maximum amount by which the window will jump when the cursor is dragged far outside the window.
-     * 
+     *
      * @return maxJumpAmount the maximum jump-amount in pixels
      */
     public void setMaxJumpAmount(final double maxJumpAmount) {
@@ -75,7 +75,7 @@ public class AutoScrollingParameters {
 
     /**
      * Gets how much (in pixels) that the jump-amount increases with each jump.
-     * 
+     *
      * @return the amount that the jump-amount increases with each jump
      */
     public double getJumpAmountIncreasePerJump() {
@@ -84,11 +84,11 @@ public class AutoScrollingParameters {
 
     /**
      * Sets how much (in pixels) that the jump-amount increases with each jump.
-     * 
+     *
      * <p>
      * This leads to an "acceleration" effect. Defaults to <b>0.5</b>.
      * </p>
-     * 
+     *
      * @param jumpAmountIncreasePerJump the amount that the jump-amount increases with each jump
      */
     public void setJumpAmountIncreasePerJump(final double jumpAmountIncreasePerJump) {
@@ -97,7 +97,7 @@ public class AutoScrollingParameters {
 
     /**
      * Gets the inset from the window-edge where auto-scrolling will begin.
-     * 
+     *
      * @return the inset from the window-edge where auto-scrolling begins
      */
     public double getInsetToBeginScroll() {
@@ -106,11 +106,11 @@ public class AutoScrollingParameters {
 
     /**
      * Sets the inset from the window-edge where auto-scrolling will begin.
-     * 
+     *
      * <p>
      * Defaults to <b>1 pixel</b>. Should not be 0 if the graph-editor can be full-screen.
      * </p>
-     * 
+     *
      * @param insetToBeginScroll the inset from the window-edge where auto-scrolling begins
      */
     public void setInsetToBeginScroll(final double insetToBeginScroll) {
