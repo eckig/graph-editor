@@ -296,24 +296,17 @@ public class PanningWindow extends Region {
                 return;
             }
 
-            setCursor(Cursor.MOVE);
-
-            if (cacheWhilePanning) {
-                content.setCache(true);
-            }
-
-            panningGestureActive = true;
-
-            clickPosition = new Point2D(event.getSceneX(), event.getSceneY());
-
-            windowXAtClick = windowXProperty().get();
-            windowYAtClick = windowYProperty().get();
+            startPanning(event.getSceneX(), event.getSceneY());
         };
 
         mouseDraggedHandler = event -> {
 
-            if (!panningGestureActive) {
+            if (!event.getButton().equals(MouseButton.SECONDARY)) {
                 return;
+            }
+
+            if (!panningGestureActive) {
+                startPanning(event.getSceneX(), event.getSceneY());
             }
 
             final Point2D currentPosition = new Point2D(event.getSceneX(), event.getSceneY());
@@ -390,5 +383,28 @@ public class PanningWindow extends Region {
                 cacheOnMouseRelease = false;
             }
         });
+    }
+
+    /**
+     * Starts panning. Should be called on mouse-pressed or when a drag event occurs without a pressed event having been
+     * registered. This can happen if e.g. a context menu closes and consumes the pressed event.
+     * 
+     * @param x the scene-x position of the cursor
+     * @param y the scene-y position of the cursor
+     */
+    private void startPanning(final double x, final double y) {
+
+        setCursor(Cursor.MOVE);
+
+        if (cacheWhilePanning) {
+            content.setCache(true);
+        }
+
+        panningGestureActive = true;
+
+        clickPosition = new Point2D(x, y);
+
+        windowXAtClick = windowXProperty().get();
+        windowYAtClick = windowYProperty().get();
     }
 }
