@@ -9,7 +9,10 @@ import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.CommandStackListener;
 
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
+import de.tesis.dynaware.grapheditor.GJointSkin;
+import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectorDragManager;
@@ -21,6 +24,7 @@ import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -212,16 +216,27 @@ public class GraphEditorController {
     private void cleanUpView() {
 
         for (final GNode node : modelMemory.getNodesToRemove()) {
-            view.remove(skinManager.lookupNode(node));
+
+            final GNodeSkin nodeSkin = skinManager.lookupNode(node);
+            view.remove(nodeSkin);
+            nodeSkin.dispose();
+
+            for (final GConnector connector : node.getConnectors()) {
+                skinManager.lookupConnector(connector).dispose();
+            }
         }
 
         for (final GConnection connection : modelMemory.getConnectionsToRemove()) {
-            view.remove(skinManager.lookupConnection(connection));
+            final GConnectionSkin connectionSkin = skinManager.lookupConnection(connection);
+            view.remove(connectionSkin);
+            connectionSkin.dispose();
         }
 
         for (final List<GJoint> joints : modelMemory.getJointsToRemove().values()) {
             for (final GJoint joint : joints) {
-                view.remove(skinManager.lookupJoint(joint));
+                final GJointSkin jointSkin = skinManager.lookupJoint(joint);
+                view.remove(jointSkin);
+                jointSkin.dispose();
             }
         }
     }

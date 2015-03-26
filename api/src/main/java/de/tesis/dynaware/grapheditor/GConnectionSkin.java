@@ -131,6 +131,11 @@ public abstract class GConnectionSkin {
      * </p>
      */
     public void applyConstraints(final List<Point2D> points) {
-        // Base implementation does nothing.
+    }
+
+    /**
+     * Called after the skin is removed. Can be overridden for cleanup.
+     */
+    public void dispose() {
     }
 }

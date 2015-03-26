@@ -136,6 +136,12 @@ public abstract class GNodeSkin {
     }
 
     /**
+     * Called after the skin is removed. Can be overridden for cleanup.
+     */
+    public void dispose() {
+    }
+
+    /**
      * Sets the node's connector skins.
      *
      * <p>

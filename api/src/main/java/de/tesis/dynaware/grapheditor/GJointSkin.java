@@ -120,6 +120,12 @@ public abstract class GJointSkin {
     }
 
     /**
+     * Called after the skin is removed. Can be overridden for cleanup.
+     */
+    public void dispose() {
+    }
+
+    /**
      * Gets the width of the joint.
      *
      * <p>

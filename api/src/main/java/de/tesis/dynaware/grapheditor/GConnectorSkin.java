@@ -65,6 +65,12 @@ public abstract class GConnectorSkin {
     }
 
     /**
+     * Called after the skin is removed. Can be overridden for cleanup.
+     */
+    public void dispose() {
+    }
+
+    /**
      * Gets the root JavaFX node of the skin.
      *
      * @return the connector's root {@link Node}
