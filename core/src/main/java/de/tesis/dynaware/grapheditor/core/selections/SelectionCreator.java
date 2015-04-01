@@ -31,11 +31,11 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 /**
- * Responsible for creating selections of nodes and joints in the graph editor.
+ * Responsible for creating selections of nodes, connections, and joints in the graph editor.
  *
  * <p>
- * Nodes can currently be selected by clicking on them. Additionally, one or more joints and/or nodes can be selected by
- * dragging a box around them.
+ * Nodes can currently be selected by clicking on them. Additionally, one or more nodes, connections, and joints can be
+ * selected by dragging a box around them.
  * </p>
  */
 public class SelectionCreator {
@@ -103,14 +103,14 @@ public class SelectionCreator {
     }
 
     /**
-     * Selects all 'selectable' elements (i.e. nodes and joints) in the editor.
+     * Selects all 'selectable' elements (nodes, connections, and joints) in the editor.
      */
     public void selectAll() {
         selectAll(true);
     }
 
     /**
-     * Deselects all nodes and joints.
+     * Deselects all selectable elements.
      */
     public void deselectAll() {
         selectAll(false);
@@ -526,9 +526,9 @@ public class SelectionCreator {
     }
 
     /**
-     * Sets the selected value of all nodes and joints.
+     * Sets the selected value of all nodes, connections, and joints.
      *
-     * @param selected {@code true} to select all nodes and joints, {@code false} to deselect them
+     * @param selected {@code true} to select all elements, {@code false} to deselect them
      */
     public void selectAll(final boolean selected) {
 
