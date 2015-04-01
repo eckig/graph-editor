@@ -136,26 +136,6 @@ public class GraphEditorTest {
     }
 
     @Test
-    public void backupAndRestoreSelection() {
-
-        final GNode firstNode = model.getNodes().get(0);
-        final GJoint firstJoint = model.getConnections().get(0).getJoints().get(0);
-
-        skinLookup.lookupNode(firstNode).setSelected(true);
-        skinLookup.lookupJoint(firstJoint).setSelected(true);
-
-        graphEditor.getSelectionManager().backup();
-
-        // Reloading the model will cause selection information to be lost.
-        graphEditor.reload();
-
-        graphEditor.getSelectionManager().restore();
-
-        assertTrue("First node should be selected again.", skinLookup.lookupNode(firstNode).isSelected());
-        assertTrue("First joint should be selected again.", skinLookup.lookupJoint(firstJoint).isSelected());
-    }
-
-    @Test
     public void moveJointAndUpdateLayout() {
 
         final GJoint firstJoint = model.getConnections().get(0).getJoints().get(0);

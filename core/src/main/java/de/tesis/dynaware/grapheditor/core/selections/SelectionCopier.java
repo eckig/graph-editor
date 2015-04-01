@@ -140,6 +140,8 @@ public class SelectionCopier {
      */
     public List<GNode> paste(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
 
+        selectionCreator.deselectAll();
+
         final List<GNode> pastedNodes = new ArrayList<>();
         final List<GConnection> pastedConnections = new ArrayList<>();
 
@@ -147,8 +149,6 @@ public class SelectionCopier {
         addPasteOffset(pastedNodes, pastedConnections);
         checkWithinBounds(pastedNodes, pastedConnections);
         addPastedElements(pastedNodes, pastedConnections, consumer);
-
-        selectionCreator.deselectAll();
 
         for (final GNode pastedNode : pastedNodes) {
             skinLookup.lookupNode(pastedNode).setSelected(true);

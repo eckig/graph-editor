@@ -75,11 +75,27 @@
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
+.tree-connection-background .arrow-line {
+	-fx-stroke-width: 9;
+	-fx-stroke: transparent;
+}
+
 .tree-connection .arrow-head {
 	-fx-stroke: darkslategrey;
 	-fx-fill: white;
-	-fx-fill: white;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.tree-connection-background .arrow-head {
+	-fx-stroke-width: 3;
+	-fx-stroke: transparent;
+	-fx-fill: transparent;
+}
+
+.tree-connection-selection-halo {
+	-fx-stroke-width: 1;
+	-fx-stroke: deepskyblue;
+	-fx-stroke-dash-array: 4 4;
 }
 
 .tree-tail .arrow-line  {

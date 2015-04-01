@@ -24,7 +24,6 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
-import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -102,15 +101,9 @@ public class JointCleaner {
                     JointCommands.removeJoints(command, jointsToCleanUp, connection);
                     Commands.updateLayoutValues(command, model, skinLookup);
 
-                    final SelectionManager selectionManager = graphEditor.getSelectionManager();
-
-                    selectionManager.backup();
-
                     if (command.canExecute()) {
                         editingDomain.getCommandStack().execute(command);
                     }
-
-                    selectionManager.restore();
                 }
 
                 parent.layout();

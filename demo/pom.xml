@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>de.tesis.dynaware</groupId>
 		<artifactId>de.tesis.dynaware.grapheditor</artifactId>
-		<version>1.2.1</version>
+		<version>1.3.0</version>
 	</parent>
 	<name>${component.name}::Demo</name>
 

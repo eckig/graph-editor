@@ -5,11 +5,14 @@ package de.tesis.dynaware.grapheditor;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
 
@@ -30,6 +33,17 @@ public interface SelectionManager {
     ObservableList<GNode> getSelectedNodes();
 
     /**
+     * Gets the observable list of currently-selected connections.
+     *
+     * <p>
+     * This list is read-only. Connections should be selected via their skin class.
+     * </p>
+     *
+     * @return the list of selected connections
+     */
+    ObservableList<GConnection> getSelectedConnections();
+
+    /**
      * Gets the observable list of currently-selected joints.
      *
      * <p>
@@ -47,11 +61,11 @@ public interface SelectionManager {
 
     /**
      * Cuts the current selection. Saves cut nodes and the connections between them to memory to be pasted later.
-     * 
+     *
      * <p>
      * Additionally calls the given method for the compound command that removed the nodes.
      * </p>
-     * 
+     *
      * @param consumer a consumer to append additional commands to this one
      */
     void cut(BiConsumer<List<GNode>, CompoundCommand> consumer);
@@ -68,11 +82,11 @@ public interface SelectionManager {
 
     /**
      * Pastes the recently cut or copied selection.
-     * 
+     *
      * <p>
      * Additionally calls the given method for the compound command that pasted the nodes.
      * </p>
-     * 
+     *
      * @param consumer a consumer to append additional commands to this one
      */
     void paste(BiConsumer<List<GNode>, CompoundCommand> consumer);
@@ -88,36 +102,35 @@ public interface SelectionManager {
     void selectAll();
 
     /**
+     * Clears the selection, i.e. de-selects all elements.
+     */
+    void clearSelection();
+
+    /**
      * Deletes all nodes that are currently selected.
      */
     void deleteSelection();
 
     /**
-     * Deletes all nodes that are currently selected.
-     * 
+     * Deletes all nodes and connections that are currently selected.
+     *
      * <p>
      * Additionally calls the given method for the compound command that did the deletion.
      * </p>
-     * 
+     *
      * @param consumer a consumer to append additional commands to this one
      */
     void deleteSelection(BiConsumer<List<GNode>, CompoundCommand> consumer);
 
     /**
-     * Backs up the selection state, i.e. what nodes and joints are currently selected.
+     * Sets an optional predicate to be called when the selection-box changes to see if connections should be selected.
      *
      * <p>
-     * The z-ordering of the root nodes of node and joint skins is also backed up.
+     * The predicate should return true if the connection is inside the selection box. Setting a null predicate means no
+     * connections will be selected by the selection-box. This is the default behaviour.
      * </p>
-     */
-    void backup();
-
-    /**
-     * Restores the selection state from backup, i.e. reselects nodes and joints that were selected at the last backup.
      *
-     * <p>
-     * The z-ordering of the root nodes and joints is also restored.
-     * </p>
+     * @param connectionPredicate a predicate that checks if a connection is inside the selection-box
      */
-    void restore();
+    void setConnectionSelectionPredicate(BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate);
 }

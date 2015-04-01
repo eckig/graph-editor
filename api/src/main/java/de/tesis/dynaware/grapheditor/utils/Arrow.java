@@ -1,5 +1,6 @@
 package de.tesis.dynaware.grapheditor.utils;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.ArcTo;
@@ -83,6 +84,15 @@ public class Arrow extends Group {
     }
 
     /**
+     * Gets the start point of the arrow.
+     *
+     * @return the start {@link Point2D} of the arrow
+     */
+    public Point2D getStart() {
+        return new Point2D(startX, startY);
+    }
+
+    /**
      * Sets the start position of the arrow.
      *
      * @param startX the x-coordinate of the start position of the arrow
@@ -91,6 +101,15 @@ public class Arrow extends Group {
     public void setStart(final double startX, final double startY) {
         this.startX = startX;
         this.startY = startY;
+    }
+
+    /**
+     * Gets the start point of the arrow.
+     *
+     * @return the start {@link Point2D} of the arrow
+     */
+    public Point2D getEnd() {
+        return new Point2D(endX, endY);
     }
 
     /**
