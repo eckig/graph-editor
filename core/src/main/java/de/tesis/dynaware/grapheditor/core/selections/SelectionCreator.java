@@ -103,20 +103,6 @@ public class SelectionCreator {
     }
 
     /**
-     * Selects all 'selectable' elements (nodes, connections, and joints) in the editor.
-     */
-    public void selectAll() {
-        selectAll(true);
-    }
-
-    /**
-     * Deselects all selectable elements.
-     */
-    public void deselectAll() {
-        selectAll(false);
-    }
-
-    /**
      * Sets a predicate to be called when the selection-box changes to see if connections should be selected.
      *
      * <p>
@@ -127,6 +113,52 @@ public class SelectionCreator {
      */
     public void setConnectionSelectionPredicate(final BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate) {
         this.connectionPredicate = connectionPredicate;
+    }
+
+    /**
+     * Sets the selected value of all nodes.
+     *
+     * @param selected {@code true} to select all nodes, {@code false} to deselect them
+     */
+    public void selectAllNodes(final boolean selected) {
+        if (model != null) {
+            model.getNodes().forEach(node -> skinLookup.lookupNode(node).setSelected(selected));
+        }
+    }
+
+    /**
+     * Sets the selected value of all joints.
+     *
+     * @param selected {@code true} to select all joints, {@code false} to deselect them
+     */
+    public void selectAllJoints(final boolean selected) {
+        if (model != null) {
+            model.getConnections().forEach(connection -> connection.getJoints().forEach(joint -> {
+                skinLookup.lookupJoint(joint).setSelected(selected);
+            }));
+        }
+    }
+
+    /**
+     * Sets the selected value of all connections.
+     *
+     * @param selected {@code true} to select all connections, {@code false} to deselect them
+     */
+    public void selectAllConnections(final boolean selected) {
+        if (model != null) {
+            model.getConnections().forEach(connection -> {
+                skinLookup.lookupConnection(connection).setSelected(selected);
+            });
+        }
+    }
+
+    /**
+     * Deselects all selectable elements.
+     */
+    public void deselectAll() {
+        selectAllNodes(false);
+        selectAllJoints(false);
+        selectAllConnections(false);
     }
 
     /**
@@ -523,34 +555,6 @@ public class SelectionCreator {
         }
 
         return connectionsToSelect;
-    }
-
-    /**
-     * Sets the selected value of all nodes, connections, and joints.
-     *
-     * @param selected {@code true} to select all elements, {@code false} to deselect them
-     */
-    public void selectAll(final boolean selected) {
-
-        if (model != null) {
-            for (final GNode node : model.getNodes()) {
-
-                skinLookup.lookupNode(node).setSelected(selected);
-
-                for (final GConnector connector : node.getConnectors()) {
-                    skinLookup.lookupConnector(connector).setSelected(selected);
-                }
-            }
-
-            for (final GConnection connection : model.getConnections()) {
-
-                skinLookup.lookupConnection(connection).setSelected(selected);
-
-                for (final GJoint joint : connection.getJoints()) {
-                    skinLookup.lookupJoint(joint).setSelected(selected);
-                }
-            }
-        }
     }
 
     /**

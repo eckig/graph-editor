@@ -83,6 +83,11 @@ public class TreeSkinController implements SkinController {
         graphEditor.getSelectionManager().paste((nodes, command) -> selectReferencedConnections(nodes));
     }
 
+    @Override
+    public void handleSelectAll() {
+        graphEditor.getSelectionManager().selectAll();
+    }
+
     /**
      * Selects all connections that are referenced (i.e. connected to) the given nodes.
      * 

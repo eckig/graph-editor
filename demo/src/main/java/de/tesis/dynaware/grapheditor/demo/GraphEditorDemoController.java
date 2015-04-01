@@ -205,7 +205,7 @@ public class GraphEditorDemoController {
 
     @FXML
     public void selectAll() {
-        graphEditor.getSelectionManager().selectAll();
+        activeSkinController.get().handleSelectAll();
     }
 
     @FXML

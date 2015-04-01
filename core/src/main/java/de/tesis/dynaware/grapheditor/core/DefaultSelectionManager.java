@@ -102,7 +102,24 @@ public class DefaultSelectionManager implements SelectionManager {
 
     @Override
     public void selectAll() {
-        selectionCreator.selectAll();
+        selectionCreator.selectAllNodes(true);
+        selectionCreator.selectAllJoints(true);
+        selectionCreator.selectAllConnections(true);
+    }
+
+    @Override
+    public void selectAllNodes() {
+        selectionCreator.selectAllNodes(true);
+    }
+
+    @Override
+    public void selectAllJoints() {
+        selectionCreator.selectAllJoints(true);
+    }
+
+    @Override
+    public void selectAllConnections() {
+        selectionCreator.selectAllConnections(true);
     }
 
     @Override

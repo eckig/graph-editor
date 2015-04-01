@@ -97,9 +97,24 @@ public interface SelectionManager {
     void clearMemory();
 
     /**
-     * Selects all 'selectable' elements (i.e. nodes and joints) in the editor.
+     * Selects all selectable elements (nodes, joints, and connections) in the graph editor.
      */
     void selectAll();
+
+    /**
+     * Selects all nodes in the graph editor.
+     */
+    void selectAllNodes();
+
+    /**
+     * Selects all joints in the graph editor.
+     */
+    void selectAllJoints();
+
+    /**
+     * Selects all connections in the graph editor.
+     */
+    void selectAllConnections();
 
     /**
      * Clears the selection, i.e. de-selects all elements.
@@ -107,7 +122,7 @@ public interface SelectionManager {
     void clearSelection();
 
     /**
-     * Deletes all nodes that are currently selected.
+     * Deletes all elements that are currently selected.
      */
     void deleteSelection();
 
