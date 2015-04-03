@@ -48,7 +48,6 @@ public class SelectionCreator {
 
     // Keep track of all added handlers, because adding a handler twice is punishable by death.
     private final Map<GNode, EventHandler<MouseEvent>> nodePressedHandlers = new HashMap<>();
-    private final Map<GNode, EventHandler<MouseEvent>> nodeDraggedHandlers = new HashMap<>();
     private final Map<GNode, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
 
     private final Map<GConnector, EventHandler<MouseEvent>> connectorPressedHandlers = new HashMap<>();
@@ -184,15 +183,10 @@ public class SelectionCreator {
             final Region nodeRegion = skinLookup.lookupNode(node).getRoot();
 
             final EventHandler<MouseEvent> oldNodePressedHandler = nodePressedHandlers.get(node);
-            final EventHandler<MouseEvent> oldNodeDraggedHandler = nodeDraggedHandlers.get(node);
             final EventHandler<MouseEvent> oldNodeReleasedHandler = nodeReleasedHandlers.get(node);
 
             if (oldNodePressedHandler != null) {
                 nodeRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, oldNodePressedHandler);
-            }
-
-            if (oldNodeDraggedHandler != null) {
-                nodeRegion.removeEventFilter(MouseEvent.MOUSE_DRAGGED, oldNodeDraggedHandler);
             }
 
             if (oldNodeReleasedHandler != null) {
@@ -200,15 +194,12 @@ public class SelectionCreator {
             }
 
             final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, node);
-            final EventHandler<MouseEvent> newNodeDraggedHandler = event -> handleNodeDragged(event, node);
             final EventHandler<MouseEvent> newNodeReleasedHandler = event -> handleNodeReleased(event, node);
 
             nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
-            nodeRegion.addEventFilter(MouseEvent.MOUSE_DRAGGED, newNodeDraggedHandler);
             nodeRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
 
             nodePressedHandlers.put(node, newNodePressedHandler);
-            nodeDraggedHandlers.put(node, newNodeDraggedHandler);
             nodeReleasedHandlers.put(node, newNodeReleasedHandler);
 
             for (final GConnector connector : node.getConnectors()) {
@@ -297,19 +288,6 @@ public class SelectionCreator {
 
         // Consume this event so it's not passed up to the parent (i.e. the view).
         event.consume();
-    }
-
-    /**
-     * Handles mouse-dragged events on the given node.
-     *
-     * @param event a mouse-dragged event
-     * @param node the {@link GNode} on which this event occured
-     */
-    private void handleNodeDragged(final MouseEvent event, final GNode node) {
-
-        if (event.getButton().equals(MouseButton.PRIMARY) && !skinLookup.lookupNode(node).isSelected()) {
-            event.consume();
-        }
     }
 
     /**

@@ -13,6 +13,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -53,6 +54,7 @@ public class TitledNodeSkin extends GNodeSkin {
     private final Rectangle selectionHalo = new Rectangle();
 
     private VBox contentRoot = new VBox();
+    private HBox header = new HBox();
     private Label title = new Label();
 
     private final List<GConnectorSkin> inputConnectorSkins = new ArrayList<>();
@@ -80,6 +82,8 @@ public class TitledNodeSkin extends GNodeSkin {
         addSelectionListener();
 
         createContent();
+
+        contentRoot.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
     }
 
     @Override
@@ -144,7 +148,6 @@ public class TitledNodeSkin extends GNodeSkin {
      */
     private void createContent() {
 
-        final HBox header = new HBox();
         header.getStyleClass().setAll(STYLE_CLASS_HEADER);
         header.setAlignment(Pos.CENTER);
 
@@ -301,6 +304,17 @@ public class TitledNodeSkin extends GNodeSkin {
             if (skin instanceof TitledConnectorSkin) {
                 ((TitledConnectorSkin) skin).setSelected(isSelected);
             }
+        }
+    }
+
+    /**
+     * Stops the node being dragged if it isn't selected.
+     * 
+     * @param event a mouse-dragged event on the node
+     */
+    private void filterMouseDragged(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && !isSelected()) {
+            event.consume();
         }
     }
 }

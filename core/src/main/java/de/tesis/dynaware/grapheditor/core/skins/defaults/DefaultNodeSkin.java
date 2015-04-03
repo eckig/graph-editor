@@ -10,6 +10,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 
 import org.slf4j.Logger;
@@ -88,6 +89,8 @@ public class DefaultNodeSkin extends GNodeSkin {
 
         getRoot().getChildren().addAll(border, background);
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
+
+        background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
 
         addSelectionHalo();
         addSelectionListener();
@@ -315,6 +318,17 @@ public class DefaultNodeSkin extends GNodeSkin {
             return MINOR_POSITIVE_OFFSET;
         } else {
             return MINOR_NEGATIVE_OFFSET;
+        }
+    }
+
+    /**
+     * Stops the node being dragged if it isn't selected.
+     * 
+     * @param event a mouse-dragged event on the node
+     */
+    private void filterMouseDragged(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && !isSelected()) {
+            event.consume();
         }
     }
 }
