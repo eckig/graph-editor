@@ -108,7 +108,7 @@ public class TreeConnectionSkin extends GConnectionSkin {
 
         if (event.isShortcutDown()) {
             setSelected(!isSelected());
-        } else {
+        } else if (!isSelected()) {
             getGraphEditor().getSelectionManager().clearSelection();
             setSelected(true);
         }
