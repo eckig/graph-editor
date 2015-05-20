@@ -6,6 +6,7 @@ package de.tesis.dynaware.grapheditor.window;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
@@ -244,6 +245,11 @@ public class PanningWindow extends Region {
      */
     public void setCacheWhileMouseOutside(final boolean cacheWhileMouseOutside) {
         this.cacheWhileMouseOutside = cacheWhileMouseOutside;
+    }
+
+    @Override
+    public ObservableList<Node> getChildren() {
+        return super.getChildren();
     }
 
     /**
