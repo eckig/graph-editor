@@ -3,8 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
@@ -22,10 +20,7 @@ public class ResizableBox extends DraggableBox {
 
     private static final int DEFAULT_RESIZE_BORDER_TOLERANCE = 8;
 
-    private final BooleanProperty resizeEnabledNorthProperty = new SimpleBooleanProperty(true);
-    private final BooleanProperty resizeEnabledSouthProperty = new SimpleBooleanProperty(true);
-    private final BooleanProperty resizeEnabledEastProperty = new SimpleBooleanProperty(true);
-    private final BooleanProperty resizeEnabledWestProperty = new SimpleBooleanProperty(true);
+    private boolean isResizeEnabled = true;
 
     private int resizeBorderTolerance = DEFAULT_RESIZE_BORDER_TOLERANCE;
 
@@ -52,83 +47,31 @@ public class ResizableBox extends DraggableBox {
     }
 
     /**
-     * Gets whether or not the box is resizable in the north (top) direction.
+     * Gets whether or not the box is resizable.
      *
-     * @return {@code true} if the box is resizable in the north direction, {@code false} if not
+     * @return {@code true} if the box is resizable, {@code false} if not
      */
-    public boolean isResizeEnabledNorth() {
-        return resizeEnabledNorthProperty.get();
+    public boolean isResizeEnabled() {
+        return isResizeEnabled;
     }
 
     /**
-     * Sets whether the box is resizable in the north (top) direction.
+     * Sets whether the box is resizable.
      *
-     * @param resizeEnabledNorth {@code true} if the box is resizable in the north direction, {@code false} if not
+     * @param resizeEnabled {@code true} if the box is resizable, {@code false}
+     * if not
      */
-    public void setResizeEnabledNorth(final boolean resizeEnabledNorth) {
-        resizeEnabledNorthProperty.set(resizeEnabledNorth);
-    }
-
-    /**
-     * Gets whether or not the box is resizable in the south (bottom) direction.
-     *
-     * @return {@code true} if the box is resizable in the south direction, {@code false} if not
-     */
-    public boolean isResizeEnabledSouth() {
-        return resizeEnabledSouthProperty.get();
-    }
-
-    /**
-     * Sets whether the box is resizable in the south (bottom) direction.
-     *
-     * @param resizeEnabledSouth {@code true} if the box is resizable in the south direction, {@code false} if not
-     */
-    public void setResizeEnabledSouth(final boolean resizeEnabledSouth) {
-        resizeEnabledSouthProperty.set(resizeEnabledSouth);
-    }
-
-    /**
-     * Gets whether or not the box is resizable in the east (right) direction.
-     *
-     * @return {@code true} if the box is resizable in the east direction, {@code false} if not
-     */
-    public boolean isResizeEnabledEast() {
-        return resizeEnabledEastProperty.get();
-    }
-
-    /**
-     * Sets whether the box is resizable in the east (top) direction.
-     *
-     * @param resizeEnabledEast {@code true} if the box is resizable in the east direction, {@code false} if not
-     */
-    public void setResizeEnabledEast(final boolean resizeEnabledEast) {
-        resizeEnabledEastProperty.set(resizeEnabledEast);
-    }
-
-    /**
-     * Gets whether or not the box is resizable in the west (left) direction.
-     *
-     * @return {@code true} if the box is resizable in the east direction, {@code false} if not
-     */
-    public boolean isResizeEnabledWest() {
-        return resizeEnabledWestProperty.get();
-    }
-
-    /**
-     * Sets whether the node is resizable in the west (left) direction.
-     *
-     * @param resizeEnabledWest {@code true} if the node is resizable in the west direction, {@code false} if not
-     */
-    public void setResizeEnabledWest(final boolean resizeEnabledWest) {
-        resizeEnabledWestProperty.set(resizeEnabledWest);
+    public void setResizeEnabled(final boolean resizeEnabled) {
+        isResizeEnabled = resizeEnabled;
     }
 
     /**
      * Gets the border tolerance for the purposes of resizing.
      *
      * <p>
-     * Drag events that take place within this distance of the rectangle border will be intepreted as resize events.
-     * Further inside the rectangle, they will be treated as regular drag events.
+     * Drag events that take place within this distance of the rectangle border
+     * will be intepreted as resize events. Further inside the rectangle, they
+     * will be treated as regular drag events.
      * </p>
      *
      * @return an integer specifying the resize border tolerance
@@ -141,20 +84,24 @@ public class ResizableBox extends DraggableBox {
      * Sets the border tolerance for the purposes of resizing.
      *
      * <p>
-     * Drag events that take place within this distance of the rectangle border will be intepreted as resize events.
-     * Further inside the rectangle, they will be treated as regular drag events.
+     * Drag events that take place within this distance of the rectangle border
+     * will be intepreted as resize events. Further inside the rectangle, they
+     * will be treated as regular drag events.
      * </p>
      *
-     * @param resizeBorderTolerance an integer specifying the resize border tolerance
+     * @param resizeBorderTolerance an integer specifying the resize border
+     * tolerance
      */
     public void setResizeBorderTolerance(final int resizeBorderTolerance) {
         this.resizeBorderTolerance = resizeBorderTolerance;
     }
 
     /**
-     * Gets whether or not the current mouse position would lead to a resize operation.
+     * Gets whether or not the current mouse position would lead to a resize
+     * operation.
      *
-     * @return {@code true} if the mouse is near the edge of the rectangle so that a resize would occur
+     * @return {@code true} if the mouse is near the edge of the rectangle so
+     * that a resize would occur
      */
     public boolean isMouseInPositionForResize() {
         return mouseInPositionForResize;
@@ -214,7 +161,8 @@ public class ResizableBox extends DraggableBox {
     /**
      * Processes the current mouse position, updating the cursor accordingly.
      *
-     * @param event the latest {@link MouseEvent} for the mouse entering or moving inside the rectangle
+     * @param event the latest {@link MouseEvent} for the mouse entering or
+     * moving inside the rectangle
      */
     private void processMousePosition(final MouseEvent event) {
 
@@ -223,18 +171,13 @@ public class ResizableBox extends DraggableBox {
         }
 
         final RectangleMouseRegion mouseRegion = getMouseRegion(event.getX(), event.getY());
-
-        if (!mouseRegion.equals(RectangleMouseRegion.INSIDE)) {
-            mouseInPositionForResize = true;
-        } else {
-            mouseInPositionForResize = false;
-        }
-
+        mouseInPositionForResize = mouseRegion != RectangleMouseRegion.INSIDE;
         updateCursor(mouseRegion);
     }
 
     /**
-     * Stores relevant layout values at the time of the last mouse click (mouse-pressed event).
+     * Stores relevant layout values at the time of the last mouse click
+     * (mouse-pressed event).
      *
      * @param x the x position of the click event
      * @param y the y position of the click event
@@ -256,43 +199,44 @@ public class ResizableBox extends DraggableBox {
     private void handleResize(final double x, final double y) {
 
         switch (lastMouseRegion) {
-        case NORTHEAST:
-            handleResizeNorth(y);
-            handleResizeEast(x);
-            break;
-        case NORTHWEST:
-            handleResizeNorth(y);
-            handleResizeWest(x);
-            break;
-        case SOUTHEAST:
-            handleResizeSouth(y);
-            handleResizeEast(x);
-            break;
-        case SOUTHWEST:
-            handleResizeSouth(y);
-            handleResizeWest(x);
-            break;
-        case NORTH:
-            handleResizeNorth(y);
-            break;
-        case SOUTH:
-            handleResizeSouth(y);
-            break;
-        case EAST:
-            handleResizeEast(x);
-            break;
-        case WEST:
-            handleResizeWest(x);
-            break;
-        case INSIDE:
-            break;
-        case OUTSIDE:
-            break;
+            case NORTHEAST:
+                handleResizeNorth(y);
+                handleResizeEast(x);
+                break;
+            case NORTHWEST:
+                handleResizeNorth(y);
+                handleResizeWest(x);
+                break;
+            case SOUTHEAST:
+                handleResizeSouth(y);
+                handleResizeEast(x);
+                break;
+            case SOUTHWEST:
+                handleResizeSouth(y);
+                handleResizeWest(x);
+                break;
+            case NORTH:
+                handleResizeNorth(y);
+                break;
+            case SOUTH:
+                handleResizeSouth(y);
+                break;
+            case EAST:
+                handleResizeEast(x);
+                break;
+            case WEST:
+                handleResizeWest(x);
+                break;
+            case INSIDE:
+                break;
+            case OUTSIDE:
+                break;
         }
     }
 
     /**
-     * Handles a resize event in the north (top) direction to the given cursor y position.
+     * Handles a resize event in the north (top) direction to the given cursor y
+     * position.
      *
      * @param y the cursor scene-y position
      */
@@ -335,7 +279,8 @@ public class ResizableBox extends DraggableBox {
     }
 
     /**
-     * Handles a resize event in the south (bottom) direction to the given cursor y position.
+     * Handles a resize event in the south (bottom) direction to the given
+     * cursor y position.
      *
      * @param y the cursor scene-y position
      */
@@ -372,7 +317,8 @@ public class ResizableBox extends DraggableBox {
     }
 
     /**
-     * Handles a resize event in the east (right) direction to the given cursor x position.
+     * Handles a resize event in the east (right) direction to the given cursor
+     * x position.
      *
      * @param x the cursor scene-x position
      */
@@ -409,7 +355,8 @@ public class ResizableBox extends DraggableBox {
     }
 
     /**
-     * Handles a resize event in the west (left) direction to the given cursor x position.
+     * Handles a resize event in the west (left) direction to the given cursor x
+     * position.
      *
      * @param x the cursor scene-x position
      */
@@ -452,7 +399,8 @@ public class ResizableBox extends DraggableBox {
     }
 
     /**
-     * Gets the particular sub-region of the rectangle that the given cursor position is in.
+     * Gets the particular sub-region of the rectangle that the given cursor
+     * position is in.
      *
      * @param x the x cursor position
      * @param y the y cursor position
@@ -472,6 +420,10 @@ public class ResizableBox extends DraggableBox {
         final boolean isSouth = y > height - resizeBorderTolerance;
         final boolean isEast = x > width - resizeBorderTolerance;
         final boolean isWest = x < resizeBorderTolerance;
+
+        if (!isResizeEnabled) {
+            return RectangleMouseRegion.INSIDE;
+        }
 
         if (isNorth && isEast) {
             return RectangleMouseRegion.NORTHEAST;
@@ -498,47 +450,48 @@ public class ResizableBox extends DraggableBox {
      * Updates the cursor style.
      *
      * <p>
-     * This should occur for example when the cursor is near the border of the rectangle, to indicate that resizing is
-     * allowed.
+     * This should occur for example when the cursor is near the border of the
+     * rectangle, to indicate that resizing is allowed.
      * </p>
      *
-     * @param mouseRegion the {@link RectangleMouseRegion} where the cursor is located
+     * @param mouseRegion the {@link RectangleMouseRegion} where the cursor is
+     * located
      */
     private void updateCursor(final RectangleMouseRegion mouseRegion) {
 
         switch (mouseRegion) {
 
-        case NORTHEAST:
-            setCursor(Cursor.NE_RESIZE);
-            break;
-        case NORTHWEST:
-            setCursor(Cursor.NW_RESIZE);
-            break;
-        case SOUTHEAST:
-            setCursor(Cursor.SE_RESIZE);
-            break;
-        case SOUTHWEST:
-            setCursor(Cursor.SW_RESIZE);
-            break;
-        case NORTH:
-            setCursor(Cursor.N_RESIZE);
-            break;
-        case SOUTH:
-            setCursor(Cursor.S_RESIZE);
-            break;
-        case EAST:
-            setCursor(Cursor.E_RESIZE);
-            break;
-        case WEST:
-            setCursor(Cursor.W_RESIZE);
-            break;
-        case INSIDE:
-            // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
-            setCursor(null);
-            break;
-        case OUTSIDE:
-            setCursor(null);
-            break;
+            case NORTHEAST:
+                setCursor(Cursor.NE_RESIZE);
+                break;
+            case NORTHWEST:
+                setCursor(Cursor.NW_RESIZE);
+                break;
+            case SOUTHEAST:
+                setCursor(Cursor.SE_RESIZE);
+                break;
+            case SOUTHWEST:
+                setCursor(Cursor.SW_RESIZE);
+                break;
+            case NORTH:
+                setCursor(Cursor.N_RESIZE);
+                break;
+            case SOUTH:
+                setCursor(Cursor.S_RESIZE);
+                break;
+            case EAST:
+                setCursor(Cursor.E_RESIZE);
+                break;
+            case WEST:
+                setCursor(Cursor.W_RESIZE);
+                break;
+            case INSIDE:
+                // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
+                setCursor(null);
+                break;
+            case OUTSIDE:
+                setCursor(null);
+                break;
         }
     }
 
@@ -550,6 +503,7 @@ public class ResizableBox extends DraggableBox {
      * </p>
      */
     private enum RectangleMouseRegion {
+
         NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST, INSIDE, OUTSIDE;
     }
 }

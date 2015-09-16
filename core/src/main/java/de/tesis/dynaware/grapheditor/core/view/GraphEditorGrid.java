@@ -12,18 +12,19 @@ import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Line;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Pane;
 
 /**
  * The alignment grid that appears in the background of the editor.
  */
-public class GraphEditorGrid extends Group {
+public class GraphEditorGrid extends Pane {
 
     private static final String STYLE_CLASS = "graph-editor-grid";
     private static final String GRID_COLOR_SELECTOR = "-grid-color";
@@ -34,6 +35,8 @@ public class GraphEditorGrid extends Group {
 
     private static final Color DEFAULT_GRID_COLOR = Color.rgb(222, 248, 255);
 
+    private final Canvas canvas = new Canvas();
+    private boolean needsLayout = false;
     private GraphEditorProperties editorProperties;
 
     private final StyleableObjectProperty<Paint> gridColor = new StyleableObjectProperty<Paint>(DEFAULT_GRID_COLOR) {
@@ -55,18 +58,61 @@ public class GraphEditorGrid extends Group {
 
         @Override
         protected void invalidated() {
+            needsLayout = true;
+            requestLayout();
         }
     };
 
     /**
-     * Creates a new grid manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
+     * Creates a new grid manager. Only one instance should exist per
+     * {@link DefaultGraphEditor} instance.
      */
     public GraphEditorGrid() {
 
-        // The grid should under NO circumstances interfere with (a) the layout of its parent, or (b) mouse events.
-        setManaged(false);
+        getChildren().add(canvas);
         setMouseTransparent(true);
         getStyleClass().add(STYLE_CLASS);
+    }
+
+    @Override
+    protected void layoutChildren() {
+
+        final int top = (int) snappedTopInset();
+        final int right = (int) snappedRightInset();
+        final int bottom = (int) snappedBottomInset();
+        final int left = (int) snappedLeftInset();
+        final int width = (int) getWidth() - left - right;
+        final int height = (int) getHeight() - top - bottom;
+        final double spacing = editorProperties == null ? GraphEditorProperties.DEFAULT_GRID_SPACING : editorProperties.getGridSpacing();
+
+        canvas.relocate(left, top);
+
+        if (width != canvas.getWidth() || height != canvas.getHeight() || needsLayout) {
+            canvas.setWidth(width);
+            canvas.setHeight(height);
+
+            final GraphicsContext g = canvas.getGraphicsContext2D();
+            g.clearRect(0, 0, width, height);
+            g.setStroke(gridColor.get());
+            g.setFill(gridColor.get());
+
+            final int hLineCount = (int) Math.floor((height + 1) / spacing);
+            final int vLineCount = (int) Math.floor((width + 1) / spacing);
+
+            for (int i = 1; i <= hLineCount; i++) {
+                g.strokeLine(0, snap(i * spacing), width, snap(i * spacing));
+            }
+
+            for (int i = 1; i <= vLineCount; i++) {
+                g.strokeLine(snap(i * spacing), 0, snap(i * spacing), height);
+            }
+
+            needsLayout = false;
+        }
+    }
+
+    private static double snap(double y) {
+        return ((int) y) + HALF_PIXEL_OFFSET;
     }
 
     /**
@@ -75,48 +121,10 @@ public class GraphEditorGrid extends Group {
      * @param editorProperties a {@link GraphEditorProperties} instance
      */
     public void setProperties(final GraphEditorProperties editorProperties) {
+        visibleProperty().unbind();
         this.editorProperties = editorProperties;
-    }
-
-    /**
-     * Draws the grid for the given width and height.
-     *
-     * @param width the width of the editor region
-     * @param height the height of the editor region
-     */
-    public void draw(final double width, final double height) {
-
-        final double spacing = editorProperties.getGridSpacing();
-
-        getChildren().clear();
-
-        final int hLineCount = (int) Math.floor((height + 1) / spacing);
-        final int vLineCount = (int) Math.floor((width + 1) / spacing);
-
-        for (int i = 0; i < hLineCount; i++) {
-
-            final Line hLine = new Line();
-
-            hLine.setStartX(0);
-            hLine.setEndX(width);
-            hLine.setStartY((i + 1) * spacing + HALF_PIXEL_OFFSET);
-            hLine.setEndY((i + 1) * spacing + HALF_PIXEL_OFFSET);
-            hLine.strokeProperty().bind(gridColor);
-
-            getChildren().add(hLine);
-        }
-
-        for (int i = 0; i < vLineCount; i++) {
-
-            final Line vLine = new Line();
-
-            vLine.setStartX((i + 1) * spacing + HALF_PIXEL_OFFSET);
-            vLine.setEndX((i + 1) * spacing + HALF_PIXEL_OFFSET);
-            vLine.setStartY(0);
-            vLine.setEndY(height);
-            vLine.strokeProperty().bind(gridColor);
-
-            getChildren().add(vLine);
+        if(this.editorProperties != null) {
+            visibleProperty().bind(editorProperties.gridVisibleProperty());
         }
     }
 
@@ -137,16 +145,16 @@ public class GraphEditorGrid extends Group {
         private static final CssMetaData<GraphEditorGrid, Paint> GRID_COLOR = new CssMetaData<GraphEditorGrid, Paint>(
                 GRID_COLOR_SELECTOR, StyleConverter.getPaintConverter()) {
 
-            @Override
-            public boolean isSettable(final GraphEditorGrid node) {
-                return !node.gridColor.isBound();
-            }
+                    @Override
+                    public boolean isSettable(final GraphEditorGrid node) {
+                        return !node.gridColor.isBound();
+                    }
 
-            @Override
-            public StyleableProperty<Paint> getStyleableProperty(final GraphEditorGrid node) {
-                return node.gridColor;
-            }
-        };
+                    @Override
+                    public StyleableProperty<Paint> getStyleableProperty(final GraphEditorGrid node) {
+                        return node.gridColor;
+                    }
+                };
 
         private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
