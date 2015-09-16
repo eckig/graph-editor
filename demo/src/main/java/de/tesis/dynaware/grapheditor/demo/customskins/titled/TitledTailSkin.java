@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.customskins.grey;
+package de.tesis.dynaware.grapheditor.demo.customskins.titled;
 
 import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
-public class GreyTailSkin extends DefaultTailSkin {
+public class TitledTailSkin extends DefaultTailSkin {
 
-    private static final String STYLE_CLASS = "grey-tail";
-    private static final String STYLE_CLASS_ENDPOINT = "grey-tail-endpoint";
+    private static final String STYLE_CLASS = "titled-tail";
+    private static final String STYLE_CLASS_ENDPOINT = "titled-tail-endpoint";
 
     private static final double SIZE = 15;
 
@@ -20,7 +20,7 @@ public class GreyTailSkin extends DefaultTailSkin {
      *
      * @param connector the {@link GConnector} the skin is being created for
      */
-    public GreyTailSkin(final GConnector connector) {
+    public TitledTailSkin(final GConnector connector) {
 
         super(connector);
 

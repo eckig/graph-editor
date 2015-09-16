@@ -5,6 +5,7 @@ package de.tesis.dynaware.grapheditor.utils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -185,14 +186,16 @@ public class ResizableBox extends DraggableBox {
         }
 
         if (!dragActive) {
-            storeClickValuesForDrag(event.getSceneX(), event.getSceneY());
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
+            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
             storeClickValuesForResize(event.getX(), event.getY());
         }
 
         if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE)) {
             super.handleMouseDragged(event);
         } else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)) {
-            handleResize(event.getSceneX(), event.getSceneY());
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
+            handleResize(cursorPosition.getX(), cursorPosition.getY());
         }
 
         dragActive = true;
@@ -247,8 +250,8 @@ public class ResizableBox extends DraggableBox {
     /**
      * Handles a resize event to the given cursor position.
      *
-     * @param x the cursor scene-x position
-     * @param y the cursor scene-y position
+     * @param x the cursor container-x position
+     * @param y the cursor container-y position
      */
     private void handleResize(final double x, final double y) {
 

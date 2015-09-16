@@ -6,6 +6,7 @@ package de.tesis.dynaware.grapheditor.window;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
@@ -45,6 +46,8 @@ public class PanningWindow extends Region {
 
     private boolean panningGestureActive;
     private boolean cacheWhilePanning = true;
+    private boolean cacheWhileMouseOutside;
+    private boolean cacheOnMouseRelease;
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -56,10 +59,14 @@ public class PanningWindow extends Region {
 
         setClip(clip);
 
-        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> checkWindowBounds();
+        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> {
+            checkWindowBounds();
+        };
 
         widthProperty().addListener(windowSizeChangeListener);
         heightProperty().addListener(windowSizeChangeListener);
+
+        initializeCacheWhenMouseOutside();
     }
 
     /**
@@ -106,6 +113,8 @@ public class PanningWindow extends Region {
      * The current width & height values of the window and its content are used in this method. It should therefore be
      * called <em>after</em> the scene has been drawn.
      * </p>
+     *
+     * @param position the {@link WindowPosition} to pan to
      */
     public void panTo(final WindowPosition position) {
 
@@ -199,7 +208,7 @@ public class PanningWindow extends Region {
      * <p>
      * If this is set to true, large graphs will pan more smoothly but require more memory.
      * </p>
-     * 
+     *
      * <p>
      * <em>Warning:</em> currently works like crap if the content has a scale transform applied to it.
      * </p>
@@ -211,12 +220,36 @@ public class PanningWindow extends Region {
     }
 
     /**
-     * Gets the content of the panning window.
+     * Gets whether the content's cache will be set to true when the mouse is outside the panning window.
      *
-     * @return the {@link Region} that stores the content of the panning window, or {@code null}
+     * @return {@code true} if the content will be cached while the mouse is outside the panning window
+     * @see javafx.scene.Node#setCache
      */
-    protected Region getContent() {
-        return content;
+    public boolean isCacheWhileMouseOutside() {
+        return cacheWhileMouseOutside;
+    }
+
+    /**
+     * Sets whether the content's cache will be set to true when the mouse is outside the panning window.
+     *
+     * <p>
+     * If the mouse is dragged outside while the primary mouse button is down, the cache will not be turned on until the
+     * button is released.
+     * </p>
+     *
+     * <p>
+     * Experimental API. False by default.
+     * </p>
+     *
+     * @param cacheWhileMouseOutside {@code true} if the content will be cached while the mouse is outside
+     */
+    public void setCacheWhileMouseOutside(final boolean cacheWhileMouseOutside) {
+        this.cacheWhileMouseOutside = cacheWhileMouseOutside;
+    }
+
+    @Override
+    public ObservableList<Node> getChildren() {
+        return super.getChildren();
     }
 
     /**
@@ -269,24 +302,17 @@ public class PanningWindow extends Region {
                 return;
             }
 
-            setCursor(Cursor.MOVE);
-
-            if (cacheWhilePanning) {
-                content.setCache(true);
-            }
-
-            panningGestureActive = true;
-
-            clickPosition = new Point2D(event.getSceneX(), event.getSceneY());
-
-            windowXAtClick = windowXProperty().get();
-            windowYAtClick = windowYProperty().get();
+            startPanning(event.getSceneX(), event.getSceneY());
         };
 
         mouseDraggedHandler = event -> {
 
-            if (!panningGestureActive) {
+            if (!event.getButton().equals(MouseButton.SECONDARY)) {
                 return;
+            }
+
+            if (!panningGestureActive) {
+                startPanning(event.getSceneX(), event.getSceneY());
             }
 
             final Point2D currentPosition = new Point2D(event.getSceneX(), event.getSceneY());
@@ -334,5 +360,57 @@ public class PanningWindow extends Region {
         if (mouseReleasedHandler != null) {
             content.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         }
+    }
+
+    /**
+     * Sets up the mechanism to cache the panning window when the mouse is not inside it.
+     */
+    private void initializeCacheWhenMouseOutside() {
+
+        addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (cacheWhileMouseOutside && content != null) {
+                content.setCache(false);
+            }
+        });
+
+        addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+            if (cacheWhileMouseOutside && content != null) {
+                if (!event.isPrimaryButtonDown()) {
+                    content.setCache(true);
+                } else {
+                    cacheOnMouseRelease = true;
+                }
+            }
+        });
+
+        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            if (cacheOnMouseRelease && content != null) {
+                content.setCache(true);
+                cacheOnMouseRelease = false;
+            }
+        });
+    }
+
+    /**
+     * Starts panning. Should be called on mouse-pressed or when a drag event occurs without a pressed event having been
+     * registered. This can happen if e.g. a context menu closes and consumes the pressed event.
+     * 
+     * @param x the scene-x position of the cursor
+     * @param y the scene-y position of the cursor
+     */
+    private void startPanning(final double x, final double y) {
+
+        setCursor(Cursor.MOVE);
+
+        if (cacheWhilePanning) {
+            content.setCache(true);
+        }
+
+        panningGestureActive = true;
+
+        clickPosition = new Point2D(x, y);
+
+        windowXAtClick = windowXProperty().get();
+        windowYAtClick = windowYProperty().get();
     }
 }

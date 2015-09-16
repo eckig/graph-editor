@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package de.tesis.dynaware.grapheditor.demo.customskins.grey;
+package de.tesis.dynaware.grapheditor.demo.customskins.titled;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -26,18 +27,18 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 /**
- * A grey node with a navy title-bar for the 'grey-skins' theme.
+ * A grey node with a navy title-bar for the 'titled-skins' theme.
  */
-public class GreyNodeSkin extends GNodeSkin {
+public class TitledNodeSkin extends GNodeSkin {
 
     private static final String TITLE_TEXT = "Node ";
 
-    private static final String STYLE_CLASS_BORDER = "grey-node-border";
-    private static final String STYLE_CLASS_BACKGROUND = "grey-node-background";
-    private static final String STYLE_CLASS_SELECTION_HALO = "grey-node-selection-halo";
-    private static final String STYLE_CLASS_HEADER = "grey-node-header";
-    private static final String STYLE_CLASS_TITLE = "grey-node-title";
-    private static final String STYLE_CLASS_BUTTON = "grey-node-close-button";
+    private static final String STYLE_CLASS_BORDER = "titled-node-border";
+    private static final String STYLE_CLASS_BACKGROUND = "titled-node-background";
+    private static final String STYLE_CLASS_SELECTION_HALO = "titled-node-selection-halo";
+    private static final String STYLE_CLASS_HEADER = "titled-node-header";
+    private static final String STYLE_CLASS_TITLE = "titled-node-title";
+    private static final String STYLE_CLASS_BUTTON = "titled-node-close-button";
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
@@ -53,6 +54,7 @@ public class GreyNodeSkin extends GNodeSkin {
     private final Rectangle selectionHalo = new Rectangle();
 
     private VBox contentRoot = new VBox();
+    private HBox header = new HBox();
     private Label title = new Label();
 
     private final List<GConnectorSkin> inputConnectorSkins = new ArrayList<>();
@@ -61,11 +63,11 @@ public class GreyNodeSkin extends GNodeSkin {
     private final Rectangle border = new Rectangle();
 
     /**
-     * Creates a new {@link GreyNodeSkin} instance.
+     * Creates a new {@link TitledNodeSkin} instance.
      *
      * @param node the {link GNode} this skin is representing
      */
-    public GreyNodeSkin(final GNode node) {
+    public TitledNodeSkin(final GNode node) {
 
         super(node);
 
@@ -80,6 +82,8 @@ public class GreyNodeSkin extends GNodeSkin {
         addSelectionListener();
 
         createContent();
+
+        contentRoot.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
     }
 
     @Override
@@ -144,7 +148,6 @@ public class GreyNodeSkin extends GNodeSkin {
      */
     private void createContent() {
 
-        final HBox header = new HBox();
         header.getStyleClass().setAll(STYLE_CLASS_HEADER);
         header.setAlignment(Pos.CENTER);
 
@@ -292,15 +295,26 @@ public class GreyNodeSkin extends GNodeSkin {
     private void setConnectorsSelected(final boolean isSelected) {
 
         for (final GConnectorSkin skin : inputConnectorSkins) {
-            if (skin instanceof GreyConnectorSkin) {
-                ((GreyConnectorSkin) skin).setSelected(isSelected);
+            if (skin instanceof TitledConnectorSkin) {
+                ((TitledConnectorSkin) skin).setSelected(isSelected);
             }
         }
 
         for (final GConnectorSkin skin : outputConnectorSkins) {
-            if (skin instanceof GreyConnectorSkin) {
-                ((GreyConnectorSkin) skin).setSelected(isSelected);
+            if (skin instanceof TitledConnectorSkin) {
+                ((TitledConnectorSkin) skin).setSelected(isSelected);
             }
+        }
+    }
+
+    /**
+     * Stops the node being dragged if it isn't selected.
+     * 
+     * @param event a mouse-dragged event on the node
+     */
+    private void filterMouseDragged(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && !isSelected()) {
+            event.consume();
         }
     }
 }

@@ -7,8 +7,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.model.GModel;
+import de.tesis.dynaware.grapheditor.window.AutoScrollingWindow;
 import de.tesis.dynaware.grapheditor.window.GraphEditorMinimap;
-import de.tesis.dynaware.grapheditor.window.PanningWindow;
 
 /**
  * A container for the graph editor.
@@ -37,7 +37,7 @@ import de.tesis.dynaware.grapheditor.window.PanningWindow;
  * values are set to those in the {@link GModel} instance.
  * </p>
  */
-public class GraphEditorContainer extends PanningWindow {
+public class GraphEditorContainer extends AutoScrollingWindow {
 
     // Minimap height is not specified here, the minimap's aspect ratio is fixed by the aspect ratio of the content.
     private static final double MINIMAP_WIDTH = 250;

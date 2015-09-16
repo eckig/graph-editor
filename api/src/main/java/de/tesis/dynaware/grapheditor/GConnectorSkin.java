@@ -3,7 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor;
 
-import javafx.scene.Node;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
@@ -18,11 +17,9 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
  * The root JavaFX node must be created by the skin implementation and returned in the {@link #getRoot()} method.
  * </p>
  */
-public abstract class GConnectorSkin {
+public abstract class GConnectorSkin extends GSkin {
 
     private final GConnector connector;
-
-    private GraphEditor graphEditor;
 
     /**
      * Creates a new {@link GConnectorSkin}.
@@ -41,35 +38,6 @@ public abstract class GConnectorSkin {
     public GConnector getConnector() {
         return connector;
     }
-
-    /**
-     * Sets the graph editor instance that this skin is a part of.
-     *
-     * @param graphEditor a {@link GraphEditor} instance
-     */
-    public void setGraphEditor(final GraphEditor graphEditor) {
-        this.graphEditor = graphEditor;
-    }
-
-    /**
-     * Gets the graph editor instance that this skin is a part of.
-     *
-     * <p>
-     * This is provided for advanced skin customisation purposes only. Use at your own risk.
-     * </p>
-     *
-     * @return the {@link GraphEditor} instance that this skin is a part of
-     */
-    public GraphEditor getGraphEditor() {
-        return graphEditor;
-    }
-
-    /**
-     * Gets the root JavaFX node of the skin.
-     *
-     * @return the connector's root {@link Node}
-     */
-    public abstract Node getRoot();
 
     /**
      * Gets the width of the connector skin.

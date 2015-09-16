@@ -30,8 +30,9 @@ public class GraphEditorPersistence {
     private static final String CHOOSER_TEXT = "Graph Model Files (*" + FILE_EXTENSION + ")";
 
     private static final String SAMPLE_FILE = "sample" + FILE_EXTENSION;
+    private static final String SAMPLE_FILE_LARGE = "sample-large" + FILE_EXTENSION;
     private static final String TREE_FILE = "tree" + FILE_EXTENSION;
-    private static final String GREY_FILE = "grey" + FILE_EXTENSION;
+    private static final String TITLED_FILE = "titled" + FILE_EXTENSION;
 
     private File initialDirectory = null;
 
@@ -83,6 +84,15 @@ public class GraphEditorPersistence {
     }
 
     /**
+     * Loads the large sample saved in the <b>sample-large.graph</b> file.
+     *
+     * @param graphEditor the graph editor in which the loaded model will be set
+     */
+    public void loadSampleLarge(final GraphEditor graphEditor) {
+        loadSample(SAMPLE_FILE_LARGE, graphEditor);
+    }
+
+    /**
      * Loads the sample saved in the <b>tree.graph</b> file.
      *
      * @param graphEditor the graph editor in which the loaded model will be set
@@ -92,12 +102,12 @@ public class GraphEditorPersistence {
     }
 
     /**
-     * Loads the sample saved in the <b>tree.graph</b> file.
+     * Loads the sample saved in the <b>titled.graph</b> file.
      *
      * @param graphEditor the graph editor in which the loaded model will be set
      */
-    public void loadGrey(final GraphEditor graphEditor) {
-        loadSample(GREY_FILE, graphEditor);
+    public void loadTitled(final GraphEditor graphEditor) {
+        loadSample(TITLED_FILE, graphEditor);
     }
 
     /**

@@ -2,6 +2,7 @@ package de.tesis.dynaware.grapheditor.core.selections;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
@@ -16,6 +17,7 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 public class SelectionTracker {
 
     ObservableList<GNode> selectedNodes = FXCollections.observableArrayList();
+    ObservableList<GConnection> selectedConnections = FXCollections.observableArrayList();
     ObservableList<GJoint> selectedJoints = FXCollections.observableArrayList();
 
     private final SkinLookup skinLookup;
@@ -35,9 +37,45 @@ public class SelectionTracker {
      * @param model the {@link GModel} instance being edited
      */
     public void initialize(final GModel model) {
+        trackNodes(model);
+        trackConnectionsAndJoints(model);
+    }
+
+    /**
+     * Gets the observable list of selected nodes.
+     *
+     * @return the list of selected nodes
+     */
+    public ObservableList<GNode> getSelectedNodes() {
+        return selectedNodes;
+    }
+
+    /**
+     * Gets the observable list of selected connections.
+     *
+     * @return the list of selected connections
+     */
+    public ObservableList<GConnection> getSelectedConnections() {
+        return selectedConnections;
+    }
+
+    /**
+     * Gets the observable list of selected joints.
+     *
+     * @return the list of selected joints
+     */
+    public ObservableList<GJoint> getSelectedJoints() {
+        return selectedJoints;
+    }
+
+    /**
+     * Creates listeners to keep track of selected nodes.
+     *
+     * @param model the {@link GModel} instance being edited
+     */
+    private void trackNodes(final GModel model) {
 
         selectedNodes.clear();
-        selectedJoints.clear();
 
         for (final GNode node : model.getNodes()) {
 
@@ -55,8 +93,33 @@ public class SelectionTracker {
                 }
             });
         }
+    }
+
+    /**
+     * Creates listeners to keep track of selected connections and joints.
+     *
+     * @param model the {@link GModel} instance being edited
+     */
+    private void trackConnectionsAndJoints(final GModel model) {
+
+        selectedConnections.clear();
+        selectedJoints.clear();
 
         for (final GConnection connection : model.getConnections()) {
+
+            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+
+            if (connectionSkin.isSelected()) {
+                selectedConnections.add(connection);
+            }
+
+            connectionSkin.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue && !selectedConnections.contains(connection)) {
+                    selectedConnections.add(connection);
+                } else if (!newValue && selectedConnections.contains(connection)) {
+                    selectedConnections.remove(connection);
+                }
+            });
 
             for (final GJoint joint : connection.getJoints()) {
 
@@ -75,23 +138,5 @@ public class SelectionTracker {
                 });
             }
         }
-    }
-
-    /**
-     * Gets the observable list of selected nodes.
-     *
-     * @return the list of selected nodes
-     */
-    public ObservableList<GNode> getSelectedNodes() {
-        return selectedNodes;
-    }
-
-    /**
-     * Gets the observable list of selected joints.
-     *
-     * @return the list of selected joints
-     */
-    public ObservableList<GJoint> getSelectedJoints() {
-        return selectedJoints;
     }
 }

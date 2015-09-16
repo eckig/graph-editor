@@ -31,4 +31,9 @@ public interface SkinController {
      * Handles the paste operation.
      */
     void handlePaste();
+
+    /**
+     * Handles the select-all operation.
+     */
+    void handleSelectAll();
 }

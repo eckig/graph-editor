@@ -5,8 +5,6 @@ package de.tesis.dynaware.grapheditor;
 
 import java.util.List;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.ResizableBox;
@@ -27,7 +25,7 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
  * The root JavaFX node of this skin is a {@link ResizableBox}.
  * </p>
  */
-public abstract class GNodeSkin {
+public abstract class GNodeSkin extends GSkin {
 
     private final GNode node;
 
@@ -39,10 +37,6 @@ public abstract class GNodeSkin {
             GNodeSkin.this.layoutConnectors();
         }
     };
-
-    private GraphEditor graphEditor;
-
-    private final BooleanProperty selectedProperty = new SimpleBooleanProperty(false);
 
     /**
      * Creates a new {@link GNodeSkin}.
@@ -67,57 +61,9 @@ public abstract class GNodeSkin {
      *
      * @return a {@link ResizableBox} containing the skin's root JavaFX node
      */
+    @Override
     public ResizableBox getRoot() {
         return root;
-    }
-
-    /**
-     * Sets the graph editor instance that this skin is a part of.
-     *
-     * @param graphEditor a {@link GraphEditor} instance
-     */
-    public void setGraphEditor(final GraphEditor graphEditor) {
-        this.graphEditor = graphEditor;
-    }
-
-    /**
-     * Gets the graph editor instance that this skin is a part of.
-     *
-     * <p>
-     * This is provided for advanced skin customisation purposes only. Use at your own risk.
-     * </p>
-     *
-     * @return the {@link GraphEditor} instance that this skin is a part of
-     */
-    public GraphEditor getGraphEditor() {
-        return graphEditor;
-    }
-
-    /**
-     * Gets whether the node is selected or not.
-     *
-     * @return {@code true} if the node is selected, {@code false} if not
-     */
-    public boolean isSelected() {
-        return selectedProperty.get();
-    }
-
-    /**
-     * Sets whether the node is selected or not.
-     *
-     * @param isSelected {@code true} if the node is selected, {@code false} if not
-     */
-    public void setSelected(final boolean isSelected) {
-        selectedProperty.set(isSelected);
-    }
-
-    /**
-     * The property that determines whether the node is selected or not.
-     *
-     * @return a {@link BooleanProperty} containing {@code true} if the node is selected, {@code false} if not
-     */
-    public BooleanProperty selectedProperty() {
-        return selectedProperty;
     }
 
     /**

@@ -63,6 +63,12 @@ public class SelectionDeleter {
             }
         }
 
+        for (final GConnection connection : model.getConnections()) {
+            if (skinLookup.lookupConnection(connection).isSelected() && !connectionsToDelete.contains(connection)) {
+                connectionsToDelete.add(connection);
+            }
+        }
+
         if (!nodesToDelete.isEmpty() || !connectionsToDelete.isEmpty()) {
 
             final CompoundCommand command = modelEditingManager.remove(nodesToDelete, connectionsToDelete);

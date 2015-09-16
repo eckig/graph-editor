@@ -23,7 +23,6 @@ import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
-import de.tesis.dynaware.grapheditor.core.validators.ValidatorManager;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -44,7 +43,6 @@ public class ConnectorDragManager {
     private final TailManager tailManager;
 
     private final SkinLookup skinLookup;
-    private final ValidatorManager validatorManager;
     private final ConnectionEventManager connectionEventManager;
 
     private GModel model;
@@ -60,6 +58,8 @@ public class ConnectorDragManager {
     private final Map<GConnector, EventHandler<MouseEvent>> mouseDragExitedHandlers = new HashMap<>();
     private final Map<GConnector, EventHandler<MouseEvent>> mouseDragReleasedHandlers = new HashMap<>();
 
+    private GConnectorValidator validator = new DefaultConnectorValidator();
+
     private GConnector hoveredConnector;
     private GConnector sourceConnector;
     private GConnector targetConnector;
@@ -72,15 +72,13 @@ public class ConnectorDragManager {
      * instance.
      *
      * @param skinLookup the {@link SkinLookup} used to look up connector and tail skins
-     * @param validatorManager the {@link ValidatorManager} used to determine which connectors can be connected
      * @param connectionEventManager the {@link ConnectionEventManager} used to notify users of connection events
      * @param view the {@link GraphEditorView} to which tail skins will be added and removed during drag events
      */
-    public ConnectorDragManager(final SkinLookup skinLookup, final ValidatorManager validatorManager,
-            final ConnectionEventManager connectionEventManager, final GraphEditorView view) {
+    public ConnectorDragManager(final SkinLookup skinLookup, final ConnectionEventManager connectionEventManager,
+            final GraphEditorView view) {
 
         this.skinLookup = skinLookup;
-        this.validatorManager = validatorManager;
         this.connectionEventManager = connectionEventManager;
 
         tailManager = new TailManager(skinLookup, view);
@@ -97,6 +95,19 @@ public class ConnectorDragManager {
 
         clearTrackingParameters();
         setHandlers();
+    }
+
+    /**
+     * Sets the validator that determines what connections can be created.
+     * 
+     * @param validator a {@link GConnectorValidator} implementaiton, or null to use the default
+     */
+    public void setValidator(final GConnectorValidator validator) {
+        if (validator != null) {
+            this.validator = validator;
+        } else {
+            this.validator = new DefaultConnectorValidator();
+        }
     }
 
     /**
@@ -305,7 +316,7 @@ public class ConnectorDragManager {
 
             sourceConnector = connector;
             skinLookup.lookupConnector(connector).getRoot().startFullDrag();
-            tailManager.create(connector, event.getX(), event.getY());
+            tailManager.create(connector, event);
 
         } else if (checkRemovable(connector)) {
 
@@ -337,7 +348,7 @@ public class ConnectorDragManager {
         if (removalConnector != null && !removalConnector.equals(hoveredConnector)) {
             detachConnection(event, connector);
         } else {
-            tailManager.updatePosition(connector, event.getX(), event.getY());
+            tailManager.updatePosition(event);
         }
 
         event.consume();
@@ -354,8 +365,6 @@ public class ConnectorDragManager {
         if (!event.getButton().equals(MouseButton.PRIMARY)) {
             return;
         }
-
-        final GConnectorValidator validator = validatorManager.getConnectorValidator();
 
         if (event.getButton().equals(MouseButton.PRIMARY) && validator.prevalidate(sourceConnector, connector)) {
 
@@ -382,16 +391,11 @@ public class ConnectorDragManager {
      */
     private void handleDragExited(final MouseEvent event, final GConnector connector) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
-            return;
-        }
+        skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
+        repositionAllowed = true;
 
-        final GConnectorValidator validator = validatorManager.getConnectorValidator();
-
-        if (event.isPrimaryButtonDown() && validator.prevalidate(sourceConnector, connector)) {
-            skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
-            repositionAllowed = true;
-            tailManager.updatePosition(connector, event.getX(), event.getY());
+        if (event.getButton().equals(MouseButton.PRIMARY)) {
+            tailManager.updatePosition(event);
         }
 
         event.consume();
@@ -413,7 +417,6 @@ public class ConnectorDragManager {
         event.consume();
 
         final GConnectorSkin targetConnectorSkin = skinLookup.lookupConnector(connector);
-        final GConnectorValidator validator = validatorManager.getConnectorValidator();
 
         if (validator.prevalidate(sourceConnector, connector) && validator.validate(sourceConnector, connector)) {
 
@@ -459,8 +462,8 @@ public class ConnectorDragManager {
      */
     private void addConnection(final GConnector source, final GConnector target) {
 
-        final String connectionType = validatorManager.getConnectorValidator().createConnectionType(source, target);
-        final String jointType = validatorManager.getConnectorValidator().createJointType(source, target);
+        final String connectionType = validator.createConnectionType(source, target);
+        final String jointType = validator.createJointType(source, target);
         final List<Point2D> jointPositions = skinLookup.lookupTail(source).allocateJointPositions();
 
         final List<GJoint> joints = new ArrayList<>();
@@ -500,7 +503,7 @@ public class ConnectorDragManager {
         }
 
         final GConnection connection = connector.getConnections().get(0);
-        tailManager.createFromConnection(connector, connection, event.getX(), event.getY());
+        tailManager.createFromConnection(connector, connection, event);
 
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
 

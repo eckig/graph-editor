@@ -5,21 +5,24 @@ package de.tesis.dynaware.grapheditor.core;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
-import de.tesis.dynaware.grapheditor.core.selections.SelectionBackup;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionCreator;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionDeleter;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionDragManager;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionTracker;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -46,7 +49,6 @@ public class DefaultSelectionManager implements SelectionManager {
     private final SelectionCreator selectionCreator;
     private final SelectionDragManager selectionDragManager;
     private final SelectionDeleter selectionDeleter;
-    private final SelectionBackup selectionBackup;
     private final SelectionTracker selectionTracker;
     private final SelectionCopier selectionCopier;
 
@@ -65,7 +67,6 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionDragManager = new SelectionDragManager(skinLookup, view);
         selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
         selectionCreator = new SelectionCreator(skinLookup, view, selectionDragManager);
-        selectionBackup = new SelectionBackup(skinLookup, view);
         selectionTracker = new SelectionTracker(skinLookup);
         selectionCopier = new SelectionCopier(skinLookup, selectionTracker, selectionCreator, selectionDeleter);
     }
@@ -80,7 +81,6 @@ public class DefaultSelectionManager implements SelectionManager {
         this.model = model;
 
         selectionCreator.initialize(model);
-        selectionBackup.initialize(model);
         selectionTracker.initialize(model);
         selectionCopier.initialize(model);
     }
@@ -91,13 +91,40 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
+    public ObservableList<GConnection> getSelectedConnections() {
+        return selectionTracker.getSelectedConnections();
+    }
+
+    @Override
     public ObservableList<GJoint> getSelectedJoints() {
         return selectionTracker.getSelectedJoints();
     }
 
     @Override
     public void selectAll() {
-        selectionCreator.selectAll();
+        selectionCreator.selectAllNodes(true);
+        selectionCreator.selectAllJoints(true);
+        selectionCreator.selectAllConnections(true);
+    }
+
+    @Override
+    public void selectAllNodes() {
+        selectionCreator.selectAllNodes(true);
+    }
+
+    @Override
+    public void selectAllJoints() {
+        selectionCreator.selectAllJoints(true);
+    }
+
+    @Override
+    public void selectAllConnections() {
+        selectionCreator.selectAllConnections(true);
+    }
+
+    @Override
+    public void clearSelection() {
+        selectionCreator.deselectAll();
     }
 
     @Override
@@ -108,16 +135,6 @@ public class DefaultSelectionManager implements SelectionManager {
     @Override
     public void deleteSelection(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
         selectionDeleter.deleteSelection(model, consumer);
-    }
-
-    @Override
-    public void backup() {
-        selectionBackup.backup();
-    }
-
-    @Override
-    public void restore() {
-        selectionBackup.restore();
     }
 
     @Override
@@ -148,5 +165,10 @@ public class DefaultSelectionManager implements SelectionManager {
     @Override
     public void clearMemory() {
         selectionCopier.clearMemory();
+    }
+
+    @Override
+    public void setConnectionSelectionPredicate(final BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate) {
+        selectionCreator.setConnectionSelectionPredicate(connectionPredicate);
     }
 }

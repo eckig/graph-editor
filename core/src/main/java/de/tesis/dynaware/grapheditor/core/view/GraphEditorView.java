@@ -217,6 +217,10 @@ public class GraphEditorView extends Region {
      * This increases performance if the content does not need to be redrawn. It <b>decreases</b> performance when the
      * content is redrawn. Use with care.
      * </p>
+     * 
+     * <p>
+     * <b>Note:</b> Currently leads to poor performance when scale transforms are used, or on retina displays.
+     * </p>
      *
      * @param cache {@code true} to enable caching, {@code false} to disable it
      */

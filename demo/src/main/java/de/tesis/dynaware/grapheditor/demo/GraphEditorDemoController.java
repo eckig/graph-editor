@@ -29,10 +29,11 @@ import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
-import de.tesis.dynaware.grapheditor.demo.customskins.GreySkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
+import de.tesis.dynaware.grapheditor.demo.customskins.TitledSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.TreeSkinController;
-import de.tesis.dynaware.grapheditor.demo.customskins.grey.GreySkinConstants;
+import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
+import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSelectionPredicate;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
@@ -46,7 +47,7 @@ import de.tesis.dynaware.grapheditor.window.WindowPosition;
  */
 public class GraphEditorDemoController {
 
-    private static final String STYLE_CLASS_GREY_SKINS = "grey-skins";
+    private static final String STYLE_CLASS_TITLED_SKINS = "titled-skins";
 
     @FXML
     private AnchorPane root;
@@ -81,7 +82,7 @@ public class GraphEditorDemoController {
     @FXML
     private RadioMenuItem treeSkinButton;
     @FXML
-    private RadioMenuItem greySkinButton;
+    private RadioMenuItem titledSkinButton;
     @FXML
     private Menu intersectionStyle;
     @FXML
@@ -103,7 +104,7 @@ public class GraphEditorDemoController {
 
     private DefaultSkinController defaultSkinController;
     private TreeSkinController treeSkinController;
-    private GreySkinController greySkinController;
+    private TitledSkinController titledSkinController;
 
     private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>();
 
@@ -116,10 +117,11 @@ public class GraphEditorDemoController {
 
         graphEditor.setModel(model);
         graphEditorContainer.setGraphEditor(graphEditor);
+        setDetouredStyle();
 
         defaultSkinController = new DefaultSkinController(graphEditor, graphEditorContainer);
         treeSkinController = new TreeSkinController(graphEditor, graphEditorContainer);
-        greySkinController = new GreySkinController(graphEditor, graphEditorContainer);
+        titledSkinController = new TitledSkinController(graphEditor, graphEditorContainer);
 
         activeSkinController.set(defaultSkinController);
 
@@ -141,6 +143,13 @@ public class GraphEditorDemoController {
     }
 
     @FXML
+    public void loadSampleLarge() {
+        defaultSkinButton.setSelected(true);
+        setDefaultSkin();
+        graphEditorPersistence.loadSampleLarge(graphEditor);
+    }
+
+    @FXML
     public void loadTree() {
         treeSkinButton.setSelected(true);
         setTreeSkin();
@@ -148,10 +157,10 @@ public class GraphEditorDemoController {
     }
 
     @FXML
-    public void loadGrey() {
-        greySkinButton.setSelected(true);
-        setGreySkin();
-        graphEditorPersistence.loadGrey(graphEditor);
+    public void loadTitled() {
+        titledSkinButton.setSelected(true);
+        setTitledSkin();
+        graphEditorPersistence.loadTitled(graphEditor);
     }
 
     @FXML
@@ -171,16 +180,12 @@ public class GraphEditorDemoController {
 
     @FXML
     public void undo() {
-        graphEditor.getSelectionManager().backup();
         Commands.undo(graphEditor.getModel());
-        graphEditor.getSelectionManager().restore();
     }
 
     @FXML
     public void redo() {
-        graphEditor.getSelectionManager().backup();
         Commands.redo(graphEditor.getModel());
-        graphEditor.getSelectionManager().restore();
     }
 
     @FXML
@@ -200,7 +205,7 @@ public class GraphEditorDemoController {
 
     @FXML
     public void selectAll() {
-        graphEditor.getSelectionManager().selectAll();
+        activeSkinController.get().handleSelectAll();
     }
 
     @FXML
@@ -234,8 +239,8 @@ public class GraphEditorDemoController {
     }
 
     @FXML
-    public void setGreySkin() {
-        activeSkinController.set(greySkinController);
+    public void setTitledSkin() {
+        activeSkinController.set(titledSkinController);
     }
 
     @FXML
@@ -280,7 +285,7 @@ public class GraphEditorDemoController {
         graphEditor.getView().getTransforms().add(scaleTransform);
 
         final ToggleGroup skinGroup = new ToggleGroup();
-        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, greySkinButton);
+        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton);
 
         final ToggleGroup connectionStyleGroup = new ToggleGroup();
         connectionStyleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
@@ -376,22 +381,25 @@ public class GraphEditorDemoController {
 
         if (treeSkinController.equals(activeSkinController.get())) {
 
-            graphEditor.setConnectorValidator(TreeConnectorValidator.class);
-            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_GREY_SKINS);
+            graphEditor.setConnectorValidator(new TreeConnectorValidator());
+            graphEditor.getSelectionManager().setConnectionSelectionPredicate(new TreeConnectionSelectionPredicate());
+            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             treeSkinButton.setSelected(true);
 
-        } else if (greySkinController.equals(activeSkinController.get())) {
+        } else if (titledSkinController.equals(activeSkinController.get())) {
 
             graphEditor.setConnectorValidator(null);
-            if (!graphEditor.getView().getStyleClass().contains(STYLE_CLASS_GREY_SKINS)) {
-                graphEditor.getView().getStyleClass().add(STYLE_CLASS_GREY_SKINS);
+            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
+            if (!graphEditor.getView().getStyleClass().contains(STYLE_CLASS_TITLED_SKINS)) {
+                graphEditor.getView().getStyleClass().add(STYLE_CLASS_TITLED_SKINS);
             }
-            greySkinButton.setSelected(true);
+            titledSkinButton.setSelected(true);
 
         } else {
 
             graphEditor.setConnectorValidator(null);
-            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_GREY_SKINS);
+            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
+            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             defaultSkinButton.setSelected(true);
         }
 
@@ -414,8 +422,8 @@ public class GraphEditorDemoController {
 
             if (TreeSkinConstants.TREE_NODE.equals(type)) {
                 activeSkinController.set(treeSkinController);
-            } else if (GreySkinConstants.GREY_NODE.equals(type)) {
-                activeSkinController.set(greySkinController);
+            } else if (TitledSkinConstants.TITLED_NODE.equals(type)) {
+                activeSkinController.set(titledSkinController);
             } else {
                 activeSkinController.set(defaultSkinController);
             }
@@ -430,9 +438,9 @@ public class GraphEditorDemoController {
         final boolean nothingSelected = graphEditor.getSelectionManager().getSelectedNodes().isEmpty();
 
         final boolean treeSkinActive = treeSkinController.equals(activeSkinController.get());
-        final boolean greySkinActive = greySkinController.equals(activeSkinController.get());
+        final boolean titledSkinActive = titledSkinController.equals(activeSkinController.get());
 
-        if (greySkinActive || treeSkinActive) {
+        if (titledSkinActive || treeSkinActive) {
             addConnectorButton.setDisable(true);
             clearConnectorsButton.setDisable(true);
             connectorTypeMenu.setDisable(true);

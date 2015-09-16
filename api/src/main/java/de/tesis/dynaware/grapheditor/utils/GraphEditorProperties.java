@@ -3,13 +3,12 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 /**
  * General properties for the graph editor.
@@ -55,7 +54,7 @@ public class GraphEditorProperties {
     private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty();
     private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(DEFAULT_GRID_SPACING);
 
-    private final Map<String, String> customProperties = new HashMap<>();
+    private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
 
     /**
      * Creates a new editor properties instance containing a set of default properties.
@@ -303,7 +302,7 @@ public class GraphEditorProperties {
      *
      * @return a map of custom properties
      */
-    public Map<String, String> getCustomProperties() {
+    public ObservableMap<String, String> getCustomProperties() {
         return customProperties;
     }
 }

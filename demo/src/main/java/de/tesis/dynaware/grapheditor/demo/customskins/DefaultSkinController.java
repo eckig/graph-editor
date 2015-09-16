@@ -112,6 +112,12 @@ public class DefaultSkinController implements SkinController {
         graphEditor.getSelectionManager().paste();
     }
 
+    @Override
+    public void handleSelectAll() {
+        graphEditor.getSelectionManager().selectAllNodes();
+        graphEditor.getSelectionManager().selectAllJoints();
+    }
+
     /**
      * Counts the number of connectors the given node currently has of the given type.
      *

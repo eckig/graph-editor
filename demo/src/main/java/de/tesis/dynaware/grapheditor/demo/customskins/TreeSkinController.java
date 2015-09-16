@@ -1,5 +1,7 @@
 package de.tesis.dynaware.grapheditor.demo.customskins;
 
+import java.util.List;
+
 import javafx.geometry.Side;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
@@ -78,6 +80,24 @@ public class TreeSkinController implements SkinController {
 
     @Override
     public void handlePaste() {
-        graphEditor.getSelectionManager().paste();
+        graphEditor.getSelectionManager().paste((nodes, command) -> selectReferencedConnections(nodes));
+    }
+
+    @Override
+    public void handleSelectAll() {
+        graphEditor.getSelectionManager().selectAll();
+    }
+
+    /**
+     * Selects all connections that are referenced (i.e. connected to) the given nodes.
+     * 
+     * @param nodes a list of graph nodes
+     */
+    private void selectReferencedConnections(final List<GNode> nodes) {
+        nodes.forEach(node -> node.getConnectors().forEach(connector -> {
+            connector.getConnections().forEach(connection -> {
+                graphEditor.getSkinLookup().lookupConnection(connection).setSelected(true);
+            });
+        }));
     }
 }

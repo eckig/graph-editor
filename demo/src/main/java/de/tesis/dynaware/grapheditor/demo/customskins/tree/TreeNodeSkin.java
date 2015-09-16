@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
@@ -91,6 +92,8 @@ public class TreeNodeSkin extends GNodeSkin {
         addSelectionHalo();
         addSelectionListener();
         addButton();
+
+        background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
     }
 
     @Override
@@ -308,6 +311,17 @@ public class TreeNodeSkin extends GNodeSkin {
             return getNode().getConnectors().get(1);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Stops the node being dragged if it isn't selected.
+     * 
+     * @param event a mouse-dragged event on the node
+     */
+    private void filterMouseDragged(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && !isSelected()) {
+            event.consume();
         }
     }
 }

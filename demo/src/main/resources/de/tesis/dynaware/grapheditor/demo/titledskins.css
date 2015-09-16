@@ -5,17 +5,17 @@
 	-title-color:  linear-gradient(to bottom, rgb(0, 50, 60), rgb(0, 80, 80));
 }
 
-.grey-node-background {
+.titled-node-background {
 	-fx-background-color: -background-color;
 	-fx-background-insets: 1;
 	-fx-border-width: 0;	
 }
 
-.grey-node-background:selected {
+.titled-node-background:selected {
 	-fx-background-color: derive(-background-color, -5%);
 }
 
-.grey-node-border {
+.titled-node-border {
 	-fx-stroke: -border-color;
 	-fx-stroke-width: 1;
 	-fx-stroke-type: inside;
@@ -23,7 +23,7 @@
 	-fx-effect: dropshadow(gaussian, rgb(150, 150, 150), 5, 0, 1, 1);
 }
 
-.grey-node-selection-halo {
+.titled-node-selection-halo {
 	-fx-stroke: -halo-color;
 	-fx-opacity: 0.6;
 	-fx-stroke-type: inside;
@@ -31,7 +31,7 @@
 	-fx-fill: null;
 }
 
-.grey-node-header {
+.titled-node-header {
 	-fx-padding: 2 5 2 5;
 	-fx-background-color: -title-color;
 	-fx-border-width: 0 0 1 0;
@@ -39,30 +39,30 @@
 	-fx-opacity: 0.9;
 }
 
-.grey-node-title {
+.titled-node-title {
 	-fx-font-size: 11;
 	-fx-text-fill: white;
 }
 
-.grey-node-close-button {
+.titled-node-close-button {
 	-fx-background-color: null;
 	-fx-border-color: null;
 	-fx-padding: 0 0 0 0;
 }
 
-.grey-node-close-button .icon {
+.titled-node-close-button .icon {
 	-fx-fill: -background-color;
 }
 
-.grey-node-close-button:hover .icon {
+.titled-node-close-button:hover .icon {
 	-fx-fill: white;
 }
 
-.grey-node-close-button:pressed .icon {
+.titled-node-close-button:pressed .icon {
 	-fx-fill: derive(-background-color, -5%);
 }
 
-.grey-connector {
+.titled-connector {
 	-fx-border-color: -border-color;
 	-fx-border-width: 1;
 	-fx-stroke-type: inside;
@@ -71,51 +71,51 @@
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.grey-connector:selected {
+.titled-connector:selected {
 	-fx-background-color: derive(white, -4%);
 	-fx-opacity: 0.6;
 }
 
-.grey-connector:hover, .grey-connector:allowed, .grey-connector:forbidden, .grey-connector:selected:hover {
+.titled-connector:hover, .titled-connector:allowed, .titled-connector:forbidden, .titled-connector:selected:hover {
 	-fx-background-color: white;
 	-fx-opacity: 0.6;
 }
 
-.grey-connector:pressed {
+.titled-connector:pressed {
 	-fx-background-color: derive(white, -2%);
 	-fx-opacity: 0.6;
 }
 
-.grey-connector-forbidden-graphic {
+.titled-connector-forbidden-graphic {
 	-fx-stroke: -border-color;
 	-fx-stroke-width: 1;
 	-fx-fill: null;
 }
 
-.grey-tail  {
+.titled-tail  {
 	-fx-stroke: derive(-border-color, 50%);
 	-fx-effect: dropshadow(one-pass-box, rgb(220, 220, 220), 5, 0, 1, 1);
 }
 
-.grey-tail-endpoint  {
+.titled-tail-endpoint  {
 	-fx-stroke: derive(-border-color, 50%);
 	-fx-stroke-type: inside;
 	-fx-fill: derive(-background-color, 50%);
 	-fx-effect: dropshadow(one-pass-box, rgb(220, 220, 220), 5, 0, 1, 1);
 }
 
-.grey-skins .default-connection {
+.titled-skins .default-connection {
 	-fx-stroke-width: 1;
 	-fx-stroke: -border-color;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.grey-skins .default-connection-background {
+.titled-skins .default-connection-background {
 	-fx-stroke-width: 7;
 	-fx-stroke: transparent;
 }
 
-.grey-skins .default-connection-hover-effect {
+.titled-skins .default-connection-hover-effect {
 	-fx-stroke-width: 1;
 	-fx-stroke: -border-color;
 	-fx-stroke-dash-array: 8 4;
@@ -125,14 +125,14 @@
 	-fx-fill: transparent;
 }
 
-.grey-skins .default-connection-hover-effect:pressed {
+.titled-skins .default-connection-hover-effect:pressed {
 	-fx-stroke-width: 1;
 	-fx-stroke: null;
 	-fx-stroke-type: inside;
 	-fx-fill: null;
 }
 
-.grey-skins .default-joint {
+.titled-skins .default-joint {
 	/* Invisible by default but make sure it has the exact same dimensions as for hover and pressed effects. */
 	-fx-border-width: 1;
 	-fx-border-color: transparent;
@@ -142,14 +142,14 @@
 	-fx-background-radius: 0;
 }
 
-.grey-skins .default-joint:hover, .grey-skins .default-joint:selected:hover {
+.titled-skins .default-joint:hover, .titled-skins .default-joint:selected:hover {
 	-fx-border-color: -border-color;
 	-fx-background-color: white;
 	-fx-opacity: 0.6;
 	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
 }
 
-.grey-skins .default-joint:pressed, .grey-skins .default-joint:selected, .grey-skins .default-joint:selected:pressed {
+.titled-skins .default-joint:pressed, .titled-skins .default-joint:selected, .titled-skins .default-joint:selected:pressed {
 	-fx-border-color: -border-color;
 	-fx-background-color: derive(white, -4%);
 	-fx-opacity: 0.6;

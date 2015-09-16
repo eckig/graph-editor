@@ -3,8 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 
@@ -20,15 +18,10 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
  * The root JavaFX node of this skin is a {@link DraggableBox}.
  * </p>
  */
-public abstract class GJointSkin {
+public abstract class GJointSkin extends GSkin {
 
     private final GJoint joint;
-
     private final DraggableBox root = new DraggableBox();
-
-    private GraphEditor graphEditor;
-
-    private final BooleanProperty selectedProperty = new SimpleBooleanProperty(false);
 
     /**
      * Creates a new {@link GJointSkin}.
@@ -53,57 +46,9 @@ public abstract class GJointSkin {
      *
      * @return a {@link DraggableBox} containing the skin's root JavaFX node
      */
+    @Override
     public DraggableBox getRoot() {
         return root;
-    }
-
-    /**
-     * Sets the graph editor instance that this skin is a part of.
-     *
-     * @param graphEditor a {@link GraphEditor} instance
-     */
-    public void setGraphEditor(final GraphEditor graphEditor) {
-        this.graphEditor = graphEditor;
-    }
-
-    /**
-     * Gets the graph editor instance that this skin is a part of.
-     *
-     * <p>
-     * This is provided for advanced skin customisation purposes only. Use at your own risk.
-     * </p>
-     *
-     * @return the {@link GraphEditor} instance that this skin is a part of
-     */
-    public GraphEditor getGraphEditor() {
-        return graphEditor;
-    }
-
-    /**
-     * Gets whether the joint is selected or not.
-     *
-     * @return {@code true} if the joint is selected, {@code false} if not
-     */
-    public boolean isSelected() {
-        return selectedProperty.get();
-    }
-
-    /**
-     * Sets whether the joint is selected or not.
-     *
-     * @param isSelected {@code true} if the joint is selected, {@code false} if not
-     */
-    public void setSelected(final boolean isSelected) {
-        selectedProperty.set(isSelected);
-    }
-
-    /**
-     * The property storing whether the joint is selected or not.
-     *
-     * @return a {@link BooleanProperty} containing {@code true} if the joint is selected, {@code false} if not
-     */
-    public BooleanProperty selectedProperty() {
-        return selectedProperty;
     }
 
     /**
@@ -114,7 +59,6 @@ public abstract class GJointSkin {
      * </p>
      */
     public void initialize() {
-
         getRoot().setLayoutX(getJoint().getX() - getWidth() / 2);
         getRoot().setLayoutY(getJoint().getY() - getHeight() / 2);
     }

@@ -122,15 +122,15 @@ public interface GraphEditor {
     void setTailSkin(final String type, final Class<? extends GTailSkin> skin);
 
     /**
-     * Sets the custom connector validator class.
+     * Sets a custom connector validator.
      *
      * <p>
      * This will be used to decide which connections are allowed / forbidden during drag & drop events in the editor.
      * </p>
      *
-     * @param validator a custom validator class that implements {@link GConnectorValidator}
+     * @param validator a custom validator implements {@link GConnectorValidator}, or null to use the default validator
      */
-    void setConnectorValidator(final Class<? extends GConnectorValidator> validator);
+    void setConnectorValidator(final GConnectorValidator validator);
 
     /**
      * Sets the graph model to be edited.

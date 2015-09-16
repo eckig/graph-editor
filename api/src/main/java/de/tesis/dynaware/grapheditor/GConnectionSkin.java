@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.shape.Line;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
@@ -25,11 +24,9 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
  * source and target connectors.
  * </p>
  */
-public abstract class GConnectionSkin {
+public abstract class GConnectionSkin extends GSkin {
 
     private final GConnection connection;
-
-    private GraphEditor graphEditor;
 
     /**
      * Creates a new {@link GConnectionSkin}.
@@ -48,35 +45,6 @@ public abstract class GConnectionSkin {
     public GConnection getConnection() {
         return connection;
     }
-
-    /**
-     * Sets the graph editor instance that this skin is a part of.
-     *
-     * @param graphEditor a {@link GraphEditor} instance
-     */
-    public void setGraphEditor(final GraphEditor graphEditor) {
-        this.graphEditor = graphEditor;
-    }
-
-    /**
-     * Gets the graph editor instance that this skin is a part of.
-     *
-     * <p>
-     * This is provided for advanced skin customisation purposes only. Use at your own risk.
-     * </p>
-     *
-     * @return the {@link GraphEditor} instance that this skin is a part of
-     */
-    public GraphEditor getGraphEditor() {
-        return graphEditor;
-    }
-
-    /**
-     * Gets the root JavaFX node of the skin.
-     *
-     * @return a the connection's root {@link Node}
-     */
-    public abstract Node getRoot();
 
     /**
      * Sets the skin objects for all joints inside the connection.
@@ -131,6 +99,6 @@ public abstract class GConnectionSkin {
      * </p>
      */
     public void applyConstraints(final List<Point2D> points) {
-        // Base implementation does nothing.
+        // No default implementation.
     }
 }
