@@ -45,6 +45,11 @@ public class DefaultSkinController implements SkinController {
     }
 
     @Override
+    public void activate() {
+        // Nothing to do
+    }
+
+    @Override
     public void addNode(final double currentZoomFactor) {
 
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;

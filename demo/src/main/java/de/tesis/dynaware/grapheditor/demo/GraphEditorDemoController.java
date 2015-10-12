@@ -106,7 +106,17 @@ public class GraphEditorDemoController {
     private TreeSkinController treeSkinController;
     private TitledSkinController titledSkinController;
 
-    private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>();
+    private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<SkinController>(){
+
+        @Override
+        protected void invalidated() {
+            super.invalidated();
+            if(get() != null) {
+                get().activate();
+            }
+        }
+        
+    };
 
     /**
      * Called by JavaFX when FXML is loaded.

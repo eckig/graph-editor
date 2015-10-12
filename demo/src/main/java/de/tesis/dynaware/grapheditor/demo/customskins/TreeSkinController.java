@@ -4,13 +4,22 @@ import java.util.List;
 
 import javafx.geometry.Side;
 import de.tesis.dynaware.grapheditor.Commands;
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultNodeSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeTailSkin;
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
@@ -35,13 +44,32 @@ public class TreeSkinController implements SkinController {
 
         this.graphEditor = graphEditor;
         this.graphEditorContainer = graphEditorContainer;
+    }
 
-        graphEditor.setNodeSkin(TreeSkinConstants.TREE_NODE, TreeNodeSkin.class);
-        graphEditor.setConnectorSkin(TreeSkinConstants.TREE_INPUT_CONNECTOR, TreeConnectorSkin.class);
-        graphEditor.setConnectorSkin(TreeSkinConstants.TREE_OUTPUT_CONNECTOR, TreeConnectorSkin.class);
-        graphEditor.setConnectionSkin(TreeSkinConstants.TREE_CONNECTION, TreeConnectionSkin.class);
-        graphEditor.setTailSkin(TreeSkinConstants.TREE_INPUT_CONNECTOR, TreeTailSkin.class);
-        graphEditor.setTailSkin(TreeSkinConstants.TREE_OUTPUT_CONNECTOR, TreeTailSkin.class);
+    @Override
+    public void activate() {
+        graphEditor.setNodeSkinFactory(this::createSkin);
+        graphEditor.setConnectorSkinFactory(this::createSkin);
+        graphEditor.setConnectionSkinFactory(this::createSkin);
+        graphEditor.setTailSkinFactory(this::createTailSkin);
+    }
+    
+    private GNodeSkin createSkin(final GNode node) {
+        return TreeSkinConstants.TREE_NODE.equals(node.getType()) ? new TreeNodeSkin(node) : new DefaultNodeSkin(node);
+    }
+    
+    private GConnectionSkin createSkin(final GConnection connection) {
+        return TreeSkinConstants.TREE_CONNECTION.equals(connection.getType()) ? new TreeConnectionSkin(connection) : new DefaultConnectionSkin(connection);
+    }
+    
+    private GConnectorSkin createSkin(final GConnector connector) {
+        return TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(connector.getType()) || TreeSkinConstants.TREE_OUTPUT_CONNECTOR.equals(connector.getType()) ?
+                new TreeConnectorSkin(connector) : new DefaultConnectorSkin(connector);
+    }
+    
+    private GTailSkin createTailSkin(final GConnector connector) {
+        return TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(connector.getType()) || TreeSkinConstants.TREE_OUTPUT_CONNECTOR.equals(connector.getType()) ?
+                new TreeTailSkin(connector) : new DefaultTailSkin(connector);
     }
 
     @Override

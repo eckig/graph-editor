@@ -23,8 +23,12 @@ import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.model.GConnector;
+import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
+import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.util.Callback;
 
 /**
  * Default implementation of the {@link GraphEditor}.
@@ -32,10 +36,8 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 public class DefaultGraphEditor implements GraphEditor {
 
     private final SkinManager skinManager;
-    private final ConnectionEventManager connectionEventManager;
-
+    private final ConnectionEventManager connectionEventManager = new ConnectionEventManager();
     private final GraphEditorController controller;
-
     private final ObjectProperty<GModel> modelProperty = new SimpleObjectProperty<>();
 
     /**
@@ -45,7 +47,6 @@ public class DefaultGraphEditor implements GraphEditor {
 
         // Skin manager needs 'this' reference so users can access GraphEditor inside their custom skins.
         skinManager = new SkinManager(this);
-        connectionEventManager = new ConnectionEventManager();
 
         controller = new GraphEditorController(skinManager, connectionEventManager);
 
@@ -56,28 +57,28 @@ public class DefaultGraphEditor implements GraphEditor {
     }
 
     @Override
-    public void setNodeSkin(final String type, final Class<? extends GNodeSkin> skin) {
-        skinManager.setNodeSkin(type, skin);
+    public void setNodeSkinFactory(final Callback<GNode, GNodeSkin> skinFactory) {
+        skinManager.setNodeSkinFactory(skinFactory);
     }
 
     @Override
-    public void setConnectorSkin(final String type, final Class<? extends GConnectorSkin> skin) {
-        skinManager.setConnectorSkin(type, skin);
+    public void setConnectorSkinFactory(final Callback<GConnector, GConnectorSkin> connectorSkinFactory) {
+        skinManager.setConnectorSkinFactory(connectorSkinFactory);
     }
 
     @Override
-    public void setConnectionSkin(final String type, final Class<? extends GConnectionSkin> skin) {
-        skinManager.setConnectionSkin(type, skin);
+    public void setConnectionSkinFactory(final Callback<GConnection, GConnectionSkin> connectionSkinFactory) {
+        skinManager.setConnectionSkinFactory(connectionSkinFactory);
     }
 
     @Override
-    public void setJointSkin(final String type, final Class<? extends GJointSkin> skin) {
-        skinManager.setJointSkin(type, skin);
+    public void setJointSkinFactory(final Callback<GJoint, GJointSkin> jointSkinFactory) {
+        skinManager.setJointSkinFactory(jointSkinFactory);
     }
 
     @Override
-    public void setTailSkin(final String type, final Class<? extends GTailSkin> skin) {
-        skinManager.setTailSkin(type, skin);
+    public void setTailSkinFactory(final Callback<GConnector, GTailSkin> tailSkinFactory) {
+        skinManager.setTailSkinFactory(tailSkinFactory);
     }
 
     @Override

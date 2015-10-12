@@ -13,6 +13,8 @@ public interface SkinController {
      * @param currentZoomFactor the current zoom factor (1 for 100%)
      */
     void addNode(final double currentZoomFactor);
+    
+    void activate();
 
     /**
      * Adds a connector of the given type to all selected nodes.

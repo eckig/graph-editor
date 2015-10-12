@@ -11,10 +11,7 @@ import javafx.scene.layout.Region;
 import org.eclipse.emf.common.command.CompoundCommand;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
-import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
-import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 
 /**
@@ -54,72 +51,7 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
  * via CSS. See <b>defaults.css</b> in the core module for more information.
  * </p>
  */
-public interface GraphEditor {
-
-    /**
-     * Sets the custom node skin for a particular node type.
-     *
-     * <p>
-     * All {@link GNode} model elements that have a '<em><b>Type</b></em>' attribute equal to type set here will be
-     * rendered using this skin.
-     * </p>
-     *
-     * @param type the {@link GNode} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GNodeSkin}
-     */
-    void setNodeSkin(final String type, final Class<? extends GNodeSkin> skin);
-
-    /**
-     * Sets the custom connector skin for a particular connector type.
-     *
-     * <p>
-     * All {@link GConnector} model elements that have a '<em><b>Type</b></em>' attribute equal to type set here will be
-     * rendered using this skin.
-     * </p>
-     *
-     * @param type the {@link GConnector} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GConnectorSkin}
-     */
-    void setConnectorSkin(final String type, final Class<? extends GConnectorSkin> skin);
-
-    /**
-     * Sets the custom connection skin for a particular connection type.
-     *
-     * <p>
-     * All {@link GConnection} model elements that have a '<em><b>Type</b></em>' attribute equal to type set here will
-     * be rendered using this skin.
-     * </p>
-     *
-     * @param type the {@link GConnection} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GConnectionSkin}
-     */
-    void setConnectionSkin(final String type, final Class<? extends GConnectionSkin> skin);
-
-    /**
-     * Sets the custom joint skin for a particular joint type.
-     *
-     * <p>
-     * All {@link GJoint} model elements that have a '<em><b>Type</b></em>' attribute equal to type set here will be
-     * rendered using this skin.
-     * </p>
-     *
-     * @param type the {@link GJoint} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GJointSkin}
-     */
-    void setJointSkin(final String type, final Class<? extends GJointSkin> skin);
-
-    /**
-     * Sets the custom tail skin for a particular connector type.
-     *
-     * <p>
-     * All {@link GConnector} model elements that have a '<em><b>Type</b></em>' attribute equal to type set here will
-     * have their tails rendered using this skin.
-     * </p>
-     *
-     * @param type the {@link GConnector} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GTailSkin}
-     */
-    void setTailSkin(final String type, final Class<? extends GTailSkin> skin);
+public interface GraphEditor extends GraphEditorSkins {
 
     /**
      * Sets a custom connector validator.

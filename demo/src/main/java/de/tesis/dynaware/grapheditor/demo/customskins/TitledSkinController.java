@@ -12,8 +12,14 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.Commands;
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultNodeSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledTailSkin;
@@ -37,12 +43,28 @@ public class TitledSkinController extends DefaultSkinController {
     public TitledSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
 
         super(graphEditor, graphEditorContainer);
+    }
 
-        graphEditor.setNodeSkin(TitledSkinConstants.TITLED_NODE, TitledNodeSkin.class);
-        graphEditor.setConnectorSkin(TitledSkinConstants.TITLED_INPUT_CONNECTOR, TitledConnectorSkin.class);
-        graphEditor.setConnectorSkin(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR, TitledConnectorSkin.class);
-        graphEditor.setTailSkin(TitledSkinConstants.TITLED_INPUT_CONNECTOR, TitledTailSkin.class);
-        graphEditor.setTailSkin(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR, TitledTailSkin.class);
+    @Override
+    public void activate() {
+        super.activate();
+        graphEditor.setNodeSkinFactory(this::createSkin);
+        graphEditor.setConnectorSkinFactory(this::createSkin);
+        graphEditor.setTailSkinFactory(this::createTailSkin);
+    }
+    
+    private GNodeSkin createSkin(final GNode node) {
+        return TitledSkinConstants.TITLED_NODE.equals(node.getType()) ? new TitledNodeSkin(node) : new DefaultNodeSkin(node);
+    }
+    
+    private GConnectorSkin createSkin(final GConnector connector) {
+        return TitledSkinConstants.TITLED_INPUT_CONNECTOR.equals(connector.getType()) || TitledSkinConstants.TITLED_OUTPUT_CONNECTOR.equals(connector.getType()) ?
+                new TitledConnectorSkin(connector) : new DefaultConnectorSkin(connector);
+    }
+    
+    private GTailSkin createTailSkin(final GConnector connector) {
+        return TitledSkinConstants.TITLED_INPUT_CONNECTOR.equals(connector.getType()) || TitledSkinConstants.TITLED_INPUT_CONNECTOR.equals(connector.getType()) ?
+                new TitledTailSkin(connector) : new DefaultTailSkin(connector);
     }
 
     @Override

@@ -14,13 +14,20 @@ import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
+import de.tesis.dynaware.grapheditor.GraphEditorSkins;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultJointSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultNodeSkin;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.util.Callback;
 
 /**
  * Manages skins for all elements of a {@link GModel}.
@@ -29,11 +36,16 @@ import de.tesis.dynaware.grapheditor.model.GNode;
  * Provides lookup methods, for example to find the {@link GNodeSkin} instance associated to a {@link GNode} instance.
  * </p>
  */
-public class SkinManager implements SkinLookup {
+public class SkinManager implements SkinLookup, GraphEditorSkins {
 
     private final GraphEditor graphEditor;
-    private final SkinFactory skinFactory;
 
+    private Callback<GNode, GNodeSkin> nodeSkinFactory;
+    private Callback<GConnector, GConnectorSkin> connectorSkinFactory;
+    private Callback<GConnection, GConnectionSkin> connectionSkinFactory;
+    private Callback<GJoint, GJointSkin> jointSkinFactory;
+    private Callback<GConnector, GTailSkin> tailSkinFactory;
+    
     private final Map<GNode, GNodeSkin> nodeSkins = new HashMap<>();
     private final Map<GConnector, GConnectorSkin> connectorSkins = new HashMap<>();
     private final Map<GConnection, GConnectionSkin> connectionSkins = new HashMap<>();
@@ -44,67 +56,32 @@ public class SkinManager implements SkinLookup {
      * Creates a new skin manager instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
      */
     public SkinManager(final GraphEditor graphEditor) {
-        this(graphEditor, new SkinFactory());
-    }
-
-    /**
-     * Package-private constructor used only to inject mocks in unit tests.
-     *
-     * @param skinFactory a mock {@link SkinFactory} instance
-     */
-    SkinManager(final GraphEditor graphEditor, final SkinFactory skinFactory) {
         this.graphEditor = graphEditor;
-        this.skinFactory = skinFactory;
     }
 
-    /**
-     * Sets the custom node skin class for the given type.
-     *
-     * @param type the {@link GNode} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GNodeSkin}
-     */
-    public void setNodeSkin(final String type, final Class<? extends GNodeSkin> skin) {
-        skinFactory.setNodeSkin(type, skin);
+    @Override
+    public void setNodeSkinFactory(final Callback<GNode, GNodeSkin> skinFactory) {
+        this.nodeSkinFactory = skinFactory;
     }
 
-    /**
-     * Sets the custom connector skin class for the given type.
-     *
-     * @param type the {@link GConnector} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GConnectorSkin}
-     */
-    public void setConnectorSkin(final String type, final Class<? extends GConnectorSkin> skin) {
-        skinFactory.setConnectorSkin(type, skin);
+    @Override
+    public void setConnectorSkinFactory(final Callback<GConnector, GConnectorSkin> connectorSkinFactory) {
+        this.connectorSkinFactory = connectorSkinFactory;
     }
 
-    /**
-     * Sets the custom connection skin class for the given type.
-     *
-     * @param type the {@link GConnection} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GConnectionSkin}
-     */
-    public void setConnectionSkin(final String type, final Class<? extends GConnectionSkin> skin) {
-        skinFactory.setConnectionSkin(type, skin);
+    @Override
+    public void setConnectionSkinFactory(final Callback<GConnection, GConnectionSkin> connectionSkinFactory) {
+        this.connectionSkinFactory = connectionSkinFactory;
     }
 
-    /**
-     * Sets the custom joint skin class for the given type.
-     *
-     * @param type the {@link GJoint} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GJointSkin}
-     */
-    public void setJointSkin(final String type, final Class<? extends GJointSkin> skin) {
-        skinFactory.setJointSkin(type, skin);
+    @Override
+    public void setJointSkinFactory(final Callback<GJoint, GJointSkin> jointSkinFactory) {
+        this.jointSkinFactory = jointSkinFactory;
     }
 
-    /**
-     * Sets the custom tail skin class for the given type.
-     *
-     * @param type the {@link GConnector} type for which this skin should be used
-     * @param skin a custom skin class that extends {@link GTailSkin}
-     */
-    public void setTailSkin(final String type, final Class<? extends GTailSkin> skin) {
-        skinFactory.setTailSkin(type, skin);
+    @Override
+    public void setTailSkinFactory(final Callback<GConnector, GTailSkin> tailSkinFactory) {
+        this.tailSkinFactory = tailSkinFactory;
     }
 
     /**
@@ -122,16 +99,19 @@ public class SkinManager implements SkinLookup {
         final GNode[] updates = nodesToAdd == null ? new GNode[0] : nodesToAdd.toArray(new GNode[nodesToAdd.size()]);
         for (final GNode node : updates) {
 
-            final GNodeSkin nodeSkin = skinFactory.createNodeSkin(node);
+            final GNodeSkin nodeSkin = nodeSkins.computeIfAbsent(node, this::createSkin);
 
             nodeSkin.setGraphEditor(graphEditor);
             nodeSkin.getRoot().setEditorProperties(graphEditor.getProperties());
             nodeSkin.initialize();
 
-            nodeSkins.put(node, nodeSkin);
-
             addConnectors(node);
         }
+    }
+    
+    private GNodeSkin createSkin(final GNode node) {
+        final GNodeSkin skin = nodeSkinFactory == null ? null : nodeSkinFactory.call(node);
+        return skin == null ? new DefaultNodeSkin(node) : skin;
     }
 
     /**
@@ -206,13 +186,16 @@ public class SkinManager implements SkinLookup {
         final GConnection[] updates = connectionsToAdd == null ? new GConnection[0] : connectionsToAdd.toArray(new GConnection[connectionsToAdd.size()]);
         for (final GConnection connection : updates) {
 
-            final GConnectionSkin connectionSkin = skinFactory.createConnectionSkin(connection);
+            final GConnectionSkin connectionSkin = connectionSkins.computeIfAbsent(connection, this::createSkin);
             connectionSkin.setGraphEditor(graphEditor);
-
-            connectionSkins.put(connection, connectionSkin);
 
             addJoints(connection);
         }
+    }
+    
+    private GConnectionSkin createSkin(final GConnection connection) {
+        final GConnectionSkin skin = connectionSkinFactory == null ? null : connectionSkinFactory.call(connection);
+        return skin == null ? new DefaultConnectionSkin(connection) : skin;
     }
 
     /**
@@ -248,11 +231,9 @@ public class SkinManager implements SkinLookup {
 
         for (final GJoint joint : jointsToAdd) {
 
-            final GJointSkin jointSkin = skinFactory.createJointSkin(joint);
+            final GJointSkin jointSkin = jointSkins.computeIfAbsent(joint, this::createSkin);
             jointSkin.setGraphEditor(graphEditor);
             jointSkin.getRoot().setEditorProperties(graphEditor.getProperties());
-
-            jointSkins.put(joint, jointSkin);
         }
 
         final List<GJointSkin> connectionJointSkins = new ArrayList<>();
@@ -262,6 +243,11 @@ public class SkinManager implements SkinLookup {
         }
 
         lookupConnection(connection).setJointSkins(connectionJointSkins);
+    }
+    
+    private GJointSkin createSkin(final GJoint joint) {
+        final GJointSkin skin = jointSkinFactory == null ? null : jointSkinFactory.call(joint);
+        return skin == null ? new DefaultJointSkin(joint) : skin;
     }
 
     /**
@@ -329,19 +315,25 @@ public class SkinManager implements SkinLookup {
 
         for (final GConnector connector : node.getConnectors()) {
 
-            final GConnectorSkin connectorSkin = skinFactory.createConnectorSkin(connector);
+            final GConnectorSkin connectorSkin = connectorSkins.computeIfAbsent(connector, this::createConnectorSkin);
             connectorSkin.setGraphEditor(graphEditor);
-
-            connectorSkins.put(connector, connectorSkin);
             nodeConnectorSkins.add(connectorSkin);
 
-            final GTailSkin tailSkin = skinFactory.createTailSkin(connector);
+            final GTailSkin tailSkin = tailSkins.computeIfAbsent(connector, this::createTailSkin);
             tailSkin.setGraphEditor(graphEditor);
-
-            tailSkins.put(connector, tailSkin);
         }
 
         nodeSkins.get(node).setConnectorSkins(nodeConnectorSkins);
+    }
+    
+    private GConnectorSkin createConnectorSkin(final GConnector connector) {
+        final GConnectorSkin skin = connectorSkinFactory == null ? null : connectorSkinFactory.call(connector);
+        return skin == null ? new DefaultConnectorSkin(connector) : skin;
+    }
+    
+    private GTailSkin createTailSkin(final GConnector connector) {
+        final GTailSkin skin = tailSkinFactory == null ? null : tailSkinFactory.call(connector);
+        return skin == null ? new DefaultTailSkin(connector) : skin;
     }
 
     /**
@@ -355,11 +347,10 @@ public class SkinManager implements SkinLookup {
 
         for (final GJoint joint : connection.getJoints()) {
 
-            final GJointSkin jointSkin = skinFactory.createJointSkin(joint);
+            final GJointSkin jointSkin = jointSkins.computeIfAbsent(joint, this::createSkin);
             jointSkin.setGraphEditor(graphEditor);
             jointSkin.getRoot().setEditorProperties(graphEditor.getProperties());
 
-            jointSkins.put(joint, jointSkin);
             connectionJointSkins.add(jointSkin);
         }
 
