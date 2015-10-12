@@ -48,7 +48,7 @@ public class GraphEditorController {
     private final SkinManager skinManager;
     private final GraphEditorView view;
 
-    private final CommandStackListener commandStackListener;
+    private final CommandStackListener commandStackListener = event -> initializeAll();
     private final ModelEditingManager modelEditingManager;
     private final ModelLayoutUpdater modelLayoutUpdater;
     private final ModelMemory modelMemory;
@@ -72,7 +72,6 @@ public class GraphEditorController {
 
         view = new GraphEditorView();
 
-        commandStackListener = createCommandStackListener();
         modelEditingManager = new ModelEditingManager(commandStackListener);
         modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager);
         modelMemory = new ModelMemory();
@@ -171,19 +170,6 @@ public class GraphEditorController {
     }
 
     /**
-     * Creates the listener implementation for when a command is executed on the command stack.
-     *
-     * <p>
-     * The current approach is brute force - the entire view and all secondary managers are reinitialized.
-     * </p>
-     *
-     * @return the created command stack listener
-     */
-    private CommandStackListener createCommandStackListener() {
-        return event -> initializeAll();
-    }
-
-    /**
      * Reloads the view according to the new model values.
      *
      * <p>
@@ -254,13 +240,9 @@ public class GraphEditorController {
         skinManager.addConnections(modelMemory.getConnectionsToAdd());
         skinManager.removeConnections(modelMemory.getConnectionsToRemove());
 
-        for (final List<GJoint> joints : modelMemory.getJointsToRemove().values()) {
-            skinManager.removeJoints(joints);
-        }
-
-        for (final GConnection connection : modelMemory.getJointsToAdd().keySet()) {
-            skinManager.addJoints(connection, modelMemory.getJointsToAdd().get(connection));
-        }
+        modelMemory.getJointsToRemove().values().forEach(skinManager::removeJoints);
+        
+        modelMemory.getJointsToAdd().forEach(skinManager::addJoints);
 
         skinManager.initializeAll();
     }

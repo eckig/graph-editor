@@ -118,7 +118,9 @@ public class SkinManager implements SkinLookup {
      */
     public void addNodes(final List<GNode> nodesToAdd) {
 
-        for (final GNode node : nodesToAdd) {
+        // prevent ConcurrentModification
+        final GNode[] updates = nodesToAdd == null ? new GNode[0] : nodesToAdd.toArray(new GNode[nodesToAdd.size()]);
+        for (final GNode node : updates) {
 
             final GNodeSkin nodeSkin = skinFactory.createNodeSkin(node);
 
@@ -143,7 +145,9 @@ public class SkinManager implements SkinLookup {
      */
     public void removeNodes(final List<GNode> nodesToRemove) {
 
-        for (final GNode node : nodesToRemove) {
+        // prevent ConcurrentModification
+        final GNode[] updates = nodesToRemove == null ? new GNode[0] : nodesToRemove.toArray(new GNode[nodesToRemove.size()]);
+        for (final GNode node : updates) {
             nodeSkins.remove(node);
             removeConnectors(node.getConnectors());
         }
@@ -160,7 +164,9 @@ public class SkinManager implements SkinLookup {
      */
     public void updateNodes(final List<GNode> nodesToUpdate) {
 
-        for (final GNode node : nodesToUpdate) {
+        // prevent ConcurrentModification
+        final GNode[] updates = nodesToUpdate == null ? new GNode[0] : nodesToUpdate.toArray(new GNode[nodesToUpdate.size()]);
+        for (final GNode node : updates) {
             removeConnectors(node.getConnectors());
             addConnectors(node);
         }
@@ -177,7 +183,9 @@ public class SkinManager implements SkinLookup {
      */
     public void removeConnectors(final List<GConnector> connectorsToRemove) {
 
-        for (final GConnector connector : connectorsToRemove) {
+        // prevent ConcurrentModification
+        final GConnector[] updates = connectorsToRemove == null ? new GConnector[0] : connectorsToRemove.toArray(new GConnector[connectorsToRemove.size()]);
+        for (final GConnector connector : updates) {
             connectorSkins.remove(connector);
             tailSkins.remove(connector);
         }
@@ -194,7 +202,9 @@ public class SkinManager implements SkinLookup {
      */
     public void addConnections(final List<GConnection> connectionsToAdd) {
 
-        for (final GConnection connection : connectionsToAdd) {
+        // prevent ConcurrentModification
+        final GConnection[] updates = connectionsToAdd == null ? new GConnection[0] : connectionsToAdd.toArray(new GConnection[connectionsToAdd.size()]);
+        for (final GConnection connection : updates) {
 
             final GConnectionSkin connectionSkin = skinFactory.createConnectionSkin(connection);
             connectionSkin.setGraphEditor(graphEditor);
@@ -215,8 +225,10 @@ public class SkinManager implements SkinLookup {
      * @param connectionsToRemove a list of {@link GConnection} instances for which skin instances should be removed
      */
     public void removeConnections(final List<GConnection> connectionsToRemove) {
-
-        for (final GConnection connection : connectionsToRemove) {
+        
+        // prevent ConcurrentModification
+        final GConnection[] updates = connectionsToRemove == null ? new GConnection[0] : connectionsToRemove.toArray(new GConnection[connectionsToRemove.size()]);
+        for (final GConnection connection : updates) {
             connectionSkins.remove(connection);
         }
     }
@@ -262,7 +274,9 @@ public class SkinManager implements SkinLookup {
      * @param jointsToRemove a list of {@link GJoint} instances for which skin instances should be removed
      */
     public void removeJoints(final List<GJoint> jointsToRemove) {
-        for (final GJoint joint : jointsToRemove) {
+        // prevent ConcurrentModification
+        final GJoint[] updates = jointsToRemove == null ? new GJoint[0] : jointsToRemove.toArray(new GJoint[jointsToRemove.size()]);
+        for (final GJoint joint : updates) {
             jointSkins.remove(joint);
         }
     }
@@ -271,14 +285,8 @@ public class SkinManager implements SkinLookup {
      * Initializes all node and joint skins, so that their layout values are reloaded from their model instances.
      */
     public void initializeAll() {
-
-        for (final GNodeSkin nodeSkin : nodeSkins.values()) {
-            nodeSkin.initialize();
-        }
-
-        for (final GJointSkin jointSkin : jointSkins.values()) {
-            jointSkin.initialize();
-        }
+        nodeSkins.values().forEach(GNodeSkin::initialize);
+        jointSkins.values().forEach(GJointSkin::initialize);
     }
 
     @Override
