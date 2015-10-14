@@ -38,7 +38,15 @@ public class DefaultGraphEditor implements GraphEditor {
     private final SkinManager skinManager;
     private final ConnectionEventManager connectionEventManager = new ConnectionEventManager();
     private final GraphEditorController controller;
-    private final ObjectProperty<GModel> modelProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<GModel> modelProperty = new SimpleObjectProperty<GModel>() {
+
+        @Override
+        protected void invalidated() {
+            super.invalidated();
+            controller.setModel(get());
+        }
+        
+    };
 
     /**
      * Creates a new default implementation of the {@link GraphEditor}.
@@ -52,8 +60,6 @@ public class DefaultGraphEditor implements GraphEditor {
 
         // Create some default layout properties in case the user never sets any.
         setProperties(new GraphEditorProperties());
-
-        addModelPropertyListener();
     }
 
     @Override
@@ -139,15 +145,5 @@ public class DefaultGraphEditor implements GraphEditor {
     @Override
     public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> consumer) {
         connectionEventManager.setOnConnectionRemoved(consumer);
-    }
-
-    /**
-     * Adds a listener to the model property to set the controller value whenever the model property is updated.
-     */
-    private void addModelPropertyListener() {
-
-        modelProperty.addListener((observable, oldValue, newValue) -> {
-            controller.setModel(newValue);
-        });
     }
 }

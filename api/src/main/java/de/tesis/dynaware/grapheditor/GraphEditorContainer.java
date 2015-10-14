@@ -47,14 +47,22 @@ public class GraphEditorContainer extends AutoScrollingWindow {
     private final GraphEditorMinimap minimap = new GraphEditorMinimap(MINIMAP_WIDTH);
 
     private GraphEditor graphEditor;
-    private ChangeListener<GModel> modelChangeListener;
+    private final ChangeListener<GModel> modelChangeListener = (observable, oldValue, newValue) -> modelChanged(newValue);
 
     /**
      * Creates a new {@link GraphEditorContainer}.
      */
     public GraphEditorContainer() {
         initializeMinimap();
-        createModelChangeListener();
+    }
+    
+    private void modelChanged(final GModel newValue) {
+
+        if (newValue != null) {
+            graphEditor.getView().resize(newValue.getContentWidth(), newValue.getContentHeight());
+        }
+        checkWindowBounds();
+        minimap.setModel(newValue);
     }
 
     /**
@@ -121,19 +129,5 @@ public class GraphEditorContainer extends AutoScrollingWindow {
         minimap.layoutXProperty().bind(widthProperty().subtract(MINIMAP_WIDTH + MINIMAP_RIGHT_INDENT));
         minimap.setLayoutY(MINIMAP_TOP_INDENT);
         minimap.setVisible(false);
-    }
-
-    /**
-     * This listener updates the minimap with the new model each time one is set in the {@link GraphEditor} instance.
-     */
-    private void createModelChangeListener() {
-
-        modelChangeListener = (ChangeListener<GModel>) (observable, oldValue, newValue) -> {
-            if (newValue == null || (newValue != null && !newValue.equals(oldValue))) {
-                graphEditor.getView().resize(newValue.getContentWidth(), newValue.getContentHeight());
-                checkWindowBounds();
-                minimap.setModel(newValue);
-            }
-        };
     }
 }
