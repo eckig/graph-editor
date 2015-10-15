@@ -27,6 +27,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import java.util.stream.Collectors;
 import javafx.util.Callback;
 
 /**
@@ -98,27 +99,14 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * instances should be created
      */
     public void addNodes(final List<GNode> nodesToAdd) {
-
         if (nodesToAdd != null && !nodesToAdd.isEmpty()) {
-            
             // prevent ConcurrentModification
             final GNode[] updates = nodesToAdd.toArray(new GNode[nodesToAdd.size()]);
             for (final GNode node : updates) {
-
-                final GNodeSkin nodeSkin = nodeSkins.computeIfAbsent(node, this::createSkin);
-
-                nodeSkin.setGraphEditor(graphEditor);
-                nodeSkin.getRoot().setEditorProperties(graphEditor.getProperties());
-                nodeSkin.initialize();
-
+                nodeSkins.computeIfAbsent(node, this::createNodeSkin);
                 addConnectors(node);
             }
         }
-    }
-
-    private GNodeSkin createSkin(final GNode node) {
-        final GNodeSkin skin = nodeSkinFactory == null ? null : nodeSkinFactory.call(node);
-        return skin == null ? new DefaultNodeSkin(node) : skin;
     }
 
     /**
@@ -132,15 +120,11 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * instances should be removed
      */
     public void removeNodes(final List<GNode> nodesToRemove) {
-
         if (nodesToRemove != null && !nodesToRemove.isEmpty()) {
-
             // prevent ConcurrentModification
             final GNode[] updates = nodesToRemove.toArray(new GNode[nodesToRemove.size()]);
             for (final GNode node : updates) {
-
-                GNodeSkin removedSkin = nodeSkins.remove(node);
-
+                final GNodeSkin removedSkin = nodeSkins.remove(node);
                 if (removedSkin != null) {
                     removedSkin.dispose();
                 }
@@ -160,9 +144,7 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * updated
      */
     public void updateNodes(final List<GNode> nodesToUpdate) {
-
         if (nodesToUpdate != null && !nodesToUpdate.isEmpty()) {
-
             // prevent ConcurrentModification
             final GNode[] updates = nodesToUpdate.toArray(new GNode[nodesToUpdate.size()]);
             for (final GNode node : updates) {
@@ -183,20 +165,18 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * which skin instances should be removed
      */
     public void removeConnectors(final List<GConnector> connectorsToRemove) {
-
         if (connectorsToRemove != null && !connectorsToRemove.isEmpty()) {
-
             // prevent ConcurrentModification
             final GConnector[] updates = connectorsToRemove.toArray(new GConnector[connectorsToRemove.size()]);
             for (final GConnector connector : updates) {
-
                 final GConnectorSkin removedSkin = connectorSkins.remove(connector);
-
                 if (removedSkin != null) {
                     removedSkin.dispose();
                 }
-                tailSkins.remove(connector);
-
+                final GTailSkin removedTailSkin = tailSkins.remove(connector);
+                if(removedTailSkin != null) {
+                    removedTailSkin.dispose();
+                }
             }
         }
     }
@@ -213,21 +193,16 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * skin instances should be created
      */
     public void addConnections(final List<GConnection> connectionsToAdd) {
-
-        // prevent ConcurrentModification
-        final GConnection[] updates = connectionsToAdd == null ? new GConnection[0] : connectionsToAdd.toArray(new GConnection[connectionsToAdd.size()]);
-        for (final GConnection connection : updates) {
-
-            final GConnectionSkin connectionSkin = connectionSkins.computeIfAbsent(connection, this::createSkin);
-            connectionSkin.setGraphEditor(graphEditor);
-
-            addJoints(connection);
+        if (connectionsToAdd != null && !connectionsToAdd.isEmpty()) {
+            // prevent ConcurrentModification
+            final GConnection[] updates = connectionsToAdd.toArray(new GConnection[connectionsToAdd.size()]);
+            for (final GConnection connection : updates) {
+                final GConnectionSkin connectionSkin = connectionSkins.computeIfAbsent(connection, this::createConnectionSkin);
+                final List<GJointSkin> connectionJointSkins = connection.getJoints().stream()
+                        .map(joint -> jointSkins.computeIfAbsent(joint, this::createJointSkin)).collect(Collectors.toList());
+                connectionSkin.setJointSkins(connectionJointSkins);
+            }
         }
-    }
-
-    private GConnectionSkin createSkin(final GConnection connection) {
-        final GConnectionSkin skin = connectionSkinFactory == null ? null : connectionSkinFactory.call(connection);
-        return skin == null ? new DefaultConnectionSkin(connection) : skin;
     }
 
     /**
@@ -241,15 +216,11 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * which skin instances should be removed
      */
     public void removeConnections(final List<GConnection> connectionsToRemove) {
-
         if (connectionsToRemove != null && !connectionsToRemove.isEmpty()) {
-
             // prevent ConcurrentModification
             final GConnection[] updates = connectionsToRemove.toArray(new GConnection[connectionsToRemove.size()]);
             for (final GConnection connection : updates) {
-
                 final GConnectionSkin removedSkin = connectionSkins.remove(connection);
-
                 if (removedSkin != null) {
                     removedSkin.dispose();
                 }
@@ -270,26 +241,13 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * instances should be created and added
      */
     public void addJoints(final GConnection connection, final List<GJoint> jointsToAdd) {
-
-        for (final GJoint joint : jointsToAdd) {
-
-            final GJointSkin jointSkin = jointSkins.computeIfAbsent(joint, this::createSkin);
-            jointSkin.setGraphEditor(graphEditor);
-            jointSkin.getRoot().setEditorProperties(graphEditor.getProperties());
+        if (jointsToAdd != null && !jointsToAdd.isEmpty()) {
+            jointsToAdd.forEach(joint -> jointSkins.computeIfAbsent(joint, this::createJointSkin));
         }
-
-        final List<GJointSkin> connectionJointSkins = new ArrayList<>();
-
-        for (final GJoint joint : connection.getJoints()) {
-            connectionJointSkins.add(lookupJoint(joint));
+        if (connection != null) {
+            final List<GJointSkin> connectionJointSkins = connection.getJoints().stream().map(this::lookupJoint).collect(Collectors.toList());
+            lookupConnection(connection).setJointSkins(connectionJointSkins);
         }
-
-        lookupConnection(connection).setJointSkins(connectionJointSkins);
-    }
-
-    private GJointSkin createSkin(final GJoint joint) {
-        final GJointSkin skin = jointSkinFactory == null ? null : jointSkinFactory.call(joint);
-        return skin == null ? new DefaultJointSkin(joint) : skin;
     }
 
     /**
@@ -303,14 +261,14 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * instances should be removed
      */
     public void removeJoints(final List<GJoint> jointsToRemove) {
-        // prevent ConcurrentModification
-        final GJoint[] updates = jointsToRemove == null ? new GJoint[0] : jointsToRemove.toArray(new GJoint[jointsToRemove.size()]);
-        for (final GJoint joint : updates) {
-
-            final GJointSkin removedSkin = jointSkins.remove(joint);
-
-            if (removedSkin != null) {
-                removedSkin.dispose();
+        if (jointsToRemove != null && !jointsToRemove.isEmpty()) {
+            // prevent ConcurrentModification
+            final GJoint[] updates = jointsToRemove.toArray(new GJoint[jointsToRemove.size()]);
+            for (final GJoint joint : updates) {
+                final GJointSkin removedSkin = jointSkins.remove(joint);
+                if (removedSkin != null) {
+                    removedSkin.dispose();
+                }
             }
         }
     }
@@ -359,51 +317,61 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
      * @param node the {@link GNode} whose connectors should be added
      */
     private void addConnectors(final GNode node) {
-
         final List<GConnectorSkin> nodeConnectorSkins = new ArrayList<>();
 
         for (final GConnector connector : node.getConnectors()) {
-
-            final GConnectorSkin connectorSkin = connectorSkins.computeIfAbsent(connector, this::createConnectorSkin);
-            connectorSkin.setGraphEditor(graphEditor);
-            nodeConnectorSkins.add(connectorSkin);
-
-            final GTailSkin tailSkin = tailSkins.computeIfAbsent(connector, this::createTailSkin);
-            tailSkin.setGraphEditor(graphEditor);
+            nodeConnectorSkins.add(connectorSkins.computeIfAbsent(connector, this::createConnectorSkin));
+            tailSkins.computeIfAbsent(connector, this::createTailSkin);
         }
 
         nodeSkins.get(node).setConnectorSkins(nodeConnectorSkins);
     }
 
     private GConnectorSkin createConnectorSkin(final GConnector connector) {
-        final GConnectorSkin skin = connectorSkinFactory == null ? null : connectorSkinFactory.call(connector);
-        return skin == null ? new DefaultConnectorSkin(connector) : skin;
+        GConnectorSkin skin = connectorSkinFactory == null ? null : connectorSkinFactory.call(connector);
+        if (skin == null) {
+            skin = new DefaultConnectorSkin(connector);
+        }
+        skin.setGraphEditor(graphEditor);
+        return skin;
     }
 
     private GTailSkin createTailSkin(final GConnector connector) {
-        final GTailSkin skin = tailSkinFactory == null ? null : tailSkinFactory.call(connector);
-        return skin == null ? new DefaultTailSkin(connector) : skin;
+        GTailSkin skin = tailSkinFactory == null ? null : tailSkinFactory.call(connector);
+        if (skin == null) {
+            skin = new DefaultTailSkin(connector);
+        }
+        skin.setGraphEditor(graphEditor);
+        return skin;
     }
 
-    /**
-     * Adds all joints belonging to the given connection.
-     *
-     * @param connection the {@link GConnection} instance whose joints should be
-     * added
-     */
-    private void addJoints(final GConnection connection) {
-
-        final List<GJointSkin> connectionJointSkins = new ArrayList<>();
-
-        for (final GJoint joint : connection.getJoints()) {
-
-            final GJointSkin jointSkin = jointSkins.computeIfAbsent(joint, this::createSkin);
-            jointSkin.setGraphEditor(graphEditor);
-            jointSkin.getRoot().setEditorProperties(graphEditor.getProperties());
-
-            connectionJointSkins.add(jointSkin);
+    private GConnectionSkin createConnectionSkin(final GConnection connection) {
+        GConnectionSkin skin = connectionSkinFactory == null ? null : connectionSkinFactory.call(connection);
+        if (skin == null) {
+            skin = new DefaultConnectionSkin(connection);
         }
+        skin.setGraphEditor(graphEditor);
+        return skin;
+    }
 
-        connectionSkins.get(connection).setJointSkins(connectionJointSkins);
+    private GJointSkin createJointSkin(final GJoint joint) {
+        GJointSkin skin = jointSkinFactory == null ? null : jointSkinFactory.call(joint);
+        if (skin == null) {
+            skin = new DefaultJointSkin(joint);
+        }
+        skin.setGraphEditor(graphEditor);
+        skin.getRoot().setEditorProperties(graphEditor.getProperties());
+        return skin;
+    }
+
+    private GNodeSkin createNodeSkin(final GNode node) {
+        GNodeSkin skin = nodeSkinFactory == null ? null : nodeSkinFactory.call(node);
+        if (skin == null) {
+            skin = new DefaultNodeSkin(node);
+        }
+        skin.setGraphEditor(graphEditor);
+        skin.getRoot().setEditorProperties(graphEditor.getProperties());
+        skin.initialize();
+        return skin;
     }
 }
