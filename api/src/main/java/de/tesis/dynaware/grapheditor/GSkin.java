@@ -4,7 +4,7 @@
 package de.tesis.dynaware.grapheditor;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.BooleanPropertyBase;
 import javafx.scene.Node;
 
 /**
@@ -12,12 +12,21 @@ import javafx.scene.Node;
  */
 public abstract class GSkin {
 
-    private final BooleanProperty selectedProperty = new SimpleBooleanProperty(false){
+    private final BooleanProperty selectedProperty = new BooleanPropertyBase(false){
 
         @Override
         protected void invalidated() {
-            super.invalidated();
             selectionChanged(get());
+        }
+
+        @Override
+        public Object getBean() {
+            return GSkin.this;
+        }
+
+        @Override
+        public String getName() {
+            return "selected";
         }
         
     };

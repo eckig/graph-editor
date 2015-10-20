@@ -5,22 +5,32 @@ import javafx.collections.ObservableList;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import javafx.beans.Observable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
 
 /**
  * Provides observable lists of selected nodes and joints for convenience.
  */
 public class SelectionTracker {
 
-    ObservableList<GNode> selectedNodes = FXCollections.observableArrayList();
-    ObservableList<GConnection> selectedConnections = FXCollections.observableArrayList();
-    ObservableList<GJoint> selectedJoints = FXCollections.observableArrayList();
+    private final ObservableList<GNode> selectedNodes = FXCollections.observableArrayList();
+    private final ObservableList<GConnection> selectedConnections = FXCollections.observableArrayList();
+    private final ObservableList<GJoint> selectedJoints = FXCollections.observableArrayList();
 
     private final SkinLookup skinLookup;
+    
+    private final List<GSkin> observedSkins = new ArrayList<>();
+    private final ChangeListener<Boolean> selectionChangeListener = this::selectionChanged;
 
     /**
      * Creates a new {@link SelectionTracker} instance.
@@ -37,6 +47,11 @@ public class SelectionTracker {
      * @param model the {@link GModel} instance being edited
      */
     public void initialize(final GModel model) {
+        for(final Iterator<GSkin> iter = observedSkins.iterator(); iter.hasNext();) {
+            final GSkin next = iter.next();
+            next.selectedProperty().removeListener(selectionChangeListener);
+            iter.remove();
+        }
         trackNodes(model);
         trackConnectionsAndJoints(model);
     }
@@ -74,24 +89,43 @@ public class SelectionTracker {
      * @param model the {@link GModel} instance being edited
      */
     private void trackNodes(final GModel model) {
-
         selectedNodes.clear();
 
         for (final GNode node : model.getNodes()) {
-
             final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+            addRemove(selectedNodes, node, nodeSkin.isSelected());
 
-            if (nodeSkin.isSelected()) {
-                selectedNodes.add(node);
+            observedSkins.add(nodeSkin);
+            nodeSkin.selectedProperty().addListener(selectionChangeListener);
+        }
+    }
+    
+    private void selectionChanged(final Observable observable, final boolean oldValue, final boolean newValue) {
+        if (observable instanceof BooleanProperty) {
+            final BooleanProperty property = (BooleanProperty) observable;
+            if (property.getBean() instanceof GNodeSkin) {
+                final GNode node = ((GNodeSkin) property.getBean()).getNode();
+                addRemove(selectedNodes, node, newValue);
             }
-
-            nodeSkin.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue && !selectedNodes.contains(node)) {
-                    selectedNodes.add(node);
-                } else if (!newValue && selectedNodes.contains(node)) {
-                    selectedNodes.remove(node);
-                }
-            });
+            else if (property.getBean() instanceof GJointSkin) {
+                final GJoint joint = ((GJointSkin) property.getBean()).getJoint();
+                addRemove(selectedJoints, joint, newValue);
+            }
+            else if (property.getBean() instanceof GConnectionSkin) {
+                final GConnection connection = ((GConnectionSkin) property.getBean()).getConnection();
+                addRemove(selectedConnections, connection, newValue);
+            }
+        }
+    }
+    
+    private static <T> void addRemove(final ObservableList<T> list, final T element, final boolean add) {
+        if(add) {
+            if(!list.contains(element)) {
+                list.add(element);
+            }
+        }
+        else {
+            list.remove(element);
         }
     }
 
@@ -108,34 +142,18 @@ public class SelectionTracker {
         for (final GConnection connection : model.getConnections()) {
 
             final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+            addRemove(selectedConnections, connection, connectionSkin.isSelected());
 
-            if (connectionSkin.isSelected()) {
-                selectedConnections.add(connection);
-            }
-
-            connectionSkin.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue && !selectedConnections.contains(connection)) {
-                    selectedConnections.add(connection);
-                } else if (!newValue && selectedConnections.contains(connection)) {
-                    selectedConnections.remove(connection);
-                }
-            });
+            observedSkins.add(connectionSkin);
+            connectionSkin.selectedProperty().addListener(selectionChangeListener);
 
             for (final GJoint joint : connection.getJoints()) {
 
                 final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                addRemove(selectedJoints, joint, jointSkin.isSelected());
 
-                if (jointSkin.isSelected()) {
-                    selectedJoints.add(joint);
-                }
-
-                jointSkin.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue && !selectedJoints.contains(joint)) {
-                        selectedJoints.add(joint);
-                    } else if (!newValue && selectedJoints.contains(joint)) {
-                        selectedJoints.remove(joint);
-                    }
-                });
+                observedSkins.add(jointSkin);
+                jointSkin.selectedProperty().addListener(selectionChangeListener);
             }
         }
     }
