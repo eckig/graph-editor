@@ -201,4 +201,10 @@ public class DefaultTailSkin extends GTailSkin {
     private void addPoint(final double x, final double y) {
         line.getPoints().addAll(GeometryUtils.moveOffPixel(x), GeometryUtils.moveOffPixel(y));
     }
+
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        // Not implemented
+    }
+    
 }

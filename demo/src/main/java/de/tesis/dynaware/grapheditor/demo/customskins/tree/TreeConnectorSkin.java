@@ -55,6 +55,11 @@ public class TreeConnectorSkin extends GConnectorSkin {
     }
 
     @Override
+    protected void selectionChanged(boolean isSelected) {
+        // Not implemented
+    }
+
+    @Override
     public Node getRoot() {
         return root;
     }

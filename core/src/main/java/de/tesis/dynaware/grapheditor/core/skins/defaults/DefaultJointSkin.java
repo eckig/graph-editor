@@ -32,7 +32,6 @@ public class DefaultJointSkin extends GJointSkin {
      * @param joint the {@link GJoint} the skin is being created for
      */
     public DefaultJointSkin(final GJoint joint) {
-
         super(joint);
 
         getRoot().resize(SIZE, SIZE);
@@ -40,24 +39,14 @@ public class DefaultJointSkin extends GJointSkin {
 
         getRoot().setPickOnBounds(false);
         getRoot().setSnapToGridOffset(new Point2D(SNAP_OFFSET, SNAP_OFFSET));
-
-        addSelectionListener();
     }
 
-    /**
-     * Adds a listener to react to whether the joint is selected or not and change the CSS classes accordingly.
-     */
-    private void addSelectionListener() {
-
-        selectedProperty().addListener((ChangeListener<Boolean>) (v, o, n) -> {
-
-            if (n) {
-                getRoot().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-                getRoot().toFront();
-            } else {
-                getRoot().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-            }
-        });
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        getRoot().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, isSelected);
+        if (isSelected) {
+            getRoot().toFront();
+        }
     }
 
     @Override

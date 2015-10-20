@@ -198,4 +198,9 @@ public class DefaultConnectorSkin extends GConnectorSkin {
             getConnector().setType(DefaultConnectorTypes.LEFT_INPUT);
         }
     }
+    
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        // Not implemented
+    }
 }

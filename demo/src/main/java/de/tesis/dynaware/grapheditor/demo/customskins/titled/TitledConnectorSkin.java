@@ -88,13 +88,9 @@ public class TitledConnectorSkin extends GConnectorSkin {
             break;
         }
     }
-
-    /**
-     * Sets the 'selected' pseudo-class based on the given boolean.
-     * 
-     * @param isSelected {@code true} to add the selected pseudo-class, {@code false} to remove it
-     */
-    public void setSelected(final boolean isSelected) {
+    
+    @Override
+    protected void selectionChanged(boolean isSelected) {
         if (isSelected) {
             root.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
         } else {

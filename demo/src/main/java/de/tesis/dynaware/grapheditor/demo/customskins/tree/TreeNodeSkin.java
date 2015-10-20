@@ -90,7 +90,6 @@ public class TreeNodeSkin extends GNodeSkin {
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
 
         addSelectionHalo();
-        addSelectionListener();
         addButton();
 
         background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
@@ -193,23 +192,17 @@ public class TreeNodeSkin extends GNodeSkin {
         }
     }
 
-    /**
-     * Adds a listener to react to whether the node is selected or not and change the style accordingly.
-     */
-    private void addSelectionListener() {
-
-        selectedProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (newValue) {
-                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-                selectionHalo.setVisible(true);
-                layoutSelectionHalo();
-                getRoot().toFront();
-            } else {
-                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-                selectionHalo.setVisible(false);
-            }
-        });
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        if (isSelected) {
+            background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+            selectionHalo.setVisible(true);
+            layoutSelectionHalo();
+            getRoot().toFront();
+        } else {
+            background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+            selectionHalo.setVisible(false);
+        }
     }
 
     /**

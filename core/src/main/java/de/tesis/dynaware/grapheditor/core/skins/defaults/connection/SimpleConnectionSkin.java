@@ -320,4 +320,9 @@ public class SimpleConnectionSkin extends GConnectionSkin {
 
         return showDetours;
     }
+    
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        // Not implemented
+    }
 }

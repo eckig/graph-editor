@@ -79,7 +79,6 @@ public class TitledNodeSkin extends GNodeSkin {
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
 
         addSelectionHalo();
-        addSelectionListener();
 
         createContent();
 
@@ -252,25 +251,19 @@ public class TitledNodeSkin extends GNodeSkin {
         }
     }
 
-    /**
-     * Adds a listener to react to whether the node is selected or not and change the style accordingly.
-     */
-    private void addSelectionListener() {
 
-        selectedProperty().addListener((v, o, n) -> {
-
-            if (n) {
-                selectionHalo.setVisible(true);
-                layoutSelectionHalo();
-                contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-                getRoot().toFront();
-            } else {
-                selectionHalo.setVisible(false);
-                contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-            }
-
-            setConnectorsSelected(n);
-        });
+    @Override
+    protected void selectionChanged(final boolean isSelected) {
+        if (isSelected) {
+            selectionHalo.setVisible(true);
+            layoutSelectionHalo();
+            contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+            getRoot().toFront();
+        } else {
+            selectionHalo.setVisible(false);
+            contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+        }
+        setConnectorsSelected(isSelected);
     }
 
     /**

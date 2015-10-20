@@ -61,8 +61,6 @@ public class TreeConnectionSkin extends GConnectionSkin {
         haloFirstSide.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
         haloSecondSide.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
         selectionHalo.setVisible(false);
-
-        selectedProperty().addListener((v, o, n) -> handleSelection(n));
     }
 
     @Override
@@ -125,12 +123,9 @@ public class TreeConnectionSkin extends GConnectionSkin {
         event.consume();
     }
 
-    /**
-     * Handles a change in the selected property of the connection.
-     *
-     * @param selected {@code true} if the connection is selected, {@code false} if not
-     */
-    private void handleSelection(final boolean selected) {
+
+    @Override
+    protected void selectionChanged(final boolean selected) {
         selectionHalo.setVisible(selected);
         if (selected) {
             drawSelectionHalo();

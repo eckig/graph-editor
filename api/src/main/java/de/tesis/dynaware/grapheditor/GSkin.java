@@ -12,7 +12,16 @@ import javafx.scene.Node;
  */
 public abstract class GSkin {
 
-    private final BooleanProperty selectedProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty selectedProperty = new SimpleBooleanProperty(false){
+
+        @Override
+        protected void invalidated() {
+            super.invalidated();
+            selectionChanged(get());
+        }
+        
+    };
+    
     private GraphEditor graphEditor;
 
     /**
@@ -63,6 +72,13 @@ public abstract class GSkin {
     public BooleanProperty selectedProperty() {
         return selectedProperty;
     }
+    
+    /**
+     * Is called whenever the selection state has changed.
+     *
+     * @param isSelected {@code true} if the skin is selected, {@code false} if not
+     */
+    protected abstract void selectionChanged(final boolean isSelected);
 
     /**
      * Called after the skin is removed. Can be overridden for cleanup.

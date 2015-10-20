@@ -93,7 +93,6 @@ public class DefaultNodeSkin extends GNodeSkin {
         background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
 
         addSelectionHalo();
-        addSelectionListener();
     }
 
     @Override
@@ -255,23 +254,17 @@ public class DefaultNodeSkin extends GNodeSkin {
         }
     }
 
-    /**
-     * Adds a listener to react to whether the node is selected or not and change the CSS classes accordingly.
-     */
-    private void addSelectionListener() {
-
-        selectedProperty().addListener((v, o, n) -> {
-
-            if (n) {
-                selectionHalo.setVisible(true);
-                layoutSelectionHalo();
-                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-                getRoot().toFront();
-            } else {
-                selectionHalo.setVisible(false);
-                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-            }
-        });
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        if (isSelected) {
+            selectionHalo.setVisible(true);
+            layoutSelectionHalo();
+            background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+            getRoot().toFront();
+        } else {
+            selectionHalo.setVisible(false);
+            background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+        }
     }
 
     /**

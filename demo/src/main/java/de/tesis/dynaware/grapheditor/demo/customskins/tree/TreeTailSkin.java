@@ -57,7 +57,12 @@ public class TreeTailSkin extends GTailSkin {
 
     @Override
     public List<Point2D> allocateJointPositions() {
-        return new ArrayList<Point2D>();
+        return new ArrayList<>();
+    }
+
+    @Override
+    protected void selectionChanged(boolean isSelected) {
+        // Not implemented
     }
 
     /**
