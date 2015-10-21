@@ -3,12 +3,11 @@
  */
 package de.tesis.dynaware.grapheditor.core.skins.defaults;
 
-import javafx.beans.value.ChangeListener;
-import javafx.css.PseudoClass;
-import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
+import javafx.css.PseudoClass;
+import javafx.geometry.Point2D;
 
 /**
  * The default joint skin.

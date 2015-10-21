@@ -9,13 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
@@ -23,6 +16,7 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
 import de.tesis.dynaware.grapheditor.core.utils.GModelUtils;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -31,9 +25,13 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
-import java.util.Iterator;
-import javafx.event.Event;
-import javafx.event.EventType;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 
 /**
  * Responsible for creating selections of nodes, connections, and joints in the graph editor.
@@ -188,20 +186,12 @@ public class SelectionCreator {
     private void addClickSelectionMechanism() {
         
         // remove all listeners:
-        removeEventHandlers(nodePressedHandlers, MouseEvent.MOUSE_PRESSED);
-        removeEventHandlers(nodeReleasedHandlers, MouseEvent.MOUSE_RELEASED);
-        removeEventHandlers(nodeClickedHandlers, MouseEvent.MOUSE_CLICKED);
+        EventUtils.removeEventHandlers(nodePressedHandlers, MouseEvent.MOUSE_PRESSED);
+        EventUtils.removeEventHandlers(nodeReleasedHandlers, MouseEvent.MOUSE_RELEASED);
+        EventUtils.removeEventHandlers(nodeClickedHandlers, MouseEvent.MOUSE_CLICKED);
         
         addClickSelectionForNodes();
         addClickSelectionForJoints();
-    }
-    
-    private static <T extends Event> void removeEventHandlers(final Map<Node, EventHandler<T>> eventHandlers, final EventType<T> type) {
-        for(final Iterator<Map.Entry<Node, EventHandler<T>>> iter = eventHandlers.entrySet().iterator(); iter.hasNext();) {
-            final Map.Entry<Node, EventHandler<T>> next = iter.next();
-            next.getKey().removeEventHandler(type, next.getValue());
-            iter.remove();
-        }
     }
 
     private void handleSelectionClick(final MouseEvent event, final GSkin skin) {
@@ -239,15 +229,12 @@ public class SelectionCreator {
 
             final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, node);
             final EventHandler<MouseEvent> newNodeReleasedHandler = event -> handleNodeReleased(event, node);
-            final EventHandler<MouseEvent> selectionClickHandler = event -> handleSelectionClick(event, skin);
 
             nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
             nodeRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
-            nodeRegion.addEventHandler(MouseEvent.MOUSE_CLICKED, selectionClickHandler);
             
             nodePressedHandlers.put(nodeRegion, newNodePressedHandler);
             nodeReleasedHandlers.put(nodeRegion, newNodeReleasedHandler);
-            nodeClickedHandlers.put(nodeRegion, selectionClickHandler);
 
             for (final GConnector connector : node.getConnectors()) {
 
@@ -304,6 +291,8 @@ public class SelectionCreator {
             selectionDragManager.bindPositions(node, model);
         }
 
+        handleSelectionClick(event, nodeSkin);
+        
         // Consume this event so it's not passed up to the parent (i.e. the view).
         event.consume();
     }
@@ -337,20 +326,7 @@ public class SelectionCreator {
         }
 
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-
-        if (!jointSkin.isSelected()) {
-            if (!event.isShortcutDown()) {
-                deselectAll();
-            } else {
-                backupSelections();
-                jointSkin.setSelected(true);
-            }
-            jointSkin.getRoot().toFront();
-        } else {
-            if (event.isShortcutDown()) {
-                jointSkin.setSelected(false);
-            }
-        }
+        handleSelectionClick(event, jointSkin);
 
         selectionDragManager.bindPositions(joint, model);
         event.consume();

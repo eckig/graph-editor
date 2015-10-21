@@ -8,14 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
-
 import org.eclipse.emf.common.command.CompoundCommand;
 
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -23,6 +15,7 @@ import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -30,6 +23,13 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 
 /**
  * Responsible for what happens when connectors are dragged in the graph editor.
@@ -47,16 +47,15 @@ public class ConnectorDragManager {
 
     private GModel model;
 
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseExitedHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mouseExitedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
 
-    private final Map<GConnector, EventHandler<MouseEvent>> dragDetectedHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseDraggedHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseDragEnteredHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseDragExitedHandlers = new HashMap<>();
-    private final Map<GConnector, EventHandler<MouseEvent>> mouseDragReleasedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> dragDetectedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mouseDraggedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseDragEvent>> mouseDragEnteredHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseDragEvent>> mouseDragExitedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseDragEvent>> mouseDragReleasedHandlers = new HashMap<>();
 
     private GConnectorValidator validator = new DefaultConnectorValidator();
 
@@ -68,12 +67,18 @@ public class ConnectorDragManager {
     private boolean repositionAllowed;
 
     /**
-     * Creates a new {@link ConnectorDragManager}. Only one instance should exist per {@link DefaultGraphEditor}
-     * instance.
+     * Creates a new {@link ConnectorDragManager}. Only one instance should
+     * exist per {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup the {@link SkinLookup} used to look up connector and tail skins
-     * @param connectionEventManager the {@link ConnectionEventManager} used to notify users of connection events
-     * @param view the {@link GraphEditorView} to which tail skins will be added and removed during drag events
+     * @param skinLookup
+     *            the {@link SkinLookup} used to look up connector and tail
+     *            skins
+     * @param connectionEventManager
+     *            the {@link ConnectionEventManager} used to notify users of
+     *            connection events
+     * @param view
+     *            the {@link GraphEditorView} to which tail skins will be added
+     *            and removed during drag events
      */
     public ConnectorDragManager(final SkinLookup skinLookup, final ConnectionEventManager connectionEventManager,
             final GraphEditorView view) {
@@ -87,20 +92,24 @@ public class ConnectorDragManager {
     /**
      * Initializes the drag manager for the given model.
      *
-     * @param model the {@link GModel} currently being edited
+     * @param model
+     *            the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
 
         this.model = model;
 
         clearTrackingParameters();
+        removeEventHandler();
         setHandlers();
     }
 
     /**
      * Sets the validator that determines what connections can be created.
      * 
-     * @param validator a {@link GConnectorValidator} implementaiton, or null to use the default
+     * @param validator
+     *            a {@link GConnectorValidator} implementation, or null to use
+     *            the default
      */
     public void setValidator(final GConnectorValidator validator) {
         if (validator != null) {
@@ -111,20 +120,31 @@ public class ConnectorDragManager {
     }
 
     /**
-     * Clears all parameters that track things like what connector is currently hovered over, and so on.
+     * Clears all parameters that track things like what connector is currently
+     * hovered over, and so on.
      */
     private void clearTrackingParameters() {
-
         hoveredConnector = null;
         removalConnector = null;
         repositionAllowed = true;
     }
 
+    private void removeEventHandler() {
+        EventUtils.removeEventHandlers(mouseEnteredHandlers, MouseEvent.MOUSE_ENTERED);
+        EventUtils.removeEventHandlers(mouseExitedHandlers, MouseEvent.MOUSE_EXITED);
+        EventUtils.removeEventHandlers(mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
+        EventUtils.removeEventHandlers(dragDetectedHandlers, MouseEvent.DRAG_DETECTED);
+        EventUtils.removeEventHandlers(mouseDraggedHandlers, MouseEvent.MOUSE_DRAGGED);
+        EventUtils.removeEventHandlers(mouseDragEnteredHandlers, MouseDragEvent.MOUSE_DRAG_ENTERED);
+        EventUtils.removeEventHandlers(mouseDragExitedHandlers, MouseDragEvent.MOUSE_DRAG_EXITED);
+        EventUtils.removeEventHandlers(mouseDragReleasedHandlers, MouseDragEvent.MOUSE_DRAG_RELEASED);
+    }
+
     /**
-     * Sets all mouse and mouse-drag handlers for all connectors in the current model.
+     * Sets all mouse and mouse-drag handlers for all connectors in the current
+     * model.
      */
     private void setHandlers() {
-
         for (final GNode node : model.getNodes()) {
             for (final GConnector connector : node.getConnectors()) {
                 setHandlers(connector);
@@ -135,99 +155,44 @@ public class ConnectorDragManager {
     /**
      * Sets all mouse and mouse-drag handlers for a particular connector.
      *
-     * @param connector the {@link GConnector} for which mouse and drag handlers should be set
+     * @param connector
+     *            the {@link GConnector} for which mouse and drag handlers
+     *            should be set
      */
     private void setHandlers(final GConnector connector) {
-
-        removeOldMouseHandlers(connector);
-        removeOldMouseDragHandlers(connector);
-
         addMouseHandlers(connector);
         addMouseDragHandlers(connector);
     }
 
     /**
-     * Removes any previously existing mouse event handlers from the connector's root JavaFX node that were added by
-     * this class.
-     *
-     * @param connector the {@link GConnector} whose old handlers should be removed
-     */
-    private void removeOldMouseHandlers(final GConnector connector) {
-
-        final Node root = skinLookup.lookupConnector(connector).getRoot();
-
-        if (mouseEnteredHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseEvent.MOUSE_ENTERED, mouseEnteredHandlers.get(connector));
-        }
-
-        if (mouseExitedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedHandlers.get(connector));
-        }
-
-        if (mouseReleasedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlers.get(connector));
-        }
-
-        if (mouseMovedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseEvent.MOUSE_MOVED, mouseMovedHandlers.get(connector));
-        }
-    }
-
-    /**
-     * Removes any previously existing mouse-drag event handlers from the connector's root JavaFX node that were added
-     * by this class.
-     *
-     * @param connector the {@link GConnector} whose old handlers should be removed
-     */
-    private void removeOldMouseDragHandlers(final GConnector connector) {
-
-        final Node root = skinLookup.lookupConnector(connector).getRoot();
-
-        if (dragDetectedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseEvent.DRAG_DETECTED, dragDetectedHandlers.get(connector));
-        }
-
-        if (mouseDraggedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandlers.get(connector));
-        }
-
-        if (mouseDragEnteredHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEnteredHandlers.get(connector));
-        }
-
-        if (mouseDragExitedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragExitedHandlers.get(connector));
-        }
-
-        if (mouseDragReleasedHandlers.get(connector) != null) {
-            root.removeEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragReleasedHandlers.get(connector));
-        }
-    }
-
-    /**
      * Adds mouse handlers to a particular connector.
      *
-     * @param connector the {@link GConnector} to which mouse handlers should be added
+     * @param connector
+     *            the {@link GConnector} to which mouse handlers should be added
      */
     private void addMouseHandlers(final GConnector connector) {
 
         final EventHandler<MouseEvent> newMouseEnteredHandler = event -> handleMouseEntered(event, connector);
-        final EventHandler<MouseEvent> newMouseExitedHandler = event -> handleMouseExited(event, connector);
-        final EventHandler<MouseEvent> newMouseReleasedHandler = event -> handleMouseReleased(event, connector);
-        final EventHandler<MouseEvent> newMouseMovedHandler = event -> event.consume();
+        final EventHandler<MouseEvent> newMouseExitedHandler = event -> handleMouseExited(event);
+        final EventHandler<MouseEvent> newMouseReleasedHandler = event -> handleMouseReleased(event);
 
         final Node root = skinLookup.lookupConnector(connector).getRoot();
 
         root.addEventHandler(MouseEvent.MOUSE_ENTERED, newMouseEnteredHandler);
         root.addEventHandler(MouseEvent.MOUSE_EXITED, newMouseExitedHandler);
         root.addEventHandler(MouseEvent.MOUSE_RELEASED, newMouseReleasedHandler);
-        root.addEventHandler(MouseEvent.MOUSE_MOVED, newMouseMovedHandler);
+
+        mouseEnteredHandlers.put(root, newMouseEnteredHandler);
+        mouseExitedHandlers.put(root, newMouseExitedHandler);
+        mouseReleasedHandlers.put(root, newMouseReleasedHandler);
     }
 
     /**
      * Adds mouse-drag handlers to a particular connector.
      *
-     * @param connector the {@link GConnector} to which mouse-drag handlers should be added
+     * @param connector
+     *            the {@link GConnector} to which mouse-drag handlers should be
+     *            added
      */
     private void addMouseDragHandlers(final GConnector connector) {
 
@@ -244,13 +209,21 @@ public class ConnectorDragManager {
         root.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, newMouseDragEnteredHandler);
         root.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, newMouseDragExitedHandler);
         root.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, newMouseDragReleasedHandler);
+
+        dragDetectedHandlers.put(root, newDragDetectedHandler);
+        mouseDraggedHandlers.put(root, newMouseDraggedHandler);
+        mouseDragEnteredHandlers.put(root, newMouseDragEnteredHandler);
+        mouseDragExitedHandlers.put(root, newMouseDragExitedHandler);
+        mouseDragReleasedHandlers.put(root, newMouseDragReleasedHandler);
     }
 
     /**
      * Handles mouse-entered events on the given connector.
      *
-     * @param event a mouse-entered event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a mouse-entered event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
     private void handleMouseEntered(final MouseEvent event, final GConnector connector) {
 
@@ -266,11 +239,10 @@ public class ConnectorDragManager {
     /**
      * Handles mouse-exited events on the given connector.
      *
-     * @param event a mouse-exited event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a mouse-exited event
      */
-    private void handleMouseExited(final MouseEvent event, final GConnector connector) {
-
+    private void handleMouseExited(final MouseEvent event) {
         hoveredConnector = null;
         event.consume();
     }
@@ -278,10 +250,10 @@ public class ConnectorDragManager {
     /**
      * Handles mouse-released events on the given connector.
      *
-     * @param event a mouse-released event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a mouse-released event
      */
-    private void handleMouseReleased(final MouseEvent event, final GConnector connector) {
+    private void handleMouseReleased(final MouseEvent event) {
 
         if (!event.getButton().equals(MouseButton.PRIMARY)) {
             return;
@@ -303,8 +275,10 @@ public class ConnectorDragManager {
     /**
      * Handles drag-detected events on the given connector.
      *
-     * @param event a drag-detected event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a drag-detected event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
     private void handleDragDetected(final MouseEvent event, final GConnector connector) {
 
@@ -330,8 +304,10 @@ public class ConnectorDragManager {
     /**
      * Handles mouse-dragged events on the given connector.
      *
-     * @param event a mouse-dragged event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a mouse-dragged event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
     private void handleMouseDragged(final MouseEvent event, final GConnector connector) {
 
@@ -344,7 +320,8 @@ public class ConnectorDragManager {
             return;
         }
 
-        // Case for when the mouse first exits a connector during a drag gesture.
+        // Case for when the mouse first exits a connector during a drag
+        // gesture.
         if (removalConnector != null && !removalConnector.equals(hoveredConnector)) {
             detachConnection(event, connector);
         } else {
@@ -357,8 +334,10 @@ public class ConnectorDragManager {
     /**
      * Handles drag-entered events on the given connector.
      *
-     * @param event a drag-entered event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a drag-entered event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
     private void handleDragEntered(final MouseEvent event, final GConnector connector) {
 
@@ -386,8 +365,10 @@ public class ConnectorDragManager {
     /**
      * Handles drag-exited events on the given connector.
      *
-     * @param event a drag-exited event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a drag-exited event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
     private void handleDragExited(final MouseEvent event, final GConnector connector) {
 
@@ -404,8 +385,10 @@ public class ConnectorDragManager {
     /**
      * Handles drag-released events on the given connector.
      *
-     * @param event a drag-released event
-     * @param connector the {@link GConnector} on which this event occured
+     * @param event
+     *            a drag-released event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
     private void handleDragReleased(final MouseEvent event, final GConnector connector) {
 
@@ -413,17 +396,20 @@ public class ConnectorDragManager {
             return;
         }
 
-        // Consume the event now so it doesn't fire repeatedly after re-initialization.
+        // Consume the event now so it doesn't fire repeatedly after
+        // re-initialization.
         event.consume();
 
         final GConnectorSkin targetConnectorSkin = skinLookup.lookupConnector(connector);
 
         if (validator.prevalidate(sourceConnector, connector) && validator.validate(sourceConnector, connector)) {
 
-            // Remember that adding a connection will fire a listener and reinitialize this class.
+            // Remember that adding a connection will fire a listener and
+            // reinitialize this class.
             addConnection(sourceConnector, connector);
 
-            // After reinitialization we are still hovering over a connector, so we have to re-set that.
+            // After reinitialization we are still hovering over a connector, so
+            // we have to re-set that.
             hoveredConnector = connector;
         }
 
@@ -433,8 +419,10 @@ public class ConnectorDragManager {
     /**
      * Checks if a connection can be created from the given connector.
      *
-     * @param connector a {@link GConnector} instance
-     * @return {@code true} if a connection can be created from the given {@link GConnector}, {@code false} if not
+     * @param connector
+     *            a {@link GConnector} instance
+     * @return {@code true} if a connection can be created from the given
+     *         {@link GConnector}, {@code false} if not
      */
     private boolean checkCreatable(final GConnector connector) {
         return connector.getConnections().isEmpty() || !connector.isConnectionDetachedOnDrag();
@@ -443,8 +431,10 @@ public class ConnectorDragManager {
     /**
      * Checks if a connection can be removed from the given connector.
      *
-     * @param connector a {@link GConnector} instance
-     * @return {@code true} if a connection can be removed from the given {@link GConnector}, {@code false} if not
+     * @param connector
+     *            a {@link GConnector} instance
+     * @return {@code true} if a connection can be removed from the given
+     *         {@link GConnector}, {@code false} if not
      */
     private boolean checkRemovable(final GConnector connector) {
         return !connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag();
@@ -454,11 +444,14 @@ public class ConnectorDragManager {
      * Adds a new connection to the model.
      *
      * <p>
-     * This will trigger the model listener and cause everything to be reinitialized.
+     * This will trigger the model listener and cause everything to be
+     * reinitialized.
      * </p>
      *
-     * @param source the source {@link GConnector} for the new connection
-     * @param target the target {@link GConnector} for the new connection
+     * @param source
+     *            the source {@link GConnector} for the new connection
+     * @param target
+     *            the target {@link GConnector} for the new connection
      */
     private void addConnection(final GConnector source, final GConnector target) {
 
@@ -480,16 +473,21 @@ public class ConnectorDragManager {
 
         final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, connectionType, joints);
 
-        // Notify the event manager so additional commands may be appended to this compound command.
+        // Notify the event manager so additional commands may be appended to
+        // this compound command.
         final GConnection addedConnection = model.getConnections().get(model.getConnections().size() - 1);
         connectionEventManager.notifyConnectionAdded(addedConnection, command);
     }
 
     /**
-     * Detaches the first connection from the given connector - i.e. removes the connection and replaces it with a tail.
+     * Detaches the first connection from the given connector - i.e. removes the
+     * connection and replaces it with a tail.
      *
-     * @param event the {@link MouseEvent} that caused the connection to be detached
-     * @param connector the connector that the connection was detached from
+     * @param event
+     *            the {@link MouseEvent} that caused the connection to be
+     *            detached
+     * @param connector
+     *            the connector that the connection was detached from
      */
     private void detachConnection(final MouseEvent event, final GConnector connector) {
 
@@ -507,18 +505,23 @@ public class ConnectorDragManager {
 
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
 
-        // Notify the event manager so additional commands may be appended to this compound command.
+        // Notify the event manager so additional commands may be appended to
+        // this compound command.
         connectionEventManager.notifyConnectionRemoved(connection, command);
 
         removalConnector = null;
+        handleMouseReleased(event);
     }
 
     /**
-     * Gets the 'opposing' connector that the given connector's first connection is connected to.
+     * Gets the 'opposing' connector that the given connector's first connection
+     * is connected to.
      *
-     * @param connector a {@link GConnector} instance
+     * @param connector
+     *            a {@link GConnector} instance
      *
-     * @return the {@link GConnector} on the other end of the connection, or {@code null} if no connection is present
+     * @return the {@link GConnector} on the other end of the connection, or
+     *         {@code null} if no connection is present
      */
     private GConnector getFirstOpposingConnector(final GConnector connector) {
 
