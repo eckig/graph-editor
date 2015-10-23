@@ -6,17 +6,18 @@ package de.tesis.dynaware.grapheditor.core.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
-import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 
 /**
  * Responsible for updating the {@link GModel}'s layout values at the end of each mouse gesture.
@@ -25,9 +26,7 @@ public class ModelLayoutUpdater {
 
     private final SkinLookup skinLookup;
     private final ModelEditingManager modelEditingManager;
-
-    private final Map<GNode, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
-    private final Map<GJoint, EventHandler<MouseEvent>> jointReleasedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
 
     /**
      * Creates a new model layout updater. Only one instance should exist per {@link DefaultGraphEditor} instance.
@@ -58,27 +57,11 @@ public class ModelLayoutUpdater {
      * @param model the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
-
-        final Map<GNode, EventHandler<MouseEvent>> oldNodeReleasedHandlers = new HashMap<>(nodeReleasedHandlers);
-        final Map<GJoint, EventHandler<MouseEvent>> oldJointReleasedHandlers = new HashMap<>(jointReleasedHandlers);
-
-        for (final GNode node : model.getNodes()) {
-
-            if (oldNodeReleasedHandlers.get(node) != null) {
-                removeHandler(node, oldNodeReleasedHandlers.get(node));
-            }
-            addHandler(node);
-        }
-
-        for (final GConnection connection : model.getConnections()) {
-            for (final GJoint joint : connection.getJoints()) {
-
-                if (oldJointReleasedHandlers.get(joint) != null) {
-                    removeHandler(joint, oldJointReleasedHandlers.get(joint));
-                }
-                addHandler(joint);
-            }
-        }
+        // remove previous event handlers:
+        EventUtils.removeEventHandlers(nodeReleasedHandlers, MouseEvent.MOUSE_RELEASED);
+        // add new event handlers:
+        model.getNodes().forEach(this::addHandler);
+        model.getConnections().stream().flatMap(c -> c.getJoints().stream()).forEach(this::addHandler);
     }
 
     /**
@@ -87,12 +70,19 @@ public class ModelLayoutUpdater {
      * @param node the {@link GNode} whose values should be updated
      */
     private void addHandler(final GNode node) {
-
-        skinLookup.lookupNode(node).getRoot().setOnMouseReleased(event -> {
-            if (checkNodeChanged(node)) {
-                modelEditingManager.updateLayoutValues(skinLookup);
-            }
-        });
+        
+        final EventHandler<MouseEvent> mouseReleasedHandler = event -> nodeMouseReleased(node); 
+        final GNodeSkin nodeSkin =  skinLookup.lookupNode(node);
+        if(nodeSkin != null) {
+            nodeSkin.getRoot().addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+            nodeReleasedHandlers.put(nodeSkin.getRoot(), mouseReleasedHandler);
+        }
+    }
+    
+    private void nodeMouseReleased(final GNode node) {
+        if (checkNodeChanged(node)) {
+            modelEditingManager.updateLayoutValues(skinLookup);
+        }
     }
 
     /**
@@ -101,32 +91,19 @@ public class ModelLayoutUpdater {
      * @param joint the {@link GJoint} whose values should be updated
      */
     private void addHandler(final GJoint joint) {
-
-        skinLookup.lookupJoint(joint).getRoot().setOnMouseReleased(event -> {
-            if (checkJointChanged(joint)) {
-                modelEditingManager.updateLayoutValues(skinLookup);
-            }
-        });
+        
+        final EventHandler<MouseEvent> mouseReleasedHandler = event -> jointMouseReleased(joint); 
+        final GJointSkin jointSkin =  skinLookup.lookupJoint(joint);
+        if(jointSkin != null) {
+            jointSkin.getRoot().addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+            nodeReleasedHandlers.put(jointSkin.getRoot(), mouseReleasedHandler);
+        }
     }
-
-    /**
-     * Removes a mouse-released handler from a node skin's root JavaFX node.
-     *
-     * @param node the {@link GNode} whose handler should be removed
-     * @param handler the mouse-released handler to remove
-     */
-    private void removeHandler(final GNode node, final EventHandler<MouseEvent> handler) {
-        skinLookup.lookupNode(node).getRoot().removeEventHandler(MouseEvent.MOUSE_RELEASED, handler);
-    }
-
-    /**
-     * Removes a mouse-released handler from a joint skin's root JavaFX node.
-     *
-     * @param joint the {@link GJoint} whose handler should be removed
-     * @param handler the mouse-released handler to remove
-     */
-    private void removeHandler(final GJoint joint, final EventHandler<MouseEvent> handler) {
-        skinLookup.lookupJoint(joint).getRoot().removeEventHandler(MouseEvent.MOUSE_RELEASED, handler);
+    
+    private void jointMouseReleased(final GJoint node) {
+        if (checkJointChanged(node)) {
+            modelEditingManager.updateLayoutValues(skinLookup);
+        }
     }
 
     /**

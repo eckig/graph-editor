@@ -6,11 +6,6 @@ package de.tesis.dynaware.grapheditor.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
@@ -20,6 +15,10 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 
 /**
  * Utility class containing helper methods relating to geometry, positions, etc.
@@ -74,25 +73,6 @@ public class GeometryUtils {
      * @return the position of the cursor relative to the node origin
      */
     public static Point2D getCursorPosition(final MouseEvent event, final Node node) {
-
-        final double sceneX = event.getSceneX();
-        final double sceneY = event.getSceneY();
-
-        final double containerSceneX = node.localToScene(0, 0).getX();
-        final double containerSceneY = node.localToScene(0, 0).getY();
-
-        return new Point2D(sceneX - containerSceneX, sceneY - containerSceneY);
-    }
-    
-    /**
-     * Gets the position of the cursor relative to some node.
-     *
-     * @param event a {@link DragEvent} storing the cursor position
-     * @param node some {@link Node}
-     *
-     * @return the position of the cursor relative to the node origin
-     */
-    public static Point2D getCursorPosition(final DragEvent event, final Node node) {
 
         final double sceneX = event.getSceneX();
         final double sceneY = event.getSceneY();

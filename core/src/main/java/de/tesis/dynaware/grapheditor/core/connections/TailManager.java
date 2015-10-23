@@ -10,7 +10,6 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -95,25 +94,6 @@ public class TailManager {
      * @param the mouse event responsible for updating the position
      */
     public void updatePosition(final MouseEvent event) {
-
-        if (tailSkin != null && sourcePosition != null) {
-
-            final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
-
-            if (jointPositions != null) {
-                tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
-            } else {
-                tailSkin.draw(sourcePosition, cursorPosition);
-            }
-        }
-    }
-    
-    /**
-     * Updates the tail position based on new cursor position.
-     * 
-     * @param the mouse event responsible for updating the position
-     */
-    public void updatePosition(final DragEvent event) {
 
         if (tailSkin != null && sourcePosition != null) {
 

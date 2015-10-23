@@ -49,14 +49,13 @@ public class SelectionCreator {
 
     private GModel model;
 
-    // Keep track of all added handlers, because adding a handler twice is punishable by death.
     private final Map<Node, EventHandler<MouseEvent>> nodePressedHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> nodeClickedHandlers = new HashMap<>();
 
-    private EventHandler<MouseEvent> viewPressedHandler;
-    private EventHandler<MouseEvent> viewDraggedHandler;
-    private EventHandler<MouseEvent> viewReleasedHandler;
+    private final EventHandler<MouseEvent> viewPressedHandler = this::handleViewPressed;
+    private final EventHandler<MouseEvent> viewDraggedHandler = this::handleViewDragged;
+    private final EventHandler<MouseEvent> viewReleasedHandler = this::handleViewReleased;
 
     private List<GJoint> allJoints;
 
@@ -84,6 +83,10 @@ public class SelectionCreator {
         this.skinLookup = skinLookup;
         this.view = view;
         this.selectionDragManager = selectionDragManager;
+        
+        view.addEventHandler(MouseEvent.MOUSE_PRESSED, viewPressedHandler);
+        view.addEventHandler(MouseEvent.MOUSE_DRAGGED, viewDraggedHandler);
+        view.addEventHandler(MouseEvent.MOUSE_RELEASED, viewReleasedHandler);
     }
 
     /**
@@ -92,13 +95,11 @@ public class SelectionCreator {
      * @param model the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
-
+        
         this.model = model;
-
-        addClickSelectionMechanism();
-        addDragSelectionMechanism();
-
         allJoints = GModelUtils.getAllJoints(model);
+        
+        addClickSelectionMechanism();
     }
 
     /**
@@ -349,39 +350,13 @@ public class SelectionCreator {
     }
     
     /**
-     * Adds a mechanism to select one or more joints and / or nodes by dragging a box around them.
-     */
-    private void addDragSelectionMechanism() {
-
-        if (viewPressedHandler != null) {
-            view.removeEventHandler(MouseEvent.MOUSE_PRESSED, viewPressedHandler);
-        }
-
-        if (viewDraggedHandler != null) {
-            view.removeEventHandler(MouseEvent.MOUSE_PRESSED, viewDraggedHandler);
-        }
-
-        if (viewReleasedHandler != null) {
-            view.removeEventHandler(MouseEvent.MOUSE_PRESSED, viewReleasedHandler);
-        }
-
-        viewPressedHandler = event -> handleViewPressed(event);
-        viewDraggedHandler = event -> handleViewDragged(event);
-        viewReleasedHandler = event -> handleViewReleased(event);
-
-        view.addEventHandler(MouseEvent.MOUSE_PRESSED, viewPressedHandler);
-        view.addEventHandler(MouseEvent.MOUSE_DRAGGED, viewDraggedHandler);
-        view.addEventHandler(MouseEvent.MOUSE_RELEASED, viewReleasedHandler);
-    }
-
-    /**
      * Handles mouse-pressed events on the view.
      *
      * @param event a mouse-pressed event
      */
     private void handleViewPressed(final MouseEvent event) {
 
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+        if (model == null || !MouseButton.PRIMARY.equals(event.getButton())) {
             return;
         }
 
@@ -404,7 +379,7 @@ public class SelectionCreator {
      */
     private void handleViewDragged(final MouseEvent event) {
 
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+        if (model == null || !MouseButton.PRIMARY.equals(event.getButton())) {
             return;
         }
 
@@ -439,7 +414,7 @@ public class SelectionCreator {
      */
     private void handleViewReleased(final MouseEvent event) {
 
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+        if (model == null || !MouseButton.PRIMARY.equals(event.getButton())) {
             return;
         }
 
