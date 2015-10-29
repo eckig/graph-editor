@@ -268,7 +268,8 @@ public class ConnectorDragManager {
         } else if (checkRemovable(connector)) {
 
             skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
-            detachConnection(event, connector);
+            detachConnection(connector);
+            handleMouseReleased(event);
         }
 
         event.consume();
@@ -362,10 +363,6 @@ public class ConnectorDragManager {
             return;
         }
 
-        // Consume the event now so it doesn't fire repeatedly after
-        // re-initialization.
-        event.consume();
-
         final GConnectorSkin targetConnectorSkin = skinLookup.lookupConnector(connector);
 
         if (validator.prevalidate(sourceConnector, connector) && validator.validate(sourceConnector, connector)) {
@@ -376,6 +373,7 @@ public class ConnectorDragManager {
         }
 
         targetConnectorSkin.applyStyle(GConnectorStyle.DEFAULT);
+        handleMouseReleased(event); // consumes the event
     }
 
     /**
@@ -445,13 +443,10 @@ public class ConnectorDragManager {
      * Detaches the first connection from the given connector - i.e. removes the
      * connection and replaces it with a tail.
      *
-     * @param event
-     *            the {@link MouseEvent} that caused the connection to be
-     *            detached
      * @param connector
      *            the connector that the connection was detached from
      */
-    private void detachConnection(final MouseEvent event, final GConnector connector) {
+    private void detachConnection(final GConnector connector) {
 
         sourceConnector = getFirstOpposingConnector(connector);
 
@@ -462,15 +457,11 @@ public class ConnectorDragManager {
         }
 
         final GConnection connection = connector.getConnections().get(0);
-        tailManager.createFromConnection(connector, connection, event);
-
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
 
         // Notify the event manager so additional commands may be appended to
         // this compound command.
         connectionEventManager.notifyConnectionRemoved(connection, command);
-
-        handleMouseReleased(event);
     }
 
     /**
