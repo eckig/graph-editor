@@ -176,6 +176,10 @@ public class SelectionCreator {
         selectAllConnections(false);
         selectAllConnectors(false);
     }
+    
+    private boolean isEditable() {
+        return view != null && view.getEditorProperties() != null && !view.getEditorProperties().isReadOnly();
+    }
 
     /**
      * Adds a mechanism to select nodes by clicking on them.
@@ -379,7 +383,7 @@ public class SelectionCreator {
      */
     private void handleViewDragged(final MouseEvent event) {
 
-        if (model == null || !MouseButton.PRIMARY.equals(event.getButton())) {
+        if (model == null || !MouseButton.PRIMARY.equals(event.getButton()) || !isEditable()) {
             return;
         }
 

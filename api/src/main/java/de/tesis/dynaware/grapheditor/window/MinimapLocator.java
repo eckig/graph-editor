@@ -41,6 +41,12 @@ public class MinimapLocator extends DraggableBox {
 
         setEditorProperties(locatorProperties);
     }
+    
+    @Override
+    protected boolean isEditable() {
+        // we want the minimap to be movable at all times because it is not really editing
+        return true;
+    }
 
     /**
      * Draws the locator based on the given window, content, and scale factor values.

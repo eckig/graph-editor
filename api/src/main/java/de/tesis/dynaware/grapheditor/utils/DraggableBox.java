@@ -274,6 +274,10 @@ public class DraggableBox extends StackPane {
     public boolean isResizable() {
         return false;
     }
+    
+    protected boolean isEditable() {
+        return editorProperties != null && !editorProperties.isReadOnly();
+    }
 
     /**
      * Handles mouse-pressed events.
@@ -282,7 +286,7 @@ public class DraggableBox extends StackPane {
      */
     protected void handleMousePressed(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 
@@ -305,7 +309,7 @@ public class DraggableBox extends StackPane {
      */
     protected void handleMouseDragged(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 
@@ -328,7 +332,7 @@ public class DraggableBox extends StackPane {
      */
     protected void handleMouseReleased(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 

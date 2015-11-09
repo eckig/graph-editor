@@ -78,6 +78,8 @@ public class GraphEditorDemoController {
     @FXML
     private RadioMenuItem snapToGridButton;
     @FXML
+    private RadioMenuItem readOnlyButton;
+    @FXML
     private RadioMenuItem defaultSkinButton;
     @FXML
     private RadioMenuItem treeSkinButton;
@@ -309,6 +311,7 @@ public class GraphEditorDemoController {
 
         graphEditor.getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
         graphEditor.getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
+        graphEditor.getProperties().readOnlyProperty().bind(readOnlyButton.selectedProperty());
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 

@@ -54,6 +54,8 @@ public class GraphEditorProperties {
     private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty();
     private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(DEFAULT_GRID_SPACING);
 
+    private final BooleanProperty readOnlyProperty = new SimpleBooleanProperty();
+    
     private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
 
     /**
@@ -84,6 +86,10 @@ public class GraphEditorProperties {
         gridVisibleProperty.set(editorProperties.isGridVisible());
         snapToGridProperty.set(editorProperties.isSnapToGridOn());
         gridSpacingProperty.set(editorProperties.getGridSpacing());
+        
+        readOnlyProperty.set(editorProperties.isReadOnly());
+        
+        customProperties.putAll(editorProperties.getCustomProperties());
     }
 
     /**
@@ -295,6 +301,33 @@ public class GraphEditorProperties {
      */
     public DoubleProperty gridSpacingProperty() {
         return gridSpacingProperty;
+    }
+
+    /**
+     * Gets the read only property
+     * 
+     * @return read only {@link BooleanProperty}
+     */
+    public BooleanProperty readOnlyProperty() {
+        return readOnlyProperty;
+    }
+
+    /**
+     * Returns whether or not the graph is in read only state.
+     * 
+     * @return whether or not the graph is in read only state.
+     */
+    public boolean isReadOnly() {
+        return readOnlyProperty.get();
+    }
+
+    /**
+     * @param readOnly
+     *            {@code true} to set the graph editor in read only state or
+     *            {@code false} (default) for edit state.
+     */
+    public void setReadOnly(final boolean readOnly) {
+        readOnlyProperty.set(readOnly);
     }
 
     /**

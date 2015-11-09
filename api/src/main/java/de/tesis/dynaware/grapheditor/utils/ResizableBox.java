@@ -114,7 +114,7 @@ public class ResizableBox extends DraggableBox {
 
         if (!(getParent() instanceof Region)) {
             return;
-        } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        } else if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             setCursor(null);
             return;
         }
@@ -127,7 +127,7 @@ public class ResizableBox extends DraggableBox {
 
         if (!(getParent() instanceof Region)) {
             return;
-        } else if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        } else if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             setCursor(null);
             return;
         }
@@ -153,7 +153,7 @@ public class ResizableBox extends DraggableBox {
     protected void handleMouseReleased(final MouseEvent event) {
 
         super.handleMouseReleased(event);
-        if (event.getButton().equals(MouseButton.PRIMARY)) {
+        if (event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             processMousePosition(event);
         }
     }
@@ -166,7 +166,7 @@ public class ResizableBox extends DraggableBox {
      */
     private void processMousePosition(final MouseEvent event) {
 
-        if (event.isPrimaryButtonDown()) {
+        if (event.isPrimaryButtonDown() || !isEditable()) {
             return;
         }
 

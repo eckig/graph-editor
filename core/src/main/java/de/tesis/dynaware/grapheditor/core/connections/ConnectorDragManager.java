@@ -42,6 +42,7 @@ public class ConnectorDragManager {
 
     private final TailManager tailManager;
 
+    private final GraphEditorView view;
     private final SkinLookup skinLookup;
     private final ConnectionEventManager connectionEventManager;
 
@@ -79,6 +80,7 @@ public class ConnectorDragManager {
     public ConnectorDragManager(final SkinLookup skinLookup, final ConnectionEventManager connectionEventManager,
             final GraphEditorView view) {
 
+        this.view = view;
         this.skinLookup = skinLookup;
         this.connectionEventManager = connectionEventManager;
 
@@ -113,6 +115,10 @@ public class ConnectorDragManager {
         } else {
             this.validator = new DefaultConnectorValidator();
         }
+    }
+    
+    private boolean isEditable() {
+        return view != null && view.getEditorProperties() != null && !view.getEditorProperties().isReadOnly();
     }
 
     /**
@@ -233,7 +239,7 @@ public class ConnectorDragManager {
      */
     private void handleMouseReleased(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 
@@ -255,7 +261,7 @@ public class ConnectorDragManager {
      */
     private void handleDragDetected(final MouseEvent event, final GConnector connector) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 
@@ -285,7 +291,7 @@ public class ConnectorDragManager {
      */
     private void handleMouseDragged(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 
@@ -308,7 +314,7 @@ public class ConnectorDragManager {
      */
     private void handleDragEntered(final MouseEvent event, final GConnector connector) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
 
@@ -359,7 +365,7 @@ public class ConnectorDragManager {
      */
     private void handleDragReleased(final MouseEvent event, final GConnector connector) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY) || event.isConsumed()) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || event.isConsumed() || !isEditable()) {
             return;
         }
 
