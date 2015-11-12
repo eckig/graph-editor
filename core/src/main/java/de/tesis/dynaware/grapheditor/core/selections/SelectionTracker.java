@@ -93,10 +93,11 @@ public class SelectionTracker {
 
         for (final GNode node : model.getNodes()) {
             final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-            addRemove(selectedNodes, node, nodeSkin.isSelected());
-
-            observedSkins.add(nodeSkin);
-            nodeSkin.selectedProperty().addListener(selectionChangeListener);
+            if (nodeSkin != null) {
+                addRemove(selectedNodes, node, nodeSkin.isSelected());
+                observedSkins.add(nodeSkin);
+                nodeSkin.selectedProperty().addListener(selectionChangeListener);
+            }
         }
     }
     
@@ -142,18 +143,22 @@ public class SelectionTracker {
         for (final GConnection connection : model.getConnections()) {
 
             final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
-            addRemove(selectedConnections, connection, connectionSkin.isSelected());
+            if (connectionSkin != null) {
+                addRemove(selectedConnections, connection, connectionSkin.isSelected());
 
-            observedSkins.add(connectionSkin);
-            connectionSkin.selectedProperty().addListener(selectionChangeListener);
+                observedSkins.add(connectionSkin);
+                connectionSkin.selectedProperty().addListener(selectionChangeListener);
+            }
 
             for (final GJoint joint : connection.getJoints()) {
 
                 final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-                addRemove(selectedJoints, joint, jointSkin.isSelected());
+                if (jointSkin != null) {
+                    addRemove(selectedJoints, joint, jointSkin.isSelected());
 
-                observedSkins.add(jointSkin);
-                jointSkin.selectedProperty().addListener(selectionChangeListener);
+                    observedSkins.add(jointSkin);
+                    jointSkin.selectedProperty().addListener(selectionChangeListener);
+                }
             }
         }
     }

@@ -97,7 +97,9 @@ public class GraphEditorView extends Region {
      * @param nodeSkin the {@link GNodeSkin} instance to be added
      */
     public void add(final GNodeSkin nodeSkin) {
-        nodeLayer.getChildren().add(nodeSkin.getRoot());
+        if (nodeSkin != null) {
+            nodeLayer.getChildren().add(nodeSkin.getRoot());
+        }
     }
 
     /**
@@ -106,7 +108,9 @@ public class GraphEditorView extends Region {
      * @param connectionSkin the {@link GConnectionSkin} instance to be added
      */
     public void add(final GConnectionSkin connectionSkin) {
-        connectionLayer.getChildren().add(connectionSkin.getRoot());
+        if (connectionSkin != null) {
+            connectionLayer.getChildren().add(connectionSkin.getRoot());
+        }
     }
 
     /**
@@ -115,7 +119,9 @@ public class GraphEditorView extends Region {
      * @param jointSkin the {@link GJointSkin} instance to be added
      */
     public void add(final GJointSkin jointSkin) {
-        connectionLayer.getChildren().add(jointSkin.getRoot());
+        if (jointSkin != null) {
+            connectionLayer.getChildren().add(jointSkin.getRoot());
+        }
     }
 
     /**
@@ -124,7 +130,9 @@ public class GraphEditorView extends Region {
      * @param tailSkin the {@link GTailSkin} instance to be added
      */
     public void add(final GTailSkin tailSkin) {
-        connectionLayer.getChildren().add(tailSkin.getRoot());
+        if (tailSkin != null) {
+            connectionLayer.getChildren().add(tailSkin.getRoot());
+        }
     }
 
     /**
@@ -134,7 +142,9 @@ public class GraphEditorView extends Region {
      * @param nodeSkin the {@link GNodeSkin} instance to remove
      */
     public void remove(final GNodeSkin nodeSkin) {
-        nodeLayer.getChildren().remove(nodeSkin.getRoot());
+        if (nodeSkin != null) {
+            nodeLayer.getChildren().remove(nodeSkin.getRoot());
+        }
     }
 
     /**
@@ -144,7 +154,9 @@ public class GraphEditorView extends Region {
      * @param connectionSkin the {@link GConnectionSkin} instance to remove
      */
     public void remove(final GConnectionSkin connectionSkin) {
-        connectionLayer.getChildren().remove(connectionSkin.getRoot());
+        if (connectionSkin != null) {
+            connectionLayer.getChildren().remove(connectionSkin.getRoot());
+        }
     }
 
     /**
@@ -154,7 +166,9 @@ public class GraphEditorView extends Region {
      * @param jointSkin the {@link GJointSkin} instance to remove
      */
     public void remove(final GJointSkin jointSkin) {
-        connectionLayer.getChildren().remove(jointSkin.getRoot());
+        if (jointSkin != null) {
+            connectionLayer.getChildren().remove(jointSkin.getRoot());
+        }
     }
 
     /**
@@ -164,7 +178,9 @@ public class GraphEditorView extends Region {
      * @param tailSkin the {@link GTailSkin} instance to remove
      */
     public void remove(final GTailSkin tailSkin) {
-        connectionLayer.getChildren().remove(tailSkin.getRoot());
+        if (tailSkin != null) {
+            connectionLayer.getChildren().remove(tailSkin.getRoot());
+        }
     }
 
     /**
