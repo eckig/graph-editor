@@ -26,6 +26,7 @@ import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.event.EventHandler;
+import javafx.event.WeakEventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -84,9 +85,9 @@ public class SelectionCreator {
         this.view = view;
         this.selectionDragManager = selectionDragManager;
         
-        view.addEventHandler(MouseEvent.MOUSE_PRESSED, viewPressedHandler);
-        view.addEventHandler(MouseEvent.MOUSE_DRAGGED, viewDraggedHandler);
-        view.addEventHandler(MouseEvent.MOUSE_RELEASED, viewReleasedHandler);
+        view.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
+        view.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
+        view.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
     }
 
     /**
@@ -175,10 +176,6 @@ public class SelectionCreator {
         selectAllJoints(false);
         selectAllConnections(false);
         selectAllConnectors(false);
-    }
-    
-    private boolean isEditable() {
-        return view != null && view.getEditorProperties() != null && !view.getEditorProperties().isReadOnly();
     }
 
     /**
@@ -366,7 +363,7 @@ public class SelectionCreator {
      */
     private void handleViewPressed(final MouseEvent event) {
 
-        if (model == null || !MouseButton.PRIMARY.equals(event.getButton())) {
+        if (model == null || !MouseButton.PRIMARY.equals(event.getButton()) || event.isConsumed()) {
             return;
         }
 
@@ -389,21 +386,8 @@ public class SelectionCreator {
      */
     private void handleViewDragged(final MouseEvent event) {
 
-        if (model == null || !MouseButton.PRIMARY.equals(event.getButton()) || !isEditable()) {
+        if (model == null || !MouseButton.PRIMARY.equals(event.getButton()) || event.isConsumed() || selectionBoxStart == null) {
             return;
-        }
-
-        if (selectionBoxStart == null) {
-
-            if (!event.isShortcutDown()) {
-                deselectAll();
-            } else {
-                backupSelections();
-            }
-            final double scale = view.getLocalToSceneTransform().getMxx();
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, view);
-
-            selectionBoxStart = new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
         }
 
         final double scale = view.getLocalToSceneTransform().getMxx();
@@ -423,10 +407,6 @@ public class SelectionCreator {
      * @param event a mouse-released event
      */
     private void handleViewReleased(final MouseEvent event) {
-
-        if (model == null || !MouseButton.PRIMARY.equals(event.getButton())) {
-            return;
-        }
 
         selectionBoxStart = null;
         view.hideSelectionBox();

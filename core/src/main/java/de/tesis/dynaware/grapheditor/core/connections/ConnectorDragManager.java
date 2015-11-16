@@ -23,6 +23,7 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -49,6 +50,7 @@ public class ConnectorDragManager {
     private GModel model;
 
     private final Map<Node, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
 
     private final Map<Node, EventHandler<MouseEvent>> dragDetectedHandlers = new HashMap<>();
@@ -137,6 +139,7 @@ public class ConnectorDragManager {
         EventUtils.removeEventHandlers(mouseDragEnteredHandlers, MouseDragEvent.MOUSE_DRAG_ENTERED);
         EventUtils.removeEventHandlers(mouseDragExitedHandlers, MouseDragEvent.MOUSE_DRAG_EXITED);
         EventUtils.removeEventHandlers(mouseDragReleasedHandlers, MouseDragEvent.MOUSE_DRAG_RELEASED);
+        EventUtils.removeEventHandlers(mousePressedHandlers, MouseDragEvent.MOUSE_PRESSED);
     }
 
     /**
@@ -172,17 +175,24 @@ public class ConnectorDragManager {
     private void addMouseHandlers(final GConnector connector) {
 
         final EventHandler<MouseEvent> newMouseEnteredHandler = event -> handleMouseEntered(event, connector);
-        final EventHandler<MouseEvent> newMouseReleasedHandler = event -> handleMouseReleased(event);
+        final EventHandler<MouseEvent> newMouseReleasedHandler = this::handleMouseReleased;
+        // Consume the Event so the parent container (ResizableBox/DraggableBox) does not move on connection detach
+        final EventHandler<MouseEvent> newMousePressedHandler = Event::consume;
 
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
         if (connectorSkin != null) {
             final Node root = connectorSkin.getRoot();
 
-            root.addEventHandler(MouseEvent.MOUSE_ENTERED, newMouseEnteredHandler);
-            root.addEventHandler(MouseEvent.MOUSE_RELEASED, newMouseReleasedHandler);
+            if (root != null) {
 
-            mouseEnteredHandlers.put(root, newMouseEnteredHandler);
-            mouseReleasedHandlers.put(root, newMouseReleasedHandler);
+                root.addEventHandler(MouseEvent.MOUSE_ENTERED, newMouseEnteredHandler);
+                root.addEventHandler(MouseEvent.MOUSE_PRESSED, newMousePressedHandler);
+                root.addEventHandler(MouseEvent.MOUSE_RELEASED, newMouseReleasedHandler);
+
+                mousePressedHandlers.put(root, newMousePressedHandler);
+                mouseEnteredHandlers.put(root, newMouseEnteredHandler);
+                mouseReleasedHandlers.put(root, newMouseReleasedHandler);
+            }
         }
     }
 
@@ -205,17 +215,20 @@ public class ConnectorDragManager {
         if (connectorSkin != null) {
             final Node root = connectorSkin.getRoot();
 
-            root.addEventHandler(MouseEvent.DRAG_DETECTED, newDragDetectedHandler);
-            root.addEventHandler(MouseEvent.MOUSE_DRAGGED, newMouseDraggedHandler);
-            root.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, newMouseDragEnteredHandler);
-            root.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, newMouseDragExitedHandler);
-            root.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, newMouseDragReleasedHandler);
+            if (root != null) {
 
-            dragDetectedHandlers.put(root, newDragDetectedHandler);
-            mouseDraggedHandlers.put(root, newMouseDraggedHandler);
-            mouseDragEnteredHandlers.put(root, newMouseDragEnteredHandler);
-            mouseDragExitedHandlers.put(root, newMouseDragExitedHandler);
-            mouseDragReleasedHandlers.put(root, newMouseDragReleasedHandler);
+                root.addEventHandler(MouseEvent.DRAG_DETECTED, newDragDetectedHandler);
+                root.addEventHandler(MouseEvent.MOUSE_DRAGGED, newMouseDraggedHandler);
+                root.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, newMouseDragEnteredHandler);
+                root.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, newMouseDragExitedHandler);
+                root.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, newMouseDragReleasedHandler);
+
+                dragDetectedHandlers.put(root, newDragDetectedHandler);
+                mouseDraggedHandlers.put(root, newMouseDraggedHandler);
+                mouseDragEnteredHandlers.put(root, newMouseDragEnteredHandler);
+                mouseDragExitedHandlers.put(root, newMouseDragExitedHandler);
+                mouseDragReleasedHandlers.put(root, newMouseDragReleasedHandler);
+            }
         }
     }
 

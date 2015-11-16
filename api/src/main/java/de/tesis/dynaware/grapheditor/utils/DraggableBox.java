@@ -58,16 +58,12 @@ public class DraggableBox extends StackPane {
 
     private Point2D snapToGridOffset = new Point2D(0, 0);
 
-    // Turned off by default because it leads to poor performance of panning while zoomed.
-    private boolean cacheWhenStationary;
-
     /**
      * Creates an empty draggable box.
      */
     public DraggableBox() {
 
         setPickOnBounds(false);
-        setCache(cacheWhenStationary);
 
         // Must be default or quality for re-rasterization to occur after a scale transform.
         cacheHintProperty().set(CacheHint.DEFAULT);
@@ -252,24 +248,6 @@ public class DraggableBox extends StackPane {
         this.snapToGridOffset = snapToGridOffset;
     }
 
-    /**
-     * Sets whether the box will be cached when it is not being dragged.
-     *
-     * <p>
-     * If this is set to true, the box will be cached except for in-between mouse-pressed and mouse-released events
-     * (i.e. while it is being dragged). Should improve performance for large graphs in cases where drawing the box and
-     * its contents is expensive (shadows etc).
-     * </p>
-     *
-     * <p>
-     * Currently <b>false</b> by default because it leads to poor performance while panning when zoomed-in.
-     * </p>
-     */
-    public void setCacheWhenStationary(final boolean cacheWhenStationary) {
-        this.cacheWhenStationary = cacheWhenStationary;
-        setCache(cacheWhenStationary);
-    }
-
     @Override
     public boolean isResizable() {
         return false;
@@ -292,10 +270,6 @@ public class DraggableBox extends StackPane {
 
         container = getContainer(this);
 
-        if (cacheWhenStationary) {
-            setCache(false);
-        }
-
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
         storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         dragActive = true;
@@ -312,11 +286,9 @@ public class DraggableBox extends StackPane {
         if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
             return;
         }
-
-        if (!dragActive) {
-            container = getContainer(this);
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
-            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
+        
+        if(container == null || !dragActive) {
+            return;
         }
 
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
@@ -337,10 +309,6 @@ public class DraggableBox extends StackPane {
         }
 
         dragActive = false;
-
-        if (cacheWhenStationary) {
-            setCache(true);
-        }
 
         event.consume();
     }
