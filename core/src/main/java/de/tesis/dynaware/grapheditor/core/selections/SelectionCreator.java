@@ -261,10 +261,19 @@ public class SelectionCreator {
 
         for (final GConnection connection : model.getConnections()) {
 
+            final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
+            if(connSkin != null) {
+                
+                final EventHandler<MouseEvent> connectionPressedHandler = event -> handleConnectionPressed(event, connection);
+                connSkin.getRoot().addEventHandler(MouseEvent.MOUSE_PRESSED, connectionPressedHandler);
+                nodePressedHandlers.put(connSkin.getRoot(), connectionPressedHandler);
+            }
+            
             for (final GJoint joint : connection.getJoints()) {
 
                 final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
                 if (jointSkin != null) {
+                    
                     final Region jointRegion = jointSkin.getRoot();
 
                     final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, joint);
@@ -309,7 +318,7 @@ public class SelectionCreator {
      * Handles mouse-released events on the given node.
      *
      * @param event a mouse-released event
-     * @param node the {@link GNode} on which this event occured
+     * @param node the {@link GNode} on which this event occurred
      */
     private void handleNodeReleased(final MouseEvent event, final GNode node) {
 
@@ -318,6 +327,24 @@ public class SelectionCreator {
         }
 
         selectionDragManager.unbindPositions(node);
+        event.consume();
+    }
+    
+    /**
+     * Handles mouse-pressed events on the given connection.
+     *
+     * @param event a mouse-pressed event
+     * @param connection the {@link GConnection} on which this event occurred
+     */
+    private void handleConnectionPressed(final MouseEvent event, final GConnection connection) {
+
+        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+            return;
+        }
+
+        final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
+        handleSelectionClick(event, connSkin);
+
         event.consume();
     }
 
@@ -329,7 +356,7 @@ public class SelectionCreator {
      */
     private void handleJointPressed(final MouseEvent event, final GJoint joint) {
 
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+        if (!MouseButton.PRIMARY.equals(event.getButton()) || event.isConsumed()) {
             return;
         }
 
