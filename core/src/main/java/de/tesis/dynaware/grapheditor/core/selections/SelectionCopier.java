@@ -10,6 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
+import javafx.util.Pair;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -90,7 +91,7 @@ public class SelectionCopier {
      * 
      * @param handler a {@link CommandAppender} to allow custom commands to be appended to the cut command
      */
-    public void cut(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+    public void cut(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
 
         if (selectionTracker.getSelectedNodes().isEmpty()) {
             return;

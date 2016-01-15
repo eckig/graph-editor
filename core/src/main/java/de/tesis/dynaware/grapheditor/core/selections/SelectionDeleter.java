@@ -9,6 +9,8 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
+import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -16,6 +18,7 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.util.Pair;
 
 /**
  * Responsible for deleting a selection of one or more elements in the graph editor.
@@ -42,17 +45,22 @@ public class SelectionDeleter {
      * @param model the {@link GModel} currently being edited
      * @param consumer a consumer to allow custom commands to be appended to the delete command
      */
-    public void deleteSelection(final GModel model, final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+    public void deleteSelection(final GModel model,
+            final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
 
         final List<GNode> nodesToDelete = new ArrayList<>();
         final List<GConnection> connectionsToDelete = new ArrayList<>();
 
         for (final GNode node : model.getNodes()) {
-            if (skinLookup.lookupNode(node).isSelected()) {
+
+            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+
+            if (nodeSkin != null && nodeSkin.isSelected()) {
 
                 nodesToDelete.add(node);
 
                 for (final GConnector connector : node.getConnectors()) {
+
                     for (final GConnection connection : connector.getConnections()) {
 
                         if (connection != null && !connectionsToDelete.contains(connection)) {
@@ -64,7 +72,8 @@ public class SelectionDeleter {
         }
 
         for (final GConnection connection : model.getConnections()) {
-            if (skinLookup.lookupConnection(connection).isSelected() && !connectionsToDelete.contains(connection)) {
+            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+            if (connectionSkin != null && connectionSkin.isSelected() && !connectionsToDelete.contains(connection)) {
                 connectionsToDelete.add(connection);
             }
         }
@@ -74,7 +83,7 @@ public class SelectionDeleter {
             final CompoundCommand command = modelEditingManager.remove(nodesToDelete, connectionsToDelete);
 
             if (consumer != null) {
-                consumer.accept(nodesToDelete, command);
+                consumer.accept(new Pair<>(nodesToDelete, connectionsToDelete), command);
             }
         }
     }

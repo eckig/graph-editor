@@ -9,6 +9,7 @@ import java.util.function.BiPredicate;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
+import javafx.util.Pair;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 
@@ -68,7 +69,7 @@ public interface SelectionManager {
      *
      * @param consumer a consumer to append additional commands to this one
      */
-    void cut(BiConsumer<List<GNode>, CompoundCommand> consumer);
+    void cut(BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer);
 
     /**
      * Copies the current selection. Saves copied nodes and the connections between them to memory to be pasted later.
@@ -135,7 +136,7 @@ public interface SelectionManager {
      *
      * @param consumer a consumer to append additional commands to this one
      */
-    void deleteSelection(BiConsumer<List<GNode>, CompoundCommand> consumer);
+    void deleteSelection(BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer);
 
     /**
      * Sets an optional predicate to be called when the selection-box changes to see if connections should be selected.

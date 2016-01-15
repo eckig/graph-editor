@@ -9,6 +9,7 @@ import java.util.function.BiPredicate;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
+import javafx.util.Pair;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 
@@ -133,7 +134,7 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void deleteSelection(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+    public void deleteSelection(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
         selectionDeleter.deleteSelection(model, consumer);
     }
 
@@ -143,7 +144,7 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void cut(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
+    public void cut(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
         selectionCopier.cut(consumer);
     }
 
