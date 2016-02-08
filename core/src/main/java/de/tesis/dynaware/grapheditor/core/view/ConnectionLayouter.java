@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Point2D;
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -21,14 +22,14 @@ import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 public class ConnectionLayouter {
 
     private final SkinLookup skinLookup;
-
     private GModel model;
 
     /**
-     * Creates a new {@link ConnectionLayouter} instance. Only one instance should exist per {@link DefaultGraphEditor}
-     * instance.
+     * Creates a new {@link ConnectionLayouter} instance. Only one instance
+     * should exist per {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup the {@link SkinLookup} used to look up skins
+     * @param skinLookup
+     *            the {@link SkinLookup} used to look up skins
      */
     public ConnectionLayouter(final SkinLookup skinLookup) {
         this.skinLookup = skinLookup;
@@ -37,12 +38,12 @@ public class ConnectionLayouter {
     /**
      * Initializes the connection layout manager for the given model.
      *
-     * @param model the {@link GModel} currently being edited
+     * @param model
+     *            the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
 
         this.model = model;
-
         redraw();
     }
 
@@ -51,20 +52,27 @@ public class ConnectionLayouter {
      */
     public void redraw() {
 
-        if (model == null) {
+        if (model == null || model.getConnections().isEmpty()) {
             return;
         }
-
+        
         final Map<GConnection, List<Point2D>> allPoints = new HashMap<>();
-
-        for (final GConnection connection : model.getConnections()) {
-            final List<Point2D> points = createPoints(connection);
-            skinLookup.lookupConnection(connection).applyConstraints(points);
-            allPoints.put(connection, points);
+        final GConnection[] connections = model.getConnections().toArray(new GConnection[model.getConnections().size()]);
+        
+        for (final GConnection connection : connections) {
+            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+            if (connectionSkin != null) {
+                final List<Point2D> points = createPoints(connection);
+                connectionSkin.applyConstraints(points);
+                allPoints.put(connection, points);
+            }
         }
 
-        for (final GConnection connection : model.getConnections()) {
-            skinLookup.lookupConnection(connection).draw(allPoints.get(connection), allPoints);
+        for (final GConnection connection : connections) {
+            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+            if (connectionSkin != null) {
+                connectionSkin.draw(allPoints.get(connection), allPoints);
+            }
         }
     }
 
@@ -76,13 +84,15 @@ public class ConnectionLayouter {
      *
      * <ol>
      * <li>Source position.
-     * <li>Joint positions in same order the joints appear in their {@link GConnection}.
+     * <li>Joint positions in same order the joints appear in their
+     * {@link GConnection}.
      * <li>Target position.
      * </ol>
      *
      * </p>
      *
-     * @param connection a {@link GConnection} instance
+     * @param connection
+     *            a {@link GConnection} instance
      *
      * @return a list of the given connection's points
      */

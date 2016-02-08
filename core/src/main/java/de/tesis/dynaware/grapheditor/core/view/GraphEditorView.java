@@ -3,15 +3,15 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
-import javafx.scene.CacheHint;
-import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.scene.CacheHint;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 
 /**
  * The {@link Region} that all visual elements in the graph editor are added to.
@@ -42,9 +42,6 @@ public class GraphEditorView extends Region {
     private static final String STYLE_CLASS = "graph-editor";
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
-
-    private static final String NODE_LAYER_ID = "nodeLayer";
-    private static final String CONNECTION_LAYER_ID = "connectionLayer";
 
     private final Pane nodeLayer = new Pane();
     private final Pane connectionLayer = new Pane();
@@ -229,28 +226,6 @@ public class GraphEditorView extends Region {
         selectionBox.setVisible(false);
     }
 
-    /**
-     * Enables / disables caching of the view content (node and connection
-     * layers).
-     *
-     * <p>
-     * This increases performance if the content does not need to be redrawn. It
-     * <b>decreases</b> performance when the content is redrawn. Use with care.
-     * </p>
-     *
-     * <p>
-     * <b>Note:</b> Currently leads to poor performance when scale transforms
-     * are used, or on retina displays.
-     * </p>
-     *
-     * @param cache {@code true} to enable caching, {@code false} to disable it
-     */
-    public void setContentCache(final boolean cache) {
-        nodeLayer.setCache(cache);
-        connectionLayer.setCache(cache);
-        grid.setCache(cache);
-    }
-
     @Override
     protected void layoutChildren() {
         final double width = getWidth();
@@ -272,22 +247,9 @@ public class GraphEditorView extends Region {
 
         nodeLayer.setCacheHint(CacheHint.SPEED);
         connectionLayer.setCacheHint(CacheHint.SPEED);
-
+        
         nodeLayer.getStyleClass().add(STYLE_CLASS_NODE_LAYER);
         connectionLayer.getStyleClass().add(STYLE_CLASS_CONNECTION_LAYER);
-
-        nodeLayer.setId(NODE_LAYER_ID);
-        connectionLayer.setId(CONNECTION_LAYER_ID);
-
-        nodeLayer.maxWidthProperty().bind(maxWidthProperty());
-        nodeLayer.maxHeightProperty().bind(maxHeightProperty());
-        nodeLayer.minWidthProperty().bind(minWidthProperty());
-        nodeLayer.minHeightProperty().bind(minHeightProperty());
-
-        connectionLayer.maxWidthProperty().bind(maxWidthProperty());
-        connectionLayer.maxHeightProperty().bind(maxHeightProperty());
-        connectionLayer.minWidthProperty().bind(minWidthProperty());
-        connectionLayer.minHeightProperty().bind(minHeightProperty());
 
         // Node layer should be on top of connection layer, so we add it second.
         getChildren().addAll(grid, connectionLayer, nodeLayer, selectionBox);

@@ -191,6 +191,10 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      */
     private void restrictFirstAndLastJoints() {
 
+        if(getConnection().getSource() == null || getConnection().getTarget() == null) {
+            return;
+        }
+        
         final GNode sourceNode = (GNode) getConnection().getSource().getParent();
         final GNodeSkin sourceNodeSkin = getGraphEditor().getSkinLookup().lookupNode(sourceNode);
 

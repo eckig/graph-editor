@@ -20,7 +20,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
 /**
- * Responsible for updating the {@link GModel}'s layout values at the end of each mouse gesture.
+ * Responsible for updating the {@link GModel}'s layout values at the end of
+ * each mouse gesture.
  */
 public class ModelLayoutUpdater {
 
@@ -29,10 +30,14 @@ public class ModelLayoutUpdater {
     private final Map<Node, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
 
     /**
-     * Creates a new model layout updater. Only one instance should exist per {@link DefaultGraphEditor} instance.
+     * Creates a new model layout updater. Only one instance should exist per
+     * {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup the {@link SkinLookup} used to lookup skins
-     * @param modelEditingManager the {@link ModelEditingManager} used to update the model values
+     * @param skinLookup
+     *            the {@link SkinLookup} used to lookup skins
+     * @param modelEditingManager
+     *            the {@link ModelEditingManager} used to update the model
+     *            values
      */
     public ModelLayoutUpdater(final SkinLookup skinLookup, final ModelEditingManager modelEditingManager) {
 
@@ -44,41 +49,65 @@ public class ModelLayoutUpdater {
      * Initializes the model layout updater for the given model.
      *
      * <p>
-     * The model layout updater works by updating the model whenever a <b>mouse-released</b> event occurs on a node or
-     * joint. This means the model will be updated at the end of every drag gesture. Before an update is made we check
-     * to see if a layout value actually changed. A simple click will therefore not trigger an update.
+     * The model layout updater works by updating the model whenever a
+     * <b>mouse-released</b> event occurs on a node or joint. This means the
+     * model will be updated at the end of every drag gesture. Before an update
+     * is made we check to see if a layout value actually changed. A simple
+     * click will therefore not trigger an update.
      * </p>
      *
      * <p>
-     * A change to a single node or joint will cause the entire model to be updated. This is because layout of multiple
-     * elements may be coupled, for example moving a node may cause the joints inside its connections to move.
+     * A change to a single node or joint will cause the entire model to be
+     * updated. This is because layout of multiple elements may be coupled, for
+     * example moving a node may cause the joints inside its connections to
+     * move.
      * </p>
      *
-     * @param model the {@link GModel} currently being edited
+     * @param model
+     *            the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
         // remove previous event handlers:
         EventUtils.removeEventHandlers(nodeReleasedHandlers, MouseEvent.MOUSE_RELEASED);
         // add new event handlers:
-        model.getNodes().forEach(this::addHandler);
-        model.getConnections().stream().flatMap(c -> c.getJoints().stream()).forEach(this::addHandler);
+        model.getNodes().forEach(this::addNode);
+        model.getConnections().stream().flatMap(c -> c.getJoints().stream()).forEach(this::addJoint);
     }
 
     /**
-     * Adds a handler to update the model when a node's layout properties change.
+     * Adds a handler to update the model when a node's layout properties
+     * change.
      *
-     * @param node the {@link GNode} whose values should be updated
+     * @param node
+     *            the {@link GNode} whose values should be updated
      */
-    private void addHandler(final GNode node) {
-        
-        final EventHandler<MouseEvent> mouseReleasedHandler = event -> nodeMouseReleased(node); 
-        final GNodeSkin nodeSkin =  skinLookup.lookupNode(node);
-        if(nodeSkin != null) {
-            nodeSkin.getRoot().addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-            nodeReleasedHandlers.put(nodeSkin.getRoot(), mouseReleasedHandler);
+    public void addNode(final GNode node) {
+
+        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+        if (nodeSkin != null) {
+            final Node root = nodeSkin.getRoot();
+            if (root != null) {
+                final EventHandler<MouseEvent> mouseReleasedHandler = event -> nodeMouseReleased(node);
+                root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                nodeReleasedHandlers.put(root, mouseReleasedHandler);
+            }
         }
     }
-    
+
+    public void removeNode(final GNode node) {
+
+        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+        if (nodeSkin != null) {
+            final Node root = nodeSkin.getRoot();
+            if (root != null) {
+                final EventHandler<MouseEvent> mouseReleasedHandler = nodeReleasedHandlers.remove(root);
+                if (mouseReleasedHandler != null) {
+                    root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                }
+            }
+        }
+    }
+
     private void nodeMouseReleased(final GNode node) {
         if (checkNodeChanged(node)) {
             modelEditingManager.updateLayoutValues(skinLookup);
@@ -86,20 +115,39 @@ public class ModelLayoutUpdater {
     }
 
     /**
-     * Adds a handler to update the model when a joint's layout properties change.
+     * Adds a handler to update the model when a joint's layout properties
+     * change.
      *
-     * @param joint the {@link GJoint} whose values should be updated
+     * @param joint
+     *            the {@link GJoint} whose values should be updated
      */
-    private void addHandler(final GJoint joint) {
-        
-        final EventHandler<MouseEvent> mouseReleasedHandler = event -> jointMouseReleased(joint); 
-        final GJointSkin jointSkin =  skinLookup.lookupJoint(joint);
-        if(jointSkin != null) {
-            jointSkin.getRoot().addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-            nodeReleasedHandlers.put(jointSkin.getRoot(), mouseReleasedHandler);
+    public void addJoint(final GJoint joint) {
+
+        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        if (jointSkin != null) {
+            final Node root = jointSkin.getRoot();
+            if (root != null) {
+                final EventHandler<MouseEvent> mouseReleasedHandler = event -> jointMouseReleased(joint);
+                root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                nodeReleasedHandlers.put(root, mouseReleasedHandler);
+            }
         }
     }
     
+    public void removeJoint(final GJoint joint) {
+
+        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        if (jointSkin != null) {
+            final Node root = jointSkin.getRoot();
+            if (root != null) {
+                final EventHandler<MouseEvent> mouseReleasedHandler = nodeReleasedHandlers.remove(root);
+                if (mouseReleasedHandler != null) {
+                    root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                }
+            }
+        }
+    }
+
     private void jointMouseReleased(final GJoint node) {
         if (checkJointChanged(node)) {
             modelEditingManager.updateLayoutValues(skinLookup);
@@ -107,11 +155,14 @@ public class ModelLayoutUpdater {
     }
 
     /**
-     * Checks if a node's JavaFX region has different layout values than those currently stored in the model.
+     * Checks if a node's JavaFX region has different layout values than those
+     * currently stored in the model.
      *
-     * @param node the model instance for the node
+     * @param node
+     *            the model instance for the node
      *
-     * @return {@code true} if any layout value has changed, {@code false if not}
+     * @return {@code true} if any layout value has changed,
+     *         {@code false if not}
      */
     private boolean checkNodeChanged(final GNode node) {
 
@@ -136,11 +187,14 @@ public class ModelLayoutUpdater {
     }
 
     /**
-     * Checks if a joint's JavaFX region has different layout values than those currently stored in the model.
+     * Checks if a joint's JavaFX region has different layout values than those
+     * currently stored in the model.
      *
-     * @param joint the model instance for the joint
+     * @param joint
+     *            the model instance for the joint
      *
-     * @return {@code true} if any layout value has changed, {@code false if not}
+     * @return {@code true} if any layout value has changed,
+     *         {@code false if not}
      */
     private boolean checkJointChanged(final GJoint joint) {
 

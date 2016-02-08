@@ -85,6 +85,13 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionTracker.initialize(model);
         selectionCopier.initialize(model);
     }
+    
+    /**
+     * @return the {@link SelectionCreator}
+     */
+    public SelectionCreator getSelectionCreator() {
+        return selectionCreator;
+    }
 
     @Override
     public ObservableList<GNode> getSelectedNodes() {

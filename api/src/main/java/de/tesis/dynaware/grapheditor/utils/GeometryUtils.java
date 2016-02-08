@@ -47,9 +47,11 @@ public class GeometryUtils {
         if (parent instanceof GNode) {
 
             final GNodeSkin nodeSkin = skinLookup.lookupNode((GNode) parent);
+            if(nodeSkin == null) {
+                return null;
+            }
 
             nodeSkin.layoutConnectors();
-            nodeSkin.getConnectorPosition(skinLookup.lookupConnector(connector));
 
             final double nodeX = nodeSkin.getRoot().getLayoutX();
             final double nodeY = nodeSkin.getRoot().getLayoutY();

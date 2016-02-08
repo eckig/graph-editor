@@ -50,9 +50,9 @@ public class SelectionCreator {
 
     private GModel model;
 
-    private final Map<Node, EventHandler<MouseEvent>> nodePressedHandlers = new HashMap<>();
-    private final Map<Node, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
-    private final Map<Node, EventHandler<MouseEvent>> nodeClickedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
+    private final Map<Node, EventHandler<MouseEvent>> mouseClickedHandlers = new HashMap<>();
 
     private final EventHandler<MouseEvent> viewPressedHandler = this::handleViewPressed;
     private final EventHandler<MouseEvent> viewDraggedHandler = this::handleViewDragged;
@@ -188,9 +188,9 @@ public class SelectionCreator {
     private void addClickSelectionMechanism() {
         
         // remove all listeners:
-        EventUtils.removeEventHandlers(nodePressedHandlers, MouseEvent.MOUSE_PRESSED);
-        EventUtils.removeEventHandlers(nodeReleasedHandlers, MouseEvent.MOUSE_RELEASED);
-        EventUtils.removeEventHandlers(nodeClickedHandlers, MouseEvent.MOUSE_CLICKED);
+        EventUtils.removeEventHandlers(mousePressedHandlers, MouseEvent.MOUSE_PRESSED);
+        EventUtils.removeEventHandlers(mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
+        EventUtils.removeEventHandlers(mouseClickedHandlers, MouseEvent.MOUSE_CLICKED);
         
         addClickSelectionForNodes();
         addClickSelectionForJoints();
@@ -219,38 +219,160 @@ public class SelectionCreator {
         event.consume();
     }
     
+    public void addNode(final GNode node) {
+        
+        final GNodeSkin skin = skinLookup.lookupNode(node);
+        if (skin != null) {
+            final Region nodeRegion = skin.getRoot();
+
+            if(!mousePressedHandlers.containsKey(nodeRegion)) {
+                final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, node);
+                nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
+                mousePressedHandlers.put(nodeRegion, newNodePressedHandler);
+            }
+            
+            if(!mouseReleasedHandlers.containsKey(nodeRegion)) {
+                final EventHandler<MouseEvent> newNodeReleasedHandler = event -> handleNodeReleased(event, node);
+                nodeRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
+                mouseReleasedHandlers.put(nodeRegion, newNodeReleasedHandler);
+            }
+
+            for (final GConnector connector : node.getConnectors()) {
+                addConnector(connector);
+            }
+        }
+    }
+    
+    public void removeNode(final GNode node) {
+
+        final GNodeSkin skin = skinLookup.lookupNode(node);
+        if (skin != null) {
+            final Region nodeRegion = skin.getRoot();
+
+            final EventHandler<MouseEvent> newNodePressedHandler = mousePressedHandlers.remove(nodeRegion);
+            final EventHandler<MouseEvent> newNodeReleasedHandler = mouseReleasedHandlers.remove(nodeRegion);
+
+            if (newNodePressedHandler != null) {
+                nodeRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
+            }
+            if (newNodeReleasedHandler != null) {
+                nodeRegion.removeEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
+            }
+
+            for (final GConnector connector : node.getConnectors()) {
+                removeConnector(connector);
+            }
+        }
+    }
+    
+    public void addConnector(final GConnector connector) {
+        
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        if (connectorSkin != null) {
+            final Node connectorRoot = connectorSkin.getRoot();
+            
+            if (!mouseClickedHandlers.containsKey(connectorRoot)) {
+                final EventHandler<MouseEvent> connectorClickedHandler = event -> handleSelectionClick(event, connectorSkin);
+                connectorRoot.addEventHandler(MouseEvent.MOUSE_CLICKED, connectorClickedHandler);
+                mouseClickedHandlers.put(connectorRoot, connectorClickedHandler);
+            }
+        }
+    }
+    
+    public void removeConnector(final GConnector connector) {
+
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        if (connectorSkin != null) {
+            final Node connectorRoot = connectorSkin.getRoot();
+            final EventHandler<MouseEvent> connectorClickedHandler = mouseClickedHandlers.remove(connectorRoot);
+            if (connectorClickedHandler != null) {
+                connectorRoot.removeEventHandler(MouseEvent.MOUSE_CLICKED, connectorClickedHandler);
+            }
+        }
+    }
+    
+    public void addConnection(final GConnection connection) {
+
+        final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
+        if (connSkin != null) {
+
+            final Node skinRoot = connSkin.getRoot();
+            if (!mousePressedHandlers.containsKey(skinRoot)) {
+                final EventHandler<MouseEvent> connectionPressedHandler = event -> handleConnectionPressed(event, connection);
+                skinRoot.addEventHandler(MouseEvent.MOUSE_PRESSED, connectionPressedHandler);
+                mousePressedHandlers.put(skinRoot, connectionPressedHandler);
+            }
+        }
+
+        for (final GJoint joint : connection.getJoints()) {
+            addJoint(joint);
+        }
+    }
+    
+    public void removeConnection(final GConnection connection) {
+
+        final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
+        if (connSkin != null) {
+
+            final EventHandler<MouseEvent> connectionPressedHandler = mousePressedHandlers.remove(connSkin.getRoot());
+            if (connectionPressedHandler != null) {
+                connSkin.getRoot().removeEventHandler(MouseEvent.MOUSE_PRESSED, connectionPressedHandler);
+            }
+        }
+
+        for (final GJoint joint : connection.getJoints()) {
+            removeJoint(joint);
+        }
+    }
+    
+    public void addJoint(final GJoint joint) {
+
+        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        if (jointSkin != null) {
+            
+            final Region jointRegion = jointSkin.getRoot();
+
+            if(!mousePressedHandlers.containsKey(jointRegion)) {
+                
+                final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, joint);
+                jointRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
+                mousePressedHandlers.put(jointRegion, jointPressedHandler);
+            }
+            if(!mouseReleasedHandlers.containsKey(jointRegion)) {
+                
+                final EventHandler<MouseEvent> jointReleasedHandler = event -> handleJointReleased(event, joint);
+                jointRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, jointReleasedHandler);
+                mouseReleasedHandlers.put(jointRegion, jointReleasedHandler);
+            }
+        }
+    
+    }
+    
+    public void removeJoint(final GJoint joint) {
+
+        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        if (jointSkin != null) {
+
+            final Region jointRegion = jointSkin.getRoot();
+
+            final EventHandler<MouseEvent> jointPressedHandler = mousePressedHandlers.remove(jointRegion);
+            final EventHandler<MouseEvent> jointReleasedHandler = mouseReleasedHandlers.remove(jointRegion);
+
+            if (jointPressedHandler != null) {
+                jointRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
+            }
+            if (jointReleasedHandler != null) {
+                jointRegion.removeEventHandler(MouseEvent.MOUSE_RELEASED, jointReleasedHandler);
+            }
+        }
+    }
+    
     /**
      * Adds a click selection mechanism for nodes.
      */
     private void addClickSelectionForNodes() {
-
         for (final GNode node : model.getNodes()) {
-
-            final GNodeSkin skin = skinLookup.lookupNode(node);
-            if (skin != null) {
-                final Region nodeRegion = skin.getRoot();
-
-                final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, node);
-                final EventHandler<MouseEvent> newNodeReleasedHandler = event -> handleNodeReleased(event, node);
-
-                nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
-                nodeRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
-
-                nodePressedHandlers.put(nodeRegion, newNodePressedHandler);
-                nodeReleasedHandlers.put(nodeRegion, newNodeReleasedHandler);
-
-                for (final GConnector connector : node.getConnectors()) {
-
-                    final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-                    final Node connectorRoot = connectorSkin.getRoot();
-
-                    final EventHandler<MouseEvent> connectorClickedHandler = event -> handleSelectionClick(event,
-                            connectorSkin);
-
-                    connectorRoot.addEventHandler(MouseEvent.MOUSE_CLICKED, connectorClickedHandler);
-                    nodeClickedHandlers.put(connectorRoot, connectorClickedHandler);
-                }
-            }
+            addNode(node);
         }
     }
 
@@ -258,34 +380,8 @@ public class SelectionCreator {
      * Adds a click selection mechanism for joints.
      */
     private void addClickSelectionForJoints() {
-
         for (final GConnection connection : model.getConnections()) {
-
-            final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
-            if(connSkin != null) {
-                
-                final EventHandler<MouseEvent> connectionPressedHandler = event -> handleConnectionPressed(event, connection);
-                connSkin.getRoot().addEventHandler(MouseEvent.MOUSE_PRESSED, connectionPressedHandler);
-                nodePressedHandlers.put(connSkin.getRoot(), connectionPressedHandler);
-            }
-            
-            for (final GJoint joint : connection.getJoints()) {
-
-                final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-                if (jointSkin != null) {
-                    
-                    final Region jointRegion = jointSkin.getRoot();
-
-                    final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, joint);
-                    final EventHandler<MouseEvent> jointReleasedHandler = event -> handleJointReleased(event, joint);
-
-                    jointRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
-                    jointRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, jointReleasedHandler);
-
-                    nodePressedHandlers.put(jointRegion, jointPressedHandler);
-                    nodeReleasedHandlers.put(jointRegion, jointReleasedHandler);
-                }
-            }
+            addConnection(connection);
         }
     }
 
