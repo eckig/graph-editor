@@ -8,17 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
-import de.tesis.dynaware.grapheditor.model.GConnectable;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 
 /**
  * Responsible for how joints align to adjacent joints when dragged close enough to them in the default connection skin.
@@ -242,14 +241,10 @@ public class JointAlignmentManager {
     private boolean isNodeStationary(final GJointSkin jointSkin, final boolean source) {
 
         final GConnector connector = source ? connection.getSource() : connection.getTarget();
-        final GConnectable parent = connector.getParent();
+        final GNode parent = connector.getParent();
 
-        if (parent instanceof GNode) {
-            final GNodeSkin nodeSkin = skinLookup.lookupNode((GNode) parent);
-            return !nodeSkin.isSelected() || !jointSkin.isSelected();
-        }
-
-        return false;
+        final GNodeSkin nodeSkin = skinLookup.lookupNode((GNode) parent);
+        return !nodeSkin.isSelected() || !jointSkin.isSelected();
     }
 
     /**

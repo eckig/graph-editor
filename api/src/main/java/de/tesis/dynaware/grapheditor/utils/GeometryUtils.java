@@ -10,7 +10,6 @@ import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.model.GConnectable;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -42,28 +41,24 @@ public class GeometryUtils {
     public static Point2D getConnectorPosition(final GConnector connector, final SkinLookup skinLookup) {
 
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        final GConnectable parent = connector.getParent();
+        final GNode parent = connector.getParent();
 
-        if (parent instanceof GNode) {
-
-            final GNodeSkin nodeSkin = skinLookup.lookupNode((GNode) parent);
-            if(nodeSkin == null) {
-                return null;
-            }
-
-            nodeSkin.layoutConnectors();
-
-            final double nodeX = nodeSkin.getRoot().getLayoutX();
-            final double nodeY = nodeSkin.getRoot().getLayoutY();
-
-            final Point2D connectorPosition = nodeSkin.getConnectorPosition(connectorSkin);
-
-            final double connectorX = connectorPosition.getX();
-            final double connectorY = connectorPosition.getY();
-
-            return new Point2D(moveOnPixel(nodeX + connectorX), moveOnPixel(nodeY + connectorY));
+        final GNodeSkin nodeSkin = skinLookup.lookupNode(parent);
+        if (nodeSkin == null) {
+            return null;
         }
-        return null;
+
+        nodeSkin.layoutConnectors();
+
+        final double nodeX = nodeSkin.getRoot().getLayoutX();
+        final double nodeY = nodeSkin.getRoot().getLayoutY();
+
+        final Point2D connectorPosition = nodeSkin.getConnectorPosition(connectorSkin);
+
+        final double connectorX = connectorPosition.getX();
+        final double connectorY = connectorPosition.getY();
+
+        return new Point2D(moveOnPixel(nodeX + connectorX), moveOnPixel(nodeY + connectorY));
     }
 
     /**

@@ -61,7 +61,7 @@ public class Commands {
     private static final EAttribute NODE_Y = GraphPackage.Literals.GNODE__Y;
     private static final EAttribute NODE_WIDTH = GraphPackage.Literals.GNODE__WIDTH;
     private static final EAttribute NODE_HEIGHT = GraphPackage.Literals.GNODE__HEIGHT;
-    private static final EReference NODE_CONNECTORS = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+    private static final EReference NODE_CONNECTORS = GraphPackage.Literals.GNODE__CONNECTORS;
 
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 

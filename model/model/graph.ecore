@@ -15,11 +15,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="supergraph" eType="#//GNode"
         changeable="false" eOpposite="#//GNode/subgraph"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GConnectable" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="connectors" upperBound="-1"
-        eType="#//GConnector" containment="true" eOpposite="#//GConnector/parent"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GNode" eSuperTypes="#//GConnectable">
+  <eClassifiers xsi:type="ecore:EClass" name="GNode">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -33,8 +29,10 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="101"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="subgraph" eType="#//GModel"
         containment="true" eOpposite="#//GModel/supergraph"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="connectors" upperBound="-1"
+        eType="#//GConnector" containment="true" eOpposite="#//GConnector/parent"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GConnection" eSuperTypes="#//GConnectable">
+  <eClassifiers xsi:type="ecore:EClass" name="GConnection">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -50,7 +48,7 @@
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
-        eType="#//GConnectable" eOpposite="#//GConnectable/connectors"/>
+        eType="#//GNode" eOpposite="#//GNode/connectors"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="connections" upperBound="-1"
         eType="#//GConnection"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="x" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>

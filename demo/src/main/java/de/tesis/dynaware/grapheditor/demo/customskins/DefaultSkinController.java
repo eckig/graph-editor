@@ -96,7 +96,7 @@ public class DefaultSkinController implements SkinController {
                     final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
                     connector.setType(type);
 
-                    final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+                    final EReference connectors = GraphPackage.Literals.GNODE__CONNECTORS;
                     command.append(AddCommand.create(editingDomain, node, connectors, connector));
                 }
             }

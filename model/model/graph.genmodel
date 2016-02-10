@@ -10,16 +10,12 @@
   <genPackages prefix="Graph" basePackage="de.tesis.dynaware.grapheditor" disposableProviderFactory="true"
       ecorePackage="graph.ecore#/">
     <genClasses ecoreClass="graph.ecore#//GModel">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GJoint/id"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GModel/nodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GModel/connections"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GModel/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GModel/contentWidth"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GModel/contentHeight"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GModel/supergraph"/>
-    </genClasses>
-    <genClasses image="false" ecoreClass="graph.ecore#//GConnectable">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GConnectable/connectors"/>
     </genClasses>
     <genClasses ecoreClass="graph.ecore#//GNode">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/id"/>
@@ -29,6 +25,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/width"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GNode/height"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graph.ecore#//GNode/subgraph"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GNode/connectors"/>
     </genClasses>
     <genClasses ecoreClass="graph.ecore#//GConnection">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graph.ecore#//GConnection/id"/>
