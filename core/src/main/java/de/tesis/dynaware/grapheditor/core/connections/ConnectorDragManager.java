@@ -170,7 +170,7 @@ public class ConnectorDragManager {
             final Node root = connectorSkin.getRoot();
             if (root != null && !mouseEventHandlers.containsKey(root)) {
 
-                final EventHandler<MouseEvent> newMouseHandler = event -> handleMouseEvent(event, connector);
+                final EventHandler<MouseEvent> newMouseHandler = event -> handleMouseEvent(event, connector); 
                 root.addEventHandler(MouseEvent.ANY, newMouseHandler);
                 mouseEventHandlers.put(root, newMouseHandler);
             }
@@ -243,6 +243,7 @@ public class ConnectorDragManager {
 
             sourceConnector = connector;
             skinLookup.lookupConnector(connector).getRoot().startFullDrag();
+            tailManager.cleanUp();
             tailManager.create(connector, event);
 
         } else if (checkRemovable(connector)) {
@@ -268,19 +269,20 @@ public class ConnectorDragManager {
             return;
         }
 
-        if (!repositionAllowed) {
-            event.consume();
-            return;
+        if (repositionAllowed) {
+            // Case for when the mouse first exits a connector during a drag gesture.
+            if (removalConnector != null) {
+                detachConnection(event, connector);
+            } else {
+                tailManager.updatePosition(event);
+            }
         }
-
-        // Case for when the mouse first exits a connector during a drag gesture.
-        if (removalConnector != null) {
-            detachConnection(event, connector);
-        } else {
+    }
+    
+    public void updateTail(final MouseEvent event) {
+        if (repositionAllowed && removalConnector == null) {
             tailManager.updatePosition(event);
         }
-
-        event.consume();
     }
 
     /**
@@ -445,6 +447,7 @@ public class ConnectorDragManager {
         }
 
         final GConnection connection = connector.getConnections().get(0);
+        tailManager.cleanUp();
         tailManager.createFromConnection(connector, connection, event);
 
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
