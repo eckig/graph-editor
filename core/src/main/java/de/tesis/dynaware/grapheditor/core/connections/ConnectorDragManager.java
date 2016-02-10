@@ -4,7 +4,6 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
-import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -275,8 +273,7 @@ public class ConnectorDragManager {
             return;
         }
 
-        // Case for when the mouse first exits a connector during a drag
-        // gesture.
+        // Case for when the mouse first exits a connector during a drag gesture.
         if (removalConnector != null) {
             detachConnection(event, connector);
         } else {
@@ -351,16 +348,12 @@ public class ConnectorDragManager {
             return;
         }
 
-        // Consume the event now so it doesn't fire repeatedly after
-        // re-initialization.
+        // Consume the event now so it doesn't fire repeatedly after re-initialization.
         event.consume();
 
         final GConnectorSkin targetConnectorSkin = skinLookup.lookupConnector(connector);
 
         if (validator.prevalidate(sourceConnector, connector) && validator.validate(sourceConnector, connector)) {
-
-            // Remember that adding a connection will fire a listener and
-            // reinitialize this class.
             addConnection(sourceConnector, connector);
         }
 
@@ -425,8 +418,7 @@ public class ConnectorDragManager {
 
         final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, connectionType, joints);
 
-        // Notify the event manager so additional commands may be appended to
-        // this compound command.
+        // Notify the event manager so additional commands may be appended to this compound command.
         final GConnection addedConnection = model.getConnections().get(model.getConnections().size() - 1);
         connectionEventManager.notifyConnectionAdded(addedConnection, command);
     }
@@ -453,31 +445,14 @@ public class ConnectorDragManager {
         }
 
         final GConnection connection = connector.getConnections().get(0);
+        tailManager.createFromConnection(connector, connection, event);
 
-        // FIRST
-        // backup everything from the connection to be deleted:
-        final List<Point2D> jointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
-        final GConnector newSource;
-        if (connector.equals(connection.getSource())) {
-            Collections.reverse(jointPositions);
-            newSource = connection.getTarget();
-        } else {
-            newSource = connection.getSource();
-        }
-
-        // SECOND
-        // Delete the connection
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
-        // Notify the event manager so additional commands may be appended to
-        // this compound command.
+
+        // Notify the event manager so additional commands may be appended to this compound command.
         connectionEventManager.notifyConnectionRemoved(connection, command);
 
-        // THIRD
-        // update tail
-        if (checkCreatable(connector)) {
-            sourceConnector = newSource;
-            tailManager.create(newSource, event);
-        }
+        removalConnector = null;
     }
 
     /**
