@@ -8,14 +8,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 
 /**
  * Responsible for finding the intersection points between a connection and other connections.
@@ -97,13 +96,17 @@ public class IntersectionFinder {
 
         final List<Double> segmentIntersections = new ArrayList<>();
 
-        filterConnections(behind).forEach(otherConnection -> {
-
-            final List<Point2D> otherPoints = allPoints.get(otherConnection);
+        for(final Map.Entry<GConnection, List<Point2D>> entry : allPoints.entrySet()) {
+            
+            if(!filterConnection(behind, entry.getKey())) {
+                continue;
+            }
+            
+            final List<Point2D> otherPoints = entry.getValue();
 
             for (int j = 0; j < otherPoints.size() - 1; j++) {
 
-                if (connection.equals(otherConnection) && (index > j ^ behind)) {
+                if (connection.equals(entry.getKey()) && (index > j ^ behind)) {
                     continue;
                 }
 
@@ -130,8 +133,7 @@ public class IntersectionFinder {
                     }
                 }
             }
-        });
-
+        }
         return segmentIntersections;
     }
 
@@ -142,17 +144,15 @@ public class IntersectionFinder {
      * @param behind {@code true} to leave in connections behind this one and filter out those in front
      * @return a stream of connections with some filtered out
      */
-    private Stream<GConnection> filterConnections(final boolean behind) {
+    private boolean filterConnection(final boolean behind, final GConnection otherConnection) {
 
-        return allPoints.keySet().stream().filter(otherConnection -> {
-            if (connection.equals(otherConnection)) {
-                return true;
-            } else if (behind) {
-                return checkIfBehind(otherConnection);
-            } else {
-                return !checkIfBehind(otherConnection);
-            }
-        });
+        if (connection.equals(otherConnection)) {
+            return true;
+        } else if (behind) {
+            return checkIfBehind(otherConnection);
+        } else {
+            return !checkIfBehind(otherConnection);
+        }
     }
 
     /**

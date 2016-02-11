@@ -119,9 +119,20 @@ public class GeometryUtils {
      */
     public static List<Point2D> getJointPositions(final GConnection connection, final SkinLookup skinLookup) {
 
-        final List<GJointSkin> jointSkins = getJointSkins(connection, skinLookup);
+        final List<Point2D> jointPositions = new ArrayList<>();
 
-        return getJointPositions(jointSkins);
+        for (final GJoint joint : connection.getJoints()) {
+
+            final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+            final Region region = jointSkin.getRoot();
+
+            final double x = region.getLayoutX() + jointSkin.getWidth() / 2;
+            final double y = region.getLayoutY() + jointSkin.getHeight() / 2;
+
+            jointPositions.add(new Point2D(x, y));
+        }
+
+        return jointPositions;
     }
 
     /**
@@ -140,25 +151,6 @@ public class GeometryUtils {
         }
 
         return jointPositions;
-    }
-
-    /**
-     * Gets all joint skins for a connection.
-     *
-     * @param connection the {@link GConnection} for which the joint skins
-     * @param skinLookup the {@link SkinLookup} instance for this graph editor
-     *
-     * @return a {@link List} of {@link GJointSkin} objects for this connection
-     */
-    public static List<GJointSkin> getJointSkins(final GConnection connection, final SkinLookup skinLookup) {
-
-        final List<GJointSkin> jointSkins = new ArrayList<>();
-
-        for (final GJoint joint : connection.getJoints()) {
-            jointSkins.add(skinLookup.lookupJoint(joint));
-        }
-
-        return jointSkins;
     }
 
     /**

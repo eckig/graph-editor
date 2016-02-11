@@ -3,18 +3,17 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.geometry.Point2D;
 
 /**
  * Responsible for telling connection skins to draw themselves.
@@ -55,24 +54,20 @@ public class ConnectionLayouter {
         if (model == null || model.getConnections().isEmpty()) {
             return;
         }
-        
+
         final Map<GConnection, List<Point2D>> allPoints = new HashMap<>();
-        final GConnection[] connections = model.getConnections().toArray(new GConnection[model.getConnections().size()]);
-        
-        for (final GConnection connection : connections) {
+
+        for (int i = 0; i < model.getConnections().size(); i++) {
+            final GConnection connection = model.getConnections().get(i);
             final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
-            if (connectionSkin != null) {
-                final List<Point2D> points = createPoints(connection);
-                connectionSkin.applyConstraints(points);
-                allPoints.put(connection, points);
-            }
+            final List<Point2D> points = createPoints(connection);
+            connectionSkin.applyConstraints(points);
+            allPoints.put(connection, points);
         }
 
-        for (final GConnection connection : connections) {
-            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
-            if (connectionSkin != null) {
-                connectionSkin.draw(allPoints.get(connection), allPoints);
-            }
+        for (final Map.Entry<GConnection, List<Point2D>> entry : allPoints.entrySet()) {
+            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(entry.getKey());
+            connectionSkin.draw(entry.getValue(), allPoints);
         }
     }
 
@@ -98,10 +93,13 @@ public class ConnectionLayouter {
      */
     private List<Point2D> createPoints(final GConnection connection) {
 
-        final List<Point2D> points = new ArrayList<>();
+        // Middle: joint positions
+        final List<Point2D> points = GeometryUtils.getJointPositions(connection, skinLookup);
 
-        points.add(GeometryUtils.getConnectorPosition(connection.getSource(), skinLookup));
-        points.addAll(GeometryUtils.getJointPositions(connection, skinLookup));
+        // Start: Source position
+        points.add(0, GeometryUtils.getConnectorPosition(connection.getSource(), skinLookup));
+        
+        // End: Target position
         points.add(GeometryUtils.getConnectorPosition(connection.getTarget(), skinLookup));
 
         return points;
