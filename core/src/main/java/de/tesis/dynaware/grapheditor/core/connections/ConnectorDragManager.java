@@ -278,12 +278,6 @@ public class ConnectorDragManager {
             }
         }
     }
-    
-    public void updateTail(final MouseEvent event) {
-        if (repositionAllowed && removalConnector == null) {
-            tailManager.updatePosition(event);
-        }
-    }
 
     /**
      * Handles drag-entered events on the given connector.
