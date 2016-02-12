@@ -3,9 +3,12 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
+import java.util.Iterator;
+
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.scene.Node;
 
 /**
  * The minimap representation of all nodes in the graph editor.
@@ -50,8 +53,16 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
     @Override
     public void draw(final double scaleFactor) {
 
-        getChildren().clear();
-
+        for(final Iterator<Node> childIter = getChildren().iterator(); childIter.hasNext();) {
+            
+            final Node next = childIter.next();
+            
+            if(next instanceof MinimapNode) {
+                ((MinimapNode) next).dispose();
+            }
+            childIter.remove();
+        }
+        
         if (model != null) {
             for (final GNode node : model.getNodes()) {
 

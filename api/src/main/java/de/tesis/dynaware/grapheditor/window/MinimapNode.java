@@ -3,12 +3,15 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
-import javafx.beans.value.ChangeListener;
-import javafx.css.PseudoClass;
-import javafx.scene.shape.Rectangle;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
+import javafx.css.PseudoClass;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Pair;
 
 /**
  * The minimap representation of a single node in the graph editor.
@@ -18,7 +21,8 @@ public class MinimapNode extends Rectangle {
     private static final String STYLE_CLASS = "minimap-node";
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
-    private final ChangeListener<? super Boolean> selectionListener = (v, o, n) -> setSelected(n);
+    private final ChangeListener<Boolean> selectionListener = (v, o, n) -> setSelected(n);
+    private Pair<BooleanProperty, ChangeListener<Boolean>> activeListener;
 
     /**
      * Creates a new {@link MinimapNode} instance.
@@ -36,12 +40,21 @@ public class MinimapNode extends Rectangle {
 
             if (nodeSkin != null) {
                 setSelected(nodeSkin.isSelected());
-                nodeSkin.selectedProperty().addListener(selectionListener);
+                final ChangeListener<Boolean> weakListener = new WeakChangeListener<>(selectionListener); 
+                nodeSkin.selectedProperty().addListener(weakListener);
+                activeListener = new Pair<>(nodeSkin.selectedProperty(), weakListener);
             } else {
                 setSelected(false);
             }
         } else {
             setSelected(false);
+        }
+    }
+    
+    public void dispose() {
+        if(activeListener != null) {
+            activeListener.getKey().removeListener(activeListener.getValue());
+            activeListener = null;
         }
     }
 
