@@ -92,6 +92,13 @@ public class DefaultSelectionManager implements SelectionManager {
     public SelectionCreator getSelectionCreator() {
         return selectionCreator;
     }
+    
+    /**
+     * @return {@link SelectionTracker}
+     */
+    public SelectionTracker getSelectionTracker() {
+        return selectionTracker;
+    }
 
     @Override
     public ObservableList<GNode> getSelectedNodes() {
