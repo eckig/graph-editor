@@ -31,10 +31,11 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
     private final InvalidationListener checkSelectionListener = obs -> checkSelection();
     private final InvalidationListener checkSelectionWeakListener = new WeakInvalidationListener(checkSelectionListener);
 
-    private SelectionManager selectionManager;
-
-    private final Map<GNode, Rectangle> nodes = new HashMap<>();
-    private GModel model;
+	private SelectionManager selectionManager;
+	private GModel model;
+	
+	private final Map<GNode, Rectangle> nodes = new HashMap<>();
+    
 
     /**
      * Sets the selection manager instance currently in use by this graph
