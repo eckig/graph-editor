@@ -30,9 +30,9 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
 	
     private final InvalidationListener checkSelectionListener = obs -> checkSelection();
     private final InvalidationListener checkSelectionWeakListener = new WeakInvalidationListener(checkSelectionListener);
-    
-    private SelectionManager selectionManager;
-    
+
+	private SelectionManager selectionManager;
+
 	private final Map<GNode, Rectangle> nodes = new HashMap<>();
     private GModel model;
 
