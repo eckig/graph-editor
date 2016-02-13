@@ -25,25 +25,27 @@ import javafx.scene.shape.Rectangle;
  */
 public class MinimapNodeGroup extends MinimapContentRepresentation {
 
-	private static final String STYLE_CLASS = "minimap-node";
+    private static final String STYLE_CLASS = "minimap-node";
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
-	
+
     private final InvalidationListener checkSelectionListener = obs -> checkSelection();
     private final InvalidationListener checkSelectionWeakListener = new WeakInvalidationListener(checkSelectionListener);
-    
+
     private SelectionManager selectionManager;
-    
-	private final Map<GNode, Rectangle> nodes = new HashMap<>();
+
+    private final Map<GNode, Rectangle> nodes = new HashMap<>();
     private GModel model;
 
     /**
-     * Sets the selection manager instance currently in use by this graph editor.
+     * Sets the selection manager instance currently in use by this graph
+     * editor.
      *
      * <p>
      * This will be used to show what nodes are currently selected.
      * <p>
      *
-     * @param selectionManager a {@link SelectionManager} instance
+     * @param selectionManager
+     *            a {@link SelectionManager} instance
      */
     public void setSelectionManager(final SelectionManager selectionManager) {
     	
@@ -68,18 +70,18 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
         this.model = model;
     }
     
-	private void checkSelection() {
+    private void checkSelection() {
 
-		for (final Rectangle rectangle : nodes.values()) {
-			rectangle.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-		}
+        for (final Rectangle rectangle : nodes.values()) {
+            rectangle.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+        }
 
-		if (selectionManager != null) {
-			for (final GNode selection : selectionManager.getSelectedNodes()) {
-				nodes.get(selection).pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-			}
-		}
-	}
+        if (selectionManager != null) {
+            for (final GNode selection : selectionManager.getSelectedNodes()) {
+                nodes.get(selection).pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+            }
+        }
+    }
 
     /**
      * Draws the model's nodes at a scaled-down size to be displayed in the minimap.
