@@ -3,16 +3,15 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
-import javafx.beans.binding.DoubleBinding;
-import javafx.scene.layout.Region;
-
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
-import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.utils.FloorBinding;
+import javafx.beans.binding.DoubleBinding;
+import javafx.scene.layout.Region;
 
 /**
  * A minimap for the graph editor.
@@ -56,18 +55,18 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
         setContentRepresentation(minimapNodeGroup);
         createModelChangeListener();
     }
-
+    
     /**
-     * Sets the skin lookup instance currently in use by this graph editor.
+     * Sets the selection manager instance currently in use by this graph editor.
      *
      * <p>
      * This will be used to show what nodes are currently selected.
      * <p>
      *
-     * @param skinLookup a {@link SkinLookup} instance
+     * @param selectionManager a {@link SelectionManager} instance
      */
-    public void setSkinLookup(final SkinLookup skinLookup) {
-        minimapNodeGroup.setSkinLookup(skinLookup);
+    public void setSelectionManager(final SelectionManager selectionManager) {
+    	minimapNodeGroup.setSelectionManager(selectionManager);
     }
 
     @Override

@@ -85,7 +85,6 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
             final Region view = graphEditor.getView();
             final GModel model = graphEditor.getModel();
-            final SkinLookup skinLookup = graphEditor.getSkinLookup();
 
             if (model != null) {
                 view.resize(model.getContentWidth(), model.getContentHeight());
@@ -94,7 +93,7 @@ public class GraphEditorContainer extends AutoScrollingWindow {
             setContent(view);
             minimap.setContent(view);
             minimap.setModel(model);
-            minimap.setSkinLookup(skinLookup);
+            minimap.setSelectionManager(graphEditor.getSelectionManager());
 
             view.toBack();
             view.setOnScroll(event -> panBy(-event.getDeltaX(), -event.getDeltaY()));
