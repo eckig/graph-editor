@@ -72,16 +72,13 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
     }
     
     private void checkSelection() {
-
-        for (final Rectangle rectangle : nodes.values()) {
-            rectangle.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+        for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet()) {
+            entry.getValue().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, isSelected(entry.getKey()));
         }
-
-        if (selectionManager != null) {
-            for (final GNode selection : selectionManager.getSelectedNodes()) {
-                nodes.get(selection).pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-            }
-        }
+    }
+    
+    private boolean isSelected(final GNode node) {
+        return selectionManager == null ? false : selectionManager.getSelectedNodes().contains(node);
     }
 
     /**
@@ -92,6 +89,7 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
     @Override
     public void draw(final double scaleFactor) {
 
+        nodes.clear();
         getChildren().clear();
         
         if (model != null) {
