@@ -16,6 +16,13 @@ public abstract class GSkin {
 
         @Override
         protected void invalidated() {
+            
+            if (get()) {
+                getRoot().fireEvent(new SkinSelectionEvent(SkinSelectionEvent.SKIN_SELECTED, GSkin.this));
+            } else {
+                getRoot().fireEvent(new SkinSelectionEvent(SkinSelectionEvent.SKIN_DESELECTED, GSkin.this));
+            }
+            
             selectionChanged(get());
         }
 

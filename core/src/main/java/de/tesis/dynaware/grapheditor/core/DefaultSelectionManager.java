@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
-import javafx.collections.ObservableList;
-import javafx.geometry.Rectangle2D;
-import javafx.util.Pair;
-
 import org.eclipse.emf.common.command.CompoundCommand;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
@@ -24,9 +20,13 @@ import de.tesis.dynaware.grapheditor.core.selections.SelectionDragManager;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionTracker;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
+import javafx.util.Pair;
 
 /**
  * Manages all graph editor logic relating to selections of one or more nodes and/or joints.
@@ -68,7 +68,7 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionDragManager = new SelectionDragManager(skinLookup, view);
         selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
         selectionCreator = new SelectionCreator(skinLookup, view, selectionDragManager);
-        selectionTracker = new SelectionTracker(skinLookup);
+        selectionTracker = new SelectionTracker(skinLookup, view);
         selectionCopier = new SelectionCopier(skinLookup, selectionTracker, selectionCreator, selectionDeleter);
     }
 
@@ -86,18 +86,36 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionCopier.initialize(model);
     }
     
-    /**
-     * @return the {@link SelectionCreator}
-     */
-    public SelectionCreator getSelectionCreator() {
-        return selectionCreator;
+    public void addNode(final GNode node) {
+        selectionCreator.addNode(node);
     }
     
-    /**
-     * @return {@link SelectionTracker}
-     */
-    public SelectionTracker getSelectionTracker() {
-        return selectionTracker;
+    public void removeNode(final GNode node) {
+        selectionCreator.removeNode(node);
+    }
+    
+    public void addConnector(final GConnector connector) {
+        selectionCreator.addConnector(connector);
+    }
+    
+    public void removeConnector(final GConnector connector) {
+        selectionCreator.removeConnector(connector);
+    }
+    
+    public void addConnection(final GConnection connection) {
+        selectionCreator.addConnection(connection);
+    }
+    
+    public void removeConnection(final GConnection connection) {
+        selectionCreator.removeConnection(connection);
+    }
+    
+    public void addJoint(final GJoint joint) {
+        selectionCreator.addJoint(joint);
+    }
+    
+    public void removeJoint(final GJoint joint) {
+        selectionCreator.removeJoint(joint);
     }
 
     @Override

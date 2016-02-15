@@ -80,7 +80,7 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
     private boolean isSelected(final GNode node) {
         return selectionManager == null ? false : selectionManager.getSelectedNodes().contains(node);
     }
-
+    
     /**
      * Draws the model's nodes at a scaled-down size to be displayed in the minimap.
      *
@@ -91,9 +91,10 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
 
         nodes.clear();
         getChildren().clear();
-        
         if (model != null) {
-            for (final GNode node : model.getNodes()) {
+            for(int i = 0; i < model.getNodes().size(); i++) {
+                
+                final GNode node = model.getNodes().get(i);
 
                 final Rectangle minimapNode = new Rectangle();
                 minimapNode.getStyleClass().add(STYLE_CLASS);
