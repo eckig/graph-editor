@@ -51,6 +51,7 @@ public class ConnectorDragManager {
 
     private GConnectorValidator validator = new DefaultConnectorValidator();
 
+    private GConnector hoveredConnector;
     private GConnector sourceConnector;
     private GConnector targetConnector;
     private GConnector removalConnector;
@@ -119,6 +120,7 @@ public class ConnectorDragManager {
      */
     private void clearTrackingParameters() {
 
+        hoveredConnector = null;
         removalConnector = null;
         repositionAllowed = true;
     }
@@ -183,6 +185,10 @@ public class ConnectorDragManager {
             // Consume the Event so the parent container
             // (ResizableBox/DraggableBox) does not move on connection detach
             event.consume();
+        } else if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
+            handleMouseEntered(event, connector);
+        } else if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
+            handleMouseExited(event);
         } else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
             handleMouseReleased(event, connector);
         } else if (event.getEventType() == MouseEvent.DRAG_DETECTED) {
@@ -197,6 +203,30 @@ public class ConnectorDragManager {
             handleDragReleased(event, connector);
         }
     }
+    
+    /**
+     * Handles mouse-entered events on the given connector.
+     *
+     * @param event a mouse-entered event
+     * @param connector the {@link GConnector} on which this event occurred
+     */
+    private void handleMouseEntered(final MouseEvent event, final GConnector connector) {
+
+        hoveredConnector = connector;
+        event.consume();
+    }
+    
+    /**
+     * Handles mouse-exited events on the given connector.
+     *
+     * @param event a mouse-exited event
+     */
+    private void handleMouseExited(final MouseEvent event) {
+
+        hoveredConnector = null;
+        event.consume();
+    }
+
 
     /**
      * Handles mouse-released events on the given connector.
@@ -271,7 +301,7 @@ public class ConnectorDragManager {
 
         if (repositionAllowed) {
             // Case for when the mouse first exits a connector during a drag gesture.
-            if (removalConnector != null) {
+            if (removalConnector != null && !removalConnector.equals(hoveredConnector)) {
                 detachConnection(event, connector);
             } else {
                 tailManager.updatePosition(event);
@@ -366,7 +396,8 @@ public class ConnectorDragManager {
      *         {@link GConnector}, {@code false} if not
      */
     private boolean checkCreatable(final GConnector connector) {
-        return isEditable() && (connector.getConnections().isEmpty() || !connector.isConnectionDetachedOnDrag());
+        return connector != null && connector.eContainer() instanceof GNode && isEditable()
+                && (connector.getConnections().isEmpty() || !connector.isConnectionDetachedOnDrag());
     }
 
     /**
@@ -431,8 +462,7 @@ public class ConnectorDragManager {
      */
     private void detachConnection(final MouseEvent event, final GConnector connector) {
 
-        sourceConnector = getFirstOpposingConnector(connector);
-        targetConnector = connector;
+        final GConnector firstOpposingConnector = getFirstOpposingConnector(connector);
 
         skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
 
@@ -450,6 +480,15 @@ public class ConnectorDragManager {
         connectionEventManager.notifyConnectionRemoved(connection, command);
 
         removalConnector = null;
+
+        // check if the new source connector allows to create a new connection on the fly:
+        if (!checkCreatable(firstOpposingConnector)) {
+            tailManager.cleanUp();
+            clearTrackingParameters();
+        } else {
+            sourceConnector = firstOpposingConnector;
+            targetConnector = connector;
+        }
     }
 
     /**
