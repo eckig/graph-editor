@@ -68,6 +68,7 @@ public class TailManager {
      */
     public void createFromConnection(final GConnector connector, final GConnection connection, final MouseEvent event) {
 
+        cleanUp();
         jointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
 
         final GConnector newSource;

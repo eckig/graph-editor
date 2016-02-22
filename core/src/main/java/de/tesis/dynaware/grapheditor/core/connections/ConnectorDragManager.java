@@ -57,7 +57,7 @@ public class ConnectorDragManager {
     private GConnector removalConnector;
 
     private boolean repositionAllowed;
-
+    
     /**
      * Creates a new {@link ConnectorDragManager}. Only one instance should
      * exist per {@link DefaultGraphEditor} instance.
@@ -110,28 +110,25 @@ public class ConnectorDragManager {
         }
     }
 
-    private boolean isEditable() {
-        return view != null && view.getEditorProperties() != null && !view.getEditorProperties().isReadOnly();
-    }
-
     /**
      * Clears all parameters that track things like what connector is currently
      * hovered over, and so on.
      */
     private void clearTrackingParameters() {
 
+        tailManager.cleanUp();
         hoveredConnector = null;
         removalConnector = null;
         repositionAllowed = true;
     }
 
-    public void addConnector(final GConnector pConnector) {
-        addMouseHandlers(pConnector);
+    public void addConnector(final GConnector connector) {
+        addMouseHandlers(connector);
     }
 
-    public void removeConnector(final GConnector pConnector) {
+    public void removeConnector(final GConnector connector) {
         
-        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(pConnector);
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
         if (connectorSkin != null) {
             final Node root = connectorSkin.getRoot();
             if (root != null) {
@@ -140,6 +137,11 @@ public class ConnectorDragManager {
                     root.removeEventHandler(MouseEvent.ANY, handler);
                 }
             }
+        }
+        
+        // the connector's tail we are dragging around has been removed..
+        if(sourceConnector == connector || targetConnector == connector) {
+            clearTrackingParameters();
         }
     }
 
@@ -396,7 +398,7 @@ public class ConnectorDragManager {
      *         {@link GConnector}, {@code false} if not
      */
     private boolean checkCreatable(final GConnector connector) {
-        return connector != null && connector.eContainer() instanceof GNode && isEditable()
+        return connector != null && connector.eContainer() instanceof GNode && checkEditable()
                 && (connector.getConnections().isEmpty() || !connector.isConnectionDetachedOnDrag());
     }
 
@@ -409,7 +411,11 @@ public class ConnectorDragManager {
      *         {@link GConnector}, {@code false} if not
      */
     private boolean checkRemovable(final GConnector connector) {
-        return isEditable() && (!connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag());
+        return checkEditable() && (!connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag());
+    }
+
+    private boolean checkEditable() {
+        return view != null && view.getEditorProperties() != null && !view.getEditorProperties().isReadOnly();
     }
 
     /**
@@ -463,7 +469,6 @@ public class ConnectorDragManager {
     private void detachConnection(final MouseEvent event, final GConnector connector) {
 
         final GConnector firstOpposingConnector = getFirstOpposingConnector(connector);
-
         skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
 
         if (connector.getConnections().isEmpty()) {
@@ -471,11 +476,11 @@ public class ConnectorDragManager {
         }
 
         final GConnection connection = connector.getConnections().get(0);
-        tailManager.cleanUp();
         tailManager.createFromConnection(connector, connection, event);
+        sourceConnector = firstOpposingConnector;
+        targetConnector = connector;
 
         final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
-
         // Notify the event manager so additional commands may be appended to this compound command.
         connectionEventManager.notifyConnectionRemoved(connection, command);
 
@@ -483,11 +488,9 @@ public class ConnectorDragManager {
 
         // check if the new source connector allows to create a new connection on the fly:
         if (!checkCreatable(firstOpposingConnector)) {
-            tailManager.cleanUp();
             clearTrackingParameters();
-        } else {
-            sourceConnector = firstOpposingConnector;
-            targetConnector = connector;
+            sourceConnector = null;
+            targetConnector = null;
         }
     }
 

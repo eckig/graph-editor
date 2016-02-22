@@ -22,6 +22,7 @@ import de.tesis.dynaware.grapheditor.core.model.ModelMemory;
 import de.tesis.dynaware.grapheditor.core.model.ModelSanityChecker;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
+import de.tesis.dynaware.grapheditor.core.view.DefaultConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -75,7 +76,7 @@ public class GraphEditorController {
         modelEditingManager = new ModelEditingManager(commandStackListener);
         modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager);
         modelMemory = new ModelMemory();
-        connectionLayouter = new ConnectionLayouter(skinManager);
+        connectionLayouter = new DefaultConnectionLayouter(skinManager);
         connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
         selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
 
