@@ -77,6 +77,10 @@ public class JointCreator {
     public Rectangle getHoverEffect() {
         return hoverEffect;
     }
+    
+    private boolean checkEditable() {
+        return graphEditor != null && !graphEditor.getProperties().isReadOnly();
+    }
 
     /**
      * Adds a mechanism for creating joints by clicking on the connection.
@@ -93,7 +97,7 @@ public class JointCreator {
 
         root.setOnMouseDragged(event -> {
 
-            if (!event.getButton().equals(MouseButton.PRIMARY) || temporarySelectedJointSkin == null) {
+            if (!checkEditable() || !event.getButton().equals(MouseButton.PRIMARY) || temporarySelectedJointSkin == null) {
                 return;
             }
 
@@ -109,7 +113,7 @@ public class JointCreator {
 
             final Point2D offset = offsetCalculator.getOffset(sceneX, sceneY);
 
-            if (!event.getButton().equals(MouseButton.PRIMARY) || offset == null) {
+            if (!checkEditable() || !event.getButton().equals(MouseButton.PRIMARY) || offset == null) {
                 return;
             }
 
@@ -138,7 +142,7 @@ public class JointCreator {
         // This handler updates the model with the new joints *only* if the connection shape has actually changed.
         root.setOnMouseReleased(event -> {
 
-            if (!event.getButton().equals(MouseButton.PRIMARY) || temporarySelectedJointSkin == null) {
+            if (!checkEditable() || !event.getButton().equals(MouseButton.PRIMARY) || temporarySelectedJointSkin == null) {
                 return;
             }
 
