@@ -290,10 +290,6 @@ public class PanningWindowMinimap extends Pane {
                 return;
             }
 
-            if (window.isCacheWhilePanning()) {
-                content.setCache(true);
-            }
-
             final double x = event.getX() - MINIMAP_PADDING - locator.getWidth() / 2;
             final double y = event.getY() - MINIMAP_PADDING - locator.getHeight() / 2;
 
@@ -301,20 +297,6 @@ public class PanningWindowMinimap extends Pane {
             final double zoomFactor = calculateZoomFactor();
 
             window.panTo(x / scaleFactor * zoomFactor, y / scaleFactor * zoomFactor);
-
-            locator.fireEvent(event);
-        });
-
-        setOnMouseDragged(event -> {
-            if (checkReadyForClickEvent(event)) {
-                locator.fireEvent(event);
-            }
-        });
-
-        setOnMouseReleased(event -> {
-            if (checkReadyForClickEvent(event) && window.isCacheWhilePanning()) {
-                content.setCache(false);
-            }
         });
     }
 
