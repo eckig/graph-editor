@@ -534,91 +534,50 @@ public class SelectionCreator {
         selectionBoxStart = null;
         view.hideSelectionBox();
     }
+    
+    private boolean isNodeSelected(final GNode node, final boolean isShortcutDown) {
+        return selection.contains(node.getX(), node.getY(), node.getWidth(), node.getHeight())
+                || isShortcutDown && selectedNodesBackup.contains(node);
+    }
+    
+    private boolean isJointSelected(final GJoint joint, final boolean isShortcutDown) {
+        return selection.contains(joint.getX(), joint.getY()) || isShortcutDown && selectedJointsBackup.contains(joint);
+    }
+    
+    private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown) {
+        return connectionPredicate != null
+                && connectionPredicate.test(skinLookup.lookupConnection(connection), selection)
+                || isShortcutDown && selectedConnectionsBackup.contains(connection);
+    }
 
     /**
      * Updates the selection according to what nodes & joints are inside / outside the selection box.
      */
     private void updateSelection(final boolean isShortcutDown) {
 
-        final List<GNode> selectedNodes = getAllNodesInBox();
-        final List<GJoint> selectedJoints = getAllJointsInBox();
-        final List<GConnection> selectedConnections = getAllConnectionsInBox();
-
-        if (isShortcutDown) {
-            selectedNodes.addAll(selectedNodesBackup);
-            selectedJoints.addAll(selectedJointsBackup);
-            selectedConnections.addAll(selectedConnectionsBackup);
-        }
-
-        final List<GNode> deselectedNodes = new ArrayList<>(model.getNodes());
-        final List<GJoint> deselectedJoints = new ArrayList<>(allJoints);
-        final List<GConnection> deselectedConnections = new ArrayList<>(model.getConnections());
-
-        deselectedNodes.removeAll(selectedNodes);
-        deselectedJoints.removeAll(selectedJoints);
-        deselectedConnections.removeAll(selectedConnections);
-
-        selectedNodes.forEach(node -> skinLookup.lookupNode(node).setSelected(true));
-        deselectedNodes.forEach(node -> skinLookup.lookupNode(node).setSelected(false));
-        selectedJoints.forEach(joint -> skinLookup.lookupJoint(joint).setSelected(true));
-        deselectedJoints.forEach(joint -> skinLookup.lookupJoint(joint).setSelected(false));
-        selectedConnections.forEach(connection -> skinLookup.lookupConnection(connection).setSelected(true));
-        deselectedConnections.forEach(connection -> skinLookup.lookupConnection(connection).setSelected(false));
-    }
-
-    /**
-     * Gets all nodes inside the current selection box.
-     */
-    private List<GNode> getAllNodesInBox() {
-
-        final List<GNode> nodesToSelect = new ArrayList<>();
-
-        for (final GNode node : model.getNodes()) {
-
-            if (selection.contains(node.getX(), node.getY(), node.getWidth(), node.getHeight())) {
-                nodesToSelect.add(node);
+        for (int i = 0; i < model.getNodes().size(); i++) {
+            final GNode node = model.getNodes().get(i);
+            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+            if (nodeSkin != null) {
+                nodeSkin.setSelected(isNodeSelected(node, isShortcutDown));
             }
         }
-
-        return nodesToSelect;
-    }
-
-    /**
-     * Gets all joints inside the current selection box.
-     */
-    private List<GJoint> getAllJointsInBox() {
-
-        final List<GJoint> jointsToSelect = new ArrayList<>();
-
-        for (final GConnection connection : model.getConnections()) {
-
-            for (final GJoint joint : connection.getJoints()) {
-
-                if (selection.contains(joint.getX(), joint.getY())) {
-                    jointsToSelect.add(joint);
-                }
+        
+        for (int i = 0; i < allJoints.size(); i++) {
+            final GJoint joint = allJoints.get(i);
+            final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+            if (jointSkin != null) {
+                jointSkin.setSelected(isJointSelected(joint, isShortcutDown));
             }
         }
-
-        return jointsToSelect;
-    }
-
-    /**
-     * Gets all connections inside the current selection box.
-     */
-    private List<GConnection> getAllConnectionsInBox() {
-
-        final List<GConnection> connectionsToSelect = new ArrayList<>();
-
-        if (connectionPredicate != null) {
-            for (final GConnection connection : model.getConnections()) {
-                if (connectionPredicate.test(skinLookup.lookupConnection(connection), selection)) {
-                    connectionsToSelect.add(connection);
-                }
+        
+        for (int i = 0; i < model.getConnections().size(); i++) {
+            final GConnection connection = model.getConnections().get(i);
+            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+            if (connectionSkin != null) {
+                connectionSkin.setSelected(isConnectionSelected(connection, isShortcutDown));
             }
         }
-
-        return connectionsToSelect;
     }
 
     /**
