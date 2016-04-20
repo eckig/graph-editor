@@ -345,7 +345,13 @@ public class SelectionCreator {
                 mouseReleasedHandlers.put(jointRegion, jointReleasedHandler);
             }
         }
-    
+        
+        if(allJoints == null) {
+            allJoints = GModelUtils.getAllJoints(model);
+        }
+        else {
+            allJoints.add(joint);
+        }
     }
     
     public void removeJoint(final GJoint joint) {
@@ -364,6 +370,13 @@ public class SelectionCreator {
             if (jointReleasedHandler != null) {
                 jointRegion.removeEventHandler(MouseEvent.MOUSE_RELEASED, jointReleasedHandler);
             }
+        }
+        
+        if(allJoints == null) {
+            allJoints = GModelUtils.getAllJoints(model);
+        }
+        else {
+            allJoints.remove(joint);
         }
     }
     
@@ -530,7 +543,6 @@ public class SelectionCreator {
      * @param event a mouse-released event
      */
     private void handleViewReleased(final MouseEvent event) {
-
         selectionBoxStart = null;
         view.hideSelectionBox();
     }
