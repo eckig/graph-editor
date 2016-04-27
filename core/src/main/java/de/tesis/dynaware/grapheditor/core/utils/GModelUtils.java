@@ -115,11 +115,13 @@ public class GModelUtils {
      * @return a new list containing all joints in this model
      */
     public static List<GJoint> getAllJoints(final GModel model) {
-
+        
         final List<GJoint> allJoints = new ArrayList<>();
 
-        for (final GConnection connection : model.getConnections()) {
-            allJoints.addAll(connection.getJoints());
+        if(model != null) {
+            for (final GConnection connection : model.getConnections()) {
+                allJoints.addAll(connection.getJoints());
+            }
         }
 
         return allJoints;
