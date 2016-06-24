@@ -5,6 +5,7 @@ package de.tesis.dynaware.grapheditor.core.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
@@ -14,6 +15,7 @@ import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -28,6 +30,7 @@ public class ModelLayoutUpdater {
     private final SkinLookup skinLookup;
     private final ModelEditingManager modelEditingManager;
     private final Map<Node, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
+    private final Supplier<GraphEditorProperties> properties;
 
     /**
      * Creates a new model layout updater. Only one instance should exist per
@@ -39,10 +42,12 @@ public class ModelLayoutUpdater {
      *            the {@link ModelEditingManager} used to update the model
      *            values
      */
-    public ModelLayoutUpdater(final SkinLookup skinLookup, final ModelEditingManager modelEditingManager) {
+    public ModelLayoutUpdater(final SkinLookup skinLookup, final ModelEditingManager modelEditingManager,
+            final Supplier<GraphEditorProperties> pProperties) {
 
         this.skinLookup = skinLookup;
         this.modelEditingManager = modelEditingManager;
+        this.properties  = pProperties;
     }
 
     /**
@@ -110,7 +115,7 @@ public class ModelLayoutUpdater {
 
     private void nodeMouseReleased(final GNode node) {
         if (checkNodeChanged(node)) {
-            modelEditingManager.updateLayoutValues(skinLookup);
+            modelEditingManager.updateLayoutValues(skinLookup, node);
         }
     }
 
@@ -148,12 +153,17 @@ public class ModelLayoutUpdater {
         }
     }
 
-    private void jointMouseReleased(final GJoint node) {
-        if (checkJointChanged(node)) {
-            modelEditingManager.updateLayoutValues(skinLookup);
+    private void jointMouseReleased(final GJoint joint) {
+        if (checkJointChanged(joint)) {
+            modelEditingManager.updateLayoutValues(skinLookup, joint);
         }
     }
 
+    private boolean canEdit() {
+        final GraphEditorProperties props = properties == null ? null : properties.get();
+        return props != null && !props.isReadOnly();
+    }
+    
     /**
      * Checks if a node's JavaFX region has different layout values than those
      * currently stored in the model.
@@ -166,6 +176,10 @@ public class ModelLayoutUpdater {
      */
     private boolean checkNodeChanged(final GNode node) {
 
+        if(!canEdit()) {
+            return false;
+        }
+        
         final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
 
         if (nodeSkin == null) {
@@ -198,6 +212,10 @@ public class ModelLayoutUpdater {
      */
     private boolean checkJointChanged(final GJoint joint) {
 
+        if(!canEdit()) {
+            return false;
+        }
+        
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
 
         if (jointSkin == null) {

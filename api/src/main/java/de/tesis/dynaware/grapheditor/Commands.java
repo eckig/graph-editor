@@ -227,17 +227,19 @@ public class Commands {
      *
      * @param command a {@link CompoundCommand} to which the set commands will be added
      * @param model the {@link GModel} whose layout values should be updated
+     * @param node the {@link GNode} that has changed and which needs to be updated
      * @param skinLookup the {@link SkinLookup} in use for this graph editor instance
      */
-    public static void updateLayoutValues(final CompoundCommand command, final GModel model, final SkinLookup skinLookup) {
+    public static void updateLayoutValues(final CompoundCommand command, final GModel model,
+            final SkinLookup skinLookup, final GNode node) {
 
         final EditingDomain editingDomain = getEditingDomain(model);
 
         if (editingDomain != null) {
 
-            for (final GNode node : model.getNodes()) {
-
-                final Region nodeRegion = skinLookup.lookupNode(node).getRoot();
+            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+            if (nodeSkin != null) {
+                final Region nodeRegion = nodeSkin.getRoot();
 
                 command.append(SetCommand.create(editingDomain, node, NODE_X, nodeRegion.getLayoutX()));
                 command.append(SetCommand.create(editingDomain, node, NODE_Y, nodeRegion.getLayoutY()));
@@ -247,9 +249,49 @@ public class Commands {
 
             for (final GConnection connection : model.getConnections()) {
 
-                for (final GJoint joint : connection.getJoints()) {
+                if (connection.getSource().getParent() == node || connection.getTarget().getParent() == node) {
 
-                    final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                    for (final GJoint joint : connection.getJoints()) {
+
+                        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                        if (jointSkin != null) {
+                            final Region jointRegion = jointSkin.getRoot();
+
+                            final double x = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
+                            final double y = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
+
+                            command.append(SetCommand.create(editingDomain, joint, JOINT_X, x));
+                            command.append(SetCommand.create(editingDomain, joint, JOINT_Y, y));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Updates the model's layout values to match those in the skin instances.
+     *
+     * <p>
+     * This method adds set operations to the given compound command but does <b>not</b> execute it.
+     * </p>
+     *
+     * @param command a {@link CompoundCommand} to which the set commands will be added
+     * @param model the {@link GModel} whose layout values should be updated
+     * @param node the {@link GNode} that has changed and which needs to be updated
+     * @param skinLookup the {@link SkinLookup} in use for this graph editor instance
+     */
+    public static void updateLayoutValues(final CompoundCommand command, final GModel model,
+            final SkinLookup skinLookup, final GConnection connection) {
+
+        final EditingDomain editingDomain = getEditingDomain(model);
+
+        if (editingDomain != null) {
+
+            for (final GJoint joint : connection.getJoints()) {
+
+                final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                if (jointSkin != null) {
                     final Region jointRegion = jointSkin.getRoot();
 
                     final double x = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
@@ -257,6 +299,45 @@ public class Commands {
 
                     command.append(SetCommand.create(editingDomain, joint, JOINT_X, x));
                     command.append(SetCommand.create(editingDomain, joint, JOINT_Y, y));
+                }
+            }
+        }
+    }
+    
+    /**
+     * Updates the model's layout values to match those in the skin instances.
+     *
+     * <p>
+     * This method adds set operations to the given compound command but does <b>not</b> execute it.
+     * </p>
+     *
+     * @param command a {@link CompoundCommand} to which the set commands will be added
+     * @param model the {@link GModel} whose layout values should be updated
+     * @param joint the {@link GJoint} that has changed and which needs to be updated
+     * @param skinLookup the {@link SkinLookup} in use for this graph editor instance
+     */
+    public static void updateLayoutValues(final CompoundCommand command, final GModel model,
+            final SkinLookup skinLookup, final GJoint joint) {
+
+        final EditingDomain editingDomain = getEditingDomain(model);
+
+        if (editingDomain != null) {
+
+            for (final GConnection connection : model.getConnections()) {
+
+                if (connection.getJoints().contains(joint)) {
+
+                    for (final GJoint connJoint : connection.getJoints()) {
+
+                        final GJointSkin jointSkin = skinLookup.lookupJoint(connJoint);
+                        final Region jointRegion = jointSkin.getRoot();
+
+                        final double x = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
+                        final double y = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
+
+                        command.append(SetCommand.create(editingDomain, connJoint, JOINT_X, x));
+                        command.append(SetCommand.create(editingDomain, connJoint, JOINT_Y, y));
+                    }
                 }
             }
         }

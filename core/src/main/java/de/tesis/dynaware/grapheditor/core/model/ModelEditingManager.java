@@ -24,6 +24,7 @@ import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
+import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
@@ -72,19 +73,45 @@ public class ModelEditingManager {
      *
      * @param skinLookup the {@link SkinLookup} used to lookup skin instances
      */
-    public void updateLayoutValues(final SkinLookup skinLookup) {
+    public void updateLayoutValues(final SkinLookup skinLookup, final GNode node) {
 
         final CompoundCommand command = new CompoundCommand();
 
-        Commands.updateLayoutValues(command, model, skinLookup);
+        Commands.updateLayoutValues(command, model, skinLookup, node);
 
         editingDomain.getCommandStack().removeCommandStackListener(commandStackListener);
 
-        if (command.canExecute()) {
-            editingDomain.getCommandStack().execute(command);
-        }
+        try {
+            if (command.canExecute()) {
+                editingDomain.getCommandStack().execute(command);
+            }
+        } finally {
 
-        editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+            editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+        }
+    }
+    
+    /**
+     * Silently updates the model's layout values to match those in the skin instances.
+     *
+     * @param skinLookup the {@link SkinLookup} used to lookup skin instances
+     */
+    public void updateLayoutValues(final SkinLookup skinLookup, final GJoint joint) {
+
+        final CompoundCommand command = new CompoundCommand();
+
+        Commands.updateLayoutValues(command, model, skinLookup, joint);
+
+        editingDomain.getCommandStack().removeCommandStackListener(commandStackListener);
+
+        try {
+            if (command.canExecute()) {
+                editingDomain.getCommandStack().execute(command);
+            }
+        } finally {
+
+            editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+        }
     }
 
     /**

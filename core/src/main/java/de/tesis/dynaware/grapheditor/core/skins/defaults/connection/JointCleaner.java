@@ -99,7 +99,7 @@ public class JointCleaner {
                     final SkinLookup skinLookup = graphEditor.getSkinLookup();
 
                     JointCommands.removeJoints(command, jointsToCleanUp, connection);
-                    Commands.updateLayoutValues(command, model, skinLookup);
+                    Commands.updateLayoutValues(command, model, skinLookup, connection);
 
                     if (command.canExecute()) {
                         editingDomain.getCommandStack().execute(command);

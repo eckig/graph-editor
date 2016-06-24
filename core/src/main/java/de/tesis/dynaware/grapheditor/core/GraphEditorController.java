@@ -74,7 +74,7 @@ public class GraphEditorController {
         view = new GraphEditorView();
 
         modelEditingManager = new ModelEditingManager(commandStackListener);
-        modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager);
+        modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager, view::getEditorProperties);
         modelMemory = new ModelMemory();
         connectionLayouter = new DefaultConnectionLayouter(skinManager);
         connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
