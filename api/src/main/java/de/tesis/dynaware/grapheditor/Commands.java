@@ -227,120 +227,95 @@ public class Commands {
      *
      * @param command a {@link CompoundCommand} to which the set commands will be added
      * @param model the {@link GModel} whose layout values should be updated
-     * @param node the {@link GNode} that has changed and which needs to be updated
      * @param skinLookup the {@link SkinLookup} in use for this graph editor instance
      */
     public static void updateLayoutValues(final CompoundCommand command, final GModel model,
-            final SkinLookup skinLookup, final GNode node) {
+            final SkinLookup skinLookup) {
 
         final EditingDomain editingDomain = getEditingDomain(model);
 
         if (editingDomain != null) {
 
-            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-            if (nodeSkin != null) {
-                final Region nodeRegion = nodeSkin.getRoot();
+            for (final GNode node : model.getNodes()) {
 
-                command.append(SetCommand.create(editingDomain, node, NODE_X, nodeRegion.getLayoutX()));
-                command.append(SetCommand.create(editingDomain, node, NODE_Y, nodeRegion.getLayoutY()));
-                command.append(SetCommand.create(editingDomain, node, NODE_WIDTH, nodeRegion.getWidth()));
-                command.append(SetCommand.create(editingDomain, node, NODE_HEIGHT, nodeRegion.getHeight()));
+                final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+                if (nodeSkin != null && checkNodeChanged(node, nodeSkin)) {
+                    final Region nodeRegion = nodeSkin.getRoot();
+                    command.append(SetCommand.create(editingDomain, node, NODE_X, nodeRegion.getLayoutX()));
+                    command.append(SetCommand.create(editingDomain, node, NODE_Y, nodeRegion.getLayoutY()));
+                    command.append(SetCommand.create(editingDomain, node, NODE_WIDTH, nodeRegion.getWidth()));
+                    command.append(SetCommand.create(editingDomain, node, NODE_HEIGHT, nodeRegion.getHeight()));
+                }
             }
 
             for (final GConnection connection : model.getConnections()) {
 
-                if (connection.getSource().getParent() == node || connection.getTarget().getParent() == node) {
+                for (final GJoint joint : connection.getJoints()) {
 
-                    for (final GJoint joint : connection.getJoints()) {
+                    final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+                    if (jointSkin != null && checkJointChanged(joint, jointSkin)) {
 
-                        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-                        if (jointSkin != null) {
-                            final Region jointRegion = jointSkin.getRoot();
-
-                            final double x = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
-                            final double y = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
-
-                            command.append(SetCommand.create(editingDomain, joint, JOINT_X, x));
-                            command.append(SetCommand.create(editingDomain, joint, JOINT_Y, y));
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
-     * Updates the model's layout values to match those in the skin instances.
-     *
-     * <p>
-     * This method adds set operations to the given compound command but does <b>not</b> execute it.
-     * </p>
-     *
-     * @param command a {@link CompoundCommand} to which the set commands will be added
-     * @param model the {@link GModel} whose layout values should be updated
-     * @param node the {@link GNode} that has changed and which needs to be updated
-     * @param skinLookup the {@link SkinLookup} in use for this graph editor instance
-     */
-    public static void updateLayoutValues(final CompoundCommand command, final GModel model,
-            final SkinLookup skinLookup, final GConnection connection) {
-
-        final EditingDomain editingDomain = getEditingDomain(model);
-
-        if (editingDomain != null) {
-
-            for (final GJoint joint : connection.getJoints()) {
-
-                final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-                if (jointSkin != null) {
-                    final Region jointRegion = jointSkin.getRoot();
-
-                    final double x = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
-                    final double y = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
-
-                    command.append(SetCommand.create(editingDomain, joint, JOINT_X, x));
-                    command.append(SetCommand.create(editingDomain, joint, JOINT_Y, y));
-                }
-            }
-        }
-    }
-    
-    /**
-     * Updates the model's layout values to match those in the skin instances.
-     *
-     * <p>
-     * This method adds set operations to the given compound command but does <b>not</b> execute it.
-     * </p>
-     *
-     * @param command a {@link CompoundCommand} to which the set commands will be added
-     * @param model the {@link GModel} whose layout values should be updated
-     * @param joint the {@link GJoint} that has changed and which needs to be updated
-     * @param skinLookup the {@link SkinLookup} in use for this graph editor instance
-     */
-    public static void updateLayoutValues(final CompoundCommand command, final GModel model,
-            final SkinLookup skinLookup, final GJoint joint) {
-
-        final EditingDomain editingDomain = getEditingDomain(model);
-
-        if (editingDomain != null) {
-
-            for (final GConnection connection : model.getConnections()) {
-
-                if (connection.getJoints().contains(joint)) {
-
-                    for (final GJoint connJoint : connection.getJoints()) {
-
-                        final GJointSkin jointSkin = skinLookup.lookupJoint(connJoint);
                         final Region jointRegion = jointSkin.getRoot();
-
                         final double x = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
                         final double y = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
 
-                        command.append(SetCommand.create(editingDomain, connJoint, JOINT_X, x));
-                        command.append(SetCommand.create(editingDomain, connJoint, JOINT_Y, y));
+                        command.append(SetCommand.create(editingDomain, joint, JOINT_X, x));
+                        command.append(SetCommand.create(editingDomain, joint, JOINT_Y, y));
                     }
                 }
             }
         }
+    }
+    
+    /**
+     * Checks if a node's JavaFX region has different layout values than those
+     * currently stored in the model.
+     *
+     * @param node
+     *            the model instance for the node
+     *
+     * @return {@code true} if any layout value has changed,
+     *         {@code false if not}
+     */
+    private static boolean checkNodeChanged(final GNode node, final GNodeSkin nodeSkin) {
+
+        final Region nodeRegion = nodeSkin.getRoot();
+
+        if (nodeRegion.getLayoutX() != node.getX()) {
+            return true;
+        } else if (nodeRegion.getLayoutY() != node.getY()) {
+            return true;
+        } else if (nodeRegion.getWidth() != node.getWidth()) {
+            return true;
+        } else if (nodeRegion.getHeight() != node.getHeight()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a joint's JavaFX region has different layout values than those
+     * currently stored in the model.
+     *
+     * @param joint
+     *            the model instance for the joint
+     *
+     * @return {@code true} if any layout value has changed,
+     *         {@code false if not}
+     */
+    private static boolean checkJointChanged(final GJoint joint, final GJointSkin jointSkin) {
+
+        final Region jointRegion = jointSkin.getRoot();
+
+        final double jointRegionX = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
+        final double jointRegionY = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
+
+        if (jointRegionX != joint.getX()) {
+            return true;
+        } else if (jointRegionY != joint.getY()) {
+            return true;
+        }
+        return false;
     }
 
     /**

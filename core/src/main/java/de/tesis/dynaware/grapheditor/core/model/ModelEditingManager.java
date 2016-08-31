@@ -24,7 +24,6 @@ import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
@@ -46,9 +45,12 @@ public class ModelEditingManager {
     private GModel model;
 
     /**
-     * Creates a new model editing manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
+     * Creates a new model editing manager. Only one instance should exist per
+     * {@link DefaultGraphEditor} instance.
      *
-     * @param commandStackListener the {@link CommandStackListener} that listens for changes in the model
+     * @param commandStackListener
+     *            the {@link CommandStackListener} that listens for changes in
+     *            the model
      */
     public ModelEditingManager(final CommandStackListener commandStackListener) {
         this.commandStackListener = commandStackListener;
@@ -57,11 +59,13 @@ public class ModelEditingManager {
     /**
      * Initializes the model editing manager for the given model instance.
      *
-     * @param model the new {@link GModel} to be edited
+     * @param model
+     *            the new {@link GModel} to be edited
      */
     public void initialize(final GModel model) {
 
-        // Only initialize the editing domain if the model object has actually changed.
+        // Only initialize the editing domain if the model object has actually
+        // changed.
         if (!model.equals(this.model)) {
             initializeEditingDomain(this.model, model);
         }
@@ -69,60 +73,39 @@ public class ModelEditingManager {
     }
 
     /**
-     * Silently updates the model's layout values to match those in the skin instances.
+     * Silently updates the model's layout values to match those in the skin
+     * instances.
      *
-     * @param skinLookup the {@link SkinLookup} used to lookup skin instances
+     * @param skinLookup
+     *            the {@link SkinLookup} used to lookup skin instances
      */
-    public void updateLayoutValues(final SkinLookup skinLookup, final GNode node) {
+    public void updateLayoutValues(final SkinLookup skinLookup) {
 
         final CompoundCommand command = new CompoundCommand();
 
-        Commands.updateLayoutValues(command, model, skinLookup, node);
+        Commands.updateLayoutValues(command, model, skinLookup);
 
         editingDomain.getCommandStack().removeCommandStackListener(commandStackListener);
 
-        try {
-            if (command.canExecute()) {
-                editingDomain.getCommandStack().execute(command);
-            }
-        } finally {
-
-            editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
         }
-    }
-    
-    /**
-     * Silently updates the model's layout values to match those in the skin instances.
-     *
-     * @param skinLookup the {@link SkinLookup} used to lookup skin instances
-     */
-    public void updateLayoutValues(final SkinLookup skinLookup, final GJoint joint) {
 
-        final CompoundCommand command = new CompoundCommand();
-
-        Commands.updateLayoutValues(command, model, skinLookup, joint);
-
-        editingDomain.getCommandStack().removeCommandStackListener(commandStackListener);
-
-        try {
-            if (command.canExecute()) {
-                editingDomain.getCommandStack().execute(command);
-            }
-        } finally {
-
-            editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
-        }
+        editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
     }
 
     /**
-     * Removes all specified nodes and connections from the model in a single compound command.
+     * Removes all specified nodes and connections from the model in a single
+     * compound command.
      *
      * <p>
      * All references to the removed elements are also removed.
      * </p>
      *
-     * @param nodesToRemove the nodes to be removed
-     * @param connectionsToRemove the connections to be removed
+     * @param nodesToRemove
+     *            the nodes to be removed
+     * @param connectionsToRemove
+     *            the connections to be removed
      */
     public CompoundCommand remove(final List<GNode> nodesToRemove, final List<GConnection> connectionsToRemove) {
 
@@ -158,8 +141,8 @@ public class ModelEditingManager {
      * Initializes the editing domain and resource for the new model.
      *
      * <p>
-     * If a resource and/or editing domain are already associated to this model, these will be used. Otherwise they will
-     * be created.
+     * If a resource and/or editing domain are already associated to this model,
+     * these will be used. Otherwise they will be created.
      * </p>
      */
     private void initializeEditingDomain(final GModel oldModel, final GModel newModel) {

@@ -19,7 +19,6 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 
 /**
  * Responsible for updating the {@link GModel}'s layout values at the end of
@@ -92,7 +91,7 @@ public class ModelLayoutUpdater {
         if (nodeSkin != null) {
             final Node root = nodeSkin.getRoot();
             if (root != null) {
-                final EventHandler<MouseEvent> mouseReleasedHandler = event -> nodeMouseReleased(node);
+                final EventHandler<MouseEvent> mouseReleasedHandler = event -> elementMouseReleased();
                 root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
                 nodeReleasedHandlers.put(root, mouseReleasedHandler);
             }
@@ -113,12 +112,6 @@ public class ModelLayoutUpdater {
         }
     }
 
-    private void nodeMouseReleased(final GNode node) {
-        if (checkNodeChanged(node)) {
-            modelEditingManager.updateLayoutValues(skinLookup, node);
-        }
-    }
-
     /**
      * Adds a handler to update the model when a joint's layout properties
      * change.
@@ -132,7 +125,7 @@ public class ModelLayoutUpdater {
         if (jointSkin != null) {
             final Node root = jointSkin.getRoot();
             if (root != null) {
-                final EventHandler<MouseEvent> mouseReleasedHandler = event -> jointMouseReleased(joint);
+                final EventHandler<MouseEvent> mouseReleasedHandler = event -> elementMouseReleased();
                 root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
                 nodeReleasedHandlers.put(root, mouseReleasedHandler);
             }
@@ -153,85 +146,14 @@ public class ModelLayoutUpdater {
         }
     }
 
-    private void jointMouseReleased(final GJoint joint) {
-        if (checkJointChanged(joint)) {
-            modelEditingManager.updateLayoutValues(skinLookup, joint);
+    private void elementMouseReleased() {
+        if (canEdit()) {
+            modelEditingManager.updateLayoutValues(skinLookup);
         }
     }
 
     private boolean canEdit() {
         final GraphEditorProperties props = properties == null ? null : properties.get();
         return props != null && !props.isReadOnly();
-    }
-    
-    /**
-     * Checks if a node's JavaFX region has different layout values than those
-     * currently stored in the model.
-     *
-     * @param node
-     *            the model instance for the node
-     *
-     * @return {@code true} if any layout value has changed,
-     *         {@code false if not}
-     */
-    private boolean checkNodeChanged(final GNode node) {
-
-        if(!canEdit()) {
-            return false;
-        }
-        
-        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-
-        if (nodeSkin == null) {
-            return false;
-        }
-
-        final Region nodeRegion = nodeSkin.getRoot();
-
-        if (nodeRegion.getLayoutX() != node.getX()) {
-            return true;
-        } else if (nodeRegion.getLayoutY() != node.getY()) {
-            return true;
-        } else if (nodeRegion.getWidth() != node.getWidth()) {
-            return true;
-        } else if (nodeRegion.getHeight() != node.getHeight()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a joint's JavaFX region has different layout values than those
-     * currently stored in the model.
-     *
-     * @param joint
-     *            the model instance for the joint
-     *
-     * @return {@code true} if any layout value has changed,
-     *         {@code false if not}
-     */
-    private boolean checkJointChanged(final GJoint joint) {
-
-        if(!canEdit()) {
-            return false;
-        }
-        
-        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-
-        if (jointSkin == null) {
-            return false;
-        }
-
-        final Region jointRegion = jointSkin.getRoot();
-
-        final double jointRegionX = jointRegion.getLayoutX() + jointSkin.getWidth() / 2;
-        final double jointRegionY = jointRegion.getLayoutY() + jointSkin.getHeight() / 2;
-
-        if (jointRegionX != joint.getX()) {
-            return true;
-        } else if (jointRegionY != joint.getY()) {
-            return true;
-        }
-        return false;
     }
 }
