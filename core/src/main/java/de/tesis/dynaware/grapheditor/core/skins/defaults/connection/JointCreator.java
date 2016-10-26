@@ -120,21 +120,23 @@ public class JointCreator {
             oldJointPositions = GeometryUtils.getJointPositions(connection);
 
             final int index = getNewJointLocation(event, root);
+			if (index > -1) {
 
-            final int oldJointCount = connection.getJoints().size();
+				final int oldJointCount = connection.getJoints().size();
 
-            addTemporaryJoints(index, newJointX, newJointY);
+				addTemporaryJoints(index, newJointX, newJointY);
 
-            if (index == oldJointCount) {
-                final GJoint newSelectedJoint1 = connection.getJoints().get(index);
-                temporarySelectedJointSkin = graphEditor.getSkinLookup().lookupJoint(newSelectedJoint1);
-            } else {
-                final GJoint newSelectedJoint2 = connection.getJoints().get(index + 1);
-                temporarySelectedJointSkin = graphEditor.getSkinLookup().lookupJoint(newSelectedJoint2);
-            }
+				if (index == oldJointCount) {
+					final GJoint newSelectedJoint1 = connection.getJoints().get(index);
+					temporarySelectedJointSkin = graphEditor.getSkinLookup().lookupJoint(newSelectedJoint1);
+				} else {
+					final GJoint newSelectedJoint2 = connection.getJoints().get(index + 1);
+					temporarySelectedJointSkin = graphEditor.getSkinLookup().lookupJoint(newSelectedJoint2);
+				}
 
-            temporarySelectedJointSkin.getRoot().fireEvent(event);
-            temporarySelectedJointSkin.setSelected(true);
+				temporarySelectedJointSkin.getRoot().fireEvent(event);
+				temporarySelectedJointSkin.setSelected(true);
+			}
 
             event.consume();
         });
@@ -204,7 +206,10 @@ public class JointCreator {
         final double adjacentJointX;
         final double adjacentJointY;
 
-        if (index < connection.getJoints().size()) {
+        if (index == -1 || connection.getJoints().isEmpty()) {
+        	return -1;
+        }
+        else if (index < connection.getJoints().size()) {
             adjacentJointX = connection.getJoints().get(index).getX();
             adjacentJointY = connection.getJoints().get(index).getY();
         } else {
