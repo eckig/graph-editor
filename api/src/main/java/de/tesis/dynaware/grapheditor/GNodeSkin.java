@@ -33,8 +33,10 @@ public abstract class GNodeSkin extends GSkin {
 
         @Override
         protected void layoutChildren() {
-            super.layoutChildren();
-            GNodeSkin.this.layoutConnectors();
+            if(isAutoLayout()) {
+                super.layoutChildren();
+            }
+            layoutConnectors();
         }
     };
 
@@ -110,4 +112,19 @@ public abstract class GNodeSkin extends GSkin {
      * @return the x and y coordinates of the connector
      */
     public abstract Point2D getConnectorPosition(GConnectorSkin connectorSkin);
+    
+    /**
+     * Define whether or not a default layout strategy will be applied to all
+     * children of {@link #getRoot()} before {@link #layoutConnectors()} is
+     * called.
+     * <p>
+     * Default value is {@code true}
+     * </p>
+     * 
+     * @return {@code true} if a default layout strategy will be applied to all
+     *         children of {@link #getRoot()} or {@code false}
+     */
+    protected boolean isAutoLayout() {
+        return true;
+    }
 }
