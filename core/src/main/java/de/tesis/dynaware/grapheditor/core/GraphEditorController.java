@@ -67,21 +67,24 @@ public class GraphEditorController {
      * @param skinManager the {@link SkinManager} instance
      * @param connectionEventManager the {@link ConnectionEventManager} instance
      */
-    public GraphEditorController(final SkinManager skinManager, final ConnectionEventManager connectionEventManager) {
+	public GraphEditorController(final SkinManager skinManager, final ConnectionEventManager connectionEventManager) {
 
-        this.skinManager = skinManager;
+		this.skinManager = skinManager;
 
-        view = new GraphEditorView();
+		view = new GraphEditorView();
+		view.getStylesheets().addAll(
+				GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_VIEW).toExternalForm(),
+				GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_DEFAULTS).toExternalForm());
 
-        modelEditingManager = new ModelEditingManager(commandStackListener);
-        modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager, view::getEditorProperties);
-        modelMemory = new ModelMemory();
-        connectionLayouter = new DefaultConnectionLayouter(skinManager);
-        connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
-        selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
+		modelEditingManager = new ModelEditingManager(commandStackListener);
+		modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager, view::getEditorProperties);
+		modelMemory = new ModelMemory();
+		connectionLayouter = new DefaultConnectionLayouter(skinManager);
+		connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
+		selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
 
-        view.setConnectionLayouter(connectionLayouter);
-    }
+		view.setConnectionLayouter(connectionLayouter);
+	}
 
     /**
      * Gets the {@link GraphEditorView} instance. Returned as a {@link Region} so that it's read-only.

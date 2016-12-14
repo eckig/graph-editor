@@ -36,8 +36,14 @@ import javafx.scene.layout.Region;
  */
 public class GraphEditorView extends Region {
 
-    private static final String STYLESHEET_VIEW = "view.css";
-    private static final String STYLESHEET_DEFAULTS = "defaults.css";
+	/**
+	 * default view stylesheet
+	 */
+    public static final String STYLESHEET_VIEW = "view.css";
+    /**
+     * default view stylesheet
+     */
+    public static final String STYLESHEET_DEFAULTS = "defaults.css";
 
     private static final String STYLE_CLASS = "graph-editor";
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
@@ -58,9 +64,6 @@ public class GraphEditorView extends Region {
      * added and removed.
      */
     public GraphEditorView() {
-
-        getStylesheets().add(GraphEditorView.class.getResource(STYLESHEET_VIEW).toExternalForm());
-        getStylesheets().add(GraphEditorView.class.getResource(STYLESHEET_DEFAULTS).toExternalForm());
 
         getStyleClass().addAll(STYLE_CLASS);
 
