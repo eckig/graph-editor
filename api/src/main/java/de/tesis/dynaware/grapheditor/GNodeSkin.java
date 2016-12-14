@@ -28,17 +28,7 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 public abstract class GNodeSkin extends GSkin {
 
     private final GNode node;
-
-    private final ResizableBox root = new ResizableBox() {
-
-        @Override
-        protected void layoutChildren() {
-            if(isAutoLayout()) {
-                super.layoutChildren();
-            }
-            layoutConnectors();
-        }
-    };
+    private final ResizableBox root;
 
     /**
      * Creates a new {@link GNodeSkin}.
@@ -47,6 +37,7 @@ public abstract class GNodeSkin extends GSkin {
      */
     public GNodeSkin(final GNode node) {
         this.node = node;
+        this.root = createResizableBox();
     }
 
     /**
@@ -114,17 +105,19 @@ public abstract class GNodeSkin extends GSkin {
     public abstract Point2D getConnectorPosition(GConnectorSkin connectorSkin);
     
     /**
-     * Define whether or not a default layout strategy will be applied to all
-     * children of {@link #getRoot()} before {@link #layoutConnectors()} is
-     * called.
-     * <p>
-     * Default value is {@code true}
-     * </p>
+     * Creates and returns the {@link ResizableBox} that serves as the root for
+     * this node skin.
      * 
-     * @return {@code true} if a default layout strategy will be applied to all
-     *         children of {@link #getRoot()} or {@code false}
+     * @return {@link ResizableBox}
      */
-    protected boolean isAutoLayout() {
-        return true;
+    protected ResizableBox createResizableBox() {
+        return new ResizableBox() {
+
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+                layoutConnectors();
+            }
+        };
     }
 }
