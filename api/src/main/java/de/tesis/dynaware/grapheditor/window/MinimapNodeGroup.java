@@ -97,12 +97,12 @@ public class MinimapNodeGroup extends MinimapContentRepresentation {
                 final GNode node = model.getNodes().get(i);
 
                 final Rectangle minimapNode = new Rectangle();
-                minimapNode.getStyleClass().add(STYLE_CLASS);
 
                 minimapNode.setX(Math.round(node.getX() * scaleFactor));
                 minimapNode.setY(Math.round(node.getY() * scaleFactor));
                 minimapNode.setWidth(Math.round(node.getWidth() * scaleFactor));
                 minimapNode.setHeight(Math.round(node.getHeight() * scaleFactor));
+                minimapNode.getStyleClass().addAll(STYLE_CLASS,node.getType());
 
                 getChildren().add(minimapNode);
                 nodes.put(node, minimapNode);
