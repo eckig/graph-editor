@@ -130,6 +130,14 @@ public class PanningWindowMinimap extends Pane {
 
         requestLayout();
     }
+    
+    /**
+     * @return content a {@link Region} containing some content to be visualised
+     *         in the minimap
+     */
+    public Region getContent() {
+        return content;
+    }
 
     /**
      * @return the scale factor that indicates how much smaller the minimap is
@@ -173,10 +181,9 @@ public class PanningWindowMinimap extends Pane {
             final double contentWidth = width - MINIMAP_PADDING * 2;
             if(contentHeight != contentRepresentation.getHeight() || contentWidth != contentRepresentation.getWidth()) {
                 // only redraw if the content has changed or in this case when the dimensions have changed:
+                contentRepresentation.setScaleFactor(scaleFactor);
                 contentRepresentation.resize(contentWidth, contentHeight);
-                contentRepresentation.draw(scaleFactor);
             }
-            
         }
         
         locator.draw(window, content, scaleFactor, calculateZoomFactor());

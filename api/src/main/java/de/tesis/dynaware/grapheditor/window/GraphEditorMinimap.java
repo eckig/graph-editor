@@ -12,9 +12,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
-import de.tesis.dynaware.grapheditor.utils.FloorBinding;
-import javafx.beans.binding.DoubleBinding;
-import javafx.scene.layout.Region;
+import javafx.geometry.Orientation;
 
 /**
  * A minimap for the graph editor.
@@ -35,11 +33,7 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
     private final MinimapNodeGroup minimapNodeGroup = new MinimapNodeGroup();
 
     private GModel model;
-    private final CommandStackListener modelChangeListener = event -> minimapNodeGroup.draw(getScaleFactor());
-
-    private DoubleBinding contentRatio;
-    private DoubleBinding widthBeforePadding;
-    private DoubleBinding heightBeforePadding;
+    private final CommandStackListener modelChangeListener = event -> minimapNodeGroup.draw();
 
     /**
      * Creates a new {@link GraphEditorMinimap} instance.
@@ -48,6 +42,11 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
      */
     public GraphEditorMinimap() {
         setContentRepresentation(minimapNodeGroup);
+    }
+    
+    @Override
+    public Orientation getContentBias() {
+        return Orientation.HORIZONTAL;
     }
     
     @Override
@@ -62,12 +61,30 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
     
     @Override
     protected double computePrefHeight(double width) {
-        return MINIMAP_WIDTH * INITIAL_ASPECT_RATIO;
+        
+        if(width == -1) {
+            return super.computePrefHeight(width);
+        }
+        
+        final double contentRatio = getContent() == null ? INITIAL_ASPECT_RATIO : getContent().getHeight() / getContent().getWidth();
+        final double widthBeforePadding = width - 2 * MINIMAP_PADDING;
+        final double heightBeforePadding = widthBeforePadding * contentRatio;
+        // This effectively rounds the height down to an integer.
+        return Math.floor(heightBeforePadding) + 2 * MINIMAP_PADDING;
     }
     
     @Override
     protected double computeMinHeight(double width) {
-        return MINIMAP_WIDTH * INITIAL_ASPECT_RATIO;
+        
+        if(width == -1) {
+            return super.computePrefHeight(width);
+        }
+        
+        final double contentRatio = getContent() == null ? INITIAL_ASPECT_RATIO : getContent().getHeight() / getContent().getWidth();
+        final double widthBeforePadding = width - 2 * MINIMAP_PADDING;
+        final double heightBeforePadding = widthBeforePadding * contentRatio;
+        // This effectively rounds the height down to an integer.
+        return Math.floor(heightBeforePadding) + 2 * MINIMAP_PADDING;
     }
     
     /**
@@ -94,12 +111,6 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
     	minimapNodeGroup.setSelectionManager(selectionManager);
     }
 
-    @Override
-    public void setContent(final Region content) {
-        super.setContent(content);
-        bindAspectRatioToContent(content);
-    }
-
     /**
      * Sets the model to be displayed in this minimap.
      *
@@ -117,7 +128,7 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
 
         this.model = model;
         minimapNodeGroup.setModel(model);
-        minimapNodeGroup.draw(getScaleFactor());
+        minimapNodeGroup.draw();
 
         // Now add the listener to the new model's command stack.
         if (model != null) {
@@ -126,22 +137,5 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
                 domain.getCommandStack().addCommandStackListener(modelChangeListener);
             }
         }
-    }
-
-    /**
-     * Binds the aspect ratio of the minimap to the aspect ratio of the content that the minimap is representing.
-     */
-    private void bindAspectRatioToContent(final Region content) {
-
-        contentRatio = content.heightProperty().divide(content.widthProperty());
-        widthBeforePadding = widthProperty().subtract(2 * MINIMAP_PADDING);
-        heightBeforePadding = widthBeforePadding.multiply(contentRatio);
-
-        // This effectively rounds the height down to an integer.
-        final FloorBinding flooredHeight = new FloorBinding(heightBeforePadding);
-
-        minHeightProperty().bind(flooredHeight.add(2 * MINIMAP_PADDING));
-        prefHeightProperty().bind(flooredHeight.add(2 * MINIMAP_PADDING));
-        maxHeightProperty().bind(flooredHeight.add(2 * MINIMAP_PADDING));
     }
 }

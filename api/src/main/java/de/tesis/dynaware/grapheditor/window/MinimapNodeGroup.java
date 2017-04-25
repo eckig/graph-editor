@@ -57,7 +57,10 @@ public class MinimapNodeGroup extends Group {
 
     private Predicate<GConnection> connectionFilter = c -> true;
     
-    private double width, height, scaleFactor;
+    private double width = -1;
+    private double height = -1;
+    private double scaleFactor = -1;
+    private Canvas canvas = null;
 
     private final StyleableObjectProperty<Color> connectionColor = new StyleableObjectProperty<Color>(Color.GRAY) {
 
@@ -171,8 +174,28 @@ public class MinimapNodeGroup extends Group {
         if(this.width != width || this.height != height) {
             this.width = width;
             this.height = height;
-            // only redraw if the content has changed or in this case when the dimensions have changed:
-            draw(scaleFactor);
+            redraw();
+        }
+    }
+    
+    /**
+     * @param scaleFactor
+     *            the ratio between the size of the content and the size of the
+     *            minimap (between 0 and 1)
+     */
+    public void setScaleFactor(final double scaleFactor) {
+        if(this.scaleFactor != scaleFactor) {
+            this.scaleFactor = scaleFactor;
+            redraw();
+        }
+    }
+    
+    private void redraw() {
+        if(nodes.isEmpty()) {
+            draw();
+        }
+        else {
+            drawWithScale();
         }
     }
     
@@ -193,22 +216,42 @@ public class MinimapNodeGroup extends Group {
     /**
      * Draws the model's nodes at a scaled-down size to be displayed in the
      * minimap.
-     *
-     * @param scaleFactor
-     *            the ratio between the size of the content and the size of the
-     *            minimap (between 0 and 1)
      */
-    public void draw(final double scaleFactor) {
+    public void draw() {
 
         nodes.clear();
         getChildren().clear();
-        this.scaleFactor = scaleFactor;
         
         if(width < 1 || height < 1) {
             return;
         }
         
-        final Canvas canvas = new Canvas(width, height);
+        if (model != null) {
+            for (int i = 0; i < model.getNodes().size(); i++) {
+                final GNode node = model.getNodes().get(i);
+                final Rectangle minimapNode = new Rectangle();
+                minimapNode.getStyleClass().addAll(STYLE_CLASS_NODE, node.getType());
+                getChildren().add(minimapNode);
+                nodes.put(node, minimapNode);
+            }
+            checkSelection();
+        }
+        
+        drawWithScale();
+    }
+    
+    private void drawWithScale() {
+
+        if(canvas != null) {
+            getChildren().remove(canvas);
+            canvas = null;
+        }
+        
+        if(width < 1 || height < 1) {
+            return;
+        }
+        
+        canvas = new Canvas(width, height);
         final GraphicsContext gc = canvas.getGraphicsContext2D();
 
         gc.setStroke(connectionColor.get());
@@ -264,18 +307,15 @@ public class MinimapNodeGroup extends Group {
             for (int i = 0; i < model.getNodes().size(); i++) {
 
                 final GNode node = model.getNodes().get(i);
-
-                final Rectangle minimapNode = new Rectangle();
+                final Rectangle minimapNode = nodes.get(node);
+                if(minimapNode == null) {
+                    continue;
+                }
                 minimapNode.setX(Math.round(node.getX() * scaleFactor));
                 minimapNode.setY(Math.round(node.getY() * scaleFactor));
                 minimapNode.setWidth(Math.round(node.getWidth() * scaleFactor));
                 minimapNode.setHeight(Math.round(node.getHeight() * scaleFactor));
-                minimapNode.getStyleClass().addAll(STYLE_CLASS_NODE, node.getType());
-
-                getChildren().add(minimapNode);
-                nodes.put(node, minimapNode);
             }
-            checkSelection();
         }
     }
 
