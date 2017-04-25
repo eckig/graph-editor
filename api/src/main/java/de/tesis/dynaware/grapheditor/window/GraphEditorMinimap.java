@@ -3,11 +3,14 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
+import java.util.function.Predicate;
+
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.SelectionManager;
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.utils.FloorBinding;
 import javafx.beans.binding.DoubleBinding;
@@ -25,11 +28,14 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
 
     // Until the content is set, we don't know the aspect ratio of the minimap. Use this value until then.
     private static final double INITIAL_ASPECT_RATIO = 0.75;
+    
+    // Minimap height is not specified here, the minimap's aspect ratio is fixed by the aspect ratio of the content.
+    private static final double MINIMAP_WIDTH = 250;
 
     private final MinimapNodeGroup minimapNodeGroup = new MinimapNodeGroup();
 
     private GModel model;
-    private CommandStackListener modelChangeListener;
+    private final CommandStackListener modelChangeListener = event -> minimapNodeGroup.draw(getScaleFactor());
 
     private DoubleBinding contentRatio;
     private DoubleBinding widthBeforePadding;
@@ -40,20 +46,39 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
      *
      * @param width the width to be set for this minimap
      */
-    public GraphEditorMinimap(final double width) {
-
-        setMinWidth(width);
-        setPrefWidth(width);
-        setMaxWidth(width);
-
-        setMinHeight(width * INITIAL_ASPECT_RATIO);
-        setPrefHeight(width * INITIAL_ASPECT_RATIO);
-        setMaxHeight(width * INITIAL_ASPECT_RATIO);
-
-        autosize();
-
+    public GraphEditorMinimap() {
         setContentRepresentation(minimapNodeGroup);
-        createModelChangeListener();
+    }
+    
+    @Override
+    protected double computePrefWidth(double height) {
+        return MINIMAP_WIDTH;
+    }
+    
+    @Override
+    protected double computeMinWidth(double height) {
+        return MINIMAP_WIDTH;
+    }
+    
+    @Override
+    protected double computePrefHeight(double width) {
+        return MINIMAP_WIDTH * INITIAL_ASPECT_RATIO;
+    }
+    
+    @Override
+    protected double computeMinHeight(double width) {
+        return MINIMAP_WIDTH * INITIAL_ASPECT_RATIO;
+    }
+    
+    /**
+     * Set a filter {@link Predicate} to only draw the desired connections onto
+     * the minimap. The default is to show all connections.
+     * 
+     * @param connectionFilter
+     *            connection filter {@link Predicate}
+     */
+    public void setConnectionFilter(final Predicate<GConnection> connectionFilter) {
+        minimapNodeGroup.setConnectionFilter(connectionFilter);
     }
     
     /**
@@ -92,7 +117,7 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
 
         this.model = model;
         minimapNodeGroup.setModel(model);
-        minimapNodeGroup.draw(calculateScaleFactor());
+        minimapNodeGroup.draw(getScaleFactor());
 
         // Now add the listener to the new model's command stack.
         if (model != null) {
@@ -118,16 +143,5 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
         minHeightProperty().bind(flooredHeight.add(2 * MINIMAP_PADDING));
         prefHeightProperty().bind(flooredHeight.add(2 * MINIMAP_PADDING));
         maxHeightProperty().bind(flooredHeight.add(2 * MINIMAP_PADDING));
-    }
-
-    /**
-     * Creates a change listener that will listen to changes in the model and redraw things when necessary.
-     */
-    private void createModelChangeListener() {
-        modelChangeListener = event -> {
-            if (isVisible()) {
-                minimapNodeGroup.draw(calculateScaleFactor());
-            }
-        };
     }
 }

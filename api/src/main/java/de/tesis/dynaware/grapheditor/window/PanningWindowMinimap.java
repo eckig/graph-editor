@@ -3,14 +3,11 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
-import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
+import javafx.beans.InvalidationListener;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.transform.Transform;
-import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 
 /**
  * A minimap that displays the current position of a {@link PanningWindow} relative to its content.
@@ -28,18 +25,14 @@ public class PanningWindowMinimap extends Pane {
 
     private final MinimapLocator locator = new MinimapLocator(MINIMAP_PADDING);
 
-    private MinimapContentRepresentation contentRepresentation;
+    private MinimapNodeGroup contentRepresentation;
 
     private PanningWindow window;
     private Region content;
 
-    private ChangeListener<Transform> zoomListener;
+    private final InvalidationListener drawListener = observable -> requestLayout();
 
-    private ChangeListener<Number> drawListener;
-    private ChangeListener<Number> drawLocatorListener;
-
-    private boolean locatorPositionListenersMuted;
-    private boolean drawLocatorListenerMuted;
+    private double scaleFactor = 0.75;
 
     /**
      * Creates a new {@link PanningWindowMinimap} instance.
@@ -51,23 +44,18 @@ public class PanningWindowMinimap extends Pane {
 
         setPickOnBounds(false);
 
-        createZoomListener();
-        createVisibilityChangeListener();
-        createDrawListener();
-        createDrawLocatorListener();
         createLocatorPositionListeners();
         createMinimapClickHandlers();
-        createContentCacheHandlersForLocator();
 
-        getChildren().addAll(locator);
+        getChildren().add(locator);
     }
-
+    
     /**
      * Sets the content representation to be displayed in this minimap.
      *
      * @param contentRepresentation a {@link MinimapContentRepresentation} to be displayed
      */
-    public void setContentRepresentation(final MinimapContentRepresentation contentRepresentation) {
+    public void setContentRepresentation(final MinimapNodeGroup contentRepresentation) {
 
         if (this.contentRepresentation != null) {
             getChildren().remove(this.contentRepresentation);
@@ -76,12 +64,7 @@ public class PanningWindowMinimap extends Pane {
         this.contentRepresentation = contentRepresentation;
 
         if (contentRepresentation != null) {
-
-            contentRepresentation.setLayoutX(MINIMAP_PADDING);
-            contentRepresentation.setLayoutY(MINIMAP_PADDING);
-
-            getChildren().add(contentRepresentation);
-            locator.toFront();
+            getChildren().add(0, contentRepresentation);
         }
     }
 
@@ -98,19 +81,19 @@ public class PanningWindowMinimap extends Pane {
     public void setWindow(final PanningWindow window) {
 
         if (this.window != null) {
-            this.window.widthProperty().removeListener(drawLocatorListener);
-            this.window.heightProperty().removeListener(drawLocatorListener);
+            this.window.widthProperty().removeListener(drawListener);
+            this.window.heightProperty().removeListener(drawListener);
         }
 
         this.window = window;
 
         if (this.window != null) {
-            window.widthProperty().addListener(drawLocatorListener);
-            window.heightProperty().addListener(drawLocatorListener);
+            window.widthProperty().addListener(drawListener);
+            window.heightProperty().addListener(drawListener);
         }
 
         if (isVisible()) {
-            drawLocator();
+            requestLayout();
         }
     }
 
@@ -126,11 +109,11 @@ public class PanningWindowMinimap extends Pane {
     public void setContent(final Region content) {
 
         if (this.content != null) {
-            this.content.layoutXProperty().removeListener(drawLocatorListener);
-            this.content.layoutYProperty().removeListener(drawLocatorListener);
+            this.content.layoutXProperty().removeListener(drawListener);
+            this.content.layoutYProperty().removeListener(drawListener);
             this.content.widthProperty().removeListener(drawListener);
             this.content.heightProperty().removeListener(drawListener);
-            this.content.localToSceneTransformProperty().removeListener(zoomListener);
+            this.content.localToSceneTransformProperty().removeListener(drawListener);
         }
 
         this.content = content;
@@ -138,16 +121,22 @@ public class PanningWindowMinimap extends Pane {
         if (content != null) {
             content.widthProperty().addListener(drawListener);
             content.heightProperty().addListener(drawListener);
-            content.layoutXProperty().addListener(drawLocatorListener);
-            content.layoutYProperty().addListener(drawLocatorListener);
-            content.localToSceneTransformProperty().addListener(zoomListener);
+            content.layoutXProperty().addListener(drawListener);
+            content.layoutYProperty().addListener(drawListener);
+            content.localToSceneTransformProperty().addListener(drawListener);
         } else if (contentRepresentation != null) {
             contentRepresentation.getChildren().clear();
         }
 
-        if (isVisible()) {
-            drawLocator();
-        }
+        requestLayout();
+    }
+
+    /**
+     * @return the scale factor that indicates how much smaller the minimap is
+     *         than the content it is representing.
+     */
+    protected final double getScaleFactor() {
+        return scaleFactor;
     }
 
     /**
@@ -159,7 +148,7 @@ public class PanningWindowMinimap extends Pane {
      *
      * @return the ratio of the minimap size to the content size
      */
-    protected double calculateScaleFactor() {
+    private double calculateScaleFactor() {
 
         final double scaleFactorX = (getWidth() - 2 * MINIMAP_PADDING) / content.getWidth();
         final double scaleFactorY = (getHeight() - 2 * MINIMAP_PADDING) / content.getHeight();
@@ -168,66 +157,29 @@ public class PanningWindowMinimap extends Pane {
         return Math.min(scaleFactorX, scaleFactorY);
     }
 
-    /**
-     * Creates a listener to redraw the locator if the zoom-value changes.
-     */
-    private void createZoomListener() {
-        zoomListener = (observable, oldValue, newValue) -> {
-            drawLocator();
-        };
-    }
-
-    /**
-     * Creates a change listener that will listen to changes in the visibility of the minimap.
-     *
-     * <p>
-     * This is necessary because we don't redraw the minimap if it is not visible (for performance reasons). Therefore,
-     * when the user shows the minimap we make a redraw call to make sure things are up-to-date.
-     * </p>
-     */
-    private void createVisibilityChangeListener() {
-
-        visibleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                drawAll();
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren();
+        
+        scaleFactor = calculateScaleFactor();
+        
+        final double width = getWidth();
+        final double height = getHeight();
+        
+        if (checkContentExists() && checkWindowExists() && contentRepresentation != null) {
+            contentRepresentation.relocate(MINIMAP_PADDING, MINIMAP_PADDING);
+            
+            final double contentHeight = height - MINIMAP_PADDING * 2;
+            final double contentWidth = width - MINIMAP_PADDING * 2;
+            if(contentHeight != contentRepresentation.getHeight() || contentWidth != contentRepresentation.getWidth()) {
+                // only redraw if the content has changed or in this case when the dimensions have changed:
+                contentRepresentation.resize(contentWidth, contentHeight);
+                contentRepresentation.draw(scaleFactor);
             }
-        });
-    }
-
-    /**
-     * Creates a change listener that will redraw everything.
-     *
-     * <p>
-     * This listener is intended to be fired when the size of the content changes. In this case we need to redraw the
-     * model and everything else. This is slow, but should not happen very often.
-     * </p>
-     */
-    private void createDrawListener() {
-        drawListener = (observable, oldValue, newValue) -> {
-            if (isVisible()) {
-                drawAll();
-            }
-        };
-    }
-
-    /**
-     * Creates a change listener that will only redraw the locator.
-     *
-     * <p>
-     * This listener is intended to be fired when the size or panning X & Y of the panning window changes. Just
-     * redrawing the locator is fast, so it's fine if this happens frequently.
-     * </p>
-     */
-    private void createDrawLocatorListener() {
-
-        drawLocatorListener = (observable, oldValue, newValue) -> {
-            if (isVisible()) {
-                drawLocator();
-            }
-        };
-
-        widthProperty().addListener(drawLocatorListener);
-        heightProperty().addListener(drawLocatorListener);
+            
+        }
+        
+        locator.draw(window, content, scaleFactor, calculateZoomFactor());
     }
 
     /**
@@ -245,32 +197,24 @@ public class PanningWindowMinimap extends Pane {
      */
     private void createLocatorPositionListeners() {
 
-        locator.layoutXProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+        locator.layoutXProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists()) {
+            if (checkContentExists() && checkWindowExists()) {
 
-                drawLocatorListenerMuted = true;
-
-                final double effectiveScaleFactor = calculateScaleFactor() / calculateZoomFactor();
+                final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
                 final double targetX = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
                 window.panTo(targetX, window.windowYProperty().get());
-
-                drawLocatorListenerMuted = false;
             }
         });
 
-        locator.layoutYProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+        locator.layoutYProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists()) {
+            if (checkContentExists() && checkWindowExists()) {
 
-                drawLocatorListenerMuted = true;
-
-                final double effectiveScaleFactor = calculateScaleFactor() / calculateZoomFactor();
+                final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
                 final double targetY = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
 
                 window.panTo(window.windowXProperty().get(), targetY);
-
-                drawLocatorListenerMuted = false;
             }
         });
     }
@@ -293,75 +237,10 @@ public class PanningWindowMinimap extends Pane {
             final double x = event.getX() - MINIMAP_PADDING - locator.getWidth() / 2;
             final double y = event.getY() - MINIMAP_PADDING - locator.getHeight() / 2;
 
-            final double scaleFactor = calculateScaleFactor();
             final double zoomFactor = calculateZoomFactor();
 
             window.panTo(x / scaleFactor * zoomFactor, y / scaleFactor * zoomFactor);
         });
-    }
-
-    /**
-     * Creates handlers to set the content cache when the locator is pressed / released.
-     *
-     * <p>
-     * Extends the existing pressed and released handlers of the {@link DraggableBox}.
-     * </p>
-     */
-    private void createContentCacheHandlersForLocator() {
-
-        final EventHandler<? super MouseEvent> existingPressedHandler = locator.getOnMousePressed();
-        final EventHandler<? super MouseEvent> existingReleasedHandler = locator.getOnMouseReleased();
-
-        locator.setOnMousePressed(event -> {
-
-            if (checkReadyForClickEvent(event) && window.isCacheWhilePanning()) {
-                content.setCache(true);
-            }
-
-            if (existingPressedHandler != null) {
-                existingPressedHandler.handle(event);
-            }
-        });
-
-        locator.setOnMouseReleased(event -> {
-
-            if (checkReadyForClickEvent(event) && window.isCacheWhilePanning()) {
-                content.setCache(false);
-            }
-
-            if (existingReleasedHandler != null) {
-                existingReleasedHandler.handle(event);
-            }
-        });
-    }
-
-    /**
-     * Redraws everything in the minimap.
-     */
-    private void drawAll() {
-        drawContentRepresentation();
-        drawLocator();
-    }
-
-    /**
-     * Redraws the content representation in the minimap.
-     */
-    private void drawContentRepresentation() {
-        if (checkContentExists() && checkWindowExists() && contentRepresentation != null) {
-            contentRepresentation.draw(calculateScaleFactor());
-        }
-    }
-
-    /**
-     * Redraws the minimap locator.
-     */
-    private void drawLocator() {
-
-        if (checkContentExists() && checkWindowExists() && !drawLocatorListenerMuted) {
-            locatorPositionListenersMuted = true;
-            locator.draw(window, content, calculateScaleFactor(), calculateZoomFactor());
-            locatorPositionListenersMuted = false;
-        }
     }
 
     /**
@@ -370,7 +249,7 @@ public class PanningWindowMinimap extends Pane {
      * @return the zoom factor of the content (1 for no zoom)
      */
     private double calculateZoomFactor() {
-        return content.getLocalToSceneTransform().getMxx();
+        return content == null ? 1 : content.getLocalToSceneTransform().getMxx();
     }
 
     /**

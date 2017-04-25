@@ -4,7 +4,8 @@
 package de.tesis.dynaware.grapheditor;
 
 import javafx.beans.value.ChangeListener;
-import javafx.scene.layout.Pane;
+import javafx.event.EventHandler;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.window.AutoScrollingWindow;
@@ -39,21 +40,23 @@ import de.tesis.dynaware.grapheditor.window.GraphEditorMinimap;
  */
 public class GraphEditorContainer extends AutoScrollingWindow {
 
-    // Minimap height is not specified here, the minimap's aspect ratio is fixed by the aspect ratio of the content.
-    private static final double MINIMAP_WIDTH = 250;
-    private static final double MINIMAP_RIGHT_INDENT = 10;
-    private static final double MINIMAP_TOP_INDENT = 10;
+    private static final double MINIMAP_INDENT = 10;
 
-    private final GraphEditorMinimap minimap = new GraphEditorMinimap(MINIMAP_WIDTH);
+    private final GraphEditorMinimap minimap = new GraphEditorMinimap();
 
     private GraphEditor graphEditor;
     private final ChangeListener<GModel> modelChangeListener = (observable, oldValue, newValue) -> modelChanged(newValue);
+    private final EventHandler<ScrollEvent> scrollHandler = event -> panBy(-event.getDeltaX(), -event.getDeltaY());
 
     /**
      * Creates a new {@link GraphEditorContainer}.
      */
     public GraphEditorContainer() {
-        initializeMinimap();
+        
+        getChildren().add(minimap);
+
+        minimap.setWindow(this);
+        minimap.setVisible(false);
     }
     
     private void modelChanged(final GModel newValue) {
@@ -74,7 +77,7 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
         if (this.graphEditor != null) {
             this.graphEditor.modelProperty().removeListener(modelChangeListener);
-            this.graphEditor.getView().setOnScroll(null);
+            this.graphEditor.getView().removeEventHandler(ScrollEvent.SCROLL, scrollHandler);
         }
 
         this.graphEditor = graphEditor;
@@ -96,7 +99,7 @@ public class GraphEditorContainer extends AutoScrollingWindow {
             minimap.setSelectionManager(graphEditor.getSelectionManager());
 
             view.toBack();
-            view.setOnScroll(event -> panBy(-event.getDeltaX(), -event.getDeltaY()));
+            view.addEventHandler(ScrollEvent.SCROLL, scrollHandler);
 
         } else {
             minimap.setContent(null);
@@ -105,28 +108,20 @@ public class GraphEditorContainer extends AutoScrollingWindow {
     }
 
     /**
-     * Gets the {@link Pane} representing the graph editor minimap.
+     * Returns the {@link GraphEditorMinimap}
      * 
-     * <p>
-     * <b>Note:</b> customisation of the minimap's content and layout has not been extensively tested.
-     * </p>
-     *
      * @param the graph editor minimap
      */
-    public Pane getMinimap() {
+    public GraphEditorMinimap getMinimap() {
         return minimap;
     }
 
-    /**
-     * Initializes the minimap, adding it as a child of the container and setting its position.
-     */
-    private void initializeMinimap() {
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren();
 
-        getChildren().add(minimap);
-
-        minimap.setWindow(this);
-        minimap.layoutXProperty().bind(widthProperty().subtract(MINIMAP_WIDTH + MINIMAP_RIGHT_INDENT));
-        minimap.setLayoutY(MINIMAP_TOP_INDENT);
-        minimap.setVisible(false);
+        if (getChildren().contains(minimap)) {
+            minimap.relocate(getWidth() - (minimap.getWidth() + MINIMAP_INDENT), MINIMAP_INDENT);
+        }
     }
 }
