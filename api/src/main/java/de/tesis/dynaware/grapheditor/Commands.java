@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.geometry.Point2D;
 import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.Command;
@@ -250,6 +251,9 @@ public class Commands {
 
             for (final GConnection connection : model.getConnections()) {
 
+                updateConnector(connection.getSource(), command, editingDomain, skinLookup);
+                updateConnector(connection.getTarget(), command, editingDomain, skinLookup);
+                
                 for (final GJoint joint : connection.getJoints()) {
 
                     final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
@@ -264,6 +268,21 @@ public class Commands {
                     }
                 }
             }
+        }
+    }
+    
+    private static void updateConnector(final GConnector connector, final CompoundCommand command,
+            final EditingDomain editingDomain, final SkinLookup skinLookup) {
+
+        final GNode node = connector.getParent();
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+        if (nodeSkin != null && connectorSkin != null) {
+            final Point2D connectorPosition = nodeSkin.getConnectorPosition(connectorSkin);
+            command.append(SetCommand.create(editingDomain, connector, GraphPackage.Literals.GCONNECTOR__X,
+                    connectorPosition.getX()));
+            command.append(SetCommand.create(editingDomain, connector, GraphPackage.Literals.GCONNECTOR__Y,
+                    connectorPosition.getY()));
         }
     }
     
