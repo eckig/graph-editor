@@ -220,25 +220,44 @@ public class MinimapNodeGroup extends Group {
             for (int i = 0; i < model.getConnections().size(); i++) {
 
                 final GConnection conn = model.getConnections().get(i);
-
-                if (!connectionFilter.test(conn)) {
+                if (connectionFilter != null && !connectionFilter.test(conn)) {
                     continue;
                 }
                 
                 final GConnector source = conn.getSource();
                 final GNode parentSource = source.getParent();
-                gc.moveTo(scaleSharp(source.getX() + parentSource.getX(), scaleFactor),
-                        scaleSharp(source.getY() + parentSource.getY(), scaleFactor));
+                double x = scaleSharp(source.getX() + parentSource.getX() - 10, scaleFactor),
+                        y = scaleSharp(source.getY() + parentSource.getY(), scaleFactor);
                 
-                for (int j = 0; j < conn.getJoints().size(); j++) {
-                    final GJoint joint = conn.getJoints().get(j);
-                    gc.lineTo(scaleSharp(joint.getX(), scaleFactor), scaleSharp(joint.getY(), scaleFactor));
+                gc.moveTo(x, y);
+
+                for (int j = 0; j <= conn.getJoints().size(); j++) {
+                    
+                    final double newX;
+                    final double newY;
+                    if (j < conn.getJoints().size()) {
+                        final GJoint joint = conn.getJoints().get(j);
+                        newX = scaleSharp(joint.getX(), scaleFactor);
+                        newY = scaleSharp(joint.getY(), scaleFactor);
+                    } else {
+                        final GConnector target = conn.getTarget();
+                        final GNode parentTarget = target.getParent();
+                        newX = scaleSharp(target.getX() + parentTarget.getX(), scaleFactor);
+                        newY = scaleSharp(target.getY() + parentTarget.getY(), scaleFactor);
+                    }
+                    
+                    // only draw direct rectangular lines:
+                    if(Math.abs(newX - x) < Math.abs(newY - y)) {
+                        gc.lineTo(x, newY);
+                    }
+                    else {
+                        gc.lineTo(newX, y);
+                    }
+                    
+                    x = newX;
+                    y = newY;
                 }
-                
-                final GConnector target = conn.getTarget();
-                final GNode parentTarget = target.getParent();
-                gc.lineTo(scaleSharp(target.getX() + parentTarget.getX(), scaleFactor),
-                        scaleSharp(target.getY() + parentTarget.getY(), scaleFactor) );
+
                 gc.stroke();
             }
 
