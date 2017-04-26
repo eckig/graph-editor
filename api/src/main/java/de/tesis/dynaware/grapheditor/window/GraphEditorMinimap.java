@@ -75,16 +75,7 @@ public class GraphEditorMinimap extends PanningWindowMinimap {
     
     @Override
     protected double computeMinHeight(double width) {
-        
-        if(width == -1) {
-            return super.computePrefHeight(width);
-        }
-        
-        final double contentRatio = getContent() == null ? INITIAL_ASPECT_RATIO : getContent().getHeight() / getContent().getWidth();
-        final double widthBeforePadding = width - 2 * MINIMAP_PADDING;
-        final double heightBeforePadding = widthBeforePadding * contentRatio;
-        // This effectively rounds the height down to an integer.
-        return Math.floor(heightBeforePadding) + 2 * MINIMAP_PADDING;
+        return computePrefHeight(width);
     }
     
     /**

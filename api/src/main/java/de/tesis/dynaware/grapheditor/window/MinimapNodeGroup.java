@@ -195,7 +195,7 @@ public class MinimapNodeGroup extends Group {
             draw();
         }
         else {
-            drawWithScale();
+            scaleMinimapNodes();
         }
     }
     
@@ -237,10 +237,10 @@ public class MinimapNodeGroup extends Group {
             checkSelection();
         }
         
-        drawWithScale();
+        scaleMinimapNodes();
     }
     
-    private void drawWithScale() {
+    private void scaleMinimapNodes() {
 
         if(canvas != null) {
             getChildren().remove(canvas);
@@ -256,7 +256,7 @@ public class MinimapNodeGroup extends Group {
 
         gc.setStroke(connectionColor.get());
         gc.setLineWidth(1);
-        getChildren().add(canvas);
+        getChildren().add(0, canvas);
 
         if (model != null) {
 

@@ -33,6 +33,8 @@ public class PanningWindowMinimap extends Pane {
     private final InvalidationListener drawListener = observable -> requestLayout();
 
     private double scaleFactor = 0.75;
+    private boolean locatorPositionListenersMuted;
+    private boolean drawLocatorListenerMuted;
 
     /**
      * Creates a new {@link PanningWindowMinimap} instance.
@@ -176,17 +178,15 @@ public class PanningWindowMinimap extends Pane {
         
         if (checkContentExists() && checkWindowExists() && contentRepresentation != null) {
             contentRepresentation.relocate(MINIMAP_PADDING, MINIMAP_PADDING);
-            
-            final double contentHeight = height - MINIMAP_PADDING * 2;
-            final double contentWidth = width - MINIMAP_PADDING * 2;
-            if(contentHeight != contentRepresentation.getHeight() || contentWidth != contentRepresentation.getWidth()) {
-                // only redraw if the content has changed or in this case when the dimensions have changed:
-                contentRepresentation.setScaleFactor(scaleFactor);
-                contentRepresentation.resize(contentWidth, contentHeight);
-            }
+            contentRepresentation.setScaleFactor(scaleFactor);
+            contentRepresentation.resize(width - MINIMAP_PADDING * 2, height - MINIMAP_PADDING * 2);
         }
         
-        locator.draw(window, content, scaleFactor, calculateZoomFactor());
+        if(!drawLocatorListenerMuted) {
+            locatorPositionListenersMuted = true;
+            locator.draw(window, content, scaleFactor, calculateZoomFactor());
+            locatorPositionListenersMuted = false;
+        }
     }
 
     /**
@@ -206,22 +206,25 @@ public class PanningWindowMinimap extends Pane {
 
         locator.layoutXProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (checkContentExists() && checkWindowExists()) {
+            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists()) {
 
+                drawLocatorListenerMuted = true;
                 final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
                 final double targetX = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
                 window.panTo(targetX, window.windowYProperty().get());
+                drawLocatorListenerMuted = false;
             }
         });
 
         locator.layoutYProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (checkContentExists() && checkWindowExists()) {
+            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists()) {
 
+                drawLocatorListenerMuted = true;
                 final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
                 final double targetY = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
-
                 window.panTo(window.windowXProperty().get(), targetY);
+                drawLocatorListenerMuted = false;
             }
         });
     }
