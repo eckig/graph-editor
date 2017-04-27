@@ -25,8 +25,8 @@ import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
-import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -41,7 +41,7 @@ import javafx.scene.shape.Rectangle;
  * {@link GraphEditorMinimap}.
  * </p>
  */
-public class MinimapNodeGroup extends Group {
+public class MinimapNodeGroup extends Parent {
 
     private static final String STYLE_CLASS_NODE = "minimap-node";
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
@@ -60,7 +60,7 @@ public class MinimapNodeGroup extends Group {
     private double width = -1;
     private double height = -1;
     private double scaleFactor = -1;
-    private Canvas canvas = null;
+    private final Canvas canvas = new Canvas();
 
     private final StyleableObjectProperty<Color> connectionColor = new StyleableObjectProperty<Color>(Color.GRAY) {
 
@@ -79,6 +79,13 @@ public class MinimapNodeGroup extends Group {
             return StyleableProperties.CONNECTION_COLOR;
         }
     };
+    
+    /**
+     * Default constructor
+     */
+    public MinimapNodeGroup() {
+        getChildren().add(canvas);
+    }
 
     /**
      * Sets the selection manager instance currently in use by this graph
@@ -168,9 +175,12 @@ public class MinimapNodeGroup extends Group {
     }
     
     @Override
+    public boolean isResizable() {
+        return true;
+    }
+    
+    @Override
     public void resize(double width, double height) {
-        super.resize(width, height);
-        
         if(this.width != width || this.height != height) {
             this.width = width;
             this.height = height;
@@ -195,22 +205,8 @@ public class MinimapNodeGroup extends Group {
             draw();
         }
         else {
-            scaleMinimapNodes();
+            requestLayout();
         }
-    }
-    
-    /**
-     * @return current width
-     */
-    public double getWidth() {
-        return width;
-    }
-    
-    /**
-     * @return current height
-     */
-    public double getHeight() {
-        return height;
     }
 
     /**
@@ -220,9 +216,11 @@ public class MinimapNodeGroup extends Group {
     public void draw() {
 
         nodes.clear();
-        getChildren().clear();
+        if(getChildren().size() > 1) {
+            getChildren().remove(1, getChildren().size());
+        }
         
-        if(width < 1 || height < 1) {
+        if(width == -1 || height == -1 || scaleFactor == -1) {
             return;
         }
         
@@ -237,26 +235,26 @@ public class MinimapNodeGroup extends Group {
             checkSelection();
         }
         
-        scaleMinimapNodes();
+        requestLayout();
     }
     
-    private void scaleMinimapNodes() {
+    @Override
+    protected void layoutChildren() {
 
-        if(canvas != null) {
-            getChildren().remove(canvas);
-            canvas = null;
-        }
-        
         if(width < 1 || height < 1) {
             return;
         }
         
-        canvas = new Canvas(width, height);
         final GraphicsContext gc = canvas.getGraphicsContext2D();
-
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        
+        canvas.setWidth(width);
+        canvas.setHeight(height);
+        
+        
+        gc.beginPath();
         gc.setStroke(connectionColor.get());
         gc.setLineWidth(1);
-        getChildren().add(0, canvas);
 
         if (model != null) {
 
@@ -266,12 +264,12 @@ public class MinimapNodeGroup extends Group {
                 if (connectionFilter != null && !connectionFilter.test(conn)) {
                     continue;
                 }
-                
+
                 final GConnector source = conn.getSource();
                 final GNode parentSource = source.getParent();
+                
                 double x = scaleSharp(source.getX() + parentSource.getX() - 10, scaleFactor),
                         y = scaleSharp(source.getY() + parentSource.getY(), scaleFactor);
-                
                 gc.moveTo(x, y);
 
                 for (int j = 0; j <= conn.getJoints().size(); j++) {
@@ -289,7 +287,7 @@ public class MinimapNodeGroup extends Group {
                         newY = scaleSharp(target.getY() + parentTarget.getY(), scaleFactor);
                     }
                     
-                    // only draw direct rectangular lines:
+                    // only draw direct rectangular and sharp lines:
                     if(Math.abs(newX - x) < Math.abs(newY - y)) {
                         gc.lineTo(x, newY);
                     }
@@ -304,13 +302,10 @@ public class MinimapNodeGroup extends Group {
                 gc.stroke();
             }
 
-            for (int i = 0; i < model.getNodes().size(); i++) {
+            for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet()) {
 
-                final GNode node = model.getNodes().get(i);
-                final Rectangle minimapNode = nodes.get(node);
-                if(minimapNode == null) {
-                    continue;
-                }
+                final GNode node = entry.getKey();
+                final Rectangle minimapNode = entry.getValue();
                 minimapNode.setX(Math.round(node.getX() * scaleFactor));
                 minimapNode.setY(Math.round(node.getY() * scaleFactor));
                 minimapNode.setWidth(Math.round(node.getWidth() * scaleFactor));

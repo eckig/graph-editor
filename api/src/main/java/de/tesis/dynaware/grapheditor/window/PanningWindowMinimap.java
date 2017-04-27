@@ -94,9 +94,7 @@ public class PanningWindowMinimap extends Pane {
             window.heightProperty().addListener(drawListener);
         }
 
-        if (isVisible()) {
-            requestLayout();
-        }
+        requestLayout();
     }
 
     /**
@@ -126,8 +124,6 @@ public class PanningWindowMinimap extends Pane {
             content.layoutXProperty().addListener(drawListener);
             content.layoutYProperty().addListener(drawListener);
             content.localToSceneTransformProperty().addListener(drawListener);
-        } else if (contentRepresentation != null) {
-            contentRepresentation.getChildren().clear();
         }
 
         requestLayout();
