@@ -138,6 +138,7 @@ public class GraphEditorController {
      */
     public void setEditorProperties(final GraphEditorProperties editorProperties) {
         view.setEditorProperties(editorProperties);
+        selectionManager.setEditorProperties(editorProperties);
     }
 
     /**

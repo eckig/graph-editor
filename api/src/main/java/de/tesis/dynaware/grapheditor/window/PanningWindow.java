@@ -12,7 +12,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -45,9 +44,7 @@ public class PanningWindow extends Region {
     private double windowYAtClick;
 
     private boolean panningGestureActive;
-    private boolean cacheWhilePanning = true;
-    private boolean cacheWhileMouseOutside;
-    private boolean cacheOnMouseRelease;
+    private boolean panningActive = true;
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -65,8 +62,6 @@ public class PanningWindow extends Region {
 
         widthProperty().addListener(windowSizeChangeListener);
         heightProperty().addListener(windowSizeChangeListener);
-
-        initializeCacheWhenMouseOutside();
     }
 
     /**
@@ -192,61 +187,6 @@ public class PanningWindow extends Region {
         }
     }
 
-    /**
-     * Gets whether the content's cache will be set to true on the content while panning.
-     *
-     * @return {@code true} if the content will be cached while panning is active
-     * @see javafx.scene.Node#setCache
-     */
-    public boolean isCacheWhilePanning() {
-        return cacheWhilePanning;
-    }
-
-    /**
-     * Sets the content cache value while panning is active. Defaults to true.
-     *
-     * <p>
-     * If this is set to true, large graphs will pan more smoothly but require more memory.
-     * </p>
-     *
-     * <p>
-     * <em>Warning:</em> currently works like crap if the content has a scale transform applied to it.
-     * </p>
-     *
-     * @param cacheWhilePanning {@code true} if the content will be cached while panning is active
-     */
-    public void setCacheWhilePanning(final boolean cacheWhilePanning) {
-        this.cacheWhilePanning = cacheWhilePanning;
-    }
-
-    /**
-     * Gets whether the content's cache will be set to true when the mouse is outside the panning window.
-     *
-     * @return {@code true} if the content will be cached while the mouse is outside the panning window
-     * @see javafx.scene.Node#setCache
-     */
-    public boolean isCacheWhileMouseOutside() {
-        return cacheWhileMouseOutside;
-    }
-
-    /**
-     * Sets whether the content's cache will be set to true when the mouse is outside the panning window.
-     *
-     * <p>
-     * If the mouse is dragged outside while the primary mouse button is down, the cache will not be turned on until the
-     * button is released.
-     * </p>
-     *
-     * <p>
-     * Experimental API. False by default.
-     * </p>
-     *
-     * @param cacheWhileMouseOutside {@code true} if the content will be cached while the mouse is outside
-     */
-    public void setCacheWhileMouseOutside(final boolean cacheWhileMouseOutside) {
-        this.cacheWhileMouseOutside = cacheWhileMouseOutside;
-    }
-
     @Override
     public ObservableList<Node> getChildren() {
         return super.getChildren();
@@ -290,6 +230,14 @@ public class PanningWindow extends Region {
             addMouseHandlersToContent();
         }
     }
+    
+    public void setPanningActive(boolean panningActive) {
+		this.panningActive = panningActive;
+	}
+    
+    public boolean isPanningActive() {
+		return panningActive;
+	}
 
     /**
      * Adds mouse handlers to the content to pan the {@link PanningWindow} upon right mouse click-and-drag.
@@ -297,17 +245,14 @@ public class PanningWindow extends Region {
     private void addMouseHandlersToContent() {
 
         mousePressedHandler = event -> {
-
-            if (!event.getButton().equals(MouseButton.SECONDARY)) {
-                return;
+            if (isPanningActive()) {
+            	startPanning(event.getSceneX(), event.getSceneY());
             }
-
-            startPanning(event.getSceneX(), event.getSceneY());
         };
 
         mouseDraggedHandler = event -> {
 
-            if (!event.getButton().equals(MouseButton.SECONDARY)) {
+            if (!isPanningActive()) {
                 return;
             }
 
@@ -328,15 +273,11 @@ public class PanningWindow extends Region {
 
         mouseReleasedHandler = event -> {
 
-            if (!event.getButton().equals(MouseButton.SECONDARY)) {
+            if (!isPanningActive()) {
                 return;
             }
 
             setCursor(null);
-
-            if (cacheWhilePanning) {
-                content.setCache(false);
-            }
 
             panningGestureActive = false;
         };
@@ -363,35 +304,6 @@ public class PanningWindow extends Region {
     }
 
     /**
-     * Sets up the mechanism to cache the panning window when the mouse is not inside it.
-     */
-    private void initializeCacheWhenMouseOutside() {
-
-        addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
-            if (cacheWhileMouseOutside && content != null) {
-                content.setCache(false);
-            }
-        });
-
-        addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
-            if (cacheWhileMouseOutside && content != null) {
-                if (!event.isPrimaryButtonDown()) {
-                    content.setCache(true);
-                } else {
-                    cacheOnMouseRelease = true;
-                }
-            }
-        });
-
-        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            if (cacheOnMouseRelease && content != null) {
-                content.setCache(true);
-                cacheOnMouseRelease = false;
-            }
-        });
-    }
-
-    /**
      * Starts panning. Should be called on mouse-pressed or when a drag event occurs without a pressed event having been
      * registered. This can happen if e.g. a context menu closes and consumes the pressed event.
      * 
@@ -401,10 +313,6 @@ public class PanningWindow extends Region {
     private void startPanning(final double x, final double y) {
 
         setCursor(Cursor.MOVE);
-
-        if (cacheWhilePanning) {
-            content.setCache(true);
-        }
 
         panningGestureActive = true;
 

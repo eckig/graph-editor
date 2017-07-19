@@ -16,6 +16,7 @@ import org.eclipse.emf.common.command.CompoundCommand;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 
 /**
  * Provides actions related to selections in the graph editor.
@@ -149,4 +150,11 @@ public interface SelectionManager {
      * @param connectionPredicate a predicate that checks if a connection is inside the selection-box
      */
     void setConnectionSelectionPredicate(BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate);
+    
+    /**
+     * Sets the editor properties instance for the graph editor.
+     *
+     * @param editorProperties a {@link GraphEditorProperties} instance to be used
+     */
+    void setEditorProperties(final GraphEditorProperties editorProperties);
 }

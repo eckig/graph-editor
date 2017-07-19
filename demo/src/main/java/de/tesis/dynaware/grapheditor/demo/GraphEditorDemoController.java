@@ -26,6 +26,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
+import de.tesis.dynaware.grapheditor.GraphInputMode;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
@@ -285,6 +286,16 @@ public class GraphEditorDemoController {
     public void panToCenter() {
         graphEditorContainer.panTo(WindowPosition.CENTER);
     }
+    
+    @FXML
+    private void switchToNavigation() {
+    	graphEditor.getProperties().setInputMode(GraphInputMode.NAVIGATION);
+    }
+    
+    @FXML
+    private void switchToSelection() {
+    	graphEditor.getProperties().setInputMode(GraphInputMode.SELECTION);
+    }
 
     /**
      * Initializes the menu bar.
@@ -364,13 +375,6 @@ public class GraphEditorDemoController {
 
         final double currentCenterX = graphEditorContainer.windowXProperty().get();
         final double currentCenterY = graphEditorContainer.windowYProperty().get();
-
-        if (zoomFactor != 1) {
-            // Cache-while-panning is sometimes very sluggish when zoomed in.
-            graphEditorContainer.setCacheWhilePanning(false);
-        } else {
-            graphEditorContainer.setCacheWhilePanning(true);
-        }
 
         scaleTransform.setX(zoomFactor);
         graphEditorContainer.panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);

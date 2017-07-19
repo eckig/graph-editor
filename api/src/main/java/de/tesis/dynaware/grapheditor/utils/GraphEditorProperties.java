@@ -3,8 +3,11 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import de.tesis.dynaware.grapheditor.GraphInputMode;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -50,11 +53,34 @@ public class GraphEditorProperties {
     private double westBoundValue = DEFAULT_BOUND_VALUE;
 
     // Off by default.
-    private final BooleanProperty gridVisibleProperty = new SimpleBooleanProperty();
-    private final BooleanProperty snapToGridProperty = new SimpleBooleanProperty();
-    private final DoubleProperty gridSpacingProperty = new SimpleDoubleProperty(DEFAULT_GRID_SPACING);
+    private final BooleanProperty gridVisible = new SimpleBooleanProperty(this, "gridVisible");
+    private final BooleanProperty snapToGrid = new SimpleBooleanProperty(this, "snapToGrid");
+    private final DoubleProperty gridSpacing = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING);
 
-    private final BooleanProperty readOnlyProperty = new SimpleBooleanProperty();
+    private final BooleanProperty readOnly = new SimpleBooleanProperty(this, "readOnly");
+    
+    private final ObjectProperty<GraphInputMode> inputMode = new ObjectPropertyBase<GraphInputMode>(GraphInputMode.SELECTION) {
+
+		@Override
+		public Object getBean() {
+			return GraphEditorProperties.this;
+		}
+
+		@Override
+		public String getName() {
+			return "inputMode";
+		}
+		
+		@Override
+		public void set(GraphInputMode newValue) {
+			super.set(newValue == null ? GraphInputMode.SELECTION : newValue);
+		}
+		
+		@Override
+		public void setValue(GraphInputMode newValue) {
+			set(newValue);
+		}
+	};
     
     private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
 
@@ -83,11 +109,11 @@ public class GraphEditorProperties {
         eastBoundValue = editorProperties.getEastBoundValue();
         westBoundValue = editorProperties.getWestBoundValue();
 
-        gridVisibleProperty.set(editorProperties.isGridVisible());
-        snapToGridProperty.set(editorProperties.isSnapToGridOn());
-        gridSpacingProperty.set(editorProperties.getGridSpacing());
+        gridVisible.set(editorProperties.isGridVisible());
+        snapToGrid.set(editorProperties.isSnapToGridOn());
+        gridSpacing.set(editorProperties.getGridSpacing());
         
-        readOnlyProperty.set(editorProperties.isReadOnly());
+        readOnly.set(editorProperties.isReadOnly());
         
         customProperties.putAll(editorProperties.getCustomProperties());
     }
@@ -224,7 +250,7 @@ public class GraphEditorProperties {
      * @return {@code true} if the background grid is visible, {@code false} if not
      */
     public boolean isGridVisible() {
-        return gridVisibleProperty.get();
+        return gridVisible.get();
     }
 
     /**
@@ -233,7 +259,7 @@ public class GraphEditorProperties {
      * @param gridVisible {@code true} if the background grid should be visible, {@code false} if not
      */
     public void setGridVisible(final boolean gridVisible) {
-        gridVisibleProperty.set(gridVisible);
+        this.gridVisible.set(gridVisible);
     }
 
     /**
@@ -242,7 +268,7 @@ public class GraphEditorProperties {
      * @return a {@link BooleanProperty} tracking whether the grid is visible or not
      */
     public BooleanProperty gridVisibleProperty() {
-        return gridVisibleProperty;
+        return gridVisible;
     }
 
     /**
@@ -251,7 +277,7 @@ public class GraphEditorProperties {
      * @return {@code true} if snap-to-grid is on, {@code false} if not
      */
     public boolean isSnapToGridOn() {
-        return snapToGridProperty.get();
+        return snapToGrid.get();
     }
 
     /**
@@ -260,7 +286,7 @@ public class GraphEditorProperties {
      * @param snapToGrid {@code true} if snap-to-grid should be on, {@code false} if not
      */
     public void setSnapToGrid(final boolean snapToGrid) {
-        snapToGridProperty.set(snapToGrid);
+        this.snapToGrid.set(snapToGrid);
     }
 
     /**
@@ -269,7 +295,7 @@ public class GraphEditorProperties {
      * @return a {@link BooleanProperty} tracking whether snap-to-grid is on or off
      */
     public BooleanProperty snapToGridProperty() {
-        return snapToGridProperty;
+        return snapToGrid;
     }
 
     /**
@@ -278,7 +304,7 @@ public class GraphEditorProperties {
      * @return the current grid spacing
      */
     public double getGridSpacing() {
-        return gridSpacingProperty.get();
+        return gridSpacing.get();
     }
 
     /**
@@ -291,7 +317,7 @@ public class GraphEditorProperties {
      * @param gridSpacing the grid spacing to be used
      */
     public void setGridSpacing(final double gridSpacing) {
-        gridSpacingProperty.set(gridSpacing);
+    	this.gridSpacing.set(gridSpacing);
     }
 
     /**
@@ -300,7 +326,7 @@ public class GraphEditorProperties {
      * @return the grid spacing {@link DoubleProperty}.
      */
     public DoubleProperty gridSpacingProperty() {
-        return gridSpacingProperty;
+        return gridSpacing;
     }
 
     /**
@@ -309,7 +335,7 @@ public class GraphEditorProperties {
      * @return read only {@link BooleanProperty}
      */
     public BooleanProperty readOnlyProperty() {
-        return readOnlyProperty;
+        return readOnly;
     }
 
     /**
@@ -318,7 +344,7 @@ public class GraphEditorProperties {
      * @return whether or not the graph is in read only state.
      */
     public boolean isReadOnly() {
-        return readOnlyProperty.get();
+        return readOnly.get();
     }
 
     /**
@@ -327,7 +353,7 @@ public class GraphEditorProperties {
      *            {@code false} (default) for edit state.
      */
     public void setReadOnly(final boolean readOnly) {
-        readOnlyProperty.set(readOnly);
+        this.readOnly.set(readOnly);
     }
 
     /**
@@ -337,5 +363,26 @@ public class GraphEditorProperties {
      */
     public ObservableMap<String, String> getCustomProperties() {
         return customProperties;
+    }
+    
+    /**
+     * @return currently active {@link GraphInputMode}
+     */
+    public GraphInputMode getInputMode() {
+    	return inputMode.get();
+    }
+    
+    /**
+     * @param inputMode new {@link GraphInputMode}
+     */
+    public void setInputMode(final GraphInputMode inputMode) {
+    	this.inputMode.set(inputMode);
+    }
+    
+    /**
+     * @return {@link ObjectProperty} controlling the current {@link GraphInputMode}
+     */
+    public ObjectProperty<GraphInputMode> inputModeProperty() {
+    	return inputMode;
     }
 }

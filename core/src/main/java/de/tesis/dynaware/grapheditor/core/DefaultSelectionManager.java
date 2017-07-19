@@ -10,6 +10,7 @@ import java.util.function.BiPredicate;
 import org.eclipse.emf.common.command.CompoundCommand;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
+import de.tesis.dynaware.grapheditor.GraphInputMode;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -24,6 +25,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Pair;
@@ -53,6 +55,7 @@ public class DefaultSelectionManager implements SelectionManager {
     private final SelectionTracker selectionTracker;
     private final SelectionCopier selectionCopier;
 
+    private GraphEditorProperties editorProperties;
     private GModel model;
 
     /**
@@ -67,7 +70,7 @@ public class DefaultSelectionManager implements SelectionManager {
 
         selectionDragManager = new SelectionDragManager(skinLookup, view);
         selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
-        selectionCreator = new SelectionCreator(skinLookup, view, selectionDragManager);
+        selectionCreator = new SelectionCreator(skinLookup, view, selectionDragManager, this::canSelect);
         selectionTracker = new SelectionTracker(skinLookup, view);
         selectionCopier = new SelectionCopier(skinLookup, selectionTracker, selectionCreator, selectionDeleter);
     }
@@ -84,6 +87,19 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionCreator.initialize(model);
         selectionTracker.initialize(model);
         selectionCopier.initialize(model);
+    }
+    
+    private boolean canSelect() {
+    	return editorProperties != null && editorProperties.getInputMode() == GraphInputMode.SELECTION;
+    }
+    
+    /**
+     * Sets the editor properties instance for the graph editor.
+     *
+     * @param editorProperties a {@link GraphEditorProperties} instance to be used
+     */
+    public void setEditorProperties(final GraphEditorProperties editorProperties) {
+    	this.editorProperties = editorProperties;
     }
     
     public void addNode(final GNode node) {
