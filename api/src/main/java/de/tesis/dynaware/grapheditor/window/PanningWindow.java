@@ -9,12 +9,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.CacheHint;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TouchEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
 
 /**
  * A window over a large {@link Region} of content.
@@ -34,9 +36,9 @@ public class PanningWindow extends Region {
     private final DoubleProperty windowXProperty = new SimpleDoubleProperty();
     private final DoubleProperty windowYProperty = new SimpleDoubleProperty();
 
-    protected EventHandler<MouseEvent> mousePressedHandler;
-    protected EventHandler<MouseEvent> mouseDraggedHandler;
-    protected EventHandler<MouseEvent> mouseReleasedHandler;
+    private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
+    private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
+    private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningMouseReleased;
 
     private Point2D clickPosition;
 
@@ -45,6 +47,11 @@ public class PanningWindow extends Region {
 
     private boolean panningGestureActive;
     private boolean panningActive = true;
+    
+    private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
+    private final EventHandler<TouchEvent> touchHandler = this::handleTouch;
+    private int currentTouchCount = 0;
+    private final Scale scaleTransform = new Scale(1, 1, 0, 0);
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -53,13 +60,9 @@ public class PanningWindow extends Region {
 
         clip.widthProperty().bind(widthProperty());
         clip.heightProperty().bind(heightProperty());
-
         setClip(clip);
 
-        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> {
-            checkWindowBounds();
-        };
-
+        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> checkWindowBounds();
         widthProperty().addListener(windowSizeChangeListener);
         heightProperty().addListener(windowSizeChangeListener);
     }
@@ -160,31 +163,26 @@ public class PanningWindow extends Region {
      */
     public void checkWindowBounds() {
 
-        if (content != null) {
+		if (content != null) {
 
-            if (windowXProperty.get() < 0) {
-                windowXProperty.set(0);
-            }
+			double x = Math.max(windowXProperty.get(), 0);
+			double y = Math.max(windowYProperty.get(), 0);
 
-            if (windowYProperty.get() < 0) {
-                windowYProperty.set(0);
-            }
+			final double zoomFactor = content.getLocalToSceneTransform().getMxx();
+			final double maxX = zoomFactor * content.getWidth() - getWidth();
+			final double maxY = zoomFactor * content.getHeight() - getHeight();
 
-            final double zoomFactor = content.getLocalToSceneTransform().getMxx();
-            final double maxX = zoomFactor * content.getWidth() - getWidth();
-            final double maxY = zoomFactor * content.getHeight() - getHeight();
+			if (x > maxX) {
+				x = (maxX);
+			}
 
-            if (windowXProperty.get() > maxX) {
-                windowXProperty.set(maxX);
-            }
+			if (y > maxY) {
+				y = (maxY);
+			}
 
-            if (windowYProperty.get() > maxY) {
-                windowYProperty.set(maxY);
-            }
-
-            windowXProperty.set(Math.round(windowXProperty.get()));
-            windowYProperty.set(Math.round(windowYProperty.get()));
-        }
+			windowXProperty.set(Math.round(x));
+			windowYProperty.set(Math.round(y));
+		}
     }
 
     @Override
@@ -213,6 +211,7 @@ public class PanningWindow extends Region {
 
             this.content.layoutXProperty().unbind();
             this.content.layoutYProperty().unbind();
+            this.content.getTransforms().remove(scaleTransform);
         }
 
         this.content = content;
@@ -220,12 +219,12 @@ public class PanningWindow extends Region {
         if (content != null) {
 
             content.setManaged(false);
-            content.cacheHintProperty().set(CacheHint.SPEED);
 
             getChildren().add(content);
 
             content.layoutXProperty().bind(windowXProperty.multiply(-1));
             content.layoutYProperty().bind(windowYProperty.multiply(-1));
+            content.getTransforms().add(scaleTransform);
 
             addMouseHandlersToContent();
         }
@@ -239,68 +238,92 @@ public class PanningWindow extends Region {
 		return panningActive;
 	}
 
+    private void handlePanningMousePressed(final MouseEvent event) {
+    	if (isPanningActive() && currentTouchCount < 2) {
+        	startPanning(event.getSceneX(), event.getSceneY());
+        }
+    }
+    
+    private void handlePanningMouseDragged(final MouseEvent event) {
+    	if (!isPanningActive() || currentTouchCount > 1) {
+            return;
+        }
+
+        if (!panningGestureActive) {
+            startPanning(event.getSceneX(), event.getSceneY());
+        }
+
+        final Point2D currentPosition = new Point2D(event.getSceneX(), event.getSceneY());
+
+        final double deltaX = currentPosition.getX() - clickPosition.getX();
+        final double deltaY = currentPosition.getY() - clickPosition.getY();
+
+        final double newWindowX = windowXAtClick - deltaX;
+        final double newWindowY = windowYAtClick - deltaY;
+
+        panTo(newWindowX, newWindowY);
+    }
+    
+    private void handlePanningMouseReleased(final MouseEvent event) {
+    	if (!isPanningActive()) {
+            return;
+        }
+
+        setCursor(null);
+
+        panningGestureActive = false;
+    }
+    
+    private void handleTouch(final TouchEvent pEvent) {
+		if (pEvent.getEventType() == TouchEvent.TOUCH_PRESSED) {
+			currentTouchCount = pEvent.getTouchCount();
+		} else {
+			currentTouchCount = 0;
+		}
+		pEvent.consume();
+	}
+    
+    private void handleZoom(final ZoomEvent event) {
+		if (!isPanningActive() || event.getTarget() != content || currentTouchCount != 2) {
+            return;
+        }
+        final double zoomFactor = event.getZoomFactor() > 1 ? 0.05 : -0.05;
+        final double zoomFactorRatio = (scaleTransform.getX() + zoomFactor) / scaleTransform.getX();
+
+        final double currentCenterX = event.getX();
+        final double currentCenterY = event.getY();
+
+        final double newZoomLevel =  scaleTransform.getX() + zoomFactor;
+        if (newZoomLevel < 1.5 && newZoomLevel > 0.4) {
+            scaleTransform.setX(newZoomLevel);
+            scaleTransform.setY(newZoomLevel);
+            panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);
+        }
+        event.consume();
+    }
+    
     /**
-     * Adds mouse handlers to the content to pan the {@link PanningWindow} upon right mouse click-and-drag.
+     * Adds handlers to the content for panning and zooming.
      */
     private void addMouseHandlersToContent() {
-
-        mousePressedHandler = event -> {
-            if (isPanningActive()) {
-            	startPanning(event.getSceneX(), event.getSceneY());
-            }
-        };
-
-        mouseDraggedHandler = event -> {
-
-            if (!isPanningActive()) {
-                return;
-            }
-
-            if (!panningGestureActive) {
-                startPanning(event.getSceneX(), event.getSceneY());
-            }
-
-            final Point2D currentPosition = new Point2D(event.getSceneX(), event.getSceneY());
-
-            final double deltaX = currentPosition.getX() - clickPosition.getX();
-            final double deltaY = currentPosition.getY() - clickPosition.getY();
-
-            final double newWindowX = windowXAtClick - deltaX;
-            final double newWindowY = windowYAtClick - deltaY;
-
-            panTo(newWindowX, newWindowY);
-        };
-
-        mouseReleasedHandler = event -> {
-
-            if (!isPanningActive()) {
-                return;
-            }
-
-            setCursor(null);
-
-            panningGestureActive = false;
-        };
-
         content.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         content.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
         content.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+        content.addEventHandler(ZoomEvent.ZOOM, zoomHandler);
+        content.addEventHandler(TouchEvent.TOUCH_PRESSED, touchHandler);
+        content.addEventHandler(TouchEvent.TOUCH_RELEASED, touchHandler);
     }
 
     /**
-     * Removes existing mouse pressed, drag, and released handlers from the content, if possible.
+     * Removes existing handlers from the content, if possible.
      */
     private void removeMouseHandlersFromContent() {
-
-        if (mousePressedHandler != null) {
-            content.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
-        }
-        if (mouseDraggedHandler != null) {
-            content.removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
-        }
-        if (mouseReleasedHandler != null) {
-            content.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-        }
+        content.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
+        content.removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
+        content.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+        content.removeEventHandler(ZoomEvent.ZOOM, zoomHandler);
+        content.removeEventHandler(TouchEvent.TOUCH_PRESSED, touchHandler);
+        content.removeEventHandler(TouchEvent.TOUCH_RELEASED, touchHandler);
     }
 
     /**

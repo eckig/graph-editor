@@ -3,17 +3,11 @@
  */
 package de.tesis.dynaware.grapheditor;
 
-import javafx.beans.value.ChangeListener;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.ZoomEvent;
-import javafx.scene.layout.Region;
-import javafx.scene.transform.Scale;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.window.AutoScrollingWindow;
 import de.tesis.dynaware.grapheditor.window.GraphEditorMinimap;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.layout.Region;
 
 /**
  * A container for the graph editor.
@@ -50,11 +44,8 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
     private GraphEditor graphEditor;
     private final ChangeListener<GModel> modelChangeListener = (observable, oldValue, newValue) -> modelChanged(newValue);
-    private final EventHandler<ScrollEvent> scrollHandler = this::handleScroll;
-    private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
-
 	private final ChangeListener<GraphInputMode> inputModeListener = (w,o,n) -> setPanningActive(n == GraphInputMode.NAVIGATION);
-
+	
     /**
      * Creates a new {@link GraphEditorContainer}.
      */
@@ -65,55 +56,8 @@ public class GraphEditorContainer extends AutoScrollingWindow {
         minimap.setWindow(this);
         minimap.setVisible(false);
     }
-    
-    private void handleScroll(final ScrollEvent event) {
-    	// touch events are synthesized by JavaFX to scroll events
-    	// so in effect both mouse scroll wheel rotations and touch-zoom-gestures will be handled here
-    	// but: only scroll when the mouse-cursor/finger is hovering over the view
-    	//      skip if the target is for example a node
-    	if(!isPanningActive() || graphEditor == null || event.getTarget() != graphEditor.getView()) {
-    		return;
-    	}
-		panBy(-event.getDeltaX(), -event.getDeltaY());
-    }
-    
-    private boolean isZooming = false;
-    private double currentZoomFactor = 1;
-    private final Scale scaleTransform = new Scale(1, 1, 0, 0);
-    
-    private void handleZoom(final ZoomEvent event) {
-    	if(!isPanningActive()) {
-    		return;
-    	}
-    	isZooming=true;
-    	try
-		{
-			double zoomFactor = event.getTotalZoomFactor();
-			final double zoomFactorRatio = zoomFactor / currentZoomFactor;
 
-			final double currentCenterX = windowXProperty().get();
-			final double currentCenterY = windowYProperty().get();
-
-			final double newZoomLevel = zoomFactorRatio * scaleTransform.getX();
-			if (newZoomLevel < 1.3 && newZoomLevel > 0.3) {
-				scaleTransform.setX(newZoomLevel);
-				scaleTransform.setY(newZoomLevel);
-				panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);
-				currentZoomFactor = zoomFactor;
-			}
-		}
-    	finally {
-    		isZooming=false;
-    	}
-    }
-    
-    private void filterEventsWhileZooming(final Event event) {
-    	if(isZooming) {
-    		event.consume();
-    	}
-    }
-    
-    private void modelChanged(final GModel newValue) {
+	private void modelChanged(final GModel newValue) {
 
         if (newValue != null) {
             graphEditor.getView().resize(newValue.getContentWidth(), newValue.getContentHeight());
@@ -131,8 +75,6 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
         if (this.graphEditor != null) {
             this.graphEditor.modelProperty().removeListener(modelChangeListener);
-            this.graphEditor.getView().removeEventHandler(ScrollEvent.SCROLL, scrollHandler);
-            this.graphEditor.getView().removeEventHandler(ZoomEvent.ZOOM, zoomHandler);
             this.graphEditor.getProperties().inputModeProperty().removeListener(inputModeListener);
         }
 
@@ -155,15 +97,9 @@ public class GraphEditorContainer extends AutoScrollingWindow {
             minimap.setSelectionManager(graphEditor.getSelectionManager());
 
             view.toBack();
-            view.addEventHandler(ScrollEvent.SCROLL, scrollHandler);
-            view.addEventHandler(ZoomEvent.ZOOM, zoomHandler);
             
             graphEditor.getProperties().inputModeProperty().addListener(inputModeListener);
             setPanningActive(graphEditor.getProperties().getInputMode() == GraphInputMode.NAVIGATION);
-            
-            //TODO
-            graphEditor.getView().getTransforms().add(scaleTransform);
-            graphEditor.getView().addEventFilter(MouseEvent.ANY, this::filterEventsWhileZooming);
 
         } else {
             minimap.setContent(null);

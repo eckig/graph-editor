@@ -53,7 +53,7 @@ public abstract class GSkin {
      * Gets the graph editor instance that this skin is a part of.
      *
      * <p>
-     * This is provided for advanced skin customisation purposes only. Use at your own risk.
+     * This is provided for advanced skin customization purposes only. Use at your own risk.
      * </p>
      *
      * @return the {@link GraphEditor} instance that this skin is a part of
