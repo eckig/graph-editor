@@ -70,8 +70,8 @@ public class TitledSkinController extends DefaultSkinController {
     @Override
     public void addNode(final double currentZoomFactor) {
 
-        final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
-        final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
+        final double windowXOffset = graphEditorContainer.getContentX() / currentZoomFactor;
+        final double windowYOffset = graphEditorContainer.getContentY() / currentZoomFactor;
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(NODE_INITIAL_Y + windowYOffset);

@@ -373,8 +373,8 @@ public class GraphEditorDemoController {
 
         final double zoomFactorRatio = zoomFactor / currentZoomFactor;
 
-        final double currentCenterX = graphEditorContainer.windowXProperty().get();
-        final double currentCenterY = graphEditorContainer.windowYProperty().get();
+        final double currentCenterX = graphEditorContainer.getContentX();
+        final double currentCenterY = graphEditorContainer.getContentY();
 
         scaleTransform.setX(zoomFactor);
         graphEditorContainer.panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);

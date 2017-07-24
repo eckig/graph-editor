@@ -3,9 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -32,9 +32,7 @@ public class PanningWindow extends Region {
     private final Rectangle clip = new Rectangle();
 
     private Region content;
-
-    private final DoubleProperty windowXProperty = new SimpleDoubleProperty();
-    private final DoubleProperty windowYProperty = new SimpleDoubleProperty();
+    private double contentX, contentY;
 
     private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
     private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
@@ -44,13 +42,13 @@ public class PanningWindow extends Region {
 
     private double windowXAtClick;
     private double windowYAtClick;
-
+    
     private boolean panningGestureActive;
     private boolean panningActive = true;
     
     private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
     private final EventHandler<TouchEvent> touchHandler = this::handleTouch;
-    private int currentTouchCount = 0;
+    private final AtomicInteger currentTouchCount = new AtomicInteger();
     private final Scale scaleTransform = new Scale(1, 1, 0, 0);
 
     /**
@@ -61,10 +59,15 @@ public class PanningWindow extends Region {
         clip.widthProperty().bind(widthProperty());
         clip.heightProperty().bind(heightProperty());
         setClip(clip);
-
-        final ChangeListener<Number> windowSizeChangeListener = (observableValue, oldValue, newValue) -> checkWindowBounds();
-        widthProperty().addListener(windowSizeChangeListener);
-        heightProperty().addListener(windowSizeChangeListener);
+    }
+    
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren();
+        
+        if(content != null) {
+            content.relocate(contentX * -1, contentY * -1);
+        }
     }
 
     /**
@@ -79,28 +82,39 @@ public class PanningWindow extends Region {
      */
     public void panTo(final double x, final double y) {
 
-        windowXProperty.set(x);
-        windowYProperty.set(y);
-
-        checkWindowBounds();
+        contentX = checkContentX(x);
+        contentY = checkContentY(y);
+        requestLayout();
     }
-
+    
     /**
-     * Pans the window by the specified x and y values.
+     * Pans the window to the specified x coordinate.
      *
      * <p>
      * The window cannot be panned outside the content. When the window 'hits the edge' of the content it will stop.
      * </p>
      *
-     * @param x the horizontal distance to move the window by
-     * @param y the vertical distance to move the window by
+     * @param x the x position of the window relative to the top-left corner of the content
      */
-    public void panBy(final double x, final double y) {
+    public void panToX(final double x) {
 
-        windowXProperty.set(windowXProperty.get() + x);
-        windowYProperty.set(windowYProperty.get() + y);
+        contentX = checkContentX(x);
+        requestLayout();
+    }
+    
+    /**
+     * Pans the window to the specified x coordinate.
+     *
+     * <p>
+     * The window cannot be panned outside the content. When the window 'hits the edge' of the content it will stop.
+     * </p>
+     *
+     * @param y the y position of the window relative to the top-left corner of the content
+     */
+    public void panToY(final double y) {
 
-        checkWindowBounds();
+        contentY = checkContentY(y);
+        requestLayout();
     }
 
     /**
@@ -117,41 +131,30 @@ public class PanningWindow extends Region {
     public void panTo(final WindowPosition position) {
 
         switch (position) {
-
+        
         case TOP_CENTER:
-
-            windowXProperty.set((content.getWidth() - getWidth()) / 2);
-            windowYProperty.set(0);
-
+            panTo((content.getWidth() - getWidth()) / 2, 0);
             break;
 
         case CENTER:
-
-            windowXProperty.set((content.getWidth() - getWidth()) / 2);
-            windowYProperty.set((content.getHeight() - getHeight()) / 2);
-
+            panTo((content.getWidth() - getWidth()) / 2, (content.getHeight() - getHeight()) / 2);
             break;
+            
         }
-
-        checkWindowBounds();
     }
 
     /**
-     * The property for the x coordinate of the window relative to the top-left corner of the content.
-     *
-     * @return the {@link DoubleProperty} for the x coordinate of the window
+     * @return the x coordinate of the window relative to the top-left corner of the content.
      */
-    public DoubleProperty windowXProperty() {
-        return windowXProperty;
+    public double getContentX() {
+        return contentX;
     }
-
+    
     /**
-     * The property for the y coordinate of the window relative to the top-left corner of the content.
-     *
-     * @return the {@link DoubleProperty} for the y coordinate of the window
+     * @return the y coordinate of the window relative to the top-left corner of the content.
      */
-    public DoubleProperty windowYProperty() {
-        return windowYProperty;
+    public double getContentY() {
+        return contentY;
     }
 
     /**
@@ -161,28 +164,30 @@ public class PanningWindow extends Region {
      * Also checks that the window position values are integers to ensure strokes are drawn cleanly.
      * </p>
      */
-    public void checkWindowBounds() {
+    protected void checkWindowBounds() {
+        panTo(checkContentX(getContentX()), checkContentY(getContentY()));
+    }
+    
+    private double checkContentX(final double xToCheck) {
 
-		if (content != null) {
+        double x = Math.max(xToCheck, 0);
+        if (content != null) {
+            final double zoomFactor = content.getLocalToSceneTransform().getMxx();
+            final double maxX = zoomFactor * content.getWidth() - getWidth();
+            x = x > maxX ? maxX : x;
+        }
+        return snapPosition(x);
+    }
+    
+    private double checkContentY(final double yToCheck) {
 
-			double x = Math.max(windowXProperty.get(), 0);
-			double y = Math.max(windowYProperty.get(), 0);
-
-			final double zoomFactor = content.getLocalToSceneTransform().getMxx();
-			final double maxX = zoomFactor * content.getWidth() - getWidth();
-			final double maxY = zoomFactor * content.getHeight() - getHeight();
-
-			if (x > maxX) {
-				x = (maxX);
-			}
-
-			if (y > maxY) {
-				y = (maxY);
-			}
-
-			windowXProperty.set(Math.round(x));
-			windowYProperty.set(Math.round(y));
-		}
+        double y = Math.max(yToCheck, 0);
+        if (content != null) {
+            final double zoomFactor = content.getLocalToSceneTransform().getMxx();
+            final double maxY = zoomFactor * content.getHeight() - getHeight();
+            y = y > maxY ? maxY : y;
+        }
+        return snapPosition(y);
     }
 
     @Override
@@ -206,11 +211,7 @@ public class PanningWindow extends Region {
         if (this.content != null) {
 
             removeMouseHandlersFromContent();
-
             getChildren().remove(this.content);
-
-            this.content.layoutXProperty().unbind();
-            this.content.layoutYProperty().unbind();
             this.content.getTransforms().remove(scaleTransform);
         }
 
@@ -219,13 +220,8 @@ public class PanningWindow extends Region {
         if (content != null) {
 
             content.setManaged(false);
-
             getChildren().add(content);
-
-            content.layoutXProperty().bind(windowXProperty.multiply(-1));
-            content.layoutYProperty().bind(windowYProperty.multiply(-1));
             content.getTransforms().add(scaleTransform);
-
             addMouseHandlersToContent();
         }
     }
@@ -237,15 +233,19 @@ public class PanningWindow extends Region {
     public boolean isPanningActive() {
 		return panningActive;
 	}
+    
+    protected boolean isMultiTouchActive() {
+        return currentTouchCount.get() > 1;
+    }
 
     private void handlePanningMousePressed(final MouseEvent event) {
-    	if (isPanningActive() && currentTouchCount < 2) {
+    	if (isPanningActive() && currentTouchCount.get() < 2) {
         	startPanning(event.getSceneX(), event.getSceneY());
         }
     }
     
     private void handlePanningMouseDragged(final MouseEvent event) {
-    	if (!isPanningActive() || currentTouchCount > 1) {
+    	if (!isPanningActive() || isMultiTouchActive()) {
             return;
         }
 
@@ -275,29 +275,33 @@ public class PanningWindow extends Region {
     }
     
     private void handleTouch(final TouchEvent pEvent) {
+        final int current = currentTouchCount.get();
 		if (pEvent.getEventType() == TouchEvent.TOUCH_PRESSED) {
-			currentTouchCount = pEvent.getTouchCount();
+		    currentTouchCount.compareAndSet(current, pEvent.getTouchCount());
 		} else {
-			currentTouchCount = 0;
+		    Platform.runLater(() -> currentTouchCount.compareAndSet(current, 0));
 		}
 		pEvent.consume();
 	}
     
     private void handleZoom(final ZoomEvent event) {
-		if (!isPanningActive() || event.getTarget() != content || currentTouchCount != 2) {
+        if (!isPanningActive() || currentTouchCount.get() != 2) {
             return;
         }
-        final double zoomFactor = event.getZoomFactor() > 1 ? 0.05 : -0.05;
-        final double zoomFactorRatio = (scaleTransform.getX() + zoomFactor) / scaleTransform.getX();
+        final double zoomFactor = event.getZoomFactor() > 1 ? 1.01 : 0.99;
+        final double newZoomLevel = scaleTransform.getX() * zoomFactor;
 
-        final double currentCenterX = event.getX();
-        final double currentCenterY = event.getY();
+        final double currentX = content.getLayoutX();
+        final double currentY = content.getLayoutY();
+        final double diffX = event.getX() - currentX;
+        final double diffY = event.getY() - currentY;
+        final double newX = event.getX() - (diffX * zoomFactor);
+        final double newY = event.getY() - (diffY * zoomFactor);
 
-        final double newZoomLevel =  scaleTransform.getX() + zoomFactor;
         if (newZoomLevel < 1.5 && newZoomLevel > 0.4) {
             scaleTransform.setX(newZoomLevel);
             scaleTransform.setY(newZoomLevel);
-            panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);
+            panTo(newX, newY);
         }
         event.consume();
     }
@@ -341,7 +345,7 @@ public class PanningWindow extends Region {
 
         clickPosition = new Point2D(x, y);
 
-        windowXAtClick = windowXProperty().get();
-        windowYAtClick = windowYProperty().get();
+        windowXAtClick = getContentX();
+        windowYAtClick = getContentY();
     }
 }

@@ -207,7 +207,7 @@ public class PanningWindowMinimap extends Pane {
                 drawLocatorListenerMuted = true;
                 final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
                 final double targetX = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
-                window.panTo(targetX, window.windowYProperty().get());
+                window.panToX(targetX);
                 drawLocatorListenerMuted = false;
             }
         });
@@ -219,7 +219,7 @@ public class PanningWindowMinimap extends Pane {
                 drawLocatorListenerMuted = true;
                 final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
                 final double targetY = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
-                window.panTo(window.windowXProperty().get(), targetY);
+                window.panToY(targetY);
                 drawLocatorListenerMuted = false;
             }
         });

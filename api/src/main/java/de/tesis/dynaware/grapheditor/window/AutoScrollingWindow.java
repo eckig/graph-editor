@@ -21,8 +21,6 @@ public class AutoScrollingWindow extends PanningWindow {
     private final AutoScrollingParameters parameters = new AutoScrollingParameters();
 
     private Timeline timeline;
-    private MouseEvent currentDragEvent;
-    private Node dragEventTarget;
     private boolean isScrolling;
     private Point2D jumpDistance;
 
@@ -77,10 +75,7 @@ public class AutoScrollingWindow extends PanningWindow {
      */
     private void handleMouseDragged(final MouseEvent event) {
 
-        if (event.isPrimaryButtonDown() && event.getTarget() instanceof Node) {
-
-            currentDragEvent = event;
-            dragEventTarget = (Node) event.getTarget();
+        if (event.isPrimaryButtonDown() && event.getTarget() instanceof Node && !isMultiTouchActive()) {
 
             jumpDistance = getDistanceToJump(event.getX(), event.getY());
 
@@ -98,7 +93,6 @@ public class AutoScrollingWindow extends PanningWindow {
      * @param event the mouse-released event object
      */
     private void handleMouseReleased(final MouseEvent event) {
-        dragEventTarget = null;
         endScrolling();
     }
 
@@ -140,6 +134,28 @@ public class AutoScrollingWindow extends PanningWindow {
             return new Point2D(Math.round(jumpX), Math.round(jumpY));
         }
     }
+    
+    /**
+     * Pans the window by the specified x and y values.
+     *
+     * <p>
+     * The window cannot be panned outside the content. When the window 'hits the edge' of the content it will stop.
+     * </p>
+     *
+     * @param x the horizontal distance to move the window by
+     * @param y the vertical distance to move the window by
+     */
+    private void panBy(final double x, final double y) {
+        if(x != 0 && y != 0) {
+            panTo(getContentX() + x, getContentY() + y);
+        }
+        else if(x != 0) {
+            panToX(getContentX() + x);
+        }
+        else if(y != 0) {
+            panToY(getContentY() + y);
+        }
+    }
 
     /**
      * Starts the auto-scrolling.
@@ -150,9 +166,8 @@ public class AutoScrollingWindow extends PanningWindow {
         jumpsTaken = 0;
 
         final KeyFrame frame = new KeyFrame(Duration.millis(parameters.getJumpPeriod()), event -> {
-            if (dragEventTarget != null && isScrolling && jumpDistance != null) {
+            if (isScrolling && jumpDistance != null) {
                 panBy(jumpDistance.getX(), jumpDistance.getY());
-                dragEventTarget.fireEvent(currentDragEvent);
                 jumpsTaken++;
             }
         });
