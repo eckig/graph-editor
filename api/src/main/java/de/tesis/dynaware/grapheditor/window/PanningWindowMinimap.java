@@ -4,6 +4,8 @@
 package de.tesis.dynaware.grapheditor.window;
 
 import javafx.beans.InvalidationListener;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -35,6 +37,10 @@ public class PanningWindowMinimap extends Pane {
     private double scaleFactor = 0.75;
     private boolean locatorPositionListenersMuted;
     private boolean drawLocatorListenerMuted;
+    
+    private final Hyperlink zoomIn = new Hyperlink("++");
+    private final Hyperlink zoomOut = new Hyperlink("--");
+    private final Hyperlink zoomExact = new Hyperlink("1:1");
 
     /**
      * Creates a new {@link PanningWindowMinimap} instance.
@@ -50,6 +56,34 @@ public class PanningWindowMinimap extends Pane {
         createMinimapClickHandlers();
 
         getChildren().add(locator);
+        
+        zoomOut.getStyleClass().addAll("zoom", "zoom-out");
+        zoomIn.getStyleClass().addAll("zoom", "zoom-in");
+        zoomExact.getStyleClass().addAll("zoom", "zoom-exact");
+        
+        zoomOut.setOnAction(this::zoomOut);
+        zoomIn.setOnAction(this::zoomIn);
+        zoomExact.setOnAction(this::zoomExact);
+        
+        getChildren().addAll(zoomIn, zoomOut, zoomExact);
+    }
+    
+    private void zoomIn(final ActionEvent pEvent) {
+        if(window != null) {
+            window.setZoom(window.getZoom() + 0.15);
+        }
+    }
+
+    private void zoomExact(final ActionEvent pEvent) {
+        if(window != null) {
+            window.setZoom(1);
+        }
+    }
+
+    private void zoomOut(final ActionEvent pEvent) {
+        if(window != null) {
+            window.setZoom(window.getZoom() - 0.15);
+        }
     }
     
     /**
@@ -178,12 +212,14 @@ public class PanningWindowMinimap extends Pane {
             contentRepresentation.resize(width - MINIMAP_PADDING * 2, height - MINIMAP_PADDING * 2);
         }
         
+        final double maxLocWidth = width - MINIMAP_PADDING * 2;
+        final double maxLocHeight = height - MINIMAP_PADDING * 2;
+        
         if(!drawLocatorListenerMuted) {
             locatorPositionListenersMuted = true;
             
             final double zoomFactor = calculateZoomFactor();
-            final double maxLocWidth = width - MINIMAP_PADDING * 2;
-            final double maxLocHeight = height - MINIMAP_PADDING * 2;
+            
             
             final double x = Math.round(-content.getLayoutX() * scaleFactor / zoomFactor);
             final double y = Math.round(-content.getLayoutY() * scaleFactor / zoomFactor);
@@ -193,6 +229,10 @@ public class PanningWindowMinimap extends Pane {
             locator.resizeRelocate(x + MINIMAP_PADDING, y + MINIMAP_PADDING, locWidth, locHeight);
             locatorPositionListenersMuted = false;
         }
+        
+        zoomOut.relocate(MINIMAP_PADDING, height - zoomOut.getHeight());
+        zoomIn.relocate(maxLocWidth - zoomIn.getWidth(), height - zoomOut.getHeight());
+        zoomExact.relocate(maxLocWidth / 2 - zoomExact.getWidth() / 2, height - zoomOut.getHeight());
     }
 
     /**
@@ -216,7 +256,7 @@ public class PanningWindowMinimap extends Pane {
 
                 drawLocatorListenerMuted = true;
                 final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
-                final double targetX = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
+                final double targetX = (newValue.doubleValue() - MINIMAP_PADDING) / effectiveScaleFactor;
                 window.panToX(targetX);
                 drawLocatorListenerMuted = false;
             }
@@ -228,7 +268,7 @@ public class PanningWindowMinimap extends Pane {
 
                 drawLocatorListenerMuted = true;
                 final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
-                final double targetY = ((Double) newValue - MINIMAP_PADDING) / effectiveScaleFactor;
+                final double targetY = (newValue.doubleValue() - MINIMAP_PADDING) / effectiveScaleFactor;
                 window.panToY(targetY);
                 drawLocatorListenerMuted = false;
             }

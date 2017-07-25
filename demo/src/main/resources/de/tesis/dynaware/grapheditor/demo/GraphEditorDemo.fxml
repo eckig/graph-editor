@@ -83,7 +83,6 @@
 								<RadioMenuItem fx:id="gappedStyleButton" text="Gaps" onAction="#setGappedStyle"/>
 							</items>
 						</Menu>
-						<Menu text="Zoom Level" fx:id="zoomOptions" />
 					</items>
 				</Menu>
 			</menus>

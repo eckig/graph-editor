@@ -39,7 +39,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.transform.Scale;
 
 /**
  * Controller for the {@link GraphEditorDemo} application.
@@ -91,17 +90,12 @@ public class GraphEditorDemoController {
     @FXML
     private RadioMenuItem detouredStyleButton;
     @FXML
-    private Menu zoomOptions;
-    @FXML
     private ToggleButton minimapButton;
     @FXML
     private GraphEditorContainer graphEditorContainer;
 
     private final GraphEditor graphEditor = new DefaultGraphEditor();
     private final GraphEditorPersistence graphEditorPersistence = new GraphEditorPersistence();
-
-    private Scale scaleTransform;
-    private double currentZoomFactor = 1;
 
     private DefaultSkinController defaultSkinController;
     private TreeSkinController treeSkinController;
@@ -226,7 +220,7 @@ public class GraphEditorDemoController {
 
     @FXML
     public void addNode() {
-        activeSkinController.get().addNode(currentZoomFactor);
+        activeSkinController.get().addNode(graphEditor.getView().getLocalToSceneTransform().getMxx());
     }
 
     @FXML
@@ -289,11 +283,6 @@ public class GraphEditorDemoController {
      */
     private void initializeMenuBar() {
 
-        scaleTransform = new Scale(currentZoomFactor, currentZoomFactor, 0, 0);
-        scaleTransform.yProperty().bind(scaleTransform.xProperty());
-
-        graphEditor.getView().getTransforms().add(scaleTransform);
-
         final ToggleGroup skinGroup = new ToggleGroup();
         skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton);
 
@@ -313,59 +302,12 @@ public class GraphEditorDemoController {
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 
-        initializeZoomOptions();
-
         final ListChangeListener<? super GNode> selectedNodesListener = change -> {
             checkConnectorButtonsToDisable();
         };
 
         graphEditor.getSelectionManager().getSelectedNodes().addListener(selectedNodesListener);
         checkConnectorButtonsToDisable();
-    }
-
-    /**
-     * Initializes the list of zoom options.
-     */
-    private void initializeZoomOptions() {
-
-        final ToggleGroup toggleGroup = new ToggleGroup();
-
-        for (int i = 1; i <= 5; i++) {
-
-            final RadioMenuItem zoomOption = new RadioMenuItem();
-            final double zoomFactor = i;
-
-            zoomOption.setText(i + "00%");
-            zoomOption.setOnAction(event -> setZoomFactor(zoomFactor));
-
-            toggleGroup.getToggles().add(zoomOption);
-            zoomOptions.getItems().add(zoomOption);
-
-            if (i == 1) {
-                zoomOption.setSelected(true);
-            }
-        }
-    }
-
-    /**
-     * Sets a new zoom factor.
-     *
-     * <p>
-     * Note that everything will look crap if the zoom factor is non-integer.
-     * </p>
-     *
-     * @param zoomFactor the new zoom factor
-     */
-    private void setZoomFactor(final double zoomFactor) {
-
-        final double zoomFactorRatio = zoomFactor / currentZoomFactor;
-
-        final double currentCenterX = graphEditorContainer.getContentX();
-        final double currentCenterY = graphEditorContainer.getContentY();
-
-        scaleTransform.setX(zoomFactor);
-        graphEditorContainer.panTo(currentCenterX * zoomFactorRatio, currentCenterY * zoomFactorRatio);
-        currentZoomFactor = zoomFactor;
     }
 
     /**
