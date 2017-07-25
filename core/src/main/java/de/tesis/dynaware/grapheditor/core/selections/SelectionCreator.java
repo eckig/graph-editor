@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.function.BooleanSupplier;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -34,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.util.Callback;
 
 /**
  * Responsible for creating selections of nodes, connections, and joints in the graph editor.
@@ -65,7 +65,7 @@ public class SelectionCreator {
     private final List<GJoint> selectedJointsBackup = new ArrayList<>();
     private final List<GConnection> selectedConnectionsBackup = new ArrayList<>();
 
-    private final BooleanSupplier selectionActive;
+    private final Callback<MouseEvent, Boolean> selectionActive;
     
     private Rectangle2D selection;
 
@@ -82,7 +82,7 @@ public class SelectionCreator {
      * @param selectionDragManager the {@link SelectionDragManager} instance for this graph editor
      */
     public SelectionCreator(final SkinLookup skinLookup, final GraphEditorView view,
-            final SelectionDragManager selectionDragManager, final BooleanSupplier selectionActive) {
+            final SelectionDragManager selectionDragManager, final Callback<MouseEvent, Boolean> selectionActive) {
 
         this.skinLookup = skinLookup;
         this.view = view;
@@ -503,7 +503,7 @@ public class SelectionCreator {
      */
     private void handleViewPressed(final MouseEvent event) {
 
-        if (model == null || !selectionActive.getAsBoolean() || event.isConsumed()) {
+        if (model == null || !selectionActive.call(event) || event.isConsumed()) {
             return;
         }
 
@@ -526,7 +526,7 @@ public class SelectionCreator {
      */
     private void handleViewDragged(final MouseEvent event) {
 
-        if (model == null || !selectionActive.getAsBoolean() || event.isConsumed() || selectionBoxStart == null) {
+        if (model == null || !selectionActive.call(event) || event.isConsumed() || selectionBoxStart == null) {
             return;
         }
 

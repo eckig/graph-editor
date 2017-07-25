@@ -258,7 +258,7 @@ public class DraggableBox extends StackPane {
     
     protected boolean isDragGestureActive() {
         return editorProperties != null
-                && editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.DRAG);
+                && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.DRAG);
     }
     
     void notifyDragActive() {

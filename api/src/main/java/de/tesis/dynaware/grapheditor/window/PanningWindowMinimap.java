@@ -68,22 +68,25 @@ public class PanningWindowMinimap extends Pane {
         getChildren().addAll(zoomIn, zoomOut, zoomExact);
     }
     
-    private void zoomIn(final ActionEvent pEvent) {
+    private void zoomIn(final ActionEvent event) {
         if(window != null) {
             window.setZoom(window.getZoom() + 0.15);
         }
+        event.consume();
     }
 
-    private void zoomExact(final ActionEvent pEvent) {
+    private void zoomExact(final ActionEvent event) {
         if(window != null) {
             window.setZoom(1);
         }
+        event.consume();
     }
 
-    private void zoomOut(final ActionEvent pEvent) {
+    private void zoomOut(final ActionEvent event) {
         if(window != null) {
             window.setZoom(window.getZoom() - 0.15);
         }
+        event.consume();
     }
     
     /**

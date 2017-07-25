@@ -31,6 +31,9 @@ import javafx.scene.transform.Scale;
  */
 public class PanningWindow extends Region {
 
+    private static final double SCALE_MIN = 0.5;
+    private static final double SCALE_MAX = 1.5;
+    
     private final Rectangle clip = new Rectangle();
 
     private Region content;
@@ -83,7 +86,9 @@ public class PanningWindow extends Region {
         if(this.editorProperties != null) {
             this.editorProperties.getGraphEventManager().inputModeProperty().removeListener(inputModeListener);
         }
+        
         this.editorProperties = editorProperties;
+        
         if(editorProperties != null) {
             editorProperties.getGraphEventManager().inputModeProperty().addListener(inputModeListener);
             setPanningEnabled(editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.NAVIGATION);
@@ -172,11 +177,9 @@ public class PanningWindow extends Region {
         return zoom.get();
     }
 
-    public double constrainZoom(final double zoom) {
-        final double min = 0.5;
-        final double max = 1.5;
-        final double a = zoom >= min ? zoom : min;
-        return a <= max ? a : max;
+    private static double constrainZoom(final double zoom) {
+        final double a = zoom >= SCALE_MIN ? zoom : SCALE_MIN;
+        return a <= SCALE_MAX ? a : SCALE_MAX;
     }
 
     /**
@@ -257,7 +260,7 @@ public class PanningWindow extends Region {
         // a) right mouse button pressed (no multi touch environment)
         // b) no gesture active or pan gesture active
         return event.isSecondaryButtonDown() || panningEnabled && editorProperties != null
-                && editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.PAN);
+                && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.PAN);
     }
 
     private void handlePanningMousePressed(final MouseEvent event) {
@@ -287,28 +290,32 @@ public class PanningWindow extends Region {
     }
     
     private void handlePanningMouseReleased(final MouseEvent event) {
-        if (!canPan(event)) {
-            return;
+
+        if(Cursor.MOVE.equals(getCursor())) {
+            setCursor(null);
+        }
+        
+        if(editorProperties != null) {
+            editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.PAN, null);
         }
 
-        setCursor(null);
-
-        editorProperties.getGraphEventManager().setInputGesture(null);
         panningGestureActive = false;
+        
+        event.consume();
     }
     
     private void handleZoom(final ZoomEvent event) {
         if (!panningEnabled || editorProperties == null
-                || !editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.ZOOM)) {
+                || !editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.ZOOM)) {
             return;
         }
 
         event.consume();
-        if(event.getEventType() == ZoomEvent.ZOOM_STARTED) {
+        if (event.getEventType() == ZoomEvent.ZOOM_STARTED) {
             editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.ZOOM);
             return;
-        } else if (event.getEventType() == ZoomEvent.ZOOM_STARTED) {
-            editorProperties.getGraphEventManager().setInputGesture(null);
+        } else if (event.getEventType() == ZoomEvent.ZOOM_FINISHED) {
+            editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.ZOOM, null);
             return;
         }
 

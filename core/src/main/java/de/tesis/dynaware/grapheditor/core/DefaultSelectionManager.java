@@ -28,6 +28,7 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
 /**
@@ -89,10 +90,10 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionCopier.initialize(model);
     }
     
-    private boolean canSelect() {
-		return editorProperties != null
+	private boolean canSelect(final MouseEvent event) {
+		return !event.isSecondaryButtonDown() && editorProperties != null
 				&& editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.SELECTION;
-    }
+	}
     
     /**
      * Sets the editor properties instance for the graph editor.

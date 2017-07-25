@@ -80,6 +80,18 @@ public class GraphEventManager {
     }
     
     /**
+     * <p>
+     * This method is called by the framework. Custom skins should <b>not</b> call it. 
+     * </p>
+     * @param inputMode new {@link GraphInputGesture}
+     */
+    public void compareAndSetInputGesture(final GraphInputGesture expected, final GraphInputGesture inputMode) {
+        if(getInputGesture() == expected) {
+            this.gesture.set(inputMode);
+        }
+    }
+    
+    /**
      * @return {@link ObjectProperty} controlling the current {@link GraphInputGesture}
      */
     public ObjectProperty<GraphInputGesture> inputGestureProperty() {
@@ -92,7 +104,7 @@ public class GraphEventManager {
      * @return {@code true} if {@link #getInputGesture() the currently active
      *         gesture} matches the given one or no gesture is active at all
      */
-    public boolean isInputGestureActiveOrInactive(final GraphInputGesture gesture) {
+    public boolean isInputGestureActiveOrEmpty(final GraphInputGesture gesture) {
         final GraphInputGesture current = getInputGesture();
         return current == null || current == gesture;
     }
