@@ -30,7 +30,6 @@ public class GraphEditorDemo extends Application {
         final URL location = getClass().getResource("GraphEditorDemo.fxml");
         final FXMLLoader loader = new FXMLLoader();
         final Parent root = loader.load(location.openStream());
-        final GraphEditorDemoController controller = loader.getController();
 
         final Scene scene = new Scene(root, 830, 630);
 
@@ -43,8 +42,6 @@ public class GraphEditorDemo extends Application {
         stage.setTitle(APPLICATION_TITLE);
 
         stage.show();
-
-        controller.panToCenter();
     }
 
     public static void main(final String[] args) {

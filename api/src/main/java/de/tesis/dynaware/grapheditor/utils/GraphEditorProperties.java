@@ -3,11 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import de.tesis.dynaware.grapheditor.GraphInputMode;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -35,7 +32,7 @@ public class GraphEditorProperties {
     public static final double DEFAULT_MAX_WIDTH = Double.MAX_VALUE;
     public static final double DEFAULT_MAX_HEIGHT = Double.MAX_VALUE;
 
-    private static final double DEFAULT_BOUND_VALUE = 15;
+    public static final double DEFAULT_BOUND_VALUE = 15;
     public static final double DEFAULT_GRID_SPACING = 12;
 
     // Not currently configurable.
@@ -56,33 +53,11 @@ public class GraphEditorProperties {
     private final BooleanProperty gridVisible = new SimpleBooleanProperty(this, "gridVisible");
     private final BooleanProperty snapToGrid = new SimpleBooleanProperty(this, "snapToGrid");
     private final DoubleProperty gridSpacing = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING);
-
     private final BooleanProperty readOnly = new SimpleBooleanProperty(this, "readOnly");
     
-    private final ObjectProperty<GraphInputMode> inputMode = new ObjectPropertyBase<GraphInputMode>(GraphInputMode.SELECTION) {
-
-		@Override
-		public Object getBean() {
-			return GraphEditorProperties.this;
-		}
-
-		@Override
-		public String getName() {
-			return "inputMode";
-		}
-		
-		@Override
-		public void set(GraphInputMode newValue) {
-			super.set(newValue == null ? GraphInputMode.SELECTION : newValue);
-		}
-		
-		@Override
-		public void setValue(GraphInputMode newValue) {
-			set(newValue);
-		}
-	};
-    
     private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
+    
+    private final GraphEventManager eventManager = new GraphEventManager();
 
     /**
      * Creates a new editor properties instance containing a set of default properties.
@@ -364,25 +339,11 @@ public class GraphEditorProperties {
     public ObservableMap<String, String> getCustomProperties() {
         return customProperties;
     }
-    
+
     /**
-     * @return currently active {@link GraphInputMode}
+     * @return the {@link GraphEventManager}
      */
-    public GraphInputMode getInputMode() {
-    	return inputMode.get();
-    }
-    
-    /**
-     * @param inputMode new {@link GraphInputMode}
-     */
-    public void setInputMode(final GraphInputMode inputMode) {
-    	this.inputMode.set(inputMode);
-    }
-    
-    /**
-     * @return {@link ObjectProperty} controlling the current {@link GraphInputMode}
-     */
-    public ObjectProperty<GraphInputMode> inputModeProperty() {
-    	return inputMode;
+    public GraphEventManager getGraphEventManager() {
+        return eventManager;
     }
 }

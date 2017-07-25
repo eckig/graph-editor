@@ -1,4 +1,4 @@
-package de.tesis.dynaware.grapheditor;
+package de.tesis.dynaware.grapheditor.utils;
 
 public enum GraphInputMode {
 	/**

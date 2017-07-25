@@ -11,7 +11,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -43,7 +42,7 @@ public class DraggableBox extends StackPane {
     protected double absoluteMaxWidth;
     protected double absoluteMaxHeight;
 
-    protected GraphEditorProperties editorProperties = new GraphEditorProperties();
+    protected GraphEditorProperties editorProperties;
 
     protected Region container;
 
@@ -256,6 +255,27 @@ public class DraggableBox extends StackPane {
     protected boolean isEditable() {
         return editorProperties != null && !editorProperties.isReadOnly();
     }
+    
+    protected boolean isDragGestureActive() {
+        return editorProperties != null
+                && editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.DRAG);
+    }
+    
+    void notifyDragActive() {
+        
+        dragActive = true;
+        if(editorProperties != null) {
+            editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.DRAG);
+        }
+    }
+    
+    private void notifyDragInactive() {
+        
+        dragActive = false;
+        if(editorProperties != null) {
+            editorProperties.getGraphEventManager().setInputGesture(null);
+        }
+    }
 
     /**
      * Handles mouse-pressed events.
@@ -264,7 +284,7 @@ public class DraggableBox extends StackPane {
      */
     protected void handleMousePressed(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
+        if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
             return;
         }
 
@@ -272,7 +292,7 @@ public class DraggableBox extends StackPane {
 
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
         storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
-        dragActive = true;
+        notifyDragActive();
         event.consume();
     }
 
@@ -283,7 +303,7 @@ public class DraggableBox extends StackPane {
      */
     protected void handleMouseDragged(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
+        if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
             return;
         }
         
@@ -293,7 +313,7 @@ public class DraggableBox extends StackPane {
 
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
         handleDrag(cursorPosition.getX(), cursorPosition.getY());
-        dragActive = true;
+        notifyDragActive();
         event.consume();
     }
 
@@ -304,12 +324,11 @@ public class DraggableBox extends StackPane {
      */
     protected void handleMouseReleased(final MouseEvent event) {
 
-        if (!event.getButton().equals(MouseButton.PRIMARY) || !isEditable()) {
+        if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
             return;
         }
 
-        dragActive = false;
-
+        notifyDragInactive();
         event.consume();
     }
 
@@ -361,7 +380,8 @@ public class DraggableBox extends StackPane {
      */
     protected double roundToGridSpacing(final double value) {
 
-        final double spacing = editorProperties.getGridSpacing();
+        final double spacing = editorProperties == null ? GraphEditorProperties.DEFAULT_GRID_SPACING
+                : editorProperties.getGridSpacing();
         return spacing * Math.round(value / spacing);
     }
 
@@ -389,16 +409,20 @@ public class DraggableBox extends StackPane {
      */
     private void handleDragX(final double x) {
 
-        final double maxParentWidth = editorProperties.isEastBoundActive() ? lastParentWidth : absoluteMaxWidth;
+        final double maxParentWidth = editorProperties != null && editorProperties.isEastBoundActive() ? lastParentWidth
+                : absoluteMaxWidth;
 
-        final double minLayoutX = editorProperties.getWestBoundValue();
-        final double maxLayoutX = maxParentWidth - getWidth() - editorProperties.getEastBoundValue();
+        final double minLayoutX = editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
+                : editorProperties.getWestBoundValue();
+        final double maxLayoutX = maxParentWidth - getWidth()
+                - (editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
+                        : editorProperties.getEastBoundValue());
 
         final double scaleFactor = getLocalToSceneTransform().getMxx();
 
         double newLayoutX = lastLayoutX + (x - lastMouseX) / scaleFactor;
 
-        if (editorProperties.isSnapToGridOn()) {
+        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
             // The -1 here is to put the rectangle border exactly on top of a grid line.
             newLayoutX = roundToGridSpacing(newLayoutX - snapToGridOffset.getX()) + snapToGridOffset.getX() - 1;
         } else {
@@ -410,7 +434,7 @@ public class DraggableBox extends StackPane {
             }
         }
 
-        if (editorProperties.isWestBoundActive() && newLayoutX < minLayoutX) {
+        if (editorProperties != null && editorProperties.isWestBoundActive() && newLayoutX < minLayoutX) {
             newLayoutX = minLayoutX;
         } else if (newLayoutX > maxLayoutX) {
             newLayoutX = maxLayoutX;
@@ -426,7 +450,7 @@ public class DraggableBox extends StackPane {
      */
     private void handleDragY(final double y) {
 
-        final double maxParentHeight = editorProperties.isSouthBoundActive() ? lastParentHeight : absoluteMaxHeight;
+        final double maxParentHeight = editorProperties != null && editorProperties.isSouthBoundActive() ? lastParentHeight : absoluteMaxHeight;
 
         final double minLayoutY = editorProperties.getNorthBoundValue();
         final double maxLayoutY = maxParentHeight - getHeight() - editorProperties.getSouthBoundValue();
@@ -435,7 +459,7 @@ public class DraggableBox extends StackPane {
 
         double newLayoutY = lastLayoutY + (y - lastMouseY) / scaleFactor;
 
-        if (editorProperties.isSnapToGridOn()) {
+        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
             // The -1 here is to put the rectangle border exactly on top of a grid line.
             newLayoutY = roundToGridSpacing(newLayoutY - snapToGridOffset.getY()) + snapToGridOffset.getY() - 1;
         } else {
@@ -447,7 +471,7 @@ public class DraggableBox extends StackPane {
             }
         }
 
-        if (editorProperties.isNorthBoundActive() && newLayoutY < minLayoutY) {
+        if (editorProperties != null && editorProperties.isNorthBoundActive() && newLayoutY < minLayoutY) {
             newLayoutY = minLayoutY;
         } else if (newLayoutY > maxLayoutY) {
             newLayoutY = maxLayoutY;

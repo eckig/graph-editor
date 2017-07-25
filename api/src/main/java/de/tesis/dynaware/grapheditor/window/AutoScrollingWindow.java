@@ -18,7 +18,12 @@ import javafx.util.Duration;
  */
 public class AutoScrollingWindow extends PanningWindow {
 
-    private final AutoScrollingParameters parameters = new AutoScrollingParameters();
+    private static final Duration JUMP_PERIOD = Duration.millis(25);
+    
+    private double baseJumpAmount = 1;
+    private double maxJumpAmount = 50;
+    private double jumpAmountIncreasePerJump = 0.5;
+    private double insetToBeginScroll = 1;
 
     private Timeline timeline;
     private boolean isScrolling;
@@ -54,28 +59,13 @@ public class AutoScrollingWindow extends PanningWindow {
     }
 
     /**
-     * Gets the parameters that control the auto-scrolling rate.
-     *
-     * @return the parameters that control the auto-scrolling rate
-     */
-    public AutoScrollingParameters getAutoScrollingParameters() {
-        return parameters;
-    }
-
-    /**
      * Handles mouse-dragged events.
-     *
-     * <p>
-     * The event object is stored to be re-fired later. When we pan the window, we re-fire the previous drag event on
-     * its target so that even if the cursor is no longer moving, the dragged-object will continue to move smoothly
-     * along as the window auto-scrolls.
-     * </p>
      *
      * @param event the mouse-dragged event object
      */
     private void handleMouseDragged(final MouseEvent event) {
 
-        if (event.isPrimaryButtonDown() && event.getTarget() instanceof Node && !isMultiTouchActive()) {
+        if (event.isPrimaryButtonDown() && event.getTarget() instanceof Node) {
 
             jumpDistance = getDistanceToJump(event.getX(), event.getY());
 
@@ -112,19 +102,19 @@ public class AutoScrollingWindow extends PanningWindow {
         double jumpX = 0;
         double jumpY = 0;
 
-        final double baseAmount = parameters.getBaseJumpAmount();
-        final double additionalAmount = jumpsTaken * parameters.getJumpAmountIncreasePerJump();
-        final double distance = Math.min(baseAmount + additionalAmount, parameters.getMaxJumpAmount());
+        final double baseAmount = baseJumpAmount;
+        final double additionalAmount = jumpsTaken * jumpAmountIncreasePerJump;
+        final double distance = Math.min(baseAmount + additionalAmount, maxJumpAmount);
 
-        if (cursorX <= parameters.getInsetToBeginScroll()) {
+        if (cursorX <= insetToBeginScroll) {
             jumpX = -distance;
-        } else if (cursorX >= getWidth() - parameters.getInsetToBeginScroll()) {
+        } else if (cursorX >= getWidth() - insetToBeginScroll) {
             jumpX = distance;
         }
 
-        if (cursorY <= parameters.getInsetToBeginScroll()) {
+        if (cursorY <= insetToBeginScroll) {
             jumpY = -distance;
-        } else if (cursorY >= getHeight() - parameters.getInsetToBeginScroll()) {
+        } else if (cursorY >= getHeight() - insetToBeginScroll) {
             jumpY = distance;
         }
 
@@ -165,7 +155,7 @@ public class AutoScrollingWindow extends PanningWindow {
         isScrolling = true;
         jumpsTaken = 0;
 
-        final KeyFrame frame = new KeyFrame(Duration.millis(parameters.getJumpPeriod()), event -> {
+        final KeyFrame frame = new KeyFrame(JUMP_PERIOD, event -> {
             if (isScrolling && jumpDistance != null) {
                 panBy(jumpDistance.getX(), jumpDistance.getY());
                 jumpsTaken++;

@@ -44,7 +44,6 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
     private GraphEditor graphEditor;
     private final ChangeListener<GModel> modelChangeListener = (observable, oldValue, newValue) -> modelChanged(newValue);
-	private final ChangeListener<GraphInputMode> inputModeListener = (w,o,n) -> setPanningActive(n == GraphInputMode.NAVIGATION);
 	
     /**
      * Creates a new {@link GraphEditorContainer}.
@@ -75,7 +74,7 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
         if (this.graphEditor != null) {
             this.graphEditor.modelProperty().removeListener(modelChangeListener);
-            this.graphEditor.getProperties().inputModeProperty().removeListener(inputModeListener);
+            setEditorProperties(null);
         }
 
         this.graphEditor = graphEditor;
@@ -98,10 +97,10 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
             view.toBack();
             
-            graphEditor.getProperties().inputModeProperty().addListener(inputModeListener);
-            setPanningActive(graphEditor.getProperties().getInputMode() == GraphInputMode.NAVIGATION);
+            setEditorProperties(graphEditor.getProperties());
 
         } else {
+            setEditorProperties(null);
             minimap.setContent(null);
             minimap.setModel(null);
         }

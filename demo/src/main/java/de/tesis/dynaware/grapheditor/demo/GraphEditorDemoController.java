@@ -5,28 +5,12 @@ package de.tesis.dynaware.grapheditor.demo;
 
 import java.util.Map;
 
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
-import javafx.fxml.FXML;
-import javafx.geometry.Side;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.transform.Scale;
-
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
-import de.tesis.dynaware.grapheditor.GraphInputMode;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
@@ -41,7 +25,21 @@ import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
-import de.tesis.dynaware.grapheditor.window.WindowPosition;
+import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
+import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.transform.Scale;
 
 /**
  * Controller for the {@link GraphEditorDemo} application.
@@ -275,26 +273,15 @@ public class GraphEditorDemoController {
     public void toggleMinimap() {
         graphEditorContainer.getMinimap().visibleProperty().bind(minimapButton.selectedProperty());
     }
-
-    /**
-     * Pans the graph editor container to place the window over the center of the content.
-     *
-     * <p>
-     * Only works after the scene has been drawn, when getWidth() & getHeight() return non-zero values.
-     * </p>
-     */
-    public void panToCenter() {
-        graphEditorContainer.panTo(WindowPosition.CENTER);
-    }
     
     @FXML
     private void switchToNavigation() {
-    	graphEditor.getProperties().setInputMode(GraphInputMode.NAVIGATION);
+    	graphEditor.getProperties().getGraphEventManager().setInputMode(GraphInputMode.NAVIGATION);
     }
     
     @FXML
     private void switchToSelection() {
-    	graphEditor.getProperties().setInputMode(GraphInputMode.SELECTION);
+    	graphEditor.getProperties().getGraphEventManager().setInputMode(GraphInputMode.SELECTION);
     }
 
     /**

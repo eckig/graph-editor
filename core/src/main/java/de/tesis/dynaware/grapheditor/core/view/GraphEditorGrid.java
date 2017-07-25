@@ -68,6 +68,7 @@ public class GraphEditorGrid extends Region {
     public GraphEditorGrid() {
 
         setMouseTransparent(true);
+        setCacheShape(true);
         getStyleClass().add(STYLE_CLASS);
         updateGrid();
     }

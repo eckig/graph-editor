@@ -180,7 +180,17 @@ public class PanningWindowMinimap extends Pane {
         
         if(!drawLocatorListenerMuted) {
             locatorPositionListenersMuted = true;
-            locator.draw(window, content, scaleFactor, calculateZoomFactor());
+            
+            final double zoomFactor = calculateZoomFactor();
+            final double maxLocWidth = width - MINIMAP_PADDING * 2;
+            final double maxLocHeight = height - MINIMAP_PADDING * 2;
+            
+            final double x = Math.round(-content.getLayoutX() * scaleFactor / zoomFactor);
+            final double y = Math.round(-content.getLayoutY() * scaleFactor / zoomFactor);
+            final double locWidth = Math.min(maxLocWidth, Math.round(window.getWidth() * scaleFactor / zoomFactor));
+            final double locHeight = Math.min(maxLocHeight, Math.round(window.getHeight() * scaleFactor / zoomFactor));
+
+            locator.resizeRelocate(x + MINIMAP_PADDING, y + MINIMAP_PADDING, locWidth, locHeight);
             locatorPositionListenersMuted = false;
         }
     }

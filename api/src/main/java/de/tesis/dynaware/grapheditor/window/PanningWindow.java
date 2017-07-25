@@ -3,16 +3,16 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javafx.application.Platform;
+import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
+import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TouchEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -37,19 +37,19 @@ public class PanningWindow extends Region {
     private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
     private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
     private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningMouseReleased;
+    
+    private final ChangeListener<GraphInputMode> inputModeListener = (w,o,n) -> setPanningActive(n == GraphInputMode.NAVIGATION);
 
     private Point2D clickPosition;
-
-    private double windowXAtClick;
-    private double windowYAtClick;
+    private Point2D windowPosAtClick;
     
     private boolean panningGestureActive;
     private boolean panningActive = true;
     
     private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
-    private final EventHandler<TouchEvent> touchHandler = this::handleTouch;
-    private final AtomicInteger currentTouchCount = new AtomicInteger();
     private final Scale scaleTransform = new Scale(1, 1, 0, 0);
+    
+    private GraphEditorProperties editorProperties;
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -59,6 +59,28 @@ public class PanningWindow extends Region {
         clip.widthProperty().bind(widthProperty());
         clip.heightProperty().bind(heightProperty());
         setClip(clip);
+    }
+    
+    /**
+     * Sets the editor properties object that the drag logic should respect.
+     *
+     * <p>
+     * This method is called by the framework. Custom skins should <b>not</b> call it. Editor properties should instead
+     * be set via the graph editor instance.
+     * </p>
+     *
+     * @param editorProperties the {@link GraphEditorProperties} instance for the graph editor
+     */
+    public void setEditorProperties(final GraphEditorProperties editorProperties) {
+        
+        if(this.editorProperties != null) {
+            this.editorProperties.getGraphEventManager().inputModeProperty().removeListener(inputModeListener);
+        }
+        this.editorProperties = editorProperties;
+        if(editorProperties != null) {
+            editorProperties.getGraphEventManager().inputModeProperty().addListener(inputModeListener);
+            setPanningActive(editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.NAVIGATION);
+        }
     }
     
     @Override
@@ -115,32 +137,6 @@ public class PanningWindow extends Region {
 
         contentY = checkContentY(y);
         requestLayout();
-    }
-
-    /**
-     * Pans the window to the given position.
-     *
-     * <p>
-     * <b>Note: </b><br>
-     * The current width & height values of the window and its content are used in this method. It should therefore be
-     * called <em>after</em> the scene has been drawn.
-     * </p>
-     *
-     * @param position the {@link WindowPosition} to pan to
-     */
-    public void panTo(final WindowPosition position) {
-
-        switch (position) {
-        
-        case TOP_CENTER:
-            panTo((content.getWidth() - getWidth()) / 2, 0);
-            break;
-
-        case CENTER:
-            panTo((content.getWidth() - getWidth()) / 2, (content.getHeight() - getHeight()) / 2);
-            break;
-            
-        }
     }
 
     /**
@@ -226,26 +222,26 @@ public class PanningWindow extends Region {
         }
     }
     
-    public void setPanningActive(boolean panningActive) {
+    private void setPanningActive(boolean panningActive) {
 		this.panningActive = panningActive;
 	}
     
-    public boolean isPanningActive() {
+    boolean isPanningActive() {
 		return panningActive;
 	}
     
-    protected boolean isMultiTouchActive() {
-        return currentTouchCount.get() > 1;
-    }
-
     private void handlePanningMousePressed(final MouseEvent event) {
-    	if (isPanningActive() && currentTouchCount.get() < 2) {
-        	startPanning(event.getSceneX(), event.getSceneY());
+        
+        if (!isPanningActive() || editorProperties == null
+                || !editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.PAN)) {
+            return;
         }
+    	startPanning(event.getSceneX(), event.getSceneY());
     }
     
     private void handlePanningMouseDragged(final MouseEvent event) {
-    	if (!isPanningActive() || isMultiTouchActive()) {
+        if (!isPanningActive() || editorProperties == null
+                || !editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.PAN)) {
             return;
         }
 
@@ -258,8 +254,8 @@ public class PanningWindow extends Region {
         final double deltaX = currentPosition.getX() - clickPosition.getX();
         final double deltaY = currentPosition.getY() - clickPosition.getY();
 
-        final double newWindowX = windowXAtClick - deltaX;
-        final double newWindowY = windowYAtClick - deltaY;
+        final double newWindowX = windowPosAtClick.getX() - deltaX;
+        final double newWindowY = windowPosAtClick.getY() - deltaY;
 
         panTo(newWindowX, newWindowY);
     }
@@ -271,39 +267,42 @@ public class PanningWindow extends Region {
 
         setCursor(null);
 
+        editorProperties.getGraphEventManager().setInputGesture(null);
         panningGestureActive = false;
     }
     
-    private void handleTouch(final TouchEvent pEvent) {
-        final int current = currentTouchCount.get();
-		if (pEvent.getEventType() == TouchEvent.TOUCH_PRESSED) {
-		    currentTouchCount.compareAndSet(current, pEvent.getTouchCount());
-		} else {
-		    Platform.runLater(() -> currentTouchCount.compareAndSet(current, 0));
-		}
-		pEvent.consume();
-	}
-    
     private void handleZoom(final ZoomEvent event) {
-        if (!isPanningActive() || currentTouchCount.get() != 2) {
+        if (!isPanningActive() || editorProperties == null
+                || !editorProperties.getGraphEventManager().isInputGestureActiveOrInactive(GraphInputGesture.ZOOM)) {
             return;
         }
-        final double zoomFactor = event.getZoomFactor() > 1 ? 1.01 : 0.99;
+        
+        event.consume();
+        if(event.getEventType() == ZoomEvent.ZOOM_STARTED) {
+            editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.ZOOM);
+            return;
+        }
+        else if(event.getEventType() == ZoomEvent.ZOOM_STARTED) {
+            editorProperties.getGraphEventManager().setInputGesture(null);
+            return;
+        }
+
+        final double zoomFactor = event.getZoomFactor() > 1 ? 1.02 : 0.98;
         final double newZoomLevel = scaleTransform.getX() * zoomFactor;
 
-        final double currentX = content.getLayoutX();
-        final double currentY = content.getLayoutY();
-        final double diffX = event.getX() - currentX;
-        final double diffY = event.getY() - currentY;
-        final double newX = event.getX() - (diffX * zoomFactor);
-        final double newY = event.getY() - (diffY * zoomFactor);
+        final double currentX = getContentX();
+        final double currentY = getContentY();
+        final double diffX = event.getX();
+        final double diffY = event.getY();
+        final double newX = currentX + diffX - (diffX / zoomFactor);
+        final double newY = currentY + diffY - (diffY / zoomFactor);
 
+        
         if (newZoomLevel < 1.5 && newZoomLevel > 0.4) {
             scaleTransform.setX(newZoomLevel);
             scaleTransform.setY(newZoomLevel);
             panTo(newX, newY);
         }
-        event.consume();
     }
     
     /**
@@ -313,9 +312,7 @@ public class PanningWindow extends Region {
         content.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         content.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
         content.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-        content.addEventHandler(ZoomEvent.ZOOM, zoomHandler);
-        content.addEventHandler(TouchEvent.TOUCH_PRESSED, touchHandler);
-        content.addEventHandler(TouchEvent.TOUCH_RELEASED, touchHandler);
+        content.addEventHandler(ZoomEvent.ANY, zoomHandler);
     }
 
     /**
@@ -325,9 +322,7 @@ public class PanningWindow extends Region {
         content.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         content.removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
         content.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-        content.removeEventHandler(ZoomEvent.ZOOM, zoomHandler);
-        content.removeEventHandler(TouchEvent.TOUCH_PRESSED, touchHandler);
-        content.removeEventHandler(TouchEvent.TOUCH_RELEASED, touchHandler);
+        content.removeEventHandler(ZoomEvent.ANY, zoomHandler);
     }
 
     /**
@@ -339,13 +334,12 @@ public class PanningWindow extends Region {
      */
     private void startPanning(final double x, final double y) {
 
+        editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.PAN);
         setCursor(Cursor.MOVE);
 
         panningGestureActive = true;
 
         clickPosition = new Point2D(x, y);
-
-        windowXAtClick = getContentX();
-        windowYAtClick = getContentY();
+        windowPosAtClick = new Point2D(getContentX(), getContentY());
     }
 }

@@ -10,7 +10,6 @@ import java.util.function.BiPredicate;
 import org.eclipse.emf.common.command.CompoundCommand;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
-import de.tesis.dynaware.grapheditor.GraphInputMode;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -26,6 +25,7 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Pair;
@@ -90,7 +90,8 @@ public class DefaultSelectionManager implements SelectionManager {
     }
     
     private boolean canSelect() {
-    	return editorProperties != null && editorProperties.getInputMode() == GraphInputMode.SELECTION;
+		return editorProperties != null
+				&& editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.SELECTION;
     }
     
     /**
