@@ -312,7 +312,7 @@ public class PanningWindow extends Region {
 
         event.consume();
         if (event.getEventType() == ZoomEvent.ZOOM_STARTED) {
-            editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.ZOOM);
+            editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.ZOOM);
             return;
         } else if (event.getEventType() == ZoomEvent.ZOOM_FINISHED) {
             editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.ZOOM, null);
@@ -367,7 +367,7 @@ public class PanningWindow extends Region {
      */
     private void startPanning(final double x, final double y) {
 
-        editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.PAN);
+        editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.PAN);
         setCursor(Cursor.MOVE);
 
         panningGestureActive = true;

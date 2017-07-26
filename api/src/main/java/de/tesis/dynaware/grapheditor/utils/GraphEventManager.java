@@ -75,7 +75,7 @@ public class GraphEventManager {
      * </p>
      * @param inputMode new {@link GraphInputGesture}
      */
-    public void setInputGesture(final GraphInputGesture inputMode) {
+    public void activateInputGesture(final GraphInputGesture inputMode) {
         this.gesture.set(inputMode);
     }
     

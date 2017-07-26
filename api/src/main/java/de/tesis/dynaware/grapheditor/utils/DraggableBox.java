@@ -265,7 +265,7 @@ public class DraggableBox extends StackPane {
         
         dragActive = true;
         if(editorProperties != null) {
-            editorProperties.getGraphEventManager().setInputGesture(GraphInputGesture.DRAG);
+            editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.DRAG);
         }
     }
     
@@ -273,7 +273,7 @@ public class DraggableBox extends StackPane {
         
         dragActive = false;
         if(editorProperties != null) {
-            editorProperties.getGraphEventManager().setInputGesture(null);
+            editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.DRAG, null);
         }
     }
 
@@ -323,10 +323,6 @@ public class DraggableBox extends StackPane {
      * @param event {@link MouseEvent}
      */
     protected void handleMouseReleased(final MouseEvent event) {
-
-        if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
-            return;
-        }
 
         notifyDragInactive();
         event.consume();
