@@ -113,7 +113,9 @@ public class TreeSkinController implements SkinController {
 
     @Override
     public void handleSelectAll() {
-        graphEditor.getSelectionManager().selectAll();
+    	graphEditor.getSelectionManager().getSelectedItems().addAll(graphEditor.getModel().getNodes());
+    	graphEditor.getSelectionManager().getSelectedItems().addAll(graphEditor.getModel().getConnections());
+    	graphEditor.getModel().getConnections().stream().flatMap(s -> s.getJoints().stream()).forEach(graphEditor.getSelectionManager().getSelectedItems()::add);
     }
 
     /**
@@ -121,11 +123,11 @@ public class TreeSkinController implements SkinController {
      * 
      * @param nodes a list of graph nodes
      */
-    private void selectReferencedConnections(final List<GNode> nodes) {
-        nodes.forEach(node -> node.getConnectors().forEach(connector -> {
-            connector.getConnections().forEach(connection -> {
-                graphEditor.getSkinLookup().lookupConnection(connection).setSelected(true);
-            });
-        }));
-    }
+	private void selectReferencedConnections(final List<GNode> nodes) {
+
+		nodes.stream()
+			.flatMap(node -> node.getConnectors().stream())
+			.flatMap(connector -> connector.getConnections().stream())
+			.forEach(graphEditor.getSelectionManager()::select);
+	}
 }

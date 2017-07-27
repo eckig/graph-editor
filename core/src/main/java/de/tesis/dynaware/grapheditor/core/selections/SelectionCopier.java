@@ -20,6 +20,7 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.utils.GModelUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -47,8 +48,7 @@ public class SelectionCopier {
     private static final double BASE_PASTE_OFFSET = 20;
 
     private final SkinLookup skinLookup;
-    private final SelectionTracker selectionTracker;
-    private final SelectionCreator selectionCreator;
+    private final SelectionManager selectionManager;
     private final SelectionDeleter selectionDeleter;
 
     private final List<GNode> copiedNodes = new ArrayList<>();
@@ -65,15 +65,14 @@ public class SelectionCopier {
      *
      * @param skinLookup the {@link SkinLookup} instance for the graph editor
      * @param selectionTracker the {@link SelectionTracker} instance for the graph editor
-     * @param selectionCreator the {@link SelectionCreator} instance for the graph editor
+     * @param selectionManager the {@link SelectionManager} instance for the graph editor
      * @param selectionDeleter the {@link SelectionDeleter} instance for the graph editor
      */
-    public SelectionCopier(final SkinLookup skinLookup, final SelectionTracker selectionTracker,
-            final SelectionCreator selectionCreator, final SelectionDeleter selectionDeleter) {
+	public SelectionCopier(final SkinLookup skinLookup, final SelectionManager selectionManager,
+			final SelectionDeleter selectionDeleter) {
 
         this.skinLookup = skinLookup;
-        this.selectionTracker = selectionTracker;
-        this.selectionCreator = selectionCreator;
+        this.selectionManager = selectionManager;
         this.selectionDeleter = selectionDeleter;
     }
 
@@ -93,7 +92,7 @@ public class SelectionCopier {
      */
     public void cut(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
 
-        if (selectionTracker.getSelectedNodes().isEmpty()) {
+        if (selectionManager.getSelectedItems().isEmpty()) {
             return;
         }
 
@@ -106,7 +105,7 @@ public class SelectionCopier {
      */
     public void copy() {
 
-        if (selectionTracker.getSelectedNodes().isEmpty()) {
+        if (selectionManager.getSelectedItems().isEmpty()) {
             return;
         }
 
@@ -117,7 +116,7 @@ public class SelectionCopier {
 
         // Don't iterate directly over selectionTracker.getSelectedNodes() because that will not preserve ordering.
         for (final GNode node : model.getNodes()) {
-            if (selectionTracker.getSelectedNodes().contains(node)) {
+            if (selectionManager.getSelectedNodes().contains(node)) {
 
                 final GNode copiedNode = EcoreUtil.copy(node);
                 copiedNodes.add(copiedNode);
@@ -141,7 +140,7 @@ public class SelectionCopier {
      */
     public List<GNode> paste(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
 
-        selectionCreator.deselectAll();
+    	selectionManager.clearSelection();
 
         final List<GNode> pastedNodes = new ArrayList<>();
         final List<GConnection> pastedConnections = new ArrayList<>();
@@ -152,12 +151,12 @@ public class SelectionCopier {
         addPastedElements(pastedNodes, pastedConnections, consumer);
 
         for (final GNode pastedNode : pastedNodes) {
-            skinLookup.lookupNode(pastedNode).setSelected(true);
+        	selectionManager.select(pastedNode);
         }
 
         for (final GConnection pastedConnection : pastedConnections) {
             for (final GJoint pastedJoint : pastedConnection.getJoints()) {
-                skinLookup.lookupJoint(pastedJoint).setSelected(true);
+            	selectionManager.select(pastedJoint);
             }
         }
 
@@ -303,9 +302,9 @@ public class SelectionCopier {
      */
     private void saveParentPositionInScene() {
 
-        if (!selectionTracker.getSelectedNodes().isEmpty()) {
+        if (!selectionManager.getSelectedItems().isEmpty()) {
 
-            final GNode firstSelectedNode = selectionTracker.getSelectedNodes().get(0);
+            final GNode firstSelectedNode = selectionManager.getSelectedNodes().get(0);
             final GNodeSkin firstSelectedNodeSkin = skinLookup.lookupNode(firstSelectedNode);
 
             final Node root = firstSelectedNodeSkin.getRoot();

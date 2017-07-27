@@ -18,9 +18,8 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
  * The root JavaFX node of this skin is a {@link DraggableBox}.
  * </p>
  */
-public abstract class GJointSkin extends GSkin {
+public abstract class GJointSkin extends GSkin<GJoint> {
 
-    private final GJoint joint;
     private final DraggableBox root = new DraggableBox();
 
     /**
@@ -29,16 +28,7 @@ public abstract class GJointSkin extends GSkin {
      * @param joint the {@link GJoint} represented by the skin
      */
     public GJointSkin(final GJoint joint) {
-        this.joint = joint;
-    }
-
-    /**
-     * Gets the joint model element represented by the skin.
-     *
-     * @return the {@link GJoint} represented by the skin
-     */
-    public GJoint getJoint() {
-        return joint;
+        super(joint);
     }
 
     /**
@@ -59,8 +49,8 @@ public abstract class GJointSkin extends GSkin {
      * </p>
      */
     public void initialize() {
-        getRoot().setLayoutX(getJoint().getX() - getWidth() / 2);
-        getRoot().setLayoutY(getJoint().getY() - getHeight() / 2);
+        getRoot().setLayoutX(getItem().getX() - getWidth() / 2);
+        getRoot().setLayoutY(getItem().getY() - getHeight() / 2);
     }
 
     /**

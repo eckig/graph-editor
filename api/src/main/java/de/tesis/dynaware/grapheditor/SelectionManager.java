@@ -12,6 +12,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.util.Pair;
 
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -27,18 +28,18 @@ public interface SelectionManager {
      * Gets the observable list of currently-selected nodes.
      *
      * <p>
-     * This list is read-only. Nodes should be selected via their skin class.
+     * This list is read-only. Nodes should be selected via {@link #select(EObject)}.
      * </p>
      *
      * @return the list of selected nodes
      */
     ObservableList<GNode> getSelectedNodes();
-
+    
     /**
      * Gets the observable list of currently-selected connections.
      *
      * <p>
-     * This list is read-only. Connections should be selected via their skin class.
+     * This list is read-only. Connections should be selected via {@link #select(EObject)}.
      * </p>
      *
      * @return the list of selected connections
@@ -49,12 +50,48 @@ public interface SelectionManager {
      * Gets the observable list of currently-selected joints.
      *
      * <p>
-     * This list is read-only. Joints should be selected via their skin class.
+     * This list is read-only. Joints should be selected via {@link #select(EObject)}.
      * </p>
      *
      * @return the list of selected joints
      */
     ObservableList<GJoint> getSelectedJoints();
+    
+    /**
+     * Convenience method to inform if the given object is currently selected. Is
+     * functionally equivalent to calling
+     * <code>getSelectedItems().contains(object)</code>.
+     * 
+     * @param object
+     * @return {@code true} if the given index is selected, {@code false} otherwise.
+     */
+    boolean isSelected(EObject object);
+    
+    /**
+     * Gets the observable list of currently-selected items.
+     *
+     * <p>
+     * This list is read-only. Items should be selected via {@link #select(EObject)}.
+     * </p>
+     *
+     * @return the list of selected items
+     */
+    ObservableList<EObject> getSelectedItems();
+    
+    /**
+     * This method will attempt to select the given object.
+     *
+     * @param object The object to attempt to select in the underlying data model.
+     */
+    void select(EObject object);
+    
+    /**
+     * This method will clear the selection of the given object.
+     * If the given object is not selected, nothing will happen.
+     *
+     * @param object The selected item to deselect.
+     */
+    void clearSelection(EObject object);
 
     /**
      * Cuts the current selection. Saves cut nodes and the connections between them to memory to be pasted later.
@@ -92,31 +129,6 @@ public interface SelectionManager {
      * @param consumer a consumer to append additional commands to this one
      */
     void paste(BiConsumer<List<GNode>, CompoundCommand> consumer);
-
-    /**
-     * Clears the memory of what was cut / copied, so that future paste calls will do nothing.
-     */
-    void clearMemory();
-
-    /**
-     * Selects all selectable elements (nodes, joints, and connections) in the graph editor.
-     */
-    void selectAll();
-
-    /**
-     * Selects all nodes in the graph editor.
-     */
-    void selectAllNodes();
-
-    /**
-     * Selects all joints in the graph editor.
-     */
-    void selectAllJoints();
-
-    /**
-     * Selects all connections in the graph editor.
-     */
-    void selectAllConnections();
 
     /**
      * Clears the selection, i.e. de-selects all elements.

@@ -78,7 +78,7 @@ public class DefaultConnectionSkin extends SimpleConnectionSkin {
      */
     private void performChecks() {
 
-        if (!RectangularConnectionUtils.checkJointCount(getConnection())) {
+        if (!RectangularConnectionUtils.checkJointCount(getItem())) {
             LOGGER.error(LogMessages.UNSUPPORTED_JOINT_COUNT);
         }
     }

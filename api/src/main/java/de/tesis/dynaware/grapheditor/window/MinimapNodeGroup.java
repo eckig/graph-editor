@@ -129,7 +129,7 @@ public class MinimapNodeGroup extends Parent {
     }
 
     private boolean isSelected(final GNode node) {
-        return selectionManager == null ? false : selectionManager.getSelectedNodes().contains(node);
+        return selectionManager == null ? false : selectionManager.isSelected(node);
     }
 
     private static double scaleSharp(final double value, final double scale) {

@@ -22,6 +22,7 @@ import javafx.scene.shape.Rectangle;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
@@ -88,7 +89,7 @@ public class TitledNodeSkin extends GNodeSkin {
     @Override
     public void initialize() {
         super.initialize();
-        title.setText(TITLE_TEXT + getNode().getId());
+        title.setText(TITLE_TEXT + getItem().getId());
     }
 
     @Override
@@ -102,8 +103,8 @@ public class TitledNodeSkin extends GNodeSkin {
         if (connectorSkins != null) {
             for (final GConnectorSkin connectorSkin : connectorSkins) {
 
-                final boolean isInput = connectorSkin.getConnector().getType().contains("input");
-                final boolean isOutput = connectorSkin.getConnector().getType().contains("output");
+                final boolean isInput = connectorSkin.getItem().getType().contains("input");
+                final boolean isOutput = connectorSkin.getItem().getType().contains("output");
 
                 if (isInput) {
                     inputConnectorSkins.add(connectorSkin);
@@ -164,7 +165,7 @@ public class TitledNodeSkin extends GNodeSkin {
 
         closeButton.setGraphic(AwesomeIcon.TIMES.node());
         closeButton.setCursor(Cursor.DEFAULT);
-        closeButton.setOnAction(event -> Commands.removeNode(getGraphEditor().getModel(), getNode()));
+        closeButton.setOnAction(event -> Commands.removeNode(getGraphEditor().getModel(), getItem()));
 
         contentRoot.minWidthProperty().bind(getRoot().widthProperty());
         contentRoot.prefWidthProperty().bind(getRoot().widthProperty());
@@ -287,15 +288,20 @@ public class TitledNodeSkin extends GNodeSkin {
      */
     private void setConnectorsSelected(final boolean isSelected) {
 
+    	final GraphEditor editor = getGraphEditor();
+    	if(editor == null) {
+    		return;
+    	}
+    	
         for (final GConnectorSkin skin : inputConnectorSkins) {
             if (skin instanceof TitledConnectorSkin) {
-                ((TitledConnectorSkin) skin).setSelected(isSelected);
+            	editor.getSelectionManager().select(skin.getItem());
             }
         }
 
         for (final GConnectorSkin skin : outputConnectorSkins) {
             if (skin instanceof TitledConnectorSkin) {
-                ((TitledConnectorSkin) skin).setSelected(isSelected);
+            	editor.getSelectionManager().select(skin.getItem());
             }
         }
     }

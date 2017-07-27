@@ -193,9 +193,9 @@ public class DefaultConnectorSkin extends GConnectorSkin {
      * Checks that the connector has the correct values to be displayed using this skin.
      */
     private void performChecks() {
-        if (!DefaultConnectorTypes.isValid(getConnector().getType())) {
-            LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, getConnector().getType());
-            getConnector().setType(DefaultConnectorTypes.LEFT_INPUT);
+        if (!DefaultConnectorTypes.isValid(getItem().getType())) {
+            LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, getItem().getType());
+            getItem().setType(DefaultConnectorTypes.LEFT_INPUT);
         }
     }
     

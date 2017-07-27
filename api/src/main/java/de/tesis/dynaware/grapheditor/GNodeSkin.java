@@ -25,9 +25,8 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
  * The root JavaFX node of this skin is a {@link ResizableBox}.
  * </p>
  */
-public abstract class GNodeSkin extends GSkin {
+public abstract class GNodeSkin extends GSkin<GNode> {
 
-    private final GNode node;
     private final ResizableBox root;
 
     /**
@@ -36,17 +35,8 @@ public abstract class GNodeSkin extends GSkin {
      * @param node the {@link GNode} represented by the skin
      */
     public GNodeSkin(final GNode node) {
-        this.node = node;
+        super(node);
         this.root = createResizableBox();
-    }
-
-    /**
-     * Gets the node model element represented by the skin.
-     *
-     * @return the {@link GNode} represented by the skin
-     */
-    public GNode getNode() {
-        return node;
     }
 
     /**
@@ -68,10 +58,10 @@ public abstract class GNodeSkin extends GSkin {
      */
     public void initialize() {
 
-        getRoot().setLayoutX(getNode().getX());
-        getRoot().setLayoutY(getNode().getY());
+        getRoot().setLayoutX(getItem().getX());
+        getRoot().setLayoutY(getItem().getY());
 
-        getRoot().resize(getNode().getWidth(), getNode().getHeight());
+        getRoot().resize(getItem().getWidth(), getItem().getHeight());
     }
 
     /**

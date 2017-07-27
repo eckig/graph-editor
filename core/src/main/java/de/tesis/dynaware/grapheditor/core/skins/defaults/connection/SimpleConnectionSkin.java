@@ -149,7 +149,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
             final Region thisJoint = jointSkins.get(i).getRoot();
             final Region nextJoint = jointSkins.get(i + 1).getRoot();
 
-            if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), i)) {
+            if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), i)) {
                 thisJoint.layoutXProperty().unbindBidirectional(nextJoint.layoutXProperty());
             } else {
                 thisJoint.layoutYProperty().unbindBidirectional(nextJoint.layoutYProperty());
@@ -176,7 +176,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
             final Region thisJoint = jointSkins.get(i).getRoot();
             final Region nextJoint = jointSkins.get(i + 1).getRoot();
 
-            if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), i)) {
+            if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), i)) {
                 thisJoint.layoutXProperty().bindBidirectional(nextJoint.layoutXProperty());
             } else {
                 thisJoint.layoutYProperty().bindBidirectional(nextJoint.layoutYProperty());
@@ -191,24 +191,24 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      */
     private void restrictFirstAndLastJoints() {
 
-        if(getConnection().getSource() == null || getConnection().getTarget() == null) {
+        if(getItem().getSource() == null || getItem().getTarget() == null) {
             return;
         }
         
-        final GNode sourceNode = (GNode) getConnection().getSource().getParent();
+        final GNode sourceNode = (GNode) getItem().getSource().getParent();
         final GNodeSkin sourceNodeSkin = getGraphEditor().getSkinLookup().lookupNode(sourceNode);
 
-        if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), 0)) {
+        if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), 0)) {
             jointSkins.get(0).getRoot().dragEnabledYProperty().bind(sourceNodeSkin.selectedProperty());
         } else {
             jointSkins.get(0).getRoot().dragEnabledXProperty().bind(sourceNodeSkin.selectedProperty());
         }
 
-        final GNode targetNode = (GNode) getConnection().getTarget().getParent();
+        final GNode targetNode = (GNode) getItem().getTarget().getParent();
         final GNodeSkin targetNodeSkin = getGraphEditor().getSkinLookup().lookupNode(targetNode);
         final int lastIndex = jointSkins.size() - 1;
 
-        if (RectangularConnectionUtils.isSegmentHorizontal(getConnection(), jointSkins.size())) {
+        if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), jointSkins.size())) {
             jointSkins.get(lastIndex).getRoot().dragEnabledYProperty().bind(targetNodeSkin.selectedProperty());
         } else {
             jointSkins.get(lastIndex).getRoot().dragEnabledXProperty().bind(targetNodeSkin.selectedProperty());
@@ -222,8 +222,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      */
     private void checkFirstAndLastJoints(final List<Point2D> points) {
 
-        alignJoint(points, RectangularConnectionUtils.isSegmentHorizontal(getConnection(), 0), true);
-        alignJoint(points, RectangularConnectionUtils.isSegmentHorizontal(getConnection(), points.size() - 2), false);
+        alignJoint(points, RectangularConnectionUtils.isSegmentHorizontal(getItem(), 0), true);
+        alignJoint(points, RectangularConnectionUtils.isSegmentHorizontal(getItem(), points.size() - 2), false);
     }
 
     /**

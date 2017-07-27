@@ -1,65 +1,72 @@
 package de.tesis.dynaware.grapheditor.core.selections;
 
-import de.tesis.dynaware.grapheditor.GConnectionSkin;
-import de.tesis.dynaware.grapheditor.GJointSkin;
-import de.tesis.dynaware.grapheditor.GNodeSkin;
+import org.eclipse.emf.ecore.EObject;
+
 import de.tesis.dynaware.grapheditor.GSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.SkinSelectionEvent;
-import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.event.WeakEventHandler;
+import javafx.collections.transformation.FilteredList;
 
 /**
  * Provides observable lists of selected nodes and joints for convenience.
  */
 public class SelectionTracker {
 
-    private final ObservableList<GNode> selectedNodes = FXCollections.observableArrayList();
-    private final ObservableList<GConnection> selectedConnections = FXCollections.observableArrayList();
-    private final ObservableList<GJoint> selectedJoints = FXCollections.observableArrayList();
+    private final ObservableList<EObject> selectedElements = FXCollections.observableArrayList();
+    
+    private ObservableList<GNode> selectedNodes;
+    private ObservableList<GConnection> selectedConnections;
+    private ObservableList<GJoint> selectedJoints;
 
     private final SkinLookup skinLookup;
-    private final GraphEditorView view;
     
-    private final EventHandler<SkinSelectionEvent> skinSelectionChangeHandler = this::handleSelectionChangedEvent;
-
     /**
      * Creates a new {@link SelectionTracker} instance.
      *
      * @param graphEditor the {@link GraphEditor}
      */
-    public SelectionTracker(final SkinLookup skinLookup, final GraphEditorView view) {
-
-        this.view = view;
+    public SelectionTracker(final SkinLookup skinLookup) {
         this.skinLookup = skinLookup;
-        this.view.addEventHandler(SkinSelectionEvent.SKIN_SELECTION_ANY,
-                new WeakEventHandler<>(skinSelectionChangeHandler));
+        selectedElements.addListener(this::selectedElementsChanged);
     }
     
-    private void handleSelectionChangedEvent(final SkinSelectionEvent event) {
+	private void selectedElementsChanged(final ListChangeListener.Change<? extends EObject> change) {
+		while (change.next()) {
+			if (change.wasRemoved()) {
+				for (final EObject removed : change.getRemoved()) {
+					update(removed);
+				}
+			}
+			if (change.wasAdded()) {
+	            for (int i = change.getFrom(); i < change.getTo(); i++) {
+	                update(selectedElements.get(i));
+	            }
+			}
+		}
+	}
+	
+	private void update(final EObject obj) {
         
-        final boolean selected = event.getEventType() == SkinSelectionEvent.SKIN_SELECTED;
-        final GSkin skin = event.getSkin();
+        GSkin<?> skin = null;
+        if (obj instanceof GNode) {
+            skin = skinLookup.lookupNode((GNode) obj);
+        }
+        else if (obj instanceof GJoint) {
+            skin = skinLookup.lookupJoint((GJoint) obj);
+        }
+        else if (obj instanceof GConnection) {
+            skin = skinLookup.lookupConnection((GConnection) obj);
+        }
         
-        if (skin instanceof GNodeSkin) {
-            final GNode node = ((GNodeSkin) skin).getNode();
-            addRemove(selectedNodes, node, selected);
-        }
-        else if (skin instanceof GJointSkin) {
-            final GJoint joint = ((GJointSkin) skin).getJoint();
-            addRemove(selectedJoints, joint, selected);
-        }
-        else if (skin instanceof GConnectionSkin) {
-            final GConnection connection = ((GConnectionSkin) skin).getConnection();
-            addRemove(selectedConnections, connection, selected);
+        if(skin != null) {
+        	skin.updateSelection();
         }
     }
 
@@ -69,8 +76,7 @@ public class SelectionTracker {
      * @param model the {@link GModel} instance being edited
      */
     public void initialize(final GModel model) {
-        trackNodes(model);
-        trackConnectionsAndJoints(model);
+    	selectedElements.clear();
     }
 
     /**
@@ -78,7 +84,11 @@ public class SelectionTracker {
      *
      * @return the list of selected nodes
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public ObservableList<GNode> getSelectedNodes() {
+    	if(selectedNodes == null) {
+    		selectedNodes = new FilteredList(selectedElements, e -> e instanceof GNode);
+    	}
         return selectedNodes;
     }
 
@@ -87,7 +97,11 @@ public class SelectionTracker {
      *
      * @return the list of selected connections
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public ObservableList<GConnection> getSelectedConnections() {
+    	if(selectedConnections == null) {
+    		selectedConnections = new FilteredList(selectedElements, e -> e instanceof GConnection);
+    	}
         return selectedConnections;
     }
 
@@ -96,51 +110,15 @@ public class SelectionTracker {
      *
      * @return the list of selected joints
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public ObservableList<GJoint> getSelectedJoints() {
+    	if(selectedJoints == null) {
+    		selectedJoints = new FilteredList(selectedElements, e -> e instanceof GJoint);
+    	}
         return selectedJoints;
     }
-
-    private void trackNodes(final GModel model) {
-        selectedNodes.clear();
-
-        for (final GNode node : model.getNodes()) {
-            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-            if (nodeSkin != null) {
-                addRemove(selectedNodes, node, nodeSkin.isSelected());
-            }
-        }
-    }
     
-    private void trackConnectionsAndJoints(final GModel model) {
-
-        selectedConnections.clear();
-        selectedJoints.clear();
-
-        for (final GConnection connection : model.getConnections()) {
-
-            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
-            if (connectionSkin != null) {
-                addRemove(selectedConnections, connection, connectionSkin.isSelected());
-            }
-
-            for (final GJoint joint : connection.getJoints()) {
-
-                final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-                if (jointSkin != null) {
-                    addRemove(selectedJoints, joint, jointSkin.isSelected());
-                }
-            }
-        }
-    }
-
-    private static <T> void addRemove(final ObservableList<T> list, final T element, final boolean add) {
-        if(add) {
-            if(!list.contains(element)) {
-                list.add(element);
-            }
-        }
-        else {
-            list.remove(element);
-        }
+    public ObservableList<EObject> getSelectedItems() {
+    	return selectedElements;
     }
 }

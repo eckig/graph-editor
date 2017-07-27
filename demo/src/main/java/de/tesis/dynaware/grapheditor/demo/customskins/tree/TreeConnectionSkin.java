@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
+import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
@@ -81,7 +82,7 @@ public class TreeConnectionSkin extends GConnectionSkin {
             final Point2D start = points.get(0);
             final Point2D end = points.get(1);
 
-            if (getConnection().getSource().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
+            if (getItem().getSource().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
                 ArrowUtils.draw(arrow, start, end, OFFSET_FROM_CONNECTOR);
                 ArrowUtils.draw(background, start, end, OFFSET_FROM_CONNECTOR);
             } else {
@@ -102,17 +103,26 @@ public class TreeConnectionSkin extends GConnectionSkin {
      *
      * @param event the mouse-pressed event
      */
-    private void handleMousePressed(final MouseEvent event) {
+	private void handleMousePressed(final MouseEvent event) {
 
-        if (event.isShortcutDown()) {
-            setSelected(!isSelected());
-        } else if (!isSelected()) {
-            getGraphEditor().getSelectionManager().clearSelection();
-            setSelected(true);
-        }
+		final GraphEditor editor = getGraphEditor();
+		if (editor == null) {
+			return;
+		}
 
-        event.consume();
-    }
+		if (event.isShortcutDown()) {
+			if (isSelected()) {
+				editor.getSelectionManager().clearSelection(getItem());
+			} else {
+				editor.getSelectionManager().select(getItem());
+			}
+		} else if (!isSelected()) {
+			getGraphEditor().getSelectionManager().clearSelection();
+			editor.getSelectionManager().select(getItem());
+		}
+
+		event.consume();
+	}
 
     /**
      * Handles mouse-dragged events on the connection skin. Consumes the event so it doesn't reach the view.

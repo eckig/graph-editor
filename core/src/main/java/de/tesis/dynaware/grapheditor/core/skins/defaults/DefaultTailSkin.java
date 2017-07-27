@@ -127,9 +127,9 @@ public class DefaultTailSkin extends GTailSkin {
      * Checks that the connector has the correct values to use this skin.
      */
     private void performChecks() {
-        if (!DefaultConnectorTypes.isValid(getConnector().getType())) {
-            LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, getConnector().getType());
-            getConnector().setType(DefaultConnectorTypes.LEFT_INPUT);
+        if (!DefaultConnectorTypes.isValid(getItem().getType())) {
+            LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, getItem().getType());
+            getItem().setType(DefaultConnectorTypes.LEFT_INPUT);
         }
     }
 
@@ -144,7 +144,7 @@ public class DefaultTailSkin extends GTailSkin {
         clearPoints();
         addPoint(start);
 
-        if (DefaultConnectorTypes.getSide(getConnector().getType()).isVertical()) {
+        if (DefaultConnectorTypes.getSide(getItem().getType()).isVertical()) {
             addPoint((start.getX() + end.getX()) / 2, start.getY());
             addPoint((start.getX() + end.getX()) / 2, end.getY());
         } else {
@@ -167,7 +167,7 @@ public class DefaultTailSkin extends GTailSkin {
         clearPoints();
         addPoint(start);
 
-        final Side startSide = DefaultConnectorTypes.getSide(getConnector().getType());
+        final Side startSide = DefaultConnectorTypes.getSide(getItem().getType());
         final Side endSide = DefaultConnectorTypes.getSide(target.getType());
 
         final List<Point2D> points = RectangularPathCreator.createPath(start, end, startSide, endSide);

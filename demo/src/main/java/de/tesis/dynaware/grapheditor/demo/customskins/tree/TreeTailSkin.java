@@ -73,7 +73,7 @@ public class TreeTailSkin extends GTailSkin {
      */
     private void drawArrow(final Point2D start, final Point2D end) {
 
-        if (getConnector().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
+        if (getItem().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
             ArrowUtils.draw(arrow, start, end, OFFSET_DISTANCE);
         } else {
             ArrowUtils.draw(arrow, end, start, OFFSET_DISTANCE);

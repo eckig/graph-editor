@@ -135,7 +135,9 @@ public class JointCreator {
 				}
 
 				temporarySelectedJointSkin.getRoot().fireEvent(event);
-				temporarySelectedJointSkin.setSelected(true);
+				if(graphEditor != null) {
+					graphEditor.getSelectionManager().select(temporarySelectedJointSkin.getItem());
+				}
 			}
 
             event.consume();

@@ -12,6 +12,7 @@ import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.DefaultSelectionManager;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
@@ -353,7 +354,9 @@ public class GraphEditorDemoController {
         clearAll();
         flushCommandStack();
         checkConnectorButtonsToDisable();
-        graphEditor.getSelectionManager().clearMemory();
+		if (graphEditor.getSelectionManager() instanceof DefaultSelectionManager) {
+			((DefaultSelectionManager) graphEditor.getSelectionManager()).clearMemory();
+		}
     }
 
     /**

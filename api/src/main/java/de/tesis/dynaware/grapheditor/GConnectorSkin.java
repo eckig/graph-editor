@@ -17,9 +17,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
  * The root JavaFX node must be created by the skin implementation and returned in the {@link #getRoot()} method.
  * </p>
  */
-public abstract class GConnectorSkin extends GSkin {
-
-    private final GConnector connector;
+public abstract class GConnectorSkin extends GSkin<GConnector> {
 
     /**
      * Creates a new {@link GConnectorSkin}.
@@ -27,16 +25,7 @@ public abstract class GConnectorSkin extends GSkin {
      * @param connector the {@link GConnector} represented by the skin
      */
     public GConnectorSkin(final GConnector connector) {
-        this.connector = connector;
-    }
-
-    /**
-     * Gets the connector model element represented by the skin.
-     *
-     * @return the {@link GConnector} represented by the skin
-     */
-    public GConnector getConnector() {
-        return connector;
+        super(connector);
     }
 
     /**

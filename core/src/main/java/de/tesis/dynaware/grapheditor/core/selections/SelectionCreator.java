@@ -14,6 +14,7 @@ import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GSkin;
+import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
@@ -48,6 +49,7 @@ public class SelectionCreator {
     private final SkinLookup skinLookup;
     private final GraphEditorView view;
     private final SelectionDragManager selectionDragManager;
+    private final SelectionManager selectionManager;
 
     private GModel model;
 
@@ -81,18 +83,20 @@ public class SelectionCreator {
      * @param view the {@link GraphEditorView} instance
      * @param selectionDragManager the {@link SelectionDragManager} instance for this graph editor
      */
-    public SelectionCreator(final SkinLookup skinLookup, final GraphEditorView view,
-            final SelectionDragManager selectionDragManager, final Callback<MouseEvent, Boolean> selectionActive) {
+	public SelectionCreator(final SkinLookup skinLookup, final GraphEditorView view,
+			final SelectionManager selectionManager, final SelectionDragManager selectionDragManager,
+			final Callback<MouseEvent, Boolean> selectionActive) {
 
-        this.skinLookup = skinLookup;
-        this.view = view;
-        this.selectionDragManager = selectionDragManager;
-        this.selectionActive = selectionActive;
-        
-        view.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
-        view.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
-        view.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
-    }
+		this.selectionManager = selectionManager;
+		this.skinLookup = skinLookup;
+		this.view = view;
+		this.selectionDragManager = selectionDragManager;
+		this.selectionActive = selectionActive;
+
+		view.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
+		view.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
+		view.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
+	}
 
     /**
      * Initializes the selection creator for the current model.
@@ -121,68 +125,6 @@ public class SelectionCreator {
     }
 
     /**
-     * Sets the selected value of all nodes.
-     *
-     * @param selected {@code true} to select all nodes, {@code false} to deselect them
-     */
-    public void selectAllNodes(final boolean selected) {
-        if (model != null) {
-            model.getNodes().stream().map(skinLookup::lookupNode).forEach(node -> node.setSelected(selected));
-        }
-    }
-
-    /**
-     * Sets the selected value of all joints.
-     *
-     * @param selected {@code true} to select all joints, {@code false} to deselect them
-     */
-    public void selectAllJoints(final boolean selected) {
-        if (model != null) {
-            model.getConnections().stream()
-                    .flatMap(connection -> connection.getJoints().stream())
-                    .map(skinLookup::lookupJoint)
-                    .forEach(joint -> joint.setSelected(selected));
-        }
-    }
-    
-    /**
-     * Sets the selected value of all connectors.
-     *
-     * @param selected {@code true} to select all connectors, {@code false} to deselect them
-     */
-    public void selectAllConnectors(final boolean selected) {
-        if (model != null) {
-            model.getNodes().stream()
-                    .flatMap(node -> node.getConnectors().stream())
-                    .map(skinLookup::lookupConnector)
-                    .forEach(connector -> connector.setSelected(selected));
-        }
-    }
-
-    /**
-     * Sets the selected value of all connections.
-     *
-     * @param selected {@code true} to select all connections, {@code false} to deselect them
-     */
-    public void selectAllConnections(final boolean selected) {
-        if (model != null) {
-            model.getConnections().stream()
-                    .map(skinLookup::lookupConnection)
-                    .forEach(connection -> connection.setSelected(selected));
-        }
-    }
-
-    /**
-     * Deselects all selectable elements.
-     */
-    public void deselectAll() {
-        selectAllNodes(false);
-        selectAllJoints(false);
-        selectAllConnections(false);
-        selectAllConnectors(false);
-    }
-
-    /**
      * Adds a mechanism to select nodes by clicking on them.
      *
      * <p>
@@ -200,7 +142,7 @@ public class SelectionCreator {
         addClickSelectionForJoints();
     }
 
-    private void handleSelectionClick(final MouseEvent event, final GSkin skin) {
+    private void handleSelectionClick(final MouseEvent event, final GSkin<?> skin) {
         
         if (!MouseButton.PRIMARY.equals(event.getButton())) {
             return;
@@ -208,14 +150,14 @@ public class SelectionCreator {
 
         if (!skin.isSelected()) {
             if (!event.isShortcutDown()) {
-                deselectAll();
+            	selectionManager.clearSelection();
             } else {
                 backupSelections();
             }
-            skin.setSelected(true);
+            selectionManager.select(skin.getItem());
         } else {
             if (event.isShortcutDown()) {
-                skin.setSelected(false);
+            	selectionManager.clearSelection(skin.getItem());
             }
         }
 
@@ -508,7 +450,7 @@ public class SelectionCreator {
         }
 
         if (!event.isShortcutDown()) {
-            deselectAll();
+        	selectionManager.clearSelection();
         } else {
             backupSelections();
         }
@@ -573,25 +515,31 @@ public class SelectionCreator {
 
         for (int i = 0; i < model.getNodes().size(); i++) {
             final GNode node = model.getNodes().get(i);
-            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-            if (nodeSkin != null) {
-                nodeSkin.setSelected(isNodeSelected(node, isShortcutDown));
+            
+            if(isNodeSelected(node, isShortcutDown)) {
+            	selectionManager.select(node);
+            } else {
+            	selectionManager.clearSelection(node);
             }
         }
         
         for (int i = 0; i < allJoints.size(); i++) {
             final GJoint joint = allJoints.get(i);
-            final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-            if (jointSkin != null) {
-                jointSkin.setSelected(isJointSelected(joint, isShortcutDown));
+            
+            if(isJointSelected(joint, isShortcutDown)) {
+            	selectionManager.select(joint);
+            } else {
+            	selectionManager.clearSelection(joint);
             }
         }
         
         for (int i = 0; i < model.getConnections().size(); i++) {
             final GConnection connection = model.getConnections().get(i);
-            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
-            if (connectionSkin != null) {
-                connectionSkin.setSelected(isConnectionSelected(connection, isShortcutDown));
+            
+            if(isConnectionSelected(connection, isShortcutDown)) {
+            	selectionManager.select(connection);
+            } else {
+            	selectionManager.clearSelection(connection);
             }
         }
     }

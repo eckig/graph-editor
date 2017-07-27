@@ -21,9 +21,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
  * Tail skins can have similar logic to connection skins, but they do not have to worry about positionable joints.
  * </p>
  */
-public abstract class GTailSkin extends GSkin {
-
-    private final GConnector connector;
+public abstract class GTailSkin extends GSkin<GConnector> {
 
     /**
      * Creates a new {@link GTailSkin}.
@@ -31,16 +29,7 @@ public abstract class GTailSkin extends GSkin {
      * @param connector the {@link GConnector} that the tail will extend from
      */
     public GTailSkin(final GConnector connector) {
-        this.connector = connector;
-    }
-
-    /**
-     * Gets the connector model element associated to the skin.
-     *
-     * @return the {@link GConnector} associated to the skin
-     */
-    public GConnector getConnector() {
-        return connector;
+        super(connector);
     }
 
     /**

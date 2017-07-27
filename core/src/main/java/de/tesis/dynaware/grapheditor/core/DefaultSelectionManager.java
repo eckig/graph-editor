@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
@@ -71,9 +72,9 @@ public class DefaultSelectionManager implements SelectionManager {
 
         selectionDragManager = new SelectionDragManager(skinLookup, view);
         selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
-        selectionCreator = new SelectionCreator(skinLookup, view, selectionDragManager, this::canSelect);
-        selectionTracker = new SelectionTracker(skinLookup, view);
-        selectionCopier = new SelectionCopier(skinLookup, selectionTracker, selectionCreator, selectionDeleter);
+        selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager, this::canSelect);
+        selectionTracker = new SelectionTracker(skinLookup);
+        selectionCopier = new SelectionCopier(skinLookup, this, selectionDeleter);
     }
 
     /**
@@ -135,6 +136,26 @@ public class DefaultSelectionManager implements SelectionManager {
     public void removeJoint(final GJoint joint) {
         selectionCreator.removeJoint(joint);
     }
+    
+    @Override
+    public ObservableList<EObject> getSelectedItems() {
+    	return selectionTracker.getSelectedItems();
+    }
+    
+    @Override
+    public void select(final EObject object) {
+    	getSelectedItems().add(object);
+    }
+    
+    @Override
+    public void clearSelection(final EObject object) {
+    	getSelectedItems().remove(object);
+    }
+    
+    @Override
+    public boolean isSelected(EObject object) {
+    	return getSelectedItems().contains(object);
+    }
 
     @Override
     public ObservableList<GNode> getSelectedNodes() {
@@ -152,30 +173,8 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void selectAll() {
-        selectionCreator.selectAllNodes(true);
-        selectionCreator.selectAllJoints(true);
-        selectionCreator.selectAllConnections(true);
-    }
-
-    @Override
-    public void selectAllNodes() {
-        selectionCreator.selectAllNodes(true);
-    }
-
-    @Override
-    public void selectAllJoints() {
-        selectionCreator.selectAllJoints(true);
-    }
-
-    @Override
-    public void selectAllConnections() {
-        selectionCreator.selectAllConnections(true);
-    }
-
-    @Override
     public void clearSelection() {
-        selectionCreator.deselectAll();
+    	getSelectedItems().clear();
     }
 
     @Override
@@ -213,7 +212,9 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionCopier.paste(consumer);
     }
 
-    @Override
+    /**
+     * Clears the memory of what was cut / copied, so that future paste calls will do nothing.
+     */
     public void clearMemory() {
         selectionCopier.clearMemory();
     }

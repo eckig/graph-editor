@@ -3,26 +3,22 @@
  */
 package de.tesis.dynaware.grapheditor;
 
+import org.eclipse.emf.ecore.EObject;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.Node;
 
 /**
  * Abstract class that all skins inherit from. Contains logic common to all skins.
  */
-public abstract class GSkin {
+public abstract class GSkin<T extends EObject> {
 
     private final BooleanProperty selectedProperty = new BooleanPropertyBase(false){
 
         @Override
         protected void invalidated() {
-            
-            if (get()) {
-                getRoot().fireEvent(new SkinSelectionEvent(SkinSelectionEvent.SKIN_SELECTED, GSkin.this));
-            } else {
-                getRoot().fireEvent(new SkinSelectionEvent(SkinSelectionEvent.SKIN_DESELECTED, GSkin.this));
-            }
-            
             selectionChanged(get());
         }
 
@@ -39,6 +35,17 @@ public abstract class GSkin {
     };
     
     private GraphEditor graphEditor;
+    private final T item;
+    
+    /**
+     * Constructor
+     * 
+     * @param item
+     *            item represented by this skin
+     */
+    protected GSkin(T item) {
+        this.item = item;
+    }
 
     /**
      * Sets the graph editor instance that this skin is a part of.
@@ -47,6 +54,7 @@ public abstract class GSkin {
      */
     public void setGraphEditor(final GraphEditor graphEditor) {
         this.graphEditor = graphEditor;
+        updateSelection();
     }
 
     /**
@@ -58,7 +66,7 @@ public abstract class GSkin {
      *
      * @return the {@link GraphEditor} instance that this skin is a part of
      */
-    public GraphEditor getGraphEditor() {
+    protected GraphEditor getGraphEditor() {
         return graphEditor;
     }
 
@@ -73,19 +81,43 @@ public abstract class GSkin {
 
     /**
      * Sets whether the skin is selected or not.
-     *
-     * @param isSelected {@code true} if the skin is selected, {@code false} if not
+     * <p>
+     * <b>Should not</b> be called directly, the selection state is managed by the
+     * selection manager of the graph editor!
+     * </p>
+     * 
+     * @param isSelected
+     *            {@code true} if the skin is selected, {@code false} if not
      */
-    public void setSelected(final boolean isSelected) {
+    protected void setSelected(final boolean isSelected) {
         selectedProperty.set(isSelected);
     }
+    
+    /**
+     * Updates whether this skin is in a selected state or not.
+     * <p>This method will be automatically called by the SelectionTracker when needed.</p>
+     */
+    public void updateSelection() {
+        boolean isSelected = isSelected();
+        if(graphEditor == null) {
+            isSelected = false;
+        }
+        else {
+            isSelected = graphEditor.getSelectionManager().isSelected(item);
+        }
+        
+        if(isSelected() != isSelected) {
+            setSelected(isSelected);
+        }
+    }
+    
 
     /**
      * The property that determines whether the skin is selected or not.
      *
      * @return a {@link BooleanProperty} containing {@code true} if the skin is selected, {@code false} if not
      */
-    public BooleanProperty selectedProperty() {
+    public ReadOnlyBooleanProperty selectedProperty() {
         return selectedProperty;
     }
     
@@ -109,4 +141,11 @@ public abstract class GSkin {
      * @return a the skin's root JavaFX {@link Node}
      */
     public abstract Node getRoot();
+    
+    /**
+     * @return item represented by this skin
+     */
+    public final T getItem() {
+        return item;
+    }
 }

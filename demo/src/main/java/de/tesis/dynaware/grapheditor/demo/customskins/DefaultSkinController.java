@@ -119,8 +119,8 @@ public class DefaultSkinController implements SkinController {
 
     @Override
     public void handleSelectAll() {
-        graphEditor.getSelectionManager().selectAllNodes();
-        graphEditor.getSelectionManager().selectAllJoints();
+    	graphEditor.getSelectionManager().getSelectedItems().addAll(graphEditor.getModel().getNodes());
+    	graphEditor.getModel().getConnections().stream().flatMap(s -> s.getJoints().stream()).forEach(graphEditor.getSelectionManager().getSelectedItems()::add);
     }
 
     /**

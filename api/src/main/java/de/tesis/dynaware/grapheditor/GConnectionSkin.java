@@ -24,9 +24,7 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
  * source and target connectors.
  * </p>
  */
-public abstract class GConnectionSkin extends GSkin {
-
-    private final GConnection connection;
+public abstract class GConnectionSkin extends GSkin<GConnection> {
 
     /**
      * Creates a new {@link GConnectionSkin}.
@@ -34,16 +32,7 @@ public abstract class GConnectionSkin extends GSkin {
      * @param connection the {@link GConnection} represented by the skin
      */
     public GConnectionSkin(final GConnection connection) {
-        this.connection = connection;
-    }
-
-    /**
-     * Gets the connection model element represented by the skin.
-     *
-     * @return the {@link GConnection} represented by the skin
-     */
-    public GConnection getConnection() {
-        return connection;
+        super(connection);
     }
 
     /**

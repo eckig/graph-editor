@@ -108,7 +108,7 @@ public class DefaultNodeSkin extends GNodeSkin {
         if (connectorSkins != null) {
             for (final GConnectorSkin connectorSkin : connectorSkins) {
 
-                final String type = connectorSkin.getConnector().getType();
+                final String type = connectorSkin.getItem().getType();
 
                 if (DefaultConnectorTypes.isTop(type)) {
                     topConnectorSkins.add(connectorSkin);
@@ -138,7 +138,7 @@ public class DefaultNodeSkin extends GNodeSkin {
 
         final Node connectorRoot = connectorSkin.getRoot();
 
-        final Side side = DefaultConnectorTypes.getSide(connectorSkin.getConnector().getType());
+        final Side side = DefaultConnectorTypes.getSide(connectorSkin.getItem().getType());
 
         // The following logic is required because the connectors are offset slightly from the node edges.
         final double x, y;
@@ -164,7 +164,7 @@ public class DefaultNodeSkin extends GNodeSkin {
      */
     private void performChecks() {
 
-        for (final GConnector connector : getNode().getConnectors()) {
+        for (final GConnector connector : getItem().getConnectors()) {
             if (!DefaultConnectorTypes.isValid(connector.getType())) {
                 LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, connector.getType());
                 connector.setType(DefaultConnectorTypes.LEFT_INPUT);
@@ -202,7 +202,7 @@ public class DefaultNodeSkin extends GNodeSkin {
             if (vertical) {
 
                 final double offsetY = getRoot().getHeight() / (count + 1);
-                final double offsetX = getMinorOffsetX(skin.getConnector());
+                final double offsetX = getMinorOffsetX(skin.getItem());
 
                 root.setLayoutX(GeometryUtils.moveOnPixel(offset - skin.getWidth() / 2 + offsetX));
                 root.setLayoutY(GeometryUtils.moveOnPixel((i + 1) * offsetY - skin.getHeight() / 2));
@@ -210,7 +210,7 @@ public class DefaultNodeSkin extends GNodeSkin {
             } else {
 
                 final double offsetX = getRoot().getWidth() / (count + 1);
-                final double offsetY = getMinorOffsetY(skin.getConnector());
+                final double offsetY = getMinorOffsetY(skin.getItem());
 
                 root.setLayoutX(GeometryUtils.moveOnPixel((i + 1) * offsetX - skin.getWidth() / 2));
                 root.setLayoutY(GeometryUtils.moveOnPixel(offset - skin.getHeight() / 2 + offsetY));

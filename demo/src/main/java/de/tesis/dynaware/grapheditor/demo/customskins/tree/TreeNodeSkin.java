@@ -105,10 +105,10 @@ public class TreeNodeSkin extends GNodeSkin {
         }
 
         for (final GConnectorSkin skin : connectorSkins) {
-            if (TreeSkinConstants.TREE_OUTPUT_CONNECTOR.equals(skin.getConnector().getType())) {
+            if (TreeSkinConstants.TREE_OUTPUT_CONNECTOR.equals(skin.getItem().getType())) {
                 outputConnectorSkin = skin;
                 getRoot().getChildren().add(skin.getRoot());
-            } else if (TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(skin.getConnector().getType())) {
+            } else if (TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(skin.getItem().getType())) {
                 inputConnectorSkin = skin;
                 getRoot().getChildren().add(skin.getRoot());
             }
@@ -244,8 +244,8 @@ public class TreeNodeSkin extends GNodeSkin {
         final GNode childNode = GraphFactory.eINSTANCE.createGNode();
 
         childNode.setType(TreeSkinConstants.TREE_NODE);
-        childNode.setX(getNode().getX() + (getNode().getWidth() - childNode.getWidth()) / 2);
-        childNode.setY(getNode().getY() + getNode().getHeight() + CHILD_Y_OFFSET);
+        childNode.setX(getItem().getX() + (getItem().getWidth() - childNode.getWidth()) / 2);
+        childNode.setY(getItem().getY() + getItem().getHeight() + CHILD_Y_OFFSET);
 
         final GModel model = getGraphEditor().getModel();
         final double maxAllowedY = model.getContentHeight() - VIEW_PADDING;
@@ -298,10 +298,10 @@ public class TreeNodeSkin extends GNodeSkin {
      */
     private GConnector findOutput() {
 
-        if (getNode().getConnectors().size() == 1) {
-            return getNode().getConnectors().get(0);
-        } else if (getNode().getConnectors().size() == 2) {
-            return getNode().getConnectors().get(1);
+        if (getItem().getConnectors().size() == 1) {
+            return getItem().getConnectors().get(0);
+        } else if (getItem().getConnectors().size() == 2) {
+            return getItem().getConnectors().get(1);
         } else {
             return null;
         }

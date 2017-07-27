@@ -71,7 +71,7 @@ public class JointCleaner {
 
         for (final GJointSkin jointSkin : jointSkins) {
 
-            final GJoint joint = jointSkin.getJoint();
+            final GJoint joint = jointSkin.getItem();
             final Region jointRegion = jointSkin.getRoot();
             final EventHandler<MouseEvent> oldHandler = oldCleaningHandlers.get(joint);
 
