@@ -14,7 +14,6 @@ import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
-import de.tesis.dynaware.grapheditor.core.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionCreator;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionDeleter;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionDragManager;
@@ -27,7 +26,7 @@ import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
@@ -55,7 +54,6 @@ public class DefaultSelectionManager implements SelectionManager {
     private final SelectionDragManager selectionDragManager;
     private final SelectionDeleter selectionDeleter;
     private final SelectionTracker selectionTracker;
-    private final SelectionCopier selectionCopier;
 
     private GraphEditorProperties editorProperties;
     private GModel model;
@@ -74,7 +72,6 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
         selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager, this::canSelect);
         selectionTracker = new SelectionTracker(skinLookup);
-        selectionCopier = new SelectionCopier(skinLookup, this, selectionDeleter);
     }
 
     /**
@@ -88,7 +85,6 @@ public class DefaultSelectionManager implements SelectionManager {
 
         selectionCreator.initialize(model);
         selectionTracker.initialize(model);
-        selectionCopier.initialize(model);
     }
     
 	private boolean canSelect(final MouseEvent event) {
@@ -138,13 +134,13 @@ public class DefaultSelectionManager implements SelectionManager {
     }
     
     @Override
-    public ObservableList<EObject> getSelectedItems() {
+    public ObservableSet<EObject> getSelectedItems() {
     	return selectionTracker.getSelectedItems();
     }
     
     @Override
     public void select(final EObject object) {
-    	getSelectedItems().add(object);
+		getSelectedItems().add(object);
     }
     
     @Override
@@ -158,23 +154,30 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public ObservableList<GNode> getSelectedNodes() {
+    public List<GNode> getSelectedNodes() {
         return selectionTracker.getSelectedNodes();
     }
 
     @Override
-    public ObservableList<GConnection> getSelectedConnections() {
+    public List<GConnection> getSelectedConnections() {
         return selectionTracker.getSelectedConnections();
     }
 
     @Override
-    public ObservableList<GJoint> getSelectedJoints() {
+    public List<GJoint> getSelectedJoints() {
         return selectionTracker.getSelectedJoints();
     }
 
     @Override
     public void clearSelection() {
-    	getSelectedItems().clear();
+    	if(!getSelectedItems().isEmpty()) {
+    		// copy to prevent ConcurrentModificationException
+    		// (removal triggers update notification which in turn could modify the selection)
+	    	final EObject[] selectedItems = getSelectedItems().toArray(new EObject[getSelectedItems().size()]);
+	    	for(final EObject remove : selectedItems) {
+	    		getSelectedItems().remove(remove);
+	    	}
+    	}
     }
 
     @Override
@@ -188,36 +191,18 @@ public class DefaultSelectionManager implements SelectionManager {
     }
 
     @Override
-    public void cut() {
-        selectionCopier.cut(null);
-    }
+	public void selectAll() {
+		if (model != null) {
+			getSelectedItems().addAll(model.getNodes());
+			for (final GConnection connection : model.getConnections()) {
+				getSelectedItems().add(connection);
 
-    @Override
-    public void cut(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
-        selectionCopier.cut(consumer);
-    }
-
-    @Override
-    public void copy() {
-        selectionCopier.copy();
-    }
-
-    @Override
-    public void paste() {
-        selectionCopier.paste(null);
-    }
-
-    @Override
-    public void paste(final BiConsumer<List<GNode>, CompoundCommand> consumer) {
-        selectionCopier.paste(consumer);
-    }
-
-    /**
-     * Clears the memory of what was cut / copied, so that future paste calls will do nothing.
-     */
-    public void clearMemory() {
-        selectionCopier.clearMemory();
-    }
+				for (final GJoint joint : connection.getJoints()) {
+					getSelectedItems().add(joint);
+				}
+			}
+		}
+	}
 
     @Override
     public void setConnectionSelectionPredicate(final BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate) {

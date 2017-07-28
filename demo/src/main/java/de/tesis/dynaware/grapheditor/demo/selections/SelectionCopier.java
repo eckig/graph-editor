@@ -1,4 +1,4 @@
-package de.tesis.dynaware.grapheditor.core.selections;
+package de.tesis.dynaware.grapheditor.demo.selections;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
-import javafx.util.Pair;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -49,7 +48,6 @@ public class SelectionCopier {
 
     private final SkinLookup skinLookup;
     private final SelectionManager selectionManager;
-    private final SelectionDeleter selectionDeleter;
 
     private final List<GNode> copiedNodes = new ArrayList<>();
     private final List<GConnection> copiedConnections = new ArrayList<>();
@@ -66,14 +64,11 @@ public class SelectionCopier {
      * @param skinLookup the {@link SkinLookup} instance for the graph editor
      * @param selectionTracker the {@link SelectionTracker} instance for the graph editor
      * @param selectionManager the {@link SelectionManager} instance for the graph editor
-     * @param selectionDeleter the {@link SelectionDeleter} instance for the graph editor
      */
-	public SelectionCopier(final SkinLookup skinLookup, final SelectionManager selectionManager,
-			final SelectionDeleter selectionDeleter) {
+	public SelectionCopier(final SkinLookup skinLookup, final SelectionManager selectionManager) {
 
         this.skinLookup = skinLookup;
         this.selectionManager = selectionManager;
-        this.selectionDeleter = selectionDeleter;
     }
 
     /**
@@ -83,21 +78,6 @@ public class SelectionCopier {
      */
     public void initialize(final GModel model) {
         this.model = model;
-    }
-
-    /**
-     * Cuts the current selection and stores it in memory.
-     * 
-     * @param handler a {@link CommandAppender} to allow custom commands to be appended to the cut command
-     */
-    public void cut(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
-
-        if (selectionManager.getSelectedItems().isEmpty()) {
-            return;
-        }
-
-        copy();
-        selectionDeleter.deleteSelection(model, consumer);
     }
 
     /**
@@ -116,7 +96,7 @@ public class SelectionCopier {
 
         // Don't iterate directly over selectionTracker.getSelectedNodes() because that will not preserve ordering.
         for (final GNode node : model.getNodes()) {
-            if (selectionManager.getSelectedNodes().contains(node)) {
+            if (selectionManager.isSelected(node)) {
 
                 final GNode copiedNode = EcoreUtil.copy(node);
                 copiedNodes.add(copiedNode);

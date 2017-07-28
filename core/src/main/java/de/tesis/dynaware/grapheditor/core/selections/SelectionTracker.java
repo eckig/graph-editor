@@ -1,5 +1,9 @@
 package de.tesis.dynaware.grapheditor.core.selections;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.GSkin;
@@ -10,21 +14,15 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 
 /**
  * Provides observable lists of selected nodes and joints for convenience.
  */
 public class SelectionTracker {
 
-    private final ObservableList<EObject> selectedElements = FXCollections.observableArrayList();
-    
-    private ObservableList<GNode> selectedNodes;
-    private ObservableList<GConnection> selectedConnections;
-    private ObservableList<GJoint> selectedJoints;
-
+    private final ObservableSet<EObject> selectedElements = FXCollections.observableSet(new HashSet<>());
     private final SkinLookup skinLookup;
     
     /**
@@ -37,18 +35,12 @@ public class SelectionTracker {
         selectedElements.addListener(this::selectedElementsChanged);
     }
     
-	private void selectedElementsChanged(final ListChangeListener.Change<? extends EObject> change) {
-		while (change.next()) {
-			if (change.wasRemoved()) {
-				for (final EObject removed : change.getRemoved()) {
-					update(removed);
-				}
-			}
-			if (change.wasAdded()) {
-	            for (int i = change.getFrom(); i < change.getTo(); i++) {
-	                update(selectedElements.get(i));
-	            }
-			}
+	private void selectedElementsChanged(final SetChangeListener.Change<? extends EObject> change) {
+		if (change.wasRemoved()) {
+			update(change.getElementRemoved());
+		}
+		if (change.wasAdded()) {
+			update(change.getElementAdded());
 		}
 	}
 	
@@ -80,45 +72,30 @@ public class SelectionTracker {
     }
 
     /**
-     * Gets the observable list of selected nodes.
-     *
-     * @return the list of selected nodes
+     * @return the list of currently selected nodes
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ObservableList<GNode> getSelectedNodes() {
-    	if(selectedNodes == null) {
-    		selectedNodes = new FilteredList(selectedElements, e -> e instanceof GNode);
-    	}
-        return selectedNodes;
-    }
+	public List<GNode> getSelectedNodes() {
+		return selectedElements.stream().filter(e -> e instanceof GNode).map(e -> (GNode) e)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * @return the list of currently selected connections
+	 */
+	public List<GConnection> getSelectedConnections() {
+		return selectedElements.stream().filter(e -> e instanceof GConnection).map(e -> (GConnection) e)
+				.collect(Collectors.toList());
+	}
 
     /**
-     * Gets the observable list of selected connections.
-     *
-     * @return the list of selected connections
+     * @return the list of currently selected joints
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ObservableList<GConnection> getSelectedConnections() {
-    	if(selectedConnections == null) {
-    		selectedConnections = new FilteredList(selectedElements, e -> e instanceof GConnection);
-    	}
-        return selectedConnections;
-    }
-
-    /**
-     * Gets the observable list of selected joints.
-     *
-     * @return the list of selected joints
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ObservableList<GJoint> getSelectedJoints() {
-    	if(selectedJoints == null) {
-    		selectedJoints = new FilteredList(selectedElements, e -> e instanceof GJoint);
-    	}
-        return selectedJoints;
-    }
+	public List<GJoint> getSelectedJoints() {
+		return selectedElements.stream().filter(e -> e instanceof GJoint).map(e -> (GJoint) e)
+				.collect(Collectors.toList());
+	}
     
-    public ObservableList<EObject> getSelectedItems() {
+    public ObservableSet<EObject> getSelectedItems() {
     	return selectedElements;
     }
 }

@@ -128,8 +128,7 @@ public class GraphEditorTest {
     @Test
     public void selectAllAndDelete() {
 
-        graphEditor.getSelectionManager().getSelectedItems().addAll(model.getNodes());
-        graphEditor.getSelectionManager().getSelectedItems().addAll(model.getConnections());
+        graphEditor.getSelectionManager().selectAll();
         graphEditor.getSelectionManager().deleteSelection();
 
         assertTrue("All nodes should have gone.", model.getNodes().isEmpty());

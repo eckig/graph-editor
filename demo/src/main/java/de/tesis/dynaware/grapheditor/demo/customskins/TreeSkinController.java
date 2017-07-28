@@ -19,6 +19,7 @@ import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeTailSkin;
+import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -107,15 +108,13 @@ public class TreeSkinController implements SkinController {
     }
 
     @Override
-    public void handlePaste() {
-        graphEditor.getSelectionManager().paste((nodes, command) -> selectReferencedConnections(nodes));
+    public void handlePaste(final SelectionCopier selectionCopier) {
+        selectionCopier.paste((nodes, command) -> selectReferencedConnections(nodes));
     }
 
     @Override
     public void handleSelectAll() {
-    	graphEditor.getSelectionManager().getSelectedItems().addAll(graphEditor.getModel().getNodes());
-    	graphEditor.getSelectionManager().getSelectedItems().addAll(graphEditor.getModel().getConnections());
-    	graphEditor.getModel().getConnections().stream().flatMap(s -> s.getJoints().stream()).forEach(graphEditor.getSelectionManager().getSelectedItems()::add);
+    	graphEditor.getSelectionManager().selectAll();
     }
 
     /**

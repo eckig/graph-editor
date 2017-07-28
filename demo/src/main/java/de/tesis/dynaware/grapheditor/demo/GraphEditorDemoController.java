@@ -5,6 +5,7 @@ package de.tesis.dynaware.grapheditor.demo;
 
 import java.util.Map;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
@@ -12,7 +13,6 @@ import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
-import de.tesis.dynaware.grapheditor.core.DefaultSelectionManager;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
@@ -22,6 +22,7 @@ import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSelectionPredicate;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
+import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -30,7 +31,7 @@ import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Menu;
@@ -96,6 +97,8 @@ public class GraphEditorDemoController {
     private GraphEditorContainer graphEditorContainer;
 
     private final GraphEditor graphEditor = new DefaultGraphEditor();
+	private final SelectionCopier selectionCopier = new SelectionCopier(graphEditor.getSkinLookup(),
+			graphEditor.getSelectionManager());
     private final GraphEditorPersistence graphEditorPersistence = new GraphEditorPersistence();
 
     private DefaultSkinController defaultSkinController;
@@ -130,7 +133,10 @@ public class GraphEditorDemoController {
         titledSkinController = new TitledSkinController(graphEditor, graphEditorContainer);
 
         activeSkinController.set(defaultSkinController);
-
+        
+		graphEditor.modelProperty().addListener((w, o, n) -> selectionCopier.initialize(n));
+        selectionCopier.initialize(model);
+        
         initializeMenuBar();
         addActiveSkinControllerListener();
     }
@@ -195,18 +201,13 @@ public class GraphEditorDemoController {
     }
 
     @FXML
-    public void cut() {
-        graphEditor.getSelectionManager().cut();
-    }
-
-    @FXML
     public void copy() {
-        graphEditor.getSelectionManager().copy();
+        selectionCopier.copy();
     }
 
     @FXML
     public void paste() {
-        activeSkinController.get().handlePaste();
+        activeSkinController.get().handlePaste(selectionCopier);
     }
 
     @FXML
@@ -303,11 +304,8 @@ public class GraphEditorDemoController {
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 
-        final ListChangeListener<? super GNode> selectedNodesListener = change -> {
-            checkConnectorButtonsToDisable();
-        };
-
-        graphEditor.getSelectionManager().getSelectedNodes().addListener(selectedNodesListener);
+        final SetChangeListener<? super EObject> selectedNodesListener = change -> checkConnectorButtonsToDisable();
+        graphEditor.getSelectionManager().getSelectedItems().addListener(selectedNodesListener);
         checkConnectorButtonsToDisable();
     }
 
@@ -354,9 +352,7 @@ public class GraphEditorDemoController {
         clearAll();
         flushCommandStack();
         checkConnectorButtonsToDisable();
-		if (graphEditor.getSelectionManager() instanceof DefaultSelectionManager) {
-			((DefaultSelectionManager) graphEditor.getSelectionManager()).clearMemory();
-		}
+        selectionCopier.clearMemory();
     }
 
     /**
@@ -384,7 +380,8 @@ public class GraphEditorDemoController {
      */
     private void checkConnectorButtonsToDisable() {
 
-        final boolean nothingSelected = graphEditor.getSelectionManager().getSelectedNodes().isEmpty();
+		final boolean nothingSelected = graphEditor.getSelectionManager().getSelectedItems().stream()
+				.noneMatch(e -> e instanceof GNode);
 
         final boolean treeSkinActive = treeSkinController.equals(activeSkinController.get());
         final boolean titledSkinActive = titledSkinController.equals(activeSkinController.get());

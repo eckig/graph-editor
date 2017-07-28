@@ -13,6 +13,7 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -113,14 +114,13 @@ public class DefaultSkinController implements SkinController {
     }
 
     @Override
-    public void handlePaste() {
-        graphEditor.getSelectionManager().paste();
+    public void handlePaste(final SelectionCopier selectionCopier) {
+    	selectionCopier.paste(null);
     }
 
     @Override
     public void handleSelectAll() {
-    	graphEditor.getSelectionManager().getSelectedItems().addAll(graphEditor.getModel().getNodes());
-    	graphEditor.getModel().getConnections().stream().flatMap(s -> s.getJoints().stream()).forEach(graphEditor.getSelectionManager().getSelectedItems()::add);
+    	graphEditor.getSelectionManager().selectAll();
     }
 
     /**

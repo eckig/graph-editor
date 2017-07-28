@@ -34,7 +34,6 @@
 						<MenuItem text="Undo" onAction="#undo" accelerator="Shortcut+Z"/>
 						<MenuItem text="Redo" onAction="#redo" accelerator="Shortcut+Y"/>
 						<SeparatorMenuItem/>
-						<MenuItem text="Cut" onAction="#cut" accelerator="Shortcut+X"/>
 						<MenuItem text="Copy" onAction="#copy" accelerator="Shortcut+C"/>
 						<MenuItem text="Paste" onAction="#paste" accelerator="Shortcut+V"/>
 						<SeparatorMenuItem/>

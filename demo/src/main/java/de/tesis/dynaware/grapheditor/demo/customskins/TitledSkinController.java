@@ -23,6 +23,7 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledNodeSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledTailSkin;
+import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -92,8 +93,8 @@ public class TitledSkinController extends DefaultSkinController {
     }
 
     @Override
-    public void handlePaste() {
-        graphEditor.getSelectionManager().paste((nodes, command) -> allocateIds(nodes, command));
+    public void handlePaste(final SelectionCopier selectionCopier) {
+        selectionCopier.paste((nodes, command) -> allocateIds(nodes, command));
     }
 
     /**

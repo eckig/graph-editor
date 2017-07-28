@@ -1,5 +1,6 @@
 package de.tesis.dynaware.grapheditor.demo.customskins;
 
+import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
 import javafx.geometry.Side;
 
 /**
@@ -31,8 +32,9 @@ public interface SkinController {
 
     /**
      * Handles the paste operation.
+     * @param selectionCopier {@link SelectionCopier}
      */
-    void handlePaste();
+    void handlePaste(SelectionCopier selectionCopier);
 
     /**
      * Handles the select-all operation.

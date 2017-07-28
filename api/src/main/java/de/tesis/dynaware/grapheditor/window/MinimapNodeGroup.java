@@ -101,13 +101,13 @@ public class MinimapNodeGroup extends Parent {
     public void setSelectionManager(final SelectionManager selectionManager) {
 
         if (this.selectionManager != null) {
-            this.selectionManager.getSelectedNodes().removeListener(checkSelectionWeakListener);
+            this.selectionManager.getSelectedItems().removeListener(checkSelectionWeakListener);
         }
 
         this.selectionManager = selectionManager;
 
         if (this.selectionManager != null) {
-            this.selectionManager.getSelectedNodes().addListener(checkSelectionWeakListener);
+            this.selectionManager.getSelectedItems().addListener(checkSelectionWeakListener);
         }
         checkSelection();
     }
