@@ -10,6 +10,7 @@ import de.tesis.dynaware.grapheditor.GSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -45,22 +46,22 @@ public class SelectionTracker {
 	}
 	
 	private void update(final EObject obj) {
-        
-        GSkin<?> skin = null;
-        if (obj instanceof GNode) {
-            skin = skinLookup.lookupNode((GNode) obj);
-        }
-        else if (obj instanceof GJoint) {
-            skin = skinLookup.lookupJoint((GJoint) obj);
-        }
-        else if (obj instanceof GConnection) {
-            skin = skinLookup.lookupConnection((GConnection) obj);
-        }
-        
-        if(skin != null) {
-        	skin.updateSelection();
-        }
-    }
+
+		GSkin<?> skin = null;
+		if (obj instanceof GNode) {
+			skin = skinLookup.lookupNode((GNode) obj);
+		} else if (obj instanceof GJoint) {
+			skin = skinLookup.lookupJoint((GJoint) obj);
+		} else if (obj instanceof GConnection) {
+			skin = skinLookup.lookupConnection((GConnection) obj);
+		} else if (obj instanceof GConnector) {
+			skin = skinLookup.lookupConnector((GConnector) obj);
+		}
+
+		if (skin != null) {
+			skin.updateSelection();
+		}
+	}
 
     /**
      * Initializes the selection tracker for the given model.
