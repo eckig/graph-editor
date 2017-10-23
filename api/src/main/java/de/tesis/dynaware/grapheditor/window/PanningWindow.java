@@ -259,8 +259,8 @@ public class PanningWindow extends Region {
         // allow panning if
         // a) right mouse button pressed (no multi touch environment)
         // b) no gesture active or pan gesture active
-        return event.isSecondaryButtonDown() || panningEnabled && editorProperties != null
-                && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.PAN);
+        return event.isSecondaryButtonDown() && event.getTarget() == content ||
+        panningEnabled && editorProperties != null && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.PAN);
     }
 
     private void handlePanningMousePressed(final MouseEvent event) {
