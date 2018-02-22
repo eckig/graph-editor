@@ -169,8 +169,23 @@ public class PanningWindow extends Region {
         return zoom;
     }
 
-    public void setZoom(final double zoom) {
-        this.zoom.set(constrainZoom(zoom));
+    public void zoom(final double zoomFactor) {
+        
+        final double newZoomLevel = constrainZoom(zoom.get() * zoomFactor);
+        
+        if(newZoomLevel == zoom.get()) {
+            return;
+        }
+
+        final double currentX = getContentX();
+        final double currentY = getContentY();
+        final double diffX = content.getWidth() / 2; // center X
+        final double diffY = content.getHeight() / 2; // center Y
+        final double newX = currentX + diffX - (diffX / zoomFactor);
+        final double newY = currentY + diffY - (diffY / zoomFactor);
+
+        zoom.set(newZoomLevel);
+        panTo(newX, newY);
     }
 
     public double getZoom() {
