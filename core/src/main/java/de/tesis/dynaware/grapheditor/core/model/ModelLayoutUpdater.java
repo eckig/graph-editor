@@ -3,15 +3,13 @@
  */
 package de.tesis.dynaware.grapheditor.core.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
-import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -28,12 +26,13 @@ public class ModelLayoutUpdater {
 
     private final SkinLookup skinLookup;
     private final ModelEditingManager modelEditingManager;
-    private final Map<Node, EventHandler<MouseEvent>> nodeReleasedHandlers = new HashMap<>();
+    private final List<Node> registeredElements = new ArrayList<>();
     private final Supplier<GraphEditorProperties> properties;
+    private final EventHandler<MouseEvent> mouseReleasedHandler = event -> elementMouseReleased();
 
     /**
      * Creates a new model layout updater. Only one instance should exist per
-     * {@link DefaultGraphEditor} instance.
+     * graph editor instance.
      *
      * @param skinLookup
      *            the {@link SkinLookup} used to lookup skins
@@ -71,8 +70,13 @@ public class ModelLayoutUpdater {
      *            the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
+        
         // remove previous event handlers:
-        EventUtils.removeEventHandlers(nodeReleasedHandlers, MouseEvent.MOUSE_RELEASED);
+        for(final Node root : registeredElements) {
+            root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+        }
+        registeredElements.clear();
+        
         // add new event handlers:
         model.getNodes().forEach(this::addNode);
         model.getConnections().stream().flatMap(c -> c.getJoints().stream()).forEach(this::addJoint);
@@ -91,9 +95,8 @@ public class ModelLayoutUpdater {
         if (nodeSkin != null) {
             final Node root = nodeSkin.getRoot();
             if (root != null) {
-                final EventHandler<MouseEvent> mouseReleasedHandler = event -> elementMouseReleased();
                 root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-                nodeReleasedHandlers.put(root, mouseReleasedHandler);
+                registeredElements.add(root);
             }
         }
     }
@@ -104,10 +107,8 @@ public class ModelLayoutUpdater {
         if (nodeSkin != null) {
             final Node root = nodeSkin.getRoot();
             if (root != null) {
-                final EventHandler<MouseEvent> mouseReleasedHandler = nodeReleasedHandlers.remove(root);
-                if (mouseReleasedHandler != null) {
-                    root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-                }
+                registeredElements.remove(root);
+                root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
             }
         }
     }
@@ -125,9 +126,8 @@ public class ModelLayoutUpdater {
         if (jointSkin != null) {
             final Node root = jointSkin.getRoot();
             if (root != null) {
-                final EventHandler<MouseEvent> mouseReleasedHandler = event -> elementMouseReleased();
                 root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-                nodeReleasedHandlers.put(root, mouseReleasedHandler);
+                registeredElements.add(root);
             }
         }
     }
@@ -138,10 +138,8 @@ public class ModelLayoutUpdater {
         if (jointSkin != null) {
             final Node root = jointSkin.getRoot();
             if (root != null) {
-                final EventHandler<MouseEvent> mouseReleasedHandler = nodeReleasedHandlers.remove(root);
-                if (mouseReleasedHandler != null) {
-                    root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
-                }
+                registeredElements.remove(root);
+                root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
             }
         }
     }
