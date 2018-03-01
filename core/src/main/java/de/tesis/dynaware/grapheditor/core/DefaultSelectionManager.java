@@ -68,7 +68,7 @@ public class DefaultSelectionManager implements SelectionManager {
     public DefaultSelectionManager(final SkinLookup skinLookup, final GraphEditorView view,
             final ModelEditingManager modelEditingManager) {
 
-        selectionDragManager = new SelectionDragManager(skinLookup, view);
+        selectionDragManager = new SelectionDragManager(skinLookup, view, this);
         selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
         selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager, this::canSelect);
         selectionTracker = new SelectionTracker(skinLookup);

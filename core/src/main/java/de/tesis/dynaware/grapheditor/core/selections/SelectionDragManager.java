@@ -3,17 +3,20 @@
  */
 package de.tesis.dynaware.grapheditor.core.selections;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.emf.ecore.EObject;
 
 import javafx.beans.value.ChangeListener;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
-import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -27,25 +30,53 @@ public class SelectionDragManager {
 
     private final SkinLookup skinLookup;
     private final GraphEditorView view;
+    private final SelectionManager selectionManager;
 
-    private final Map<GNode, Double> nodeLayoutXOffsets = new HashMap<>();
-    private final Map<GNode, Double> nodeLayoutYOffsets = new HashMap<>();
+    private final ChangeListener<Number> layoutXListener = (v, o, n) -> masterMovedX(n.doubleValue());
+    private final ChangeListener<Number> layoutYListener = (v, o, n) -> masterMovedY(n.doubleValue());
+            
+    private final List<DraggableBox> currentSelectedElements = new ArrayList<>();
+    private double[] elementLayoutXOffsets; // array index == List index
+    private double[] elementLayoutYOffsets; // array index == List index
 
-    private final Map<GJoint, Double> jointLayoutXOffsets = new HashMap<>();
-    private final Map<GJoint, Double> jointLayoutYOffsets = new HashMap<>();
-
-    private ChangeListener<Number> currentLayoutXListener;
-    private ChangeListener<Number> currentLayoutYListener;
-
+    private Node master;
+    
     /**
      * Creates a new selection drag manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
      * @param skinLookup the {@link SkinLookup} used to look up skins
      * @param view the {@link GraphEditorView} instance
+     * @param selectionManager the {@link SelectionManager} instance
      */
-    public SelectionDragManager(final SkinLookup skinLookup, final GraphEditorView view) {
+    public SelectionDragManager(final SkinLookup skinLookup, final GraphEditorView view,
+            final SelectionManager selectionManager) {
         this.skinLookup = skinLookup;
         this.view = view;
+        this.selectionManager = selectionManager;
+    }
+    
+    private void masterMovedX(final double x) {
+
+        if (master != null) {
+            for (int i = 0; i < currentSelectedElements.size(); i++) {
+                final DraggableBox node = currentSelectedElements.get(i);
+                if (node != master) {
+                    node.setLayoutX(x + elementLayoutXOffsets[i]);
+                }
+            }
+        }
+    }
+    
+    private void masterMovedY(final double y) {
+
+        if (master != null) {
+            for (int i = 0; i < currentSelectedElements.size(); i++) {
+                final DraggableBox node = currentSelectedElements.get(i);
+                if (node != master) {
+                    node.setLayoutY(y + elementLayoutYOffsets[i]);
+                }
+            }
+        }
     }
 
     /**
@@ -98,6 +129,29 @@ public class SelectionDragManager {
      */
     private void bindPositions(final DraggableBox master, final GModel model) {
 
+        currentSelectedElements.clear();
+
+        // store the currently selected elements of interest
+        // (the ones we want to move alongside the master):
+        for (final EObject selected : selectionManager.getSelectedItems()) {
+
+            if (selected instanceof GNode) {
+
+                final GNodeSkin skin = skinLookup.lookupNode((GNode) selected);
+                if (skin != null) {
+                    currentSelectedElements.add(skin.getRoot());
+                }
+            } else if (selected instanceof GJoint) {
+
+                final GJointSkin skin = skinLookup.lookupJoint((GJoint) selected);
+                if (skin != null) {
+                    currentSelectedElements.add(skin.getRoot());
+                }
+            }
+        }
+
+        this.master = master;
+
         storeCurrentOffsets(master, model);
         setEditorBoundsForDrag(master, model);
         addPositionListeners(master, model);
@@ -112,6 +166,12 @@ public class SelectionDragManager {
 
         removePositionListeners(master);
         restoreEditorProperties(master);
+
+        currentSelectedElements.clear();
+        elementLayoutXOffsets = null;
+        elementLayoutYOffsets = null;
+
+        this.master = null;
     }
 
     /**
@@ -122,38 +182,15 @@ public class SelectionDragManager {
      */
     private void storeCurrentOffsets(final Region master, final GModel model) {
 
-        nodeLayoutXOffsets.clear();
-        nodeLayoutYOffsets.clear();
+        elementLayoutYOffsets = new double[currentSelectedElements.size()];
+        elementLayoutXOffsets = new double[currentSelectedElements.size()];
 
-        for (final GNode node : model.getNodes()) {
+        for (int i = 0; i < currentSelectedElements.size(); i++) {
 
-            final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-
-            if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
-
-                final Region slave = nodeSkin.getRoot();
-
-                nodeLayoutXOffsets.put(node, slave.getLayoutX() - master.getLayoutX());
-                nodeLayoutYOffsets.put(node, slave.getLayoutY() - master.getLayoutY());
-            }
-        }
-
-        jointLayoutXOffsets.clear();
-        jointLayoutYOffsets.clear();
-
-        for (final GConnection connection : model.getConnections()) {
-
-            for (final GJoint joint : connection.getJoints()) {
-
-                final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-
-                if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
-
-                    final Region slave = jointSkin.getRoot();
-
-                    jointLayoutXOffsets.put(joint, slave.getLayoutX() - master.getLayoutX());
-                    jointLayoutYOffsets.put(joint, slave.getLayoutY() - master.getLayoutY());
-                }
+            final Node node = currentSelectedElements.get(i);
+            if (node != master) {
+                elementLayoutXOffsets[i] = (node.getLayoutX() - master.getLayoutX());
+                elementLayoutYOffsets[i] = (node.getLayoutY() - master.getLayoutY());
             }
         }
     }
@@ -175,25 +212,9 @@ public class SelectionDragManager {
 
         final BoundOffsets maxOffsets = new BoundOffsets();
 
-        for (final GNode node : model.getNodes()) {
+        for (final DraggableBox node : currentSelectedElements) {
 
-            if (skinLookup.lookupNode(node).isSelected()) {
-
-                final DraggableBox slave = skinLookup.lookupNode(node).getRoot();
-                addOffsets(master, slave, maxOffsets);
-            }
-        }
-
-        for (final GConnection connection : model.getConnections()) {
-
-            for (final GJoint joint : connection.getJoints()) {
-
-                if (skinLookup.lookupJoint(joint).isSelected()) {
-
-                    final DraggableBox slave = skinLookup.lookupJoint(joint).getRoot();
-                    addOffsets(master, slave, maxOffsets);
-                }
-            }
+            addOffsets(master, node, maxOffsets);
         }
 
         propertiesForDrag.setNorthBoundValue(propertiesForDrag.getNorthBoundValue() + maxOffsets.northOffset);
@@ -265,64 +286,8 @@ public class SelectionDragManager {
         // Remove old listeners just in case there are any.
         removePositionListeners(master);
 
-        currentLayoutXListener = (v, o, n) -> {
-
-            for (final GNode node : model.getNodes()) {
-
-                final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-
-                if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
-
-                    final Region slave1 = nodeSkin.getRoot();
-                    slave1.setLayoutX((Double) n + nodeLayoutXOffsets.get(node));
-                }
-            }
-
-            for (final GConnection connection : model.getConnections()) {
-
-                for (final GJoint joint : connection.getJoints()) {
-
-                    final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-
-                    if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
-
-                        final Region slave2 = jointSkin.getRoot();
-                        slave2.setLayoutX((Double) n + jointLayoutXOffsets.get(joint));
-                    }
-                }
-            }
-        };
-
-        currentLayoutYListener = (v, o, n) -> {
-
-            for (final GNode node : model.getNodes()) {
-
-                final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
-
-                if (nodeSkin.isSelected() && !nodeSkin.getRoot().equals(master)) {
-
-                    final Region slave1 = nodeSkin.getRoot();
-                    slave1.setLayoutY((Double) n + nodeLayoutYOffsets.get(node));
-                }
-            }
-
-            for (final GConnection connection : model.getConnections()) {
-
-                for (final GJoint joint : connection.getJoints()) {
-
-                    final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-
-                    if (jointSkin.isSelected() && !jointSkin.getRoot().equals(master)) {
-
-                        final Region slave2 = jointSkin.getRoot();
-                        slave2.setLayoutY((Double) n + jointLayoutYOffsets.get(joint));
-                    }
-                }
-            }
-        };
-
-        master.layoutXProperty().addListener(currentLayoutXListener);
-        master.layoutYProperty().addListener(currentLayoutYListener);
+        master.layoutXProperty().addListener(layoutXListener);
+        master.layoutYProperty().addListener(layoutYListener);
     }
 
     /**
@@ -332,12 +297,8 @@ public class SelectionDragManager {
      */
     private void removePositionListeners(final Region master) {
 
-        if (currentLayoutXListener != null) {
-            master.layoutXProperty().removeListener(currentLayoutXListener);
-        }
-        if (currentLayoutYListener != null) {
-            master.layoutYProperty().removeListener(currentLayoutYListener);
-        }
+        master.layoutXProperty().removeListener(layoutXListener);
+        master.layoutYProperty().removeListener(layoutYListener);
     }
 
     /**
