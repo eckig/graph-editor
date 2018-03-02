@@ -53,7 +53,6 @@ public class SelectionCreator {
     private GModel model;
 
     private final Map<Node, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
-    private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> mouseClickedHandlers = new HashMap<>();
 
     private final EventHandler<MouseEvent> viewPressedHandler = this::handleViewPressed;
@@ -119,7 +118,6 @@ public class SelectionCreator {
         
         // remove all listeners:
         EventUtils.removeEventHandlers(mousePressedHandlers, MouseEvent.MOUSE_PRESSED);
-        EventUtils.removeEventHandlers(mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
         EventUtils.removeEventHandlers(mouseClickedHandlers, MouseEvent.MOUSE_CLICKED);
         
         addClickSelectionForNodes();
@@ -156,17 +154,11 @@ public class SelectionCreator {
             final Region nodeRegion = skin.getRoot();
 
             if(!mousePressedHandlers.containsKey(nodeRegion)) {
-                final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, node);
+                final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, skin);
                 nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
                 mousePressedHandlers.put(nodeRegion, newNodePressedHandler);
             }
             
-            if(!mouseReleasedHandlers.containsKey(nodeRegion)) {
-                final EventHandler<MouseEvent> newNodeReleasedHandler = event -> handleNodeReleased(event, node);
-                nodeRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
-                mouseReleasedHandlers.put(nodeRegion, newNodeReleasedHandler);
-            }
-
             for (final GConnector connector : node.getConnectors()) {
                 addConnector(connector);
             }
@@ -180,13 +172,9 @@ public class SelectionCreator {
             final Region nodeRegion = skin.getRoot();
 
             final EventHandler<MouseEvent> newNodePressedHandler = mousePressedHandlers.remove(nodeRegion);
-            final EventHandler<MouseEvent> newNodeReleasedHandler = mouseReleasedHandlers.remove(nodeRegion);
 
             if (newNodePressedHandler != null) {
                 nodeRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
-            }
-            if (newNodeReleasedHandler != null) {
-                nodeRegion.removeEventHandler(MouseEvent.MOUSE_RELEASED, newNodeReleasedHandler);
             }
 
             for (final GConnector connector : node.getConnectors()) {
@@ -264,15 +252,9 @@ public class SelectionCreator {
 
             if(!mousePressedHandlers.containsKey(jointRegion)) {
                 
-                final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, joint);
+                final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, jointSkin);
                 jointRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
                 mousePressedHandlers.put(jointRegion, jointPressedHandler);
-            }
-            if(!mouseReleasedHandlers.containsKey(jointRegion)) {
-                
-                final EventHandler<MouseEvent> jointReleasedHandler = event -> handleJointReleased(event, joint);
-                jointRegion.addEventHandler(MouseEvent.MOUSE_RELEASED, jointReleasedHandler);
-                mouseReleasedHandlers.put(jointRegion, jointReleasedHandler);
             }
         }
         
@@ -292,13 +274,9 @@ public class SelectionCreator {
             final Region jointRegion = jointSkin.getRoot();
 
             final EventHandler<MouseEvent> jointPressedHandler = mousePressedHandlers.remove(jointRegion);
-            final EventHandler<MouseEvent> jointReleasedHandler = mouseReleasedHandlers.remove(jointRegion);
 
             if (jointPressedHandler != null) {
                 jointRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
-            }
-            if (jointReleasedHandler != null) {
-                jointRegion.removeEventHandler(MouseEvent.MOUSE_RELEASED, jointReleasedHandler);
             }
         }
         
@@ -332,43 +310,26 @@ public class SelectionCreator {
      * Handles mouse-pressed events on the given node.
      *
      * @param event a mouse-pressed event
-     * @param node the {@link GNode} on which this event occurred
+     * @param nodeSkin the {@link GNodeSkin} on which this event occurred
      */
-    private void handleNodePressed(final MouseEvent event, final GNode node) {
+    private void handleNodePressed(final MouseEvent event, final GNodeSkin nodeSkin) {
 
         if (!MouseButton.PRIMARY.equals(event.getButton())) {
             return;
         }
 
-        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+        // first update the selection:
+        handleSelectionClick(event, nodeSkin);
 
         // Do not bind the positions of other selected nodes if this node is about to be resized.
         if (!nodeSkin.getRoot().isMouseInPositionForResize()) {
-            selectionDragManager.bindPositions(node);
+            selectionDragManager.bindPositions(nodeSkin.getRoot());
         }
-
-        handleSelectionClick(event, nodeSkin);
         
         // Consume this event so it's not passed up to the parent (i.e. the view).
         event.consume();
     }
 
-    /**
-     * Handles mouse-released events on the given node.
-     *
-     * @param event a mouse-released event
-     * @param node the {@link GNode} on which this event occurred
-     */
-    private void handleNodeReleased(final MouseEvent event, final GNode node) {
-
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
-            return;
-        }
-
-        selectionDragManager.unbindPositions(node);
-        event.consume();
-    }
-    
     /**
      * Handles mouse-pressed events on the given connection.
      *
@@ -391,37 +352,23 @@ public class SelectionCreator {
      * Handles mouse-pressed events on the given joint.
      *
      * @param event a mouse-pressed event
-     * @param joint the {@link GJoint} on which this event occured
+     * @param jointSkin the {@link GJointSkin} on which this event occurred
      */
-    private void handleJointPressed(final MouseEvent event, final GJoint joint) {
+    private void handleJointPressed(final MouseEvent event, final GJointSkin jointSkin) {
 
         if (!MouseButton.PRIMARY.equals(event.getButton()) || event.isConsumed()) {
             return;
         }
 
-        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        // first update the selection:
         handleSelectionClick(event, jointSkin);
-
-        selectionDragManager.bindPositions(joint);
+        
+        // then bind position of other slave items:
+        selectionDragManager.bindPositions(jointSkin.getRoot());
+        
         event.consume();
     }
 
-    /**
-     * Handles mouse-released events on the given joint.
-     *
-     * @param event a mouse-released event
-     * @param joint the {@link GJoint} on which this event occured
-     */
-    private void handleJointReleased(final MouseEvent event, final GJoint joint) {
-
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
-            return;
-        }
-
-        selectionDragManager.unbindPositions(joint);
-        event.consume();
-    }
-    
     /**
      * Handles mouse-pressed events on the view.
      *

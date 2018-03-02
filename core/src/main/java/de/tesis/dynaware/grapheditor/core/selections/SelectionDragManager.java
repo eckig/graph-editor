@@ -9,8 +9,8 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 
 import javafx.beans.value.ChangeListener;
-import javafx.scene.Node;
-import javafx.scene.layout.Region;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
@@ -38,7 +38,8 @@ public class SelectionDragManager {
     private double[] elementLayoutXOffsets; // array index == List index
     private double[] elementLayoutYOffsets; // array index == List index
 
-    private Node master;
+    private DraggableBox master;
+    private EventHandler<MouseEvent> removeOnReleased;
     
     /**
      * Creates a new selection drag manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
@@ -79,53 +80,17 @@ public class SelectionDragManager {
     }
 
     /**
-     * Binds the positions of all selected objects to have a fixed position relative to a given node.
-     *
-     * @param node the master {@link GNode} that all selected objects should keep a fixed position relative to
-     */
-    public void bindPositions(final GNode node) {
-        bindPositions(skinLookup.lookupNode(node).getRoot());
-    }
-
-    /**
-     * Binds the positions of all selected objects to have a fixed position relative to a given joint.
-     *
-     * @param joint the master {@link GJoint} that all selected objects should keep a fixed position relative to
-     */
-    public void bindPositions(final GJoint joint) {
-        bindPositions(skinLookup.lookupJoint(joint).getRoot());
-    }
-
-    /**
-     * Unbinds the positions of all selected objects.
-     *
-     * @param node the master {@link GNode} that all selected objects were previously bound to
-     */
-    public void unbindPositions(final GNode node) {
-        if (skinLookup.lookupNode(node) != null) {
-            unbindPositions(skinLookup.lookupNode(node).getRoot());
-        }
-    }
-
-    /**
-     * Unbinds the positions of all selected objects.
-     *
-     * @param joint the master {@link GJoint} that all selected objects were previously bound to
-     */
-    public void unbindPositions(final GJoint joint) {
-        if (skinLookup.lookupJoint(joint) != null) {
-            unbindPositions(skinLookup.lookupJoint(joint).getRoot());
-        }
-    }
-
-    /**
      * Binds the positions of all selected objects to have a fixed position relative to the given draggable box.
      *
-     * @param master the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
+     * @param pMaster the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
      */
-    private void bindPositions(final DraggableBox master) {
+    public void bindPositions(final DraggableBox pMaster) {
 
+        // clean up
         currentSelectedElements.clear();
+        if (master != null) {
+            removePositionListeners(master);
+        }
 
         // store the currently selected elements of interest
         // (the ones we want to move alongside the master):
@@ -149,15 +114,15 @@ public class SelectionDragManager {
         // shortcut: if no element is selected or
         // if only the master element is selected we do not need to attach any listeners
         if (currentSelectedElements.isEmpty()
-                || currentSelectedElements.size() == 1 && currentSelectedElements.get(0) == master) {
+                || currentSelectedElements.size() == 1 && currentSelectedElements.get(0) == pMaster) {
             return;
         }
 
-        this.master = master;
+        master = pMaster;
 
-        storeCurrentOffsets(master);
-        setEditorBoundsForDrag(master);
-        addPositionListeners(master);
+        storeCurrentOffsets(pMaster);
+        setEditorBoundsForDrag(pMaster);
+        addPositionListeners(pMaster);
     }
 
     /**
@@ -182,14 +147,14 @@ public class SelectionDragManager {
      *
      * @param master the master {@link Region} that all selected objects should keep a fixed position relative to
      */
-    private void storeCurrentOffsets(final Region master) {
+    private void storeCurrentOffsets(final DraggableBox master) {
 
         elementLayoutYOffsets = new double[currentSelectedElements.size()];
         elementLayoutXOffsets = new double[currentSelectedElements.size()];
 
         for (int i = 0; i < currentSelectedElements.size(); i++) {
 
-            final Node node = currentSelectedElements.get(i);
+            final DraggableBox node = currentSelectedElements.get(i);
             if (node != master) {
                 elementLayoutXOffsets[i] = (node.getLayoutX() - master.getLayoutX());
                 elementLayoutYOffsets[i] = (node.getLayoutY() - master.getLayoutY());
@@ -280,13 +245,20 @@ public class SelectionDragManager {
      *
      * @param the master {@link DraggableBox} that is about to be dragged
      */
-    private void addPositionListeners(final Region master) {
-
-        // Remove old listeners just in case there are any.
-        removePositionListeners(master);
+    private void addPositionListeners(final DraggableBox master) {
 
         master.layoutXProperty().addListener(layoutXListener);
         master.layoutYProperty().addListener(layoutYListener);
+        
+        removeOnReleased = new EventHandler<MouseEvent>() {
+            
+            @Override
+            public void handle(MouseEvent event) {
+                unbindPositions(master);
+                master.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
+            }
+        };
+        master.addEventHandler(MouseEvent.MOUSE_RELEASED, removeOnReleased);
     }
 
     /**
@@ -294,10 +266,15 @@ public class SelectionDragManager {
      *
      * @param master the master {@link DraggableBox} that was just dragged
      */
-    private void removePositionListeners(final Region master) {
+    private void removePositionListeners(final DraggableBox master) {
 
         master.layoutXProperty().removeListener(layoutXListener);
         master.layoutYProperty().removeListener(layoutYListener);
+        
+        if (removeOnReleased != null) {
+            master.removeEventHandler(MouseEvent.MOUSE_RELEASED, removeOnReleased);
+            removeOnReleased = null;
+        }
     }
 
     /**
