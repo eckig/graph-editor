@@ -35,14 +35,6 @@ public class GraphEditorProperties {
     public static final double DEFAULT_BOUND_VALUE = 15;
     public static final double DEFAULT_GRID_SPACING = 12;
 
-    // Not currently configurable.
-    private final boolean northBoundActive = true;
-    private final boolean westBoundActive = true;
-
-    // On by default.
-    private boolean southBoundActive = true;
-    private boolean eastBoundActive = true;
-
     // The distance from the editor edge at which the objects should stop when dragged / resized.
     private double northBoundValue = DEFAULT_BOUND_VALUE;
     private double southBoundValue = DEFAULT_BOUND_VALUE;
@@ -76,9 +68,6 @@ public class GraphEditorProperties {
      */
     public GraphEditorProperties(final GraphEditorProperties editorProperties) {
 
-        southBoundActive = editorProperties.isSouthBoundActive();
-        eastBoundActive = editorProperties.isSouthBoundActive();
-
         northBoundValue = editorProperties.getNorthBoundValue();
         southBoundValue = editorProperties.getSouthBoundValue();
         eastBoundValue = editorProperties.getEastBoundValue();
@@ -91,60 +80,6 @@ public class GraphEditorProperties {
         readOnly.set(editorProperties.isReadOnly());
         
         customProperties.putAll(editorProperties.getCustomProperties());
-    }
-
-    /**
-     * Gets whether the north bound is active.
-     *
-     * @return {@code true} if the north bound is active, false if not
-     */
-    public boolean isNorthBoundActive() {
-        return northBoundActive;
-    }
-
-    /**
-     * Gets whether the south bound is active.
-     *
-     * @return {@code true} if the south bound is active, false if not
-     */
-    public boolean isSouthBoundActive() {
-        return southBoundActive;
-    }
-
-    /**
-     * Sets whether the south bound is active.
-     *
-     * @param southBound {@code true} if the south bound is active, false if not
-     */
-    public void setSouthBound(final boolean southBound) {
-        southBoundActive = southBound;
-    }
-
-    /**
-     * Gets whether the east bound is active.
-     *
-     * @return {@code true} if the east bound is active, false if not
-     */
-    public boolean isEastBoundActive() {
-        return eastBoundActive;
-    }
-
-    /**
-     * Sets whether the east bound is active.
-     *
-     * @param eastBound {@code true} if the east bound is active, false if not
-     */
-    public void setEastBound(final boolean eastBound) {
-        eastBoundActive = eastBound;
-    }
-
-    /**
-     * Gets whether the west bound is active.
-     *
-     * @return {@code true} if the west bound is active, false if not
-     */
-    public boolean isWestBoundActive() {
-        return westBoundActive;
     }
 
     /**

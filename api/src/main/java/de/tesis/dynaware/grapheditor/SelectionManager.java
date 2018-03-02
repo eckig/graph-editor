@@ -5,10 +5,8 @@ package de.tesis.dynaware.grapheditor;
 
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
 
 import javafx.collections.ObservableSet;
-import javafx.geometry.Rectangle2D;
 import javafx.util.Pair;
 
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -119,18 +117,6 @@ public interface SelectionManager {
      */
     void deleteSelection(BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer);
 
-    /**
-     * Sets an optional predicate to be called when the selection-box changes to see if connections should be selected.
-     *
-     * <p>
-     * The predicate should return true if the connection is inside the selection box. Setting a null predicate means no
-     * connections will be selected by the selection-box. This is the default behaviour.
-     * </p>
-     *
-     * @param connectionPredicate a predicate that checks if a connection is inside the selection-box
-     */
-    void setConnectionSelectionPredicate(BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate);
-    
     /**
      * Sets the editor properties instance for the graph editor.
      *

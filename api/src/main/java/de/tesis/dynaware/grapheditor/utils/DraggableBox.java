@@ -405,8 +405,7 @@ public class DraggableBox extends StackPane {
      */
     private void handleDragX(final double x) {
 
-        final double maxParentWidth = editorProperties != null && editorProperties.isEastBoundActive() ? lastParentWidth
-                : absoluteMaxWidth;
+        final double maxParentWidth = editorProperties != null ? lastParentWidth : absoluteMaxWidth;
 
         final double minLayoutX = editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
                 : editorProperties.getWestBoundValue();
@@ -430,7 +429,7 @@ public class DraggableBox extends StackPane {
             }
         }
 
-        if (editorProperties != null && editorProperties.isWestBoundActive() && newLayoutX < minLayoutX) {
+        if (editorProperties != null && newLayoutX < minLayoutX) {
             newLayoutX = minLayoutX;
         } else if (newLayoutX > maxLayoutX) {
             newLayoutX = maxLayoutX;
@@ -446,7 +445,7 @@ public class DraggableBox extends StackPane {
      */
     private void handleDragY(final double y) {
 
-        final double maxParentHeight = editorProperties != null && editorProperties.isSouthBoundActive() ? lastParentHeight : absoluteMaxHeight;
+        final double maxParentHeight = editorProperties != null ? lastParentHeight : absoluteMaxHeight;
 
         final double minLayoutY = editorProperties.getNorthBoundValue();
         final double maxLayoutY = maxParentHeight - getHeight() - editorProperties.getSouthBoundValue();
@@ -467,7 +466,7 @@ public class DraggableBox extends StackPane {
             }
         }
 
-        if (editorProperties != null && editorProperties.isNorthBoundActive() && newLayoutY < minLayoutY) {
+        if (editorProperties != null && newLayoutY < minLayoutY) {
             newLayoutY = minLayoutY;
         } else if (newLayoutY > maxLayoutY) {
             newLayoutY = maxLayoutY;

@@ -5,12 +5,10 @@ package de.tesis.dynaware.grapheditor.core;
 
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 
-import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
@@ -27,7 +25,6 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.collections.ObservableSet;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
@@ -203,9 +200,4 @@ public class DefaultSelectionManager implements SelectionManager {
 			}
 		}
 	}
-
-    @Override
-    public void setConnectionSelectionPredicate(final BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate) {
-        selectionCreator.setConnectionSelectionPredicate(connectionPredicate);
-    }
 }

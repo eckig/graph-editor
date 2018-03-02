@@ -263,7 +263,7 @@ public class ResizableBox extends DraggableBox {
         }
 
         // Min & max resize logic here.
-        if (editorProperties != null && editorProperties.isNorthBoundActive() && newLayoutY < editorProperties.getNorthBoundValue()) {
+        if (editorProperties != null && newLayoutY < editorProperties.getNorthBoundValue()) {
             newLayoutY = editorProperties.getNorthBoundValue();
             newHeight = lastLayoutY + lastHeight - editorProperties.getNorthBoundValue();
         } else if (newHeight < minResizeHeight) {
@@ -288,7 +288,7 @@ public class ResizableBox extends DraggableBox {
         final double yDragDistance = (y - lastMouseY) / scaleFactor;
         final double parentHeight = getParent().getLayoutBounds().getHeight();
 
-        final double maxParentHeight = editorProperties != null && editorProperties.isSouthBoundActive() ? parentHeight : absoluteMaxHeight;
+        final double maxParentHeight = editorProperties != null ? parentHeight : absoluteMaxHeight;
 
         final double minResizeHeight = Math.max(getMinHeight(), 0);
         final double maxAvailableHeight = maxParentHeight - getLayoutY()
@@ -328,7 +328,7 @@ public class ResizableBox extends DraggableBox {
         final double xDragDistance = (x - lastMouseX) / scaleFactor;
         final double parentWidth = getParent().getLayoutBounds().getWidth();
 
-        final double maxParentWidth = editorProperties != null && editorProperties.isEastBoundActive() ? parentWidth : absoluteMaxWidth;
+        final double maxParentWidth = editorProperties != null ? parentWidth : absoluteMaxWidth;
 
         final double minResizeWidth = Math.max(getMinWidth(), 0);
         final double maxAvailableWidth = maxParentWidth - getLayoutX()
@@ -387,8 +387,7 @@ public class ResizableBox extends DraggableBox {
         }
 
         // Min & max resize logic here.
-        if (editorProperties != null && editorProperties.isWestBoundActive()
-                && newLayoutX < editorProperties.getWestBoundValue()) {
+        if (editorProperties != null && newLayoutX < editorProperties.getWestBoundValue()) {
             newLayoutX = editorProperties.getWestBoundValue();
             newWidth = lastLayoutX + lastWidth - editorProperties.getWestBoundValue();
         } else if (newWidth < minResizeWidth) {

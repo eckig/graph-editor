@@ -27,6 +27,13 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 public abstract class GConnectionSkin extends GSkin<GConnection> {
 
     /**
+     * Cache the index of this connection skin inside the list of children of the
+     * connection layer. As the graph editor grows the indexOf() lookup calls take
+     * up a considerable amount of time.
+     */
+    private int connectionIndex;
+    
+    /**
      * Creates a new {@link GConnectionSkin}.
      *
      * @param connection the {@link GConnection} represented by the skin
@@ -71,7 +78,14 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * @param points all the {@link Point2D} instances that specify the connection position
      * @param allConnections the lists of points for all connections (can be ignored in a simple skin)
      */
-    public abstract void draw(final List<Point2D> points, Map<GConnection, List<Point2D>> allConnections);
+    public void draw(final List<Point2D> points, final Map<GConnection, List<Point2D>> allConnections) {
+        
+        if(getRoot() != null && getRoot().getParent() != null) {
+            connectionIndex = getRoot().getParent().getChildrenUnmodifiable().indexOf(getRoot());
+        } else {
+            connectionIndex = -1;
+        }
+    }
 
     /**
      * Applies constraints to the given set of points before any connections are drawn.
@@ -89,5 +103,13 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      */
     public void applyConstraints(final List<Point2D> points) {
         // No default implementation.
+    }
+    
+    /**
+     * @return cached position (index) of this connection skin inside the child-list
+     *         of the parent connection layer.
+     */
+    public int getParentIndex() {
+        return connectionIndex;
     }
 }

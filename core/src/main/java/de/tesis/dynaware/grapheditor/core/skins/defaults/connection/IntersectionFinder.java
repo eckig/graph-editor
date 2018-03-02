@@ -9,12 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 
 /**
  * Responsible for finding the intersection points between a connection and other connections.
@@ -163,16 +163,14 @@ public class IntersectionFinder {
      */
     private boolean checkIfBehind(final GConnection other) {
 
-        final Node node = skinLookup.lookupConnection(connection).getRoot();
-        final Node otherNode = skinLookup.lookupConnection(other).getRoot();
+        final GConnectionSkin skin = skinLookup.lookupConnection(connection);
+        final GConnectionSkin otherSkin = skinLookup.lookupConnection(other);
 
-        if (node.getParent() == null) {
+        if (skin == null || skin.getParentIndex() == -1) {
             return false;
         } else {
-            final int connectionIndex = node.getParent().getChildrenUnmodifiable().indexOf(node);
-            final int otherIndex = node.getParent().getChildrenUnmodifiable().indexOf(otherNode);
-
-            return otherIndex < connectionIndex;
+            final int otherIndex = otherSkin == null ? -1 : otherSkin.getParentIndex();
+            return otherIndex < skin.getParentIndex();
         }
     }
 }

@@ -18,7 +18,6 @@ import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GJoint;
-import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
@@ -83,20 +82,18 @@ public class SelectionDragManager {
      * Binds the positions of all selected objects to have a fixed position relative to a given node.
      *
      * @param node the master {@link GNode} that all selected objects should keep a fixed position relative to
-     * @param model the {@link GModel} currently being edited
      */
-    public void bindPositions(final GNode node, final GModel model) {
-        bindPositions(skinLookup.lookupNode(node).getRoot(), model);
+    public void bindPositions(final GNode node) {
+        bindPositions(skinLookup.lookupNode(node).getRoot());
     }
 
     /**
      * Binds the positions of all selected objects to have a fixed position relative to a given joint.
      *
      * @param joint the master {@link GJoint} that all selected objects should keep a fixed position relative to
-     * @param model the {@link GModel} currently being edited
      */
-    public void bindPositions(final GJoint joint, final GModel model) {
-        bindPositions(skinLookup.lookupJoint(joint).getRoot(), model);
+    public void bindPositions(final GJoint joint) {
+        bindPositions(skinLookup.lookupJoint(joint).getRoot());
     }
 
     /**
@@ -125,9 +122,8 @@ public class SelectionDragManager {
      * Binds the positions of all selected objects to have a fixed position relative to the given draggable box.
      *
      * @param master the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
-     * @param model the {@link GModel} currently being edited
      */
-    private void bindPositions(final DraggableBox master, final GModel model) {
+    private void bindPositions(final DraggableBox master) {
 
         currentSelectedElements.clear();
 
@@ -149,12 +145,19 @@ public class SelectionDragManager {
                 }
             }
         }
+        
+        // shortcut: if no element is selected or
+        // if only the master element is selected we do not need to attach any listeners
+        if (currentSelectedElements.isEmpty()
+                || currentSelectedElements.size() == 1 && currentSelectedElements.get(0) == master) {
+            return;
+        }
 
         this.master = master;
 
-        storeCurrentOffsets(master, model);
-        setEditorBoundsForDrag(master, model);
-        addPositionListeners(master, model);
+        storeCurrentOffsets(master);
+        setEditorBoundsForDrag(master);
+        addPositionListeners(master);
     }
 
     /**
@@ -178,9 +181,8 @@ public class SelectionDragManager {
      * Stores the current offset position of all selected objects with respect to the given master region.
      *
      * @param master the master {@link Region} that all selected objects should keep a fixed position relative to
-     * @param model the {@link GModel} currently being edited
      */
-    private void storeCurrentOffsets(final Region master, final GModel model) {
+    private void storeCurrentOffsets(final Region master) {
 
         elementLayoutYOffsets = new double[currentSelectedElements.size()];
         elementLayoutXOffsets = new double[currentSelectedElements.size()];
@@ -204,16 +206,14 @@ public class SelectionDragManager {
      * </p>
      *
      * @param master the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
-     * @param model the {@link GModel} currently being edited
      */
-    private void setEditorBoundsForDrag(final DraggableBox master, final GModel model) {
+    private void setEditorBoundsForDrag(final DraggableBox master) {
 
         final GraphEditorProperties propertiesForDrag = new GraphEditorProperties(view.getEditorProperties());
 
         final BoundOffsets maxOffsets = new BoundOffsets();
 
         for (final DraggableBox node : currentSelectedElements) {
-
             addOffsets(master, node, maxOffsets);
         }
 
@@ -279,9 +279,8 @@ public class SelectionDragManager {
      * Adds listeners to the master region to update all slave regions accordingly when the master's position changes.
      *
      * @param the master {@link DraggableBox} that is about to be dragged
-     * @param model the {@link GModel} currently being edited
      */
-    private void addPositionListeners(final Region master, final GModel model) {
+    private void addPositionListeners(final Region master) {
 
         // Remove old listeners just in case there are any.
         removePositionListeners(master);

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -74,8 +73,6 @@ public class SelectionCreator {
     private Point2D selectionBoxStart;
     private Point2D selectionBoxEnd;
 
-    private BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate;
-
     /**
      * Creates a new selection creator instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
@@ -109,19 +106,6 @@ public class SelectionCreator {
         allJoints = GModelUtils.getAllJoints(model);
         
         addClickSelectionMechanism();
-    }
-
-    /**
-     * Sets a predicate to be called when the selection-box changes to see if connections should be selected.
-     *
-     * <p>
-     * Can be null (in which case no connections will be selected by the selection-box).
-     * </p>
-     *
-     * @param connectionPredicate a predicate that checks if a connection is inside the selection-box
-     */
-    public void setConnectionSelectionPredicate(final BiPredicate<GConnectionSkin, Rectangle2D> connectionPredicate) {
-        this.connectionPredicate = connectionPredicate;
     }
 
     /**
@@ -360,7 +344,7 @@ public class SelectionCreator {
 
         // Do not bind the positions of other selected nodes if this node is about to be resized.
         if (!nodeSkin.getRoot().isMouseInPositionForResize()) {
-            selectionDragManager.bindPositions(node, model);
+            selectionDragManager.bindPositions(node);
         }
 
         handleSelectionClick(event, nodeSkin);
@@ -418,7 +402,7 @@ public class SelectionCreator {
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
         handleSelectionClick(event, jointSkin);
 
-        selectionDragManager.bindPositions(joint, model);
+        selectionDragManager.bindPositions(joint);
         event.consume();
     }
 
@@ -503,9 +487,7 @@ public class SelectionCreator {
     }
     
     private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown) {
-        return connectionPredicate != null
-                && connectionPredicate.test(skinLookup.lookupConnection(connection), selection)
-                || isShortcutDown && selectedConnectionsBackup.contains(connection);
+        return isShortcutDown && selectedConnectionsBackup.contains(connection);
     }
 
     /**

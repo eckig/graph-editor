@@ -122,6 +122,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     @Override
     public void draw(final List<Point2D> points, final Map<GConnection, List<Point2D>> allPoints) {
 
+        super.draw(points, allPoints);
+        
         final boolean pointsRequireRedraw = !points.equals(this.points);
 
         // If we are showing detours, get all intersections with connections *behind* this one. Otherwise in front.
