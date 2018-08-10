@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>de.tesis.dynaware</groupId>
 		<artifactId>de.tesis.dynaware.grapheditor</artifactId>
-		<version>1.4.2</version>
+		<version>${revision}</version>
 	</parent>
 	<name>${component.name}::API</name>
 
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>de.tesis.dynaware</groupId>
 			<artifactId>de.tesis.dynaware.grapheditor.model</artifactId>
-			<version>${graph.model.version}</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
@@ -67,5 +67,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 </project>

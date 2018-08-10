@@ -19,7 +19,6 @@ import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.TitledSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.TreeSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSelectionPredicate;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
@@ -327,14 +326,12 @@ public class GraphEditorDemoController {
         if (treeSkinController.equals(activeSkinController.get())) {
 
             graphEditor.setConnectorValidator(new TreeConnectorValidator());
-            graphEditor.getSelectionManager().setConnectionSelectionPredicate(new TreeConnectionSelectionPredicate());
             graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             treeSkinButton.setSelected(true);
 
         } else if (titledSkinController.equals(activeSkinController.get())) {
 
             graphEditor.setConnectorValidator(null);
-            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
             if (!graphEditor.getView().getStyleClass().contains(STYLE_CLASS_TITLED_SKINS)) {
                 graphEditor.getView().getStyleClass().add(STYLE_CLASS_TITLED_SKINS);
             }
@@ -343,7 +340,6 @@ public class GraphEditorDemoController {
         } else {
 
             graphEditor.setConnectorValidator(null);
-            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
             graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             defaultSkinButton.setSelected(true);
         }

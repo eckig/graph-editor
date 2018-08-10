@@ -13,6 +13,7 @@ import javafx.scene.CacheHint;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
+
 /**
  * The {@link Region} that all visual elements in the graph editor are added to.
  *
@@ -34,11 +35,12 @@ import javafx.scene.layout.Region;
  * dimensions as the editor region itself.
  * </p>
  */
-public class GraphEditorView extends Region {
+public class GraphEditorView extends Region
+{
 
-	/**
-	 * default view stylesheet
-	 */
+    /**
+     * default view stylesheet
+     */
     public static final String STYLESHEET_VIEW = "view.css";
     /**
      * default view stylesheet
@@ -63,8 +65,8 @@ public class GraphEditorView extends Region {
      * Creates a new {@link GraphEditorView} to which skin instances can be
      * added and removed.
      */
-    public GraphEditorView() {
-
+    public GraphEditorView()
+    {
         getStyleClass().addAll(STYLE_CLASS);
 
         setMaxWidth(GraphEditorProperties.DEFAULT_MAX_WIDTH);
@@ -76,17 +78,19 @@ public class GraphEditorView extends Region {
     /**
      * Sets the connection-layouter to be used by the view.
      *
-     * @param connectionLayouter the graph editor's {@link ConnectionLayouter}
-     * instance
+     * @param connectionLayouter
+     *            the graph editor's {@link ConnectionLayouter} instance
      */
-    public void setConnectionLayouter(final ConnectionLayouter connectionLayouter) {
+    public void setConnectionLayouter(final ConnectionLayouter connectionLayouter)
+    {
         this.connectionLayouter = connectionLayouter;
     }
 
     /**
      * Clears all elements from the view.
      */
-    public void clear() {
+    public void clear()
+    {
         nodeLayer.getChildren().clear();
         connectionLayer.getChildren().clear();
     }
@@ -94,10 +98,13 @@ public class GraphEditorView extends Region {
     /**
      * Adds a node skin to the view.
      *
-     * @param nodeSkin the {@link GNodeSkin} instance to be added
+     * @param nodeSkin
+     *            the {@link GNodeSkin} instance to be added
      */
-    public void add(final GNodeSkin nodeSkin) {
-        if (nodeSkin != null) {
+    public void add(final GNodeSkin nodeSkin)
+    {
+        if (nodeSkin != null)
+        {
             nodeLayer.getChildren().add(nodeSkin.getRoot());
         }
     }
@@ -105,10 +112,13 @@ public class GraphEditorView extends Region {
     /**
      * Adds a connection skin to the view.
      *
-     * @param connectionSkin the {@link GConnectionSkin} instance to be added
+     * @param connectionSkin
+     *            the {@link GConnectionSkin} instance to be added
      */
-    public void add(final GConnectionSkin connectionSkin) {
-        if (connectionSkin != null) {
+    public void add(final GConnectionSkin connectionSkin)
+    {
+        if (connectionSkin != null)
+        {
             connectionLayer.getChildren().add(connectionSkin.getRoot());
         }
     }
@@ -116,10 +126,13 @@ public class GraphEditorView extends Region {
     /**
      * Adds a joint skin to the view.
      *
-     * @param jointSkin the {@link GJointSkin} instance to be added
+     * @param jointSkin
+     *            the {@link GJointSkin} instance to be added
      */
-    public void add(final GJointSkin jointSkin) {
-        if (jointSkin != null) {
+    public void add(final GJointSkin jointSkin)
+    {
+        if (jointSkin != null)
+        {
             connectionLayer.getChildren().add(jointSkin.getRoot());
         }
     }
@@ -127,10 +140,13 @@ public class GraphEditorView extends Region {
     /**
      * Adds a tail skin to the view.
      *
-     * @param tailSkin the {@link GTailSkin} instance to be added
+     * @param tailSkin
+     *            the {@link GTailSkin} instance to be added
      */
-    public void add(final GTailSkin tailSkin) {
-        if (tailSkin != null) {
+    public void add(final GTailSkin tailSkin)
+    {
+        if (tailSkin != null)
+        {
             connectionLayer.getChildren().add(tailSkin.getRoot());
         }
     }
@@ -139,10 +155,13 @@ public class GraphEditorView extends Region {
      * Removes a node skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param nodeSkin the {@link GNodeSkin} instance to remove
+     * @param nodeSkin
+     *            the {@link GNodeSkin} instance to remove
      */
-    public void remove(final GNodeSkin nodeSkin) {
-        if (nodeSkin != null) {
+    public void remove(final GNodeSkin nodeSkin)
+    {
+        if (nodeSkin != null)
+        {
             nodeLayer.getChildren().remove(nodeSkin.getRoot());
         }
     }
@@ -151,10 +170,13 @@ public class GraphEditorView extends Region {
      * Removes a connection skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param connectionSkin the {@link GConnectionSkin} instance to remove
+     * @param connectionSkin
+     *            the {@link GConnectionSkin} instance to remove
      */
-    public void remove(final GConnectionSkin connectionSkin) {
-        if (connectionSkin != null) {
+    public void remove(final GConnectionSkin connectionSkin)
+    {
+        if (connectionSkin != null)
+        {
             connectionLayer.getChildren().remove(connectionSkin.getRoot());
         }
     }
@@ -163,10 +185,13 @@ public class GraphEditorView extends Region {
      * Removes a joint skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param jointSkin the {@link GJointSkin} instance to remove
+     * @param jointSkin
+     *            the {@link GJointSkin} instance to remove
      */
-    public void remove(final GJointSkin jointSkin) {
-        if (jointSkin != null) {
+    public void remove(final GJointSkin jointSkin)
+    {
+        if (jointSkin != null)
+        {
             connectionLayer.getChildren().remove(jointSkin.getRoot());
         }
     }
@@ -175,10 +200,13 @@ public class GraphEditorView extends Region {
      * Removes a tail skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param tailSkin the {@link GTailSkin} instance to remove
+     * @param tailSkin
+     *            the {@link GTailSkin} instance to remove
      */
-    public void remove(final GTailSkin tailSkin) {
-        if (tailSkin != null) {
+    public void remove(final GTailSkin tailSkin)
+    {
+        if (tailSkin != null)
+        {
             connectionLayer.getChildren().remove(tailSkin.getRoot());
         }
     }
@@ -191,46 +219,65 @@ public class GraphEditorView extends Region {
      * and/or snapped to.
      * </p>
      *
-     * @param editorProperties the {@link GraphEditorProperties} instance to be
-     * used by the view
+     * @param pEditorProperties
+     *            the {@link GraphEditorProperties} instance to be used by the
+     *            view
      */
-    public void setEditorProperties(final GraphEditorProperties editorProperties) {
+    public void setEditorProperties(final GraphEditorProperties pEditorProperties)
+    {
+        editorProperties = pEditorProperties;
 
-        this.editorProperties = editorProperties;
-        grid.setProperties(editorProperties);
+        if (editorProperties != null)
+        {
+            grid.visibleProperty().bind(editorProperties.gridVisibleProperty());
+            grid.gridSpacingProperty().bind(editorProperties.gridSpacingProperty());
+        }
+        else
+        {
+            grid.visibleProperty().unbind();
+            grid.gridSpacingProperty().unbind();
+        }
     }
 
     /**
      * Gets the editor properties instance used by the view.
      *
      * @return editorProperties the {@link GraphEditorProperties} instance used
-     * by the view
+     *         by the view
      */
-    public GraphEditorProperties getEditorProperties() {
+    public GraphEditorProperties getEditorProperties()
+    {
         return editorProperties;
     }
 
     /**
      * Draws a selection box in the view.
      *
-     * @param x the x position of the selection box
-     * @param y the y position of the selection box
-     * @param width the width of the selection box
-     * @param height the height of the selection box
+     * @param x
+     *            the x position of the selection box
+     * @param y
+     *            the y position of the selection box
+     * @param width
+     *            the width of the selection box
+     * @param height
+     *            the height of the selection box
      */
-    public void drawSelectionBox(final double x, final double y, final double width, final double height) {
+    public void drawSelectionBox(final double x, final double y, final double width, final double height)
+    {
         selectionBox.draw(x, y, width, height);
     }
 
     /**
      * Hides the selection box.
      */
-    public void hideSelectionBox() {
+    public void hideSelectionBox()
+    {
         selectionBox.setVisible(false);
     }
 
     @Override
-    protected void layoutChildren() {
+    protected void layoutChildren()
+    {
         final double width = getWidth();
         final double height = getHeight();
         nodeLayer.resizeRelocate(0, 0, width, height);
@@ -243,14 +290,14 @@ public class GraphEditorView extends Region {
      * Initializes the two layers (node and connection) that the view is
      * composed of.
      */
-    private void initializeLayers() {
-
+    private void initializeLayers()
+    {
         nodeLayer.setPickOnBounds(false);
         connectionLayer.setPickOnBounds(false);
 
         nodeLayer.setCacheHint(CacheHint.SPEED);
         connectionLayer.setCacheHint(CacheHint.SPEED);
-        
+
         nodeLayer.getStyleClass().add(STYLE_CLASS_NODE_LAYER);
         connectionLayer.getStyleClass().add(STYLE_CLASS_CONNECTION_LAYER);
 
