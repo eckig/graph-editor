@@ -14,6 +14,7 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
+import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.TitledSkinController;
@@ -113,7 +114,7 @@ public class GraphEditorDemoController {
                 get().activate();
             }
         }
-        
+
     };
 
     /**
@@ -125,6 +126,10 @@ public class GraphEditorDemoController {
 
         graphEditor.setModel(model);
         graphEditorContainer.setGraphEditor(graphEditor);
+
+        graphEditorContainer.getStylesheets().addAll(GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_VIEW).toExternalForm(),
+                GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_DEFAULTS).toExternalForm());
+
         setDetouredStyle();
 
         defaultSkinController = new DefaultSkinController(graphEditor, graphEditorContainer);
@@ -132,10 +137,10 @@ public class GraphEditorDemoController {
         titledSkinController = new TitledSkinController(graphEditor, graphEditorContainer);
 
         activeSkinController.set(defaultSkinController);
-        
+
 		graphEditor.modelProperty().addListener((w, o, n) -> selectionCopier.initialize(n));
         selectionCopier.initialize(model);
-        
+
         initializeMenuBar();
         addActiveSkinControllerListener();
     }
@@ -268,12 +273,12 @@ public class GraphEditorDemoController {
     public void toggleMinimap() {
         graphEditorContainer.getMinimap().visibleProperty().bind(minimapButton.selectedProperty());
     }
-    
+
     @FXML
     private void switchToNavigation() {
     	graphEditor.getProperties().getGraphEventManager().setInputMode(GraphInputMode.NAVIGATION);
     }
-    
+
     @FXML
     private void switchToSelection() {
     	graphEditor.getProperties().getGraphEventManager().setInputMode(GraphInputMode.SELECTION);

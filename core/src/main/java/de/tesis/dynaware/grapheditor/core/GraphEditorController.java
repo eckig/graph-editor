@@ -5,8 +5,6 @@ package de.tesis.dynaware.grapheditor.core;
 
 import java.util.List;
 
-import javafx.scene.layout.Region;
-
 import org.eclipse.emf.common.command.CommandStackListener;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
@@ -30,6 +28,7 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.scene.layout.Region;
 
 /**
  * The central controller class for the default graph editor implementation.
@@ -72,9 +71,6 @@ public class GraphEditorController {
 		this.skinManager = skinManager;
 
 		view = new GraphEditorView();
-		view.getStylesheets().addAll(
-				GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_VIEW).toExternalForm(),
-				GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_DEFAULTS).toExternalForm());
 
 		modelEditingManager = new ModelEditingManager(commandStackListener);
 		modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager, view::getEditorProperties);

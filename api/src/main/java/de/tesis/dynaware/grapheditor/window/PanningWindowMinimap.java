@@ -22,7 +22,6 @@ public class PanningWindowMinimap extends Pane {
 
     protected static final double MINIMAP_PADDING = 5;
 
-    private static final String STYLESHEET = "minimap.css";
     private static final String STYLE_CLASS = "minimap";
 
     private final MinimapLocator locator = new MinimapLocator(MINIMAP_PADDING);
@@ -47,7 +46,6 @@ public class PanningWindowMinimap extends Pane {
      */
     public PanningWindowMinimap() {
 
-        getStylesheets().add(PanningWindowMinimap.class.getResource(STYLESHEET).toExternalForm());
         getStyleClass().add(STYLE_CLASS);
 
         setPickOnBounds(false);
