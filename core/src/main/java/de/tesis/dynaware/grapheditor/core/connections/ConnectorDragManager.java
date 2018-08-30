@@ -4,6 +4,7 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,7 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
+import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -56,9 +58,9 @@ public class ConnectorDragManager {
      * not move on connection detach
      */
     private final EventHandler<MouseEvent> mousePressedHandler = Event::consume;
-    
+
     private final List<Node> managedConnectorSkins = new ArrayList<>();
-    
+
     private final Map<Node, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> dragDetectedHandlers = new HashMap<>();
@@ -77,7 +79,7 @@ public class ConnectorDragManager {
     private boolean repositionAllowed;
     private boolean dragInProgress;
 
-    
+
     /**
      * Creates a new {@link ConnectorDragManager}. Only one instance should
      * exist per {@link DefaultGraphEditor} instance.
@@ -117,7 +119,7 @@ public class ConnectorDragManager {
 
     /**
      * Sets the validator that determines what connections can be created.
-     * 
+     *
      * @param validator
      *            a {@link GConnectorValidator} implementation, or null to use
      *            the default
@@ -147,7 +149,7 @@ public class ConnectorDragManager {
     }
 
     public void removeConnector(final GConnector connector) {
-        
+
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
         if (connectorSkin != null) {
             final Node root = connectorSkin.getRoot();
@@ -165,18 +167,18 @@ public class ConnectorDragManager {
                 managedConnectorSkins.remove(root);
             }
         }
-        
+
         // the connector's tail we are dragging around has been removed..
         if(sourceConnector == connector || targetConnector == connector) {
             clearTrackingParameters();
         }
     }
-    
+
     private void removeGeneralEventHandlers(final Node node) {
         node.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         node.removeEventHandler(MouseEvent.MOUSE_EXITED, mousePressedHandler);
     }
-    
+
     private <T extends Event> void removeSingleEventHandler(final Node node, final Map<Node, EventHandler<T>> eventHandlerMap,
             final EventType<T> eventType) {
         final EventHandler<T> handler = eventHandlerMap.remove(node);
@@ -204,7 +206,7 @@ public class ConnectorDragManager {
             removeGeneralEventHandlers(next);
             iter.remove();
         }
-        
+
         for (final GNode node : model.getNodes()) {
             for (final GConnector connector : node.getConnectors()) {
                 addMouseHandlers(connector);
@@ -227,10 +229,10 @@ public class ConnectorDragManager {
             if(root == null || mouseEnteredHandlers.containsKey(root)) {
                 return;
             }
-            
+
             final EventHandler<MouseEvent> newMouseEnteredHandler = event -> handleMouseEntered(event, connector);
             final EventHandler<MouseEvent> newMouseReleasedHandler = event -> handleMouseReleased(event);
-            
+
             final EventHandler<MouseEvent> newDragDetectedHandler = event -> handleDragDetected(event, connectorSkin);
             final EventHandler<MouseEvent> newMouseDraggedHandler = event -> handleMouseDragged(event, connector);
             final EventHandler<MouseDragEvent> newMouseDragEnteredHandler = event -> handleDragEntered(event, connectorSkin);
@@ -241,18 +243,18 @@ public class ConnectorDragManager {
             root.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedHandler);
             root.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
             root.addEventHandler(MouseEvent.MOUSE_RELEASED, newMouseReleasedHandler);
-            
+
             root.addEventHandler(MouseEvent.DRAG_DETECTED, newDragDetectedHandler);
             root.addEventHandler(MouseEvent.MOUSE_DRAGGED, newMouseDraggedHandler);
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, newMouseDragEnteredHandler);
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, newMouseDragExitedHandler);
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, newMouseDragReleasedHandler);
-            
+
             managedConnectorSkins.add(root);
-            
+
             mouseEnteredHandlers.put(root, newMouseEnteredHandler);
             mouseReleasedHandlers.put(root, newMouseReleasedHandler);
-            
+
             dragDetectedHandlers.put(root, newDragDetectedHandler);
             mouseDraggedHandlers.put(root, newMouseDraggedHandler);
             mouseDragEnteredHandlers.put(root, newMouseDragEnteredHandler);
@@ -272,7 +274,7 @@ public class ConnectorDragManager {
         hoveredConnector = connector;
         event.consume();
     }
-    
+
     /**
      * Handles mouse-exited events on the given connector.
      *
@@ -336,7 +338,7 @@ public class ConnectorDragManager {
             connectorSkin.getRoot().startFullDrag();
             dragInProgress = true;
         }
-        
+
         event.consume();
     }
 
@@ -463,7 +465,7 @@ public class ConnectorDragManager {
      *         {@link GConnector}, {@code false} if not
      */
     private boolean checkRemovable(final GConnector connector) {
-        return checkEditable() && (!connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag());
+        return checkEditable() && !connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag();
     }
 
     private boolean checkEditable() {
@@ -518,57 +520,68 @@ public class ConnectorDragManager {
      * @param connector
      *            the connector that the connection was detached from
      */
-    private void detachConnection(final MouseEvent event, final GConnector connector) {
-
-        final GConnector firstOpposingConnector = getFirstOpposingConnector(connector);
+    private void detachConnection(final MouseEvent event, final GConnector connector)
+    {
         skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
 
-        if (connector.getConnections().isEmpty()) {
+        if (connector.getConnections().isEmpty())
+        {
             return;
         }
 
-        final GConnection connection = connector.getConnections().get(0);
-        tailManager.createFromConnection(connector, connection, event);
-        sourceConnector = firstOpposingConnector;
-        targetConnector = connector;
+        boolean followUpCreated = false;
 
-        final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
-        // Notify the event manager so additional commands may be appended to this compound command.
-        connectionEventManager.notifyConnectionRemoved(connection, command);
+        final GConnection[] connections = connector.getConnections().toArray(new GConnection[connector.getConnections().size()]);
+        for (final GConnection connection : connections)
+        {
+            final GConnector opposingConnector = getOpposingConnector(connection, connector);
+            final List<Point2D> jointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
+            final GConnector newSource;
+            if (connector.equals(connection.getSource()))
+            {
+                Collections.reverse(jointPositions);
+                newSource = connection.getTarget();
+            }
+            else
+            {
+                newSource = connection.getSource();
+            }
 
-        removalConnector = null;
+            final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
+            // Notify the event manager so additional commands may be appended to this compound command.
+            connectionEventManager.notifyConnectionRemoved(connection, command);
 
-        // check if the new source connector allows to create a new connection on the fly:
-        if (!checkCreatable(firstOpposingConnector)) {
+            // check if the new source connector allows to create a new connection on the fly:
+            if (!followUpCreated && checkCreatable(opposingConnector))
+            {
+                tailManager.updateToNewSource(jointPositions, newSource, event);
+                sourceConnector = opposingConnector;
+                targetConnector = connector;
+                followUpCreated = true;
+            }
+        }
+
+        // no follow up tail created -> clean up
+        if (!followUpCreated)
+        {
             clearTrackingParameters();
             sourceConnector = null;
             targetConnector = null;
+            followUpCreated = true;
         }
+
+        removalConnector = null;
     }
 
-    /**
-     * Gets the 'opposing' connector that the given connector's first connection
-     * is connected to.
-     *
-     * @param connector
-     *            a {@link GConnector} instance
-     *
-     * @return the {@link GConnector} on the other end of the connection, or
-     *         {@code null} if no connection is present
-     */
-    private GConnector getFirstOpposingConnector(final GConnector connector) {
-
-        if (connector.getConnections().isEmpty()) {
-            return null;
-        } else {
-
-            final GConnection connection = connector.getConnections().get(0);
-
-            if (!connection.getSource().equals(connector)) {
-                return connection.getSource();
-            } else {
-                return connection.getTarget();
-            }
+    private GConnector getOpposingConnector(final GConnection pConnection, final GConnector pConnector)
+    {
+        if (!pConnection.getSource().equals(pConnector))
+        {
+            return pConnection.getSource();
+        }
+        else
+        {
+            return pConnection.getTarget();
         }
     }
 }

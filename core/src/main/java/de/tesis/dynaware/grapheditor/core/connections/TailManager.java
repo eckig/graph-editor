@@ -1,12 +1,10 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
-import java.util.Collections;
 import java.util.List;
 
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
-import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
@@ -27,7 +25,7 @@ public class TailManager {
 
     /**
      * Creates a new {@link TailManager} instance.
-     * 
+     *
      * @param skinLookup the {@link SkinLookup} used to look up connector and tail skins
      * @param view the {@link GraphEditorView} to which tail skins will be added and removed
      */
@@ -38,7 +36,7 @@ public class TailManager {
 
     /**
      * Creates a new tail and adds it to the view.
-     * 
+     *
      * @param connector the connector where the tail starts from
      * @param the mouse event responsible for creating the tail
      */
@@ -60,29 +58,22 @@ public class TailManager {
     }
 
     /**
-     * Creates a new tail from a connection that was detached.
-     * 
-     * @param connector the connector that the connection was detached from
-     * @param connection the connection that was detached
-     * @param the mouse event responsible for creating the tail
+     * Updates the tail to follow a connection that was detached.
+     *
+     * @param pJointPositions
+     * @param pNewSource
+     * @param the
+     *            mouse event responsible for creating the tail
      */
-    public void createFromConnection(final GConnector connector, final GConnection connection, final MouseEvent event) {
-
+    public void updateToNewSource(final List<Point2D> pJointPositions, final GConnector pNewSource, final MouseEvent pEvent)
+    {
         cleanUp();
-        jointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
+        jointPositions = pJointPositions;
 
-        final GConnector newSource;
-        if (connector.equals(connection.getSource())) {
-            Collections.reverse(jointPositions);
-            newSource = connection.getTarget();
-        } else {
-            newSource = connection.getSource();
-        }
+        tailSkin = skinLookup.lookupTail(pNewSource);
 
-        tailSkin = skinLookup.lookupTail(newSource);
-
-        sourcePosition = GeometryUtils.getConnectorPosition(newSource, skinLookup);
-        final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
+        sourcePosition = GeometryUtils.getConnectorPosition(pNewSource, skinLookup);
+        final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(pEvent, view));
 
         tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
         view.add(tailSkin);
@@ -91,7 +82,7 @@ public class TailManager {
 
     /**
      * Updates the tail position based on new cursor position.
-     * 
+     *
      * @param the mouse event responsible for updating the position
      */
     public void updatePosition(final MouseEvent event) {
@@ -110,7 +101,7 @@ public class TailManager {
 
     /**
      * Snaps the position of the tail to show the position the connection itself would take if it would be created.
-     * 
+     *
      * @param source the source connector
      * @param target the target connector
      * @param valid {@code true} if the connection is valid, {@code false} if invalid
@@ -132,7 +123,7 @@ public class TailManager {
 
     /**
      * Cleans up.
-     * 
+     *
      * <p>
      * Called at the end of a drag gesture or during initialization. Removes any tail from the view and resets tracking
      * parameters.
@@ -150,9 +141,9 @@ public class TailManager {
 
     /**
      * Corrects the cursor position in the case where scale transforms are applied.
-     * 
+     *
      * @param cursorPosition the cursor position calculated assuming scale factor of 1
-     * 
+     *
      * @return the corrected cursor position
      */
     private Point2D getScaledPosition(final Point2D cursorPosition) {
