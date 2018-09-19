@@ -33,7 +33,7 @@ public class PanningWindow extends Region {
 
     private static final double SCALE_MIN = 0.5;
     private static final double SCALE_MAX = 1.5;
-    
+
     private final Rectangle clip = new Rectangle();
 
     private Region content;
@@ -42,12 +42,12 @@ public class PanningWindow extends Region {
     private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
     private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
     private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningMouseReleased;
-    
+
     private final ChangeListener<GraphInputMode> inputModeListener = (w,o,n) -> setPanningEnabled(n == GraphInputMode.NAVIGATION);
 
     private Point2D clickPosition;
     private Point2D windowPosAtClick;
-    
+
     private boolean panningGestureActive;
     private boolean panningEnabled = true;
 
@@ -55,7 +55,7 @@ public class PanningWindow extends Region {
 
     private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
     private final Scale scaleTransform = new Scale(1, 1, 0, 0);
-    
+
     private GraphEditorProperties editorProperties;
 
     /**
@@ -70,7 +70,7 @@ public class PanningWindow extends Region {
         scaleTransform.xProperty().bind(zoom);
         scaleTransform.yProperty().bind(zoom);
     }
-    
+
     /**
      * Sets the editor properties object that the drag logic should respect.
      *
@@ -79,26 +79,26 @@ public class PanningWindow extends Region {
      * be set via the graph editor instance.
      * </p>
      *
-     * @param editorProperties the {@link GraphEditorProperties} instance for the graph editor
+     * @param pEditorProperties the {@link GraphEditorProperties} instance for the graph editor
      */
-    public void setEditorProperties(final GraphEditorProperties editorProperties) {
-        
+    public void setEditorProperties(final GraphEditorProperties pEditorProperties) {
+
         if(this.editorProperties != null) {
             this.editorProperties.getGraphEventManager().inputModeProperty().removeListener(inputModeListener);
         }
-        
-        this.editorProperties = editorProperties;
-        
-        if(editorProperties != null) {
-            editorProperties.getGraphEventManager().inputModeProperty().addListener(inputModeListener);
-            setPanningEnabled(editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.NAVIGATION);
+
+        this.editorProperties = pEditorProperties;
+
+        if(pEditorProperties != null) {
+            pEditorProperties.getGraphEventManager().inputModeProperty().addListener(inputModeListener);
+            setPanningEnabled(pEditorProperties.getGraphEventManager().getInputMode() == GraphInputMode.NAVIGATION);
         }
     }
-    
+
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        
+
         if(content != null) {
             content.relocate(contentX * -1, contentY * -1);
         }
@@ -120,7 +120,7 @@ public class PanningWindow extends Region {
         contentY = checkContentY(y);
         requestLayout();
     }
-    
+
     /**
      * Pans the window to the specified x coordinate.
      *
@@ -135,7 +135,7 @@ public class PanningWindow extends Region {
         contentX = checkContentX(x);
         requestLayout();
     }
-    
+
     /**
      * Pans the window to the specified x coordinate.
      *
@@ -157,7 +157,7 @@ public class PanningWindow extends Region {
     public double getContentX() {
         return contentX;
     }
-    
+
     /**
      * @return the y coordinate of the window relative to the top-left corner of the content.
      */
@@ -170,9 +170,9 @@ public class PanningWindow extends Region {
     }
 
     public void zoom(final double zoomFactor) {
-        
+
         final double newZoomLevel = constrainZoom(zoom.get() * zoomFactor);
-        
+
         if(newZoomLevel == zoom.get()) {
             return;
         }
@@ -181,8 +181,8 @@ public class PanningWindow extends Region {
         final double currentY = getContentY();
         final double diffX = content.getWidth() / 2; // center X
         final double diffY = content.getHeight() / 2; // center Y
-        final double newX = currentX + diffX - (diffX / zoomFactor);
-        final double newY = currentY + diffY - (diffY / zoomFactor);
+        final double newX = currentX + diffX - diffX / zoomFactor;
+        final double newY = currentY + diffY - diffY / zoomFactor;
 
         zoom.set(newZoomLevel);
         panTo(newX, newY);
@@ -207,7 +207,7 @@ public class PanningWindow extends Region {
     protected void checkWindowBounds() {
         panTo(checkContentX(getContentX()), checkContentY(getContentY()));
     }
-    
+
     private double checkContentX(final double xToCheck) {
 
         double x = Math.max(xToCheck, 0);
@@ -218,7 +218,7 @@ public class PanningWindow extends Region {
         }
         return snapPosition(x);
     }
-    
+
     private double checkContentY(final double yToCheck) {
 
         double y = Math.max(yToCheck, 0);
@@ -243,9 +243,9 @@ public class PanningWindow extends Region {
      * using the {@code resize()} method of the {@link Node} class.
      * </p>
      *
-     * @param content the {@link Region} to be displayed inside the panning window
+     * @param pContent the {@link Region} to be displayed inside the panning window
      */
-    protected void setContent(final Region content) {
+    protected void setContent(final Region pContent) {
 
         // Remove children and release bindings from old content, if any exists.
         if (this.content != null) {
@@ -255,21 +255,21 @@ public class PanningWindow extends Region {
             this.content.getTransforms().remove(scaleTransform);
         }
 
-        this.content = content;
+        this.content = pContent;
 
-        if (content != null) {
+        if (pContent != null) {
 
-            content.setManaged(false);
-            getChildren().add(content);
-            content.getTransforms().add(scaleTransform);
+            pContent.setManaged(false);
+            getChildren().add(pContent);
+            pContent.getTransforms().add(scaleTransform);
             addMouseHandlersToContent();
         }
     }
-    
+
     private void setPanningEnabled(boolean panningActive) {
-		this.panningEnabled = panningActive;
+		panningEnabled = panningActive;
 	}
-    
+
     private boolean canPan(final MouseEvent event) {
         // allow panning if
         // a) right mouse button pressed (no multi touch environment)
@@ -303,22 +303,22 @@ public class PanningWindow extends Region {
 
         panTo(newWindowX, newWindowY);
     }
-    
+
     private void handlePanningMouseReleased(final MouseEvent event) {
 
         if(Cursor.MOVE.equals(getCursor())) {
             setCursor(null);
         }
-        
+
         if(editorProperties != null) {
-            editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.PAN, null);
+            editorProperties.getGraphEventManager().finishInputGesture(GraphInputGesture.PAN);
         }
 
         panningGestureActive = false;
-        
+
         event.consume();
     }
-    
+
     private void handleZoom(final ZoomEvent event) {
         if (!panningEnabled || editorProperties == null
                 || !editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.ZOOM)) {
@@ -330,13 +330,13 @@ public class PanningWindow extends Region {
             editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.ZOOM);
             return;
         } else if (event.getEventType() == ZoomEvent.ZOOM_FINISHED) {
-            editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.ZOOM, null);
+            editorProperties.getGraphEventManager().finishInputGesture(GraphInputGesture.ZOOM);
             return;
         }
 
         final double zoomFactor = event.getZoomFactor() > 1 ? 1.02 : 0.98;
         final double newZoomLevel = constrainZoom(zoom.get() * zoomFactor);
-        
+
         if(newZoomLevel == zoom.get()) {
             return;
         }
@@ -345,13 +345,13 @@ public class PanningWindow extends Region {
         final double currentY = getContentY();
         final double diffX = event.getX();
         final double diffY = event.getY();
-        final double newX = currentX + diffX - (diffX / zoomFactor);
-        final double newY = currentY + diffY - (diffY / zoomFactor);
+        final double newX = currentX + diffX - diffX / zoomFactor;
+        final double newY = currentY + diffY - diffY / zoomFactor;
 
         zoom.set(newZoomLevel);
         panTo(newX, newY);
     }
-    
+
     /**
      * Adds handlers to the content for panning and zooming.
      */
@@ -376,7 +376,7 @@ public class PanningWindow extends Region {
      * Starts panning. Should be called on mouse-pressed or when a drag event occurs
      * without a pressed event having been registered. This can happen if e.g. a
      * context menu closes and consumes the pressed event.
-     * 
+     *
      * @param x the scene-x position of the cursor
      * @param y the scene-y position of the cursor
      */

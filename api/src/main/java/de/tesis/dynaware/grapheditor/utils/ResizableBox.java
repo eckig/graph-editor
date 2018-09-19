@@ -3,7 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -88,11 +87,11 @@ public class ResizableBox extends DraggableBox {
      * will be treated as regular drag events.
      * </p>
      *
-     * @param resizeBorderTolerance an integer specifying the resize border
+     * @param pResizeBorderTolerance an integer specifying the resize border
      * tolerance
      */
-    public void setResizeBorderTolerance(final int resizeBorderTolerance) {
-        this.resizeBorderTolerance = resizeBorderTolerance;
+    public void setResizeBorderTolerance(final int pResizeBorderTolerance) {
+        resizeBorderTolerance = pResizeBorderTolerance;
     }
 
     /**
@@ -122,28 +121,25 @@ public class ResizableBox extends DraggableBox {
     }
 
     @Override
-    protected void handleMouseDragged(final MouseEvent event) {
-
-        if (!(getParent() instanceof Region)) {
-            return;
-        } else if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
+    protected void handleMouseDragged(final MouseEvent pEvent)
+    {
+        if (!dragActive || !(getParent() instanceof Region) || !pEvent.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive())
+        {
             setCursor(null);
             return;
         }
 
-        if(container == null || !dragActive) {
-            return;
+        if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE))
+        {
+            super.handleMouseDragged(pEvent);
         }
-        
-        if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE)) {
-            super.handleMouseDragged(event);
-        } else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)) {
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
-            handleResize(cursorPosition.getX(), cursorPosition.getY());
+        else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE))
+        {
+            handleResize(pEvent.getSceneX(), pEvent.getSceneY());
         }
 
         notifyDragActive();
-        event.consume();
+        pEvent.consume();
     }
 
     @Override
@@ -286,9 +282,7 @@ public class ResizableBox extends DraggableBox {
         final double scaleFactor = getLocalToSceneTransform().getMyy();
 
         final double yDragDistance = (y - lastMouseY) / scaleFactor;
-        final double parentHeight = getParent().getLayoutBounds().getHeight();
-
-        final double maxParentHeight = editorProperties != null ? parentHeight : absoluteMaxHeight;
+        final double maxParentHeight = getParent().getLayoutBounds().getHeight();
 
         final double minResizeHeight = Math.max(getMinHeight(), 0);
         final double maxAvailableHeight = maxParentHeight - getLayoutY()
@@ -326,9 +320,7 @@ public class ResizableBox extends DraggableBox {
         final double scaleFactor = getLocalToSceneTransform().getMxx();
 
         final double xDragDistance = (x - lastMouseX) / scaleFactor;
-        final double parentWidth = getParent().getLayoutBounds().getWidth();
-
-        final double maxParentWidth = editorProperties != null ? parentWidth : absoluteMaxWidth;
+        final double maxParentWidth = getParent().getLayoutBounds().getWidth();
 
         final double minResizeWidth = Math.max(getMinWidth(), 0);
         final double maxAvailableWidth = maxParentWidth - getLayoutX()

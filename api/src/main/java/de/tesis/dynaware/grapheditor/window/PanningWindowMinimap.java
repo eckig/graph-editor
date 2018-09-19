@@ -22,7 +22,7 @@ public class PanningWindowMinimap extends Pane {
 
     protected static final double MINIMAP_PADDING = 5;
 
-    private static final String STYLE_CLASS = "minimap";
+    private static final String STYLE_CLASS = "minimap"; //$NON-NLS-1$
 
     private final MinimapLocator locator = new MinimapLocator(MINIMAP_PADDING);
 
@@ -36,10 +36,10 @@ public class PanningWindowMinimap extends Pane {
     private double scaleFactor = 0.75;
     private boolean locatorPositionListenersMuted;
     private boolean drawLocatorListenerMuted;
-    
-    private final Hyperlink zoomIn = new Hyperlink("++");
-    private final Hyperlink zoomOut = new Hyperlink("--");
-    private final Hyperlink zoomExact = new Hyperlink("1:1");
+
+    private final Hyperlink zoomIn = new Hyperlink("++"); //$NON-NLS-1$
+    private final Hyperlink zoomOut = new Hyperlink("--"); //$NON-NLS-1$
+    private final Hyperlink zoomExact = new Hyperlink("1:1"); //$NON-NLS-1$
 
     /**
      * Creates a new {@link PanningWindowMinimap} instance.
@@ -54,18 +54,18 @@ public class PanningWindowMinimap extends Pane {
         createMinimapClickHandlers();
 
         getChildren().add(locator);
-        
-        zoomOut.getStyleClass().addAll("zoom", "zoom-out");
-        zoomIn.getStyleClass().addAll("zoom", "zoom-in");
-        zoomExact.getStyleClass().addAll("zoom", "zoom-exact");
-        
+
+        zoomOut.getStyleClass().addAll("zoom", "zoom-out"); //$NON-NLS-1$ //$NON-NLS-2$
+        zoomIn.getStyleClass().addAll("zoom", "zoom-in"); //$NON-NLS-1$ //$NON-NLS-2$
+        zoomExact.getStyleClass().addAll("zoom", "zoom-exact"); //$NON-NLS-1$ //$NON-NLS-2$
+
         zoomOut.setOnAction(this::zoomOut);
         zoomIn.setOnAction(this::zoomIn);
         zoomExact.setOnAction(this::zoomExact);
-        
+
         getChildren().addAll(zoomIn, zoomOut, zoomExact);
     }
-    
+
     private void zoomIn(final ActionEvent event) {
         if(window != null) {
             window.zoom(1.1);
@@ -86,11 +86,12 @@ public class PanningWindowMinimap extends Pane {
         }
         event.consume();
     }
-    
+
     /**
      * Sets the content representation to be displayed in this minimap.
      *
-     * @param contentRepresentation a {@link MinimapContentRepresentation} to be displayed
+     * @param contentRepresentation
+     *            a {@link MinimapNodeGroup} to be displayed
      */
     public void setContentRepresentation(final MinimapNodeGroup contentRepresentation) {
 
@@ -163,7 +164,7 @@ public class PanningWindowMinimap extends Pane {
 
         requestLayout();
     }
-    
+
     /**
      * @return content a {@link Region} containing some content to be visualised
      *         in the minimap
@@ -201,27 +202,27 @@ public class PanningWindowMinimap extends Pane {
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        
+
         scaleFactor = calculateScaleFactor();
-        
+
         final double width = getWidth();
         final double height = getHeight();
-        
+
         if (checkContentExists() && checkWindowExists() && contentRepresentation != null) {
             contentRepresentation.relocate(MINIMAP_PADDING, MINIMAP_PADDING);
             contentRepresentation.setScaleFactor(scaleFactor);
             contentRepresentation.resize(width - MINIMAP_PADDING * 2, height - MINIMAP_PADDING * 2);
         }
-        
+
         final double maxLocWidth = width - MINIMAP_PADDING * 2;
         final double maxLocHeight = height - MINIMAP_PADDING * 2;
-        
+
         if(!drawLocatorListenerMuted) {
             locatorPositionListenersMuted = true;
-            
+
             final double zoomFactor = calculateZoomFactor();
-            
-            
+
+
             final double x = Math.round(-content.getLayoutX() * scaleFactor / zoomFactor);
             final double y = Math.round(-content.getLayoutY() * scaleFactor / zoomFactor);
             final double locWidth = Math.min(maxLocWidth, Math.round(window.getWidth() * scaleFactor / zoomFactor));
@@ -230,7 +231,7 @@ public class PanningWindowMinimap extends Pane {
             locator.resizeRelocate(x + MINIMAP_PADDING, y + MINIMAP_PADDING, locWidth, locHeight);
             locatorPositionListenersMuted = false;
         }
-        
+
         zoomOut.relocate(MINIMAP_PADDING, height - zoomOut.getHeight());
         zoomIn.relocate(maxLocWidth - zoomIn.getWidth(), height - zoomOut.getHeight());
         zoomExact.relocate(maxLocWidth / 2 - zoomExact.getWidth() / 2, height - zoomOut.getHeight());

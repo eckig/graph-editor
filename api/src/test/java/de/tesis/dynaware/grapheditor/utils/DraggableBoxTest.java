@@ -8,14 +8,11 @@ import static de.tesis.dynaware.grapheditor.utils.FXTestUtils.dragTo;
 import static de.tesis.dynaware.grapheditor.utils.FXTestUtils.forceLayoutUpdate;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javafx.scene.layout.Pane;
-
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import javafx.scene.layout.Pane;
 
 public class DraggableBoxTest {
 
@@ -53,6 +50,7 @@ public class DraggableBoxTest {
         box.setEditorProperties(properties);
 
         container.setPrefSize(400, 300);
+        container.autosize();
         container.getChildren().add(box);
     }
 
@@ -93,20 +91,18 @@ public class DraggableBoxTest {
     @Test
     public void testDrag_AlignmentTargets() {
 
-        final List<Double> alignmentTargetsX = new ArrayList<>();
-        final List<Double> alignmentTargetsY = new ArrayList<>();
-        alignmentTargetsX.add(67D);
-        alignmentTargetsY.add(184D);
+        final double[] alignmentTargetsX = new double[] {67.0};
+        final double[] alignmentTargetsY = new double[] {184.0};
 
         box.setAlignmentThreshold(ALIGNMENT_THRESHOLD);
         box.setAlignmentTargetsX(alignmentTargetsX);
         box.setAlignmentTargetsY(alignmentTargetsY);
 
         dragTo(box, 40 + BOX_WIDTH / 2, 0);
-        assertTrue(box.getLayoutX() == 67D);
+        assertTrue(box.getLayoutX() == 67.0);
 
         dragTo(box, 0, 170 + BOX_HEIGHT / 2);
-        assertTrue(box.getLayoutY() == 184D);
+        assertTrue(box.getLayoutY() == 184.0);
     }
 
     /**

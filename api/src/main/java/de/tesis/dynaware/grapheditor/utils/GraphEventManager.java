@@ -14,20 +14,20 @@ public class GraphEventManager {
 
         @Override
         public String getName() {
-            return "inputMode";
+            return "inputMode"; //$NON-NLS-1$
         }
-        
+
         @Override
         public void set(GraphInputMode newValue) {
             super.set(newValue == null ? GraphInputMode.SELECTION : newValue);
         }
-        
+
         @Override
         public void setValue(GraphInputMode newValue) {
             set(newValue);
         }
     };
-    
+
     private final ObjectProperty<GraphInputGesture> gesture = new ObjectPropertyBase<GraphInputGesture>() {
 
         @Override
@@ -37,75 +37,87 @@ public class GraphEventManager {
 
         @Override
         public String getName() {
-            return "inputGesture";
+            return "inputGesture"; //$NON-NLS-1$
         }
     };
-    
+
     /**
      * @return currently active {@link GraphInputMode}
      */
     public GraphInputMode getInputMode() {
         return inputMode.get();
     }
-    
+
     /**
-     * @param inputMode new {@link GraphInputMode}
+     * @param pInputMode
+     *            new {@link GraphInputMode}
      */
-    public void setInputMode(final GraphInputMode inputMode) {
-        this.inputMode.set(inputMode);
+    public void setInputMode(final GraphInputMode pInputMode)
+    {
+        inputMode.set(pInputMode);
     }
-    
+
     /**
      * @return {@link ObjectProperty} controlling the current {@link GraphInputMode}
      */
     public ObjectProperty<GraphInputMode> inputModeProperty() {
         return inputMode;
     }
-    
+
     /**
      * @return currently active {@link GraphInputGesture}
      */
     public GraphInputGesture getInputGesture() {
         return gesture.get();
     }
-    
+
     /**
      * <p>
-     * This method is called by the framework. Custom skins should <b>not</b> call it. 
+     * This method is called by the framework. Custom skins should <b>not</b>
+     * call it.
      * </p>
-     * @param inputMode new {@link GraphInputGesture}
+     * 
+     * @param pInputMode
+     *            new {@link GraphInputGesture}
      */
-    public void activateInputGesture(final GraphInputGesture inputMode) {
-        this.gesture.set(inputMode);
+    public void activateInputGesture(final GraphInputGesture pInputMode)
+    {
+        gesture.set(pInputMode);
     }
-    
+
     /**
      * <p>
-     * This method is called by the framework. Custom skins should <b>not</b> call it. 
+     * This method is called by the framework. Custom skins should <b>not</b>
+     * call it.
      * </p>
-     * @param inputMode new {@link GraphInputGesture}
+     * 
+     * @param pExpected
+     *            the expected gesture that should be finished
      */
-    public void compareAndSetInputGesture(final GraphInputGesture expected, final GraphInputGesture inputMode) {
-        if(getInputGesture() == expected) {
-            this.gesture.set(inputMode);
+    public void finishInputGesture(final GraphInputGesture pExpected)
+    {
+        if (getInputGesture() == pExpected)
+        {
+            gesture.set(null);
         }
     }
-    
+
     /**
      * @return {@link ObjectProperty} controlling the current {@link GraphInputGesture}
      */
     public ObjectProperty<GraphInputGesture> inputGestureProperty() {
         return gesture;
     }
-    
+
     /**
-     * @param gesture
+     * @param pGesture
      *            {@link GraphInputGesture}
      * @return {@code true} if {@link #getInputGesture() the currently active
      *         gesture} matches the given one or no gesture is active at all
      */
-    public boolean isInputGestureActiveOrEmpty(final GraphInputGesture gesture) {
+    public boolean isInputGestureActiveOrEmpty(final GraphInputGesture pGesture)
+    {
         final GraphInputGesture current = getInputGesture();
-        return current == null || current == gesture;
+        return current == null || current == pGesture;
     }
 }

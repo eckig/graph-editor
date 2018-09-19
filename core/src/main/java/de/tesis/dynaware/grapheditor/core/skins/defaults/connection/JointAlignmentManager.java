@@ -30,7 +30,7 @@ public class JointAlignmentManager {
 
     /**
      * Creates a new {@link JointAlignmentManager} instance.
-     * 
+     *
      * @param connection the connection whose joints are being aligned
      */
     public JointAlignmentManager(final GConnection connection) {
@@ -87,32 +87,53 @@ public class JointAlignmentManager {
      * @param jointSkin the current joint skin
      * @param jointSkins all joint skin instances belonging to a connection
      */
-    private void addHorizontalAlignmentTargets(final GJointSkin jointSkin, final List<GJointSkin> jointSkins) {
+    private void addHorizontalAlignmentTargets(final GJointSkin jointSkin, final List<GJointSkin> jointSkins)
+    {
 
         final int index = jointSkins.indexOf(jointSkin);
         final int count = jointSkins.size();
 
-        final List<Double> alignmentValuesX = new ArrayList<>();
+        final List<GJointSkin> alignmentValuesX = new ArrayList<>();
 
         // First check for existence of previous vertical segment that will not move when this joint is dragged.
-        if (isPreviousVerticalSegmentStationary(index, jointSkins)) {
-            if (index == 1) {
-                alignmentValuesX.add(jointSkins.get(index - 1).getRoot().getLayoutX());
-            } else if (index > 1) {
-                alignmentValuesX.add(jointSkins.get(index - 2).getRoot().getLayoutX());
+        if (isPreviousVerticalSegmentStationary(index, jointSkins))
+        {
+            if (index == 1)
+            {
+                alignmentValuesX.add(jointSkins.get(index - 1));
+            }
+            else if (index > 1)
+            {
+                alignmentValuesX.add(jointSkins.get(index - 2));
             }
         }
 
         // Then check for existence of next vertical segment that will not move when this joint is dragged.
-        if (isNextVerticalSegmentStationary(index, jointSkins)) {
-            if (index == count - 2) {
-                alignmentValuesX.add(jointSkins.get(index + 1).getRoot().getLayoutX());
-            } else if (index < count - 2) {
-                alignmentValuesX.add(jointSkins.get(index + 2).getRoot().getLayoutX());
+        if (isNextVerticalSegmentStationary(index, jointSkins))
+        {
+            if (index == count - 2)
+            {
+                alignmentValuesX.add(jointSkins.get(index + 1));
+            }
+            else if (index < count - 2)
+            {
+                alignmentValuesX.add(jointSkins.get(index + 2));
             }
         }
 
-        jointSkin.getRoot().setAlignmentTargetsX(alignmentValuesX);
+        if (!alignmentValuesX.isEmpty())
+        {
+            final double[] alignmentValues = new double[alignmentValuesX.size()];
+            for (int i = 0; i < alignmentValuesX.size(); i++)
+            {
+                alignmentValues[i] = alignmentValuesX.get(i).getRoot().getLayoutX();
+            }
+            jointSkin.getRoot().setAlignmentTargetsX(alignmentValues);
+        }
+        else
+        {
+            jointSkin.getRoot().setAlignmentTargetsX(null);
+        }
     }
 
     /**
@@ -121,32 +142,52 @@ public class JointAlignmentManager {
      * @param jointSkin the current joint skin
      * @param jointSkins all joint skin instances belonging to a connection
      */
-    private void addVerticalAlignmentTargets(final GJointSkin jointSkin, final List<GJointSkin> jointSkins) {
-
+    private void addVerticalAlignmentTargets(final GJointSkin jointSkin, final List<GJointSkin> jointSkins)
+    {
         final int index = jointSkins.indexOf(jointSkin);
         final int count = jointSkins.size();
 
-        final List<Double> alignmentValuesY = new ArrayList<>();
+        final List<GJointSkin> alignmentValuesY = new ArrayList<>();
 
         // First check for existence of previous vertical segment that will not move when this joint is dragged.
-        if (isPreviousHorizontalSegmentStationary(index, jointSkins)) {
-            if (index == 1) {
-                alignmentValuesY.add(jointSkins.get(index - 1).getRoot().getLayoutY());
-            } else if (index > 1) {
-                alignmentValuesY.add(jointSkins.get(index - 2).getRoot().getLayoutY());
+        if (isPreviousHorizontalSegmentStationary(index, jointSkins))
+        {
+            if (index == 1)
+            {
+                alignmentValuesY.add(jointSkins.get(index - 1));
+            }
+            else if (index > 1)
+            {
+                alignmentValuesY.add(jointSkins.get(index - 2));
             }
         }
 
         // Then check for existence of next vertical segment that will not move when this joint is dragged.
-        if (isNextHorizontalSegmentStationary(index, jointSkins)) {
-            if (index == count - 2) {
-                alignmentValuesY.add(jointSkins.get(index + 1).getRoot().getLayoutY());
-            } else if (index < count - 2) {
-                alignmentValuesY.add(jointSkins.get(index + 2).getRoot().getLayoutY());
+        if (isNextHorizontalSegmentStationary(index, jointSkins))
+        {
+            if (index == count - 2)
+            {
+                alignmentValuesY.add(jointSkins.get(index + 1));
+            }
+            else if (index < count - 2)
+            {
+                alignmentValuesY.add(jointSkins.get(index + 2));
             }
         }
 
-        jointSkin.getRoot().setAlignmentTargetsY(alignmentValuesY);
+        if (!alignmentValuesY.isEmpty())
+        {
+            final double[] alignmentValues = new double[alignmentValuesY.size()];
+            for (int i = 0; i < alignmentValuesY.size(); i++)
+            {
+                alignmentValues[i] = alignmentValuesY.get(i).getRoot().getLayoutY();
+            }
+            jointSkin.getRoot().setAlignmentTargetsY(alignmentValues);
+        }
+        else
+        {
+            jointSkin.getRoot().setAlignmentTargetsY(null);
+        }
     }
 
     /**
@@ -181,7 +222,7 @@ public class JointAlignmentManager {
         final int count = jointSkins.size();
         final boolean lastSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, count);
 
-        if (!lastSegmentHorizontal && (index >= 0 && (index == count - 2 || index == count - 3))) {
+        if (!lastSegmentHorizontal && index >= 0 && (index == count - 2 || index == count - 3)) {
             return isNodeStationary(jointSkins.get(index), false);
         } else {
             return isJointPairStationary(index, false, true, jointSkins);
@@ -220,7 +261,7 @@ public class JointAlignmentManager {
         final int count = jointSkins.size();
         final boolean lastSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, count);
 
-        if (lastSegmentHorizontal && (index >= 0 && (index == count - 2 || index == count - 3))) {
+        if (lastSegmentHorizontal && index >= 0 && (index == count - 2 || index == count - 3)) {
             return isNodeStationary(jointSkins.get(index), false);
         } else {
             return isJointPairStationary(index, true, true, jointSkins);
@@ -229,11 +270,11 @@ public class JointAlignmentManager {
 
     /**
      * Checks whether a node attached to the connection's source or target connector will move when a joint is dragged.
-     * 
+     *
      * <p>
      * This is evaluated based on whether the node and/or joint are selected.
      * </p>
-     * 
+     *
      * @param jointSkin a {@link GJointSkin} that is dragged
      * @param source {@code true} to query source node, {@code false} to query target node
      * @return {@code true} if the node will move when the given joint is dragged
@@ -243,13 +284,13 @@ public class JointAlignmentManager {
         final GConnector connector = source ? connection.getSource() : connection.getTarget();
         final GNode parent = connector.getParent();
 
-        final GNodeSkin nodeSkin = skinLookup.lookupNode((GNode) parent);
+        final GNodeSkin nodeSkin = skinLookup.lookupNode(parent);
         return !nodeSkin.isSelected() || !jointSkin.isSelected();
     }
 
     /**
      * Checks if the previous or next horizontal or vertical joint pair will remain stationary.
-     * 
+     *
      * @param index the dragged joint index in the list of joint skins
      * @param horizontal {@code true} for horizontal segment, {@code false} for vertical
      * @param next {@code true} for next segment, {@code false} for previous
@@ -277,7 +318,7 @@ public class JointAlignmentManager {
             final boolean secondNotSelected = !jointSkins.get(secondIndex).isSelected();
             final boolean draggedNotSelected = !jointSkins.get(index).isSelected();
 
-            return (firstNotSelected && secondNotSelected) || draggedNotSelected;
+            return firstNotSelected && secondNotSelected || draggedNotSelected;
         } else {
             return false;
         }

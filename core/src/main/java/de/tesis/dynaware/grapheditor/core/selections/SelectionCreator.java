@@ -24,7 +24,6 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.event.EventHandler;
 import javafx.event.WeakEventHandler;
 import javafx.geometry.Point2D;
@@ -66,7 +65,7 @@ public class SelectionCreator {
     private final List<GConnection> selectedConnectionsBackup = new ArrayList<>();
 
     private final Callback<MouseEvent, Boolean> selectionActive;
-    
+
     private Rectangle2D selection;
 
     private Point2D selectionBoxStart;
@@ -100,10 +99,10 @@ public class SelectionCreator {
      * @param model the {@link GModel} currently being edited
      */
     public void initialize(final GModel model) {
-        
+
         this.model = model;
         allJoints = GModelUtils.getAllJoints(model);
-        
+
         addClickSelectionMechanism();
     }
 
@@ -115,17 +114,17 @@ public class SelectionCreator {
      * </p>
      */
     private void addClickSelectionMechanism() {
-        
+
         // remove all listeners:
         EventUtils.removeEventHandlers(mousePressedHandlers, MouseEvent.MOUSE_PRESSED);
         EventUtils.removeEventHandlers(mouseClickedHandlers, MouseEvent.MOUSE_CLICKED);
-        
+
         addClickSelectionForNodes();
         addClickSelectionForJoints();
     }
 
     private void handleSelectionClick(final MouseEvent event, final GSkin<?> skin) {
-        
+
         if (!MouseButton.PRIMARY.equals(event.getButton())) {
             return;
         }
@@ -146,9 +145,9 @@ public class SelectionCreator {
         // Consume this event so it's not passed up to the parent (i.e. the view).
         event.consume();
     }
-    
+
     public void addNode(final GNode node) {
-        
+
         final GNodeSkin skin = skinLookup.lookupNode(node);
         if (skin != null) {
             final Region nodeRegion = skin.getRoot();
@@ -158,13 +157,13 @@ public class SelectionCreator {
                 nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
                 mousePressedHandlers.put(nodeRegion, newNodePressedHandler);
             }
-            
+
             for (final GConnector connector : node.getConnectors()) {
                 addConnector(connector);
             }
         }
     }
-    
+
     public void removeNode(final GNode node) {
 
         final GNodeSkin skin = skinLookup.lookupNode(node);
@@ -182,13 +181,13 @@ public class SelectionCreator {
             }
         }
     }
-    
+
     public void addConnector(final GConnector connector) {
-        
+
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
         if (connectorSkin != null) {
             final Node connectorRoot = connectorSkin.getRoot();
-            
+
             if (!mouseClickedHandlers.containsKey(connectorRoot)) {
                 final EventHandler<MouseEvent> connectorClickedHandler = event -> handleSelectionClick(event, connectorSkin);
                 connectorRoot.addEventHandler(MouseEvent.MOUSE_CLICKED, connectorClickedHandler);
@@ -196,7 +195,7 @@ public class SelectionCreator {
             }
         }
     }
-    
+
     public void removeConnector(final GConnector connector) {
 
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
@@ -208,7 +207,7 @@ public class SelectionCreator {
             }
         }
     }
-    
+
     public void addConnection(final GConnection connection) {
 
         final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
@@ -226,7 +225,7 @@ public class SelectionCreator {
             addJoint(joint);
         }
     }
-    
+
     public void removeConnection(final GConnection connection) {
 
         final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
@@ -242,22 +241,22 @@ public class SelectionCreator {
             removeJoint(joint);
         }
     }
-    
+
     public void addJoint(final GJoint joint) {
 
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
         if (jointSkin != null) {
-            
+
             final Region jointRegion = jointSkin.getRoot();
 
             if(!mousePressedHandlers.containsKey(jointRegion)) {
-                
+
                 final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, jointSkin);
                 jointRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
                 mousePressedHandlers.put(jointRegion, jointPressedHandler);
             }
         }
-        
+
         if(allJoints == null) {
             allJoints = GModelUtils.getAllJoints(model);
         }
@@ -265,7 +264,7 @@ public class SelectionCreator {
             allJoints.add(joint);
         }
     }
-    
+
     public void removeJoint(final GJoint joint) {
 
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
@@ -279,7 +278,7 @@ public class SelectionCreator {
                 jointRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
             }
         }
-        
+
         if(allJoints == null) {
             allJoints = GModelUtils.getAllJoints(model);
         }
@@ -287,7 +286,7 @@ public class SelectionCreator {
             allJoints.remove(joint);
         }
     }
-    
+
     /**
      * Adds a click selection mechanism for nodes.
      */
@@ -325,7 +324,7 @@ public class SelectionCreator {
         if (!nodeSkin.getRoot().isMouseInPositionForResize()) {
             selectionDragManager.bindPositions(nodeSkin.getRoot());
         }
-        
+
         // Consume this event so it's not passed up to the parent (i.e. the view).
         event.consume();
     }
@@ -362,10 +361,10 @@ public class SelectionCreator {
 
         // first update the selection:
         handleSelectionClick(event, jointSkin);
-        
+
         // then bind position of other slave items:
         selectionDragManager.bindPositions(jointSkin.getRoot());
-        
+
         event.consume();
     }
 
@@ -387,9 +386,8 @@ public class SelectionCreator {
         }
 
         final double scale = view.getLocalToSceneTransform().getMxx();
-        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, view);
 
-        selectionBoxStart = new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
+        selectionBoxStart = new Point2D(event.getX() / scale, event.getY() / scale);
     }
 
     /**
@@ -404,9 +402,8 @@ public class SelectionCreator {
         }
 
         final double scale = view.getLocalToSceneTransform().getMxx();
-        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, view);
 
-        selectionBoxEnd = new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
+        selectionBoxEnd = new Point2D(event.getX() / scale, event.getY() / scale);
 
         evaluateSelectionBoxParameters();
 
@@ -423,16 +420,16 @@ public class SelectionCreator {
         selectionBoxStart = null;
         view.hideSelectionBox();
     }
-    
+
     private boolean isNodeSelected(final GNode node, final boolean isShortcutDown) {
         return selection.contains(node.getX(), node.getY(), node.getWidth(), node.getHeight())
                 || isShortcutDown && selectedNodesBackup.contains(node);
     }
-    
+
     private boolean isJointSelected(final GJoint joint, final boolean isShortcutDown) {
         return selection.contains(joint.getX(), joint.getY()) || isShortcutDown && selectedJointsBackup.contains(joint);
     }
-    
+
     private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown) {
         return isShortcutDown && selectedConnectionsBackup.contains(connection);
     }
@@ -444,27 +441,27 @@ public class SelectionCreator {
 
         for (int i = 0; i < model.getNodes().size(); i++) {
             final GNode node = model.getNodes().get(i);
-            
+
             if(isNodeSelected(node, isShortcutDown)) {
             	selectionManager.select(node);
             } else {
             	selectionManager.clearSelection(node);
             }
         }
-        
+
         for (int i = 0; i < allJoints.size(); i++) {
             final GJoint joint = allJoints.get(i);
-            
+
             if(isJointSelected(joint, isShortcutDown)) {
             	selectionManager.select(joint);
             } else {
             	selectionManager.clearSelection(joint);
             }
         }
-        
+
         for (int i = 0; i < model.getConnections().size(); i++) {
             final GConnection connection = model.getConnections().get(i);
-            
+
             if(isConnectionSelected(connection, isShortcutDown)) {
             	selectionManager.select(connection);
             } else {

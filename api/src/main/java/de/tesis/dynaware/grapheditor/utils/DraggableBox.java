@@ -3,16 +3,10 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import java.util.List;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
-import javafx.scene.CacheHint;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -27,7 +21,10 @@ public class DraggableBox extends StackPane {
 
     private static final double DEFAULT_ALIGNMENT_THRESHOLD = 5;
 
-    // Safety mechanism for exceptional case when 'drag' events occur without a 'pressed' event occuring first.
+    /**
+     * Safety mechanism for exceptional case when 'drag' events occur without a
+     * 'pressed' event occurring first.
+     */
     protected boolean dragActive;
 
     protected double lastLayoutX;
@@ -36,36 +33,25 @@ public class DraggableBox extends StackPane {
     protected double lastMouseX;
     protected double lastMouseY;
 
-    protected double lastParentWidth;
-    protected double lastParentHeight;
-
-    protected double absoluteMaxWidth;
-    protected double absoluteMaxHeight;
-
     protected GraphEditorProperties editorProperties;
 
-    protected Region container;
-
     // Note that ResizableBox subclass currently pays no attention to alignment targets!
-    private List<Double> alignmentTargetsX;
-    private List<Double> alignmentTargetsY;
+    private double[] alignmentTargetsX;
+    private double[] alignmentTargetsY;
 
     private double alignmentThreshold = DEFAULT_ALIGNMENT_THRESHOLD;
 
-    private final BooleanProperty dragEnabledXProperty = new SimpleBooleanProperty(true);
-    private final BooleanProperty dragEnabledYProperty = new SimpleBooleanProperty(true);
+    private BooleanProperty mDragEnabledXProperty;
+    private BooleanProperty mDragEnabledYProperty;
 
-    private Point2D snapToGridOffset = new Point2D(0, 0);
+    private Point2D snapToGridOffset = Point2D.ZERO;
 
     /**
      * Creates an empty draggable box.
      */
-    public DraggableBox() {
-
+    public DraggableBox()
+    {
         setPickOnBounds(false);
-
-        // Must be default or quality for re-rasterization to occur after a scale transform.
-        cacheHintProperty().set(CacheHint.DEFAULT);
 
         addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
@@ -76,68 +62,106 @@ public class DraggableBox extends StackPane {
      * Sets the editor properties object that the drag logic should respect.
      *
      * <p>
-     * This method is called by the framework. Custom skins should <b>not</b> call it. Editor properties should instead
-     * be set via the graph editor instance.
+     * This method is called by the framework. Custom skins should <b>not</b>
+     * call it. Editor properties should instead be set via the graph editor
+     * instance.
      * </p>
      *
-     * @param editorProperties the {@link GraphEditorProperties} instance for the graph editor
+     * @param pEditorProperties
+     *            the {@link GraphEditorProperties} instance for the graph
+     *            editor
      */
-    public void setEditorProperties(final GraphEditorProperties editorProperties) {
-        this.editorProperties = editorProperties;
+    public void setEditorProperties(final GraphEditorProperties pEditorProperties)
+    {
+        editorProperties = pEditorProperties;
     }
 
     /**
-     * Gets whether dragging of the box is enabled in the x (horizontal) direction.
+     * Gets whether dragging of the box is enabled in the x (horizontal)
+     * direction.
      *
-     * @return {@code true} if dragging is enabled in the x direction, {@code false} if not
+     * @return {@code true} if dragging is enabled in the x direction,
+     *         {@code false} if not
      */
-    public boolean isDragEnabledX() {
-        return dragEnabledXProperty.get();
+    public boolean isDragEnabledX()
+    {
+        return mDragEnabledXProperty == null ? true : mDragEnabledXProperty.get();
     }
 
     /**
-     * Sets whether dragging of the box is enabled in the x (horizontal) direction.
+     * Sets whether dragging of the box is enabled in the x (horizontal)
+     * direction.
      *
-     * @param dragEnabledX {@code true} if dragging is enabled in the x direction, {@code false} if not
+     * @param pDragEnabledX
+     *            {@code true} if dragging is enabled in the x direction,
+     *            {@code false} if not
      */
-    public void setDragEnabledX(final boolean dragEnabledX) {
-        dragEnabledXProperty.set(dragEnabledX);
+    public void setDragEnabledX(final boolean pDragEnabledX)
+    {
+        if (mDragEnabledXProperty != null || !pDragEnabledX)
+        {
+            dragEnabledXProperty().set(pDragEnabledX);
+        }
     }
 
     /**
-     * The property for whether dragging of the box is enabled in the x (horizontal) direction.
+     * The property for whether dragging of the box is enabled in the x
+     * (horizontal) direction.
      *
-     * @return the {@link BooleanProperty} for whether dragging is enabled in the x direction
+     * @return the {@link BooleanProperty} for whether dragging is enabled in
+     *         the x direction
      */
-    public BooleanProperty dragEnabledXProperty() {
-        return dragEnabledXProperty;
+    public BooleanProperty dragEnabledXProperty()
+    {
+        if (mDragEnabledXProperty == null)
+        {
+            mDragEnabledXProperty = new SimpleBooleanProperty(true);
+        }
+        return mDragEnabledXProperty;
     }
 
     /**
-     * Gets whether dragging of the box is enabled in the y (vertical) direction.
+     * Gets whether dragging of the box is enabled in the y (vertical)
+     * direction.
      *
-     * @return {@code true} if dragging is enabled in the y direction, {@code false} if not
+     * @return {@code true} if dragging is enabled in the y direction,
+     *         {@code false} if not
      */
-    public boolean isDragEnabledY() {
-        return dragEnabledYProperty.get();
+    public boolean isDragEnabledY()
+    {
+        return mDragEnabledYProperty == null ? true : mDragEnabledYProperty.get();
     }
 
     /**
-     * Sets whether dragging of the box is enabled in the y (vertical) direction.
+     * Sets whether dragging of the box is enabled in the y (vertical)
+     * direction.
      *
-     * @param dragEnabledY {@code true} if dragging is enabled in the y direction, {@code false} if not
+     * @param pDragEnabledY
+     *            {@code true} if dragging is enabled in the y direction,
+     *            {@code false} if not
      */
-    public void setDragEnabledY(final boolean dragEnabledY) {
-        dragEnabledYProperty.set(dragEnabledY);
+    public void setDragEnabledY(final boolean pDragEnabledY)
+    {
+        if (mDragEnabledYProperty != null || !pDragEnabledY)
+        {
+            dragEnabledYProperty().set(pDragEnabledY);
+        }
     }
 
     /**
-     * The property for whether dragging of the box is enabled in the y (vertical) direction.
+     * The property for whether dragging of the box is enabled in the y
+     * (vertical) direction.
      *
-     * @return the {@link BooleanProperty} for whether dragging is enabled in the y direction
+     * @return the {@link BooleanProperty} for whether dragging is enabled in
+     *         the y direction
      */
-    public BooleanProperty dragEnabledYProperty() {
-        return dragEnabledYProperty;
+    public BooleanProperty dragEnabledYProperty()
+    {
+        if (mDragEnabledYProperty == null)
+        {
+            mDragEnabledYProperty = new SimpleBooleanProperty(true);
+        }
+        return mDragEnabledYProperty;
     }
 
     /**
@@ -150,7 +174,8 @@ public class DraggableBox extends StackPane {
      *
      * @return a list of x values that the box will align to when dragged, or {@code null}
      */
-    public List<Double> getAlignmentTargetsX() {
+    public double[] getAlignmentTargetsX()
+    {
         return alignmentTargetsX;
     }
 
@@ -162,10 +187,11 @@ public class DraggableBox extends StackPane {
      * snap-to-grid are active, snap-to-grid will take priority.
      * </p>
      *
-     * @param alignmentTargetsX a list of x values that the box will align to when dragged, or {@code null}
+     * @param pAlignmentTargetsX a list of x values that the box will align to when dragged, or {@code null}
      */
-    public void setAlignmentTargetsX(final List<Double> alignmentTargetsX) {
-        this.alignmentTargetsX = alignmentTargetsX;
+    public void setAlignmentTargetsX(final double[] pAlignmentTargetsX)
+    {
+        alignmentTargetsX = pAlignmentTargetsX;
     }
 
     /**
@@ -178,7 +204,8 @@ public class DraggableBox extends StackPane {
      *
      * @return a list of y values that the box will align to when dragged, or {@code null}
      */
-    public List<Double> getAlignmentTargetsY() {
+    public double[] getAlignmentTargetsY()
+    {
         return alignmentTargetsY;
     }
 
@@ -190,10 +217,11 @@ public class DraggableBox extends StackPane {
      * snap-to-grid are active, snap-to-grid will take priority.
      * </p>
      *
-     * @param alignmentTargetsY a list of y values that the box will align to when dragged, or {@code null}
+     * @param pAlignmentTargetsY a list of y values that the box will align to when dragged, or {@code null}
      */
-    public void setAlignmentTargetsY(final List<Double> alignmentTargetsY) {
-        this.alignmentTargetsY = alignmentTargetsY;
+    public void setAlignmentTargetsY(final double[] pAlignmentTargetsY)
+    {
+        alignmentTargetsY = pAlignmentTargetsY;
     }
 
     /**
@@ -218,10 +246,10 @@ public class DraggableBox extends StackPane {
      * alignment target.
      * </p>
      *
-     * @param alignmentThreshold the alignment threshold value
+     * @param pAlignmentThreshold the alignment threshold value
      */
-    public void setAlignmentThreshold(final double alignmentThreshold) {
-        this.alignmentThreshold = alignmentThreshold;
+    public void setAlignmentThreshold(final double pAlignmentThreshold) {
+        alignmentThreshold = pAlignmentThreshold;
     }
 
     /**
@@ -241,80 +269,84 @@ public class DraggableBox extends StackPane {
      * top-left corner of the box will snap exactly onto a grid line.
      * </p>
      *
-     * @param snapToGridOffset the snap offset for snap-to-grid calculations
+     * @param pSnapToGridOffset the snap offset for snap-to-grid calculations
      */
-    public void setSnapToGridOffset(final Point2D snapToGridOffset) {
-        this.snapToGridOffset = snapToGridOffset;
+    public void setSnapToGridOffset(final Point2D pSnapToGridOffset) {
+        snapToGridOffset = pSnapToGridOffset;
     }
 
     @Override
-    public boolean isResizable() {
+    public boolean isResizable()
+    {
         return false;
     }
-    
-    protected boolean isEditable() {
+
+    protected boolean isEditable()
+    {
         return editorProperties != null && !editorProperties.isReadOnly();
     }
-    
-    protected boolean isDragGestureActive() {
-        return editorProperties != null
-                && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.DRAG);
+
+    protected boolean isDragGestureActive()
+    {
+        return editorProperties != null && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.DRAG);
     }
-    
-    void notifyDragActive() {
-        
+
+    void notifyDragActive()
+    {
         dragActive = true;
-        if(editorProperties != null) {
+        if (editorProperties != null)
+        {
             editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.DRAG);
         }
     }
-    
-    private void notifyDragInactive() {
-        
+
+    private void notifyDragInactive()
+    {
         dragActive = false;
-        if(editorProperties != null) {
-            editorProperties.getGraphEventManager().compareAndSetInputGesture(GraphInputGesture.DRAG, null);
+        if (editorProperties != null)
+        {
+            editorProperties.getGraphEventManager().finishInputGesture(GraphInputGesture.DRAG);
         }
     }
 
     /**
      * Handles mouse-pressed events.
      *
-     * @param event a {@link MouseEvent}
+     * @param pEvent
+     *            a {@link MouseEvent}
      */
-    protected void handleMousePressed(final MouseEvent event) {
-
-        if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
+    protected void handleMousePressed(final MouseEvent pEvent)
+    {
+        if (!pEvent.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive())
+        {
             return;
         }
 
-        container = getContainer(this);
-
-        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
-        storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
+        storeClickValuesForDrag(pEvent.getSceneX(), pEvent.getSceneY());
         notifyDragActive();
-        event.consume();
+        pEvent.consume();
     }
 
     /**
      * Handles mouse-dragged events.
      *
-     * @param event {@link MouseEvent}
+     * @param pEvent {@link MouseEvent}
      */
-    protected void handleMouseDragged(final MouseEvent event) {
-
-        if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
-            return;
-        }
-        
-        if(container == null || !dragActive) {
+    protected void handleMouseDragged(final MouseEvent pEvent)
+    {
+        if (!pEvent.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive())
+        {
             return;
         }
 
-        final Point2D cursorPosition = GeometryUtils.getCursorPosition(event, container);
-        handleDrag(cursorPosition.getX(), cursorPosition.getY());
+        if (!dragActive)
+        {
+            return;
+        }
+
+        handleDrag(pEvent.getSceneX(), pEvent.getSceneY());
         notifyDragActive();
-        event.consume();
+        pEvent.consume();
     }
 
     /**
@@ -329,42 +361,21 @@ public class DraggableBox extends StackPane {
     }
 
     /**
-     * Stores relevant layout values at the time of the last mouse click (mouse-pressed event).
+     * Stores relevant layout values at the time of the last mouse click
+     * (mouse-pressed event).
      *
-     * @param x the container-x position of the click event
-     * @param y the container-y position of the click event
+     * @param pX
+     *            the container-x position of the click event
+     * @param pY
+     *            the container-y position of the click event
      */
-    protected void storeClickValuesForDrag(final double x, final double y) {
-
+    protected void storeClickValuesForDrag(final double pX, final double pY)
+    {
         lastLayoutX = getLayoutX();
         lastLayoutY = getLayoutY();
 
-        lastMouseX = x;
-        lastMouseY = y;
-
-        if (container != null && container.getWidth() > 0) {
-            lastParentWidth = container.getWidth();
-        } else {
-            lastParentWidth = Double.MAX_VALUE;
-        }
-
-        if (container != null && container.getHeight() > 0) {
-            lastParentHeight = container.getHeight();
-        } else {
-            lastParentHeight = Double.MAX_VALUE;
-        }
-
-        if (container != null && container.getMaxWidth() > 0) {
-            absoluteMaxWidth = container.getMaxWidth();
-        } else {
-            absoluteMaxWidth = Double.MAX_VALUE;
-        }
-
-        if (container != null && container.getMaxHeight() > 0) {
-            absoluteMaxHeight = container.getMaxHeight();
-        } else {
-            absoluteMaxHeight = Double.MAX_VALUE;
-        }
+        lastMouseX = pX;
+        lastMouseY = pY;
     }
 
     /**
@@ -384,17 +395,21 @@ public class DraggableBox extends StackPane {
     /**
      * Handles a drag event to the given cursor position.
      *
-     * @param x the cursor x position relative to the container
-     * @param y the cursor y position relative to the container
+     * @param pX
+     *            the cursor x position relative to the container
+     * @param pY
+     *            the cursor y position relative to the container
      */
-    private void handleDrag(final double x, final double y) {
-
-        if (dragEnabledXProperty.get()) {
-            handleDragX(x);
+    private void handleDrag(final double pX, final double pY)
+    {
+        if (isDragEnabledX())
+        {
+            handleDragX(pX);
         }
 
-        if (dragEnabledYProperty.get()) {
-            handleDragY(y);
+        if (isDragEnabledY())
+        {
+            handleDragY(pY);
         }
     }
 
@@ -405,7 +420,7 @@ public class DraggableBox extends StackPane {
      */
     private void handleDragX(final double x) {
 
-        final double maxParentWidth = editorProperties != null ? lastParentWidth : absoluteMaxWidth;
+        final double maxParentWidth = getParent().getLayoutBounds().getWidth();
 
         final double minLayoutX = editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
                 : editorProperties.getWestBoundValue();
@@ -445,7 +460,7 @@ public class DraggableBox extends StackPane {
      */
     private void handleDragY(final double y) {
 
-        final double maxParentHeight = editorProperties != null ? lastParentHeight : absoluteMaxHeight;
+        final double maxParentHeight = getParent().getLayoutBounds().getHeight();
 
         final double minLayoutY = editorProperties.getNorthBoundValue();
         final double maxLayoutY = maxParentHeight - getHeight() - editorProperties.getSouthBoundValue();
@@ -476,25 +491,6 @@ public class DraggableBox extends StackPane {
     }
 
     /**
-     * Gets the closest ancestor (e.g. parent, grandparent) to a node that is a subclass of {@link Region}.
-     *
-     * @param node a JavaFX {@link Node}
-     * @return the node's closest ancestor that is a subclass of {@link Region}, or {@code null} if none exists
-     */
-    private Region getContainer(final Node node) {
-
-        final Parent parent = node.getParent();
-
-        if (parent == null) {
-            return null;
-        } else if (parent instanceof Region) {
-            return (Region) parent;
-        } else {
-            return getContainer(parent);
-        }
-    }
-
-    /**
      * Aligns the given position to the first alignment value that is closer than the alignment threshold.
      *
      * <p>
@@ -505,14 +501,15 @@ public class DraggableBox extends StackPane {
      * @param alignmentValues the list of the alignment values
      * @return the new position after alignment
      */
-    private double align(final double position, final List<Double> alignmentValues) {
-
-        for (final Double alignmentValue : alignmentValues) {
-            if (Math.abs(alignmentValue - position) <= alignmentThreshold) {
+    private double align(final double position, final double[] alignmentValues)
+    {
+        for (final double alignmentValue : alignmentValues)
+        {
+            if (Math.abs(alignmentValue - position) <= alignmentThreshold)
+            {
                 return alignmentValue;
             }
         }
-
         return position;
     }
 }

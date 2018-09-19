@@ -201,9 +201,9 @@ public class GeometryUtils {
 
         if (secondValue >= firstValue) {
             return firstValue <= position && position <= secondValue;
-        } else {
-            return secondValue <= position && position <= firstValue;
         }
+        // ELSE:
+        return secondValue <= position && position <= firstValue;
     }
 
     /**

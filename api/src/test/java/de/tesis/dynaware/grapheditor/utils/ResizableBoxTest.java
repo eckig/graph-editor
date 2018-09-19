@@ -3,11 +3,12 @@ package de.tesis.dynaware.grapheditor.utils;
 import static de.tesis.dynaware.grapheditor.utils.FXTestUtils.dragBy;
 import static de.tesis.dynaware.grapheditor.utils.FXTestUtils.forceLayoutUpdate;
 import static org.junit.Assert.assertTrue;
-import javafx.scene.layout.Pane;
 
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import javafx.scene.layout.Pane;
 
 public class ResizableBoxTest {
 
@@ -35,6 +36,7 @@ public class ResizableBoxTest {
         box.setLayoutY(BOX_INITIAL_Y);
 
         container.setPrefSize(360, 300);
+        container.autosize();
         container.getChildren().add(box);
 
         forceLayoutUpdate(container);
