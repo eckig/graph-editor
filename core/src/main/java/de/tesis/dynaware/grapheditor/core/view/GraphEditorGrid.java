@@ -37,7 +37,10 @@ public class GraphEditorGrid extends Region
 
     private static final Color DEFAULT_GRID_COLOR = Color.rgb(222, 248, 255);
 
-    private final StyleableObjectProperty<Color> gridColor = new StyleableObjectProperty<Color>(DEFAULT_GRID_COLOR)
+    private double mLastWidth = -1;
+    private double mLastHeight = -1;
+
+    private final StyleableObjectProperty<Color> mGridColor = new StyleableObjectProperty<Color>(DEFAULT_GRID_COLOR)
     {
 
         @Override
@@ -65,7 +68,7 @@ public class GraphEditorGrid extends Region
         }
     };
 
-    private final DoubleProperty gridSpacing = new DoublePropertyBase(GraphEditorProperties.DEFAULT_GRID_SPACING)
+    private final DoubleProperty mGridSpacing = new DoublePropertyBase(GraphEditorProperties.DEFAULT_GRID_SPACING)
     {
 
         @Override
@@ -112,33 +115,39 @@ public class GraphEditorGrid extends Region
         {
             if (child instanceof Line)
             {
-                ((Line) child).setStroke(gridColor.get());
+                ((Line) child).setStroke(mGridColor.get());
             }
         }
     }
 
     @Override
-    public void resize(double width, double height)
+    public void resize(double pWidth, double pHeight)
     {
-        super.resize(width, height);
-        draw(width, height);
+        super.resize(pWidth, pHeight);
+
+        if (mLastHeight != pHeight || mLastWidth != pWidth)
+        {
+            mLastHeight = pHeight;
+            mLastWidth = pWidth;
+            draw(pWidth, pHeight);
+        }
     }
 
     /**
      * Draws the grid for the given width and height.
      *
-     * @param width
+     * @param pWidth
      *            the width of the editor region
-     * @param height
+     * @param pHeight
      *            the height of the editor region
      */
-    void draw(final double width, final double height)
+    void draw(final double pWidth, final double pHeight)
     {
         getChildren().clear();
 
         final double spacing = getGridSpacing();
-        final int hLineCount = (int) Math.floor((height + 1) / spacing);
-        final int vLineCount = (int) Math.floor((width + 1) / spacing);
+        final int hLineCount = (int) Math.floor((pHeight + 1) / spacing);
+        final int vLineCount = (int) Math.floor((pWidth + 1) / spacing);
 
         for (int i = 0; i < hLineCount; i++)
         {
@@ -146,10 +155,10 @@ public class GraphEditorGrid extends Region
             final double y = (i + 1) * spacing + HALF_PIXEL_OFFSET;
 
             hLine.setStartX(0);
-            hLine.setEndX(width);
+            hLine.setEndX(pWidth);
             hLine.setStartY(y);
             hLine.setEndY(y);
-            hLine.setStroke(gridColor.get());
+            hLine.setStroke(mGridColor.get());
 
             getChildren().add(hLine);
         }
@@ -162,8 +171,8 @@ public class GraphEditorGrid extends Region
             vLine.setStartX(x);
             vLine.setEndX(x);
             vLine.setStartY(0);
-            vLine.setEndY(height);
-            vLine.setStroke(gridColor.get());
+            vLine.setEndY(pHeight);
+            vLine.setStroke(mGridColor.get());
 
             getChildren().add(vLine);
         }
@@ -176,7 +185,7 @@ public class GraphEditorGrid extends Region
      */
     public double getGridSpacing()
     {
-        return gridSpacing.get();
+        return mGridSpacing.get();
     }
 
     /**
@@ -192,7 +201,7 @@ public class GraphEditorGrid extends Region
      */
     public void setGridSpacing(final double gridSpacing)
     {
-        this.gridSpacing.set(gridSpacing);
+        mGridSpacing.set(gridSpacing);
     }
 
     /**
@@ -202,7 +211,7 @@ public class GraphEditorGrid extends Region
      */
     public DoubleProperty gridSpacingProperty()
     {
-        return gridSpacing;
+        return mGridSpacing;
     }
 
     @Override
@@ -228,13 +237,13 @@ public class GraphEditorGrid extends Region
             @Override
             public boolean isSettable(final GraphEditorGrid node)
             {
-                return !node.gridColor.isBound();
+                return !node.mGridColor.isBound();
             }
 
             @Override
             public StyleableProperty<Color> getStyleableProperty(final GraphEditorGrid node)
             {
-                return node.gridColor;
+                return node.mGridColor;
             }
         };
 

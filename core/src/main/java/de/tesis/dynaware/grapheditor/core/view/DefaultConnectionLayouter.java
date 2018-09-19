@@ -64,6 +64,12 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
         }
     }
 
+    @Override
+    public void redrawViewport()
+    {
+        // TODO implement as soon as the EMF model watcher is done..
+    }
+
     /**
      * Creates the list of points for the given connection.
      *
@@ -91,7 +97,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
 
         // Start: Source position
         points.add(0, GeometryUtils.getConnectorPosition(connection.getSource(), skinLookup));
-        
+
         // End: Target position
         points.add(GeometryUtils.getConnectorPosition(connection.getTarget(), skinLookup));
 

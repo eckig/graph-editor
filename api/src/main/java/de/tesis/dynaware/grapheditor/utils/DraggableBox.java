@@ -281,6 +281,18 @@ public class DraggableBox extends StackPane {
         return false;
     }
 
+    /**
+     * Gets whether or not the current mouse position would lead to a resize
+     * operation.
+     *
+     * @return {@code true} if the mouse is near the edge of the rectangle so
+     *         that a resize would occur
+     */
+    public boolean isMouseInPositionForResize()
+    {
+        return false;
+    }
+
     protected boolean isEditable()
     {
         return editorProperties != null && !editorProperties.isReadOnly();

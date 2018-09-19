@@ -23,7 +23,7 @@ public class DefaultJointSkin extends GJointSkin {
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
     private static final double SIZE = 12;
-    private static final double SNAP_OFFSET = -5;
+    private static final Point2D SNAP_OFFSET = new Point2D(-5, -5);
 
     /**
      * Creates a new default join instance.
@@ -37,7 +37,7 @@ public class DefaultJointSkin extends GJointSkin {
         getRoot().getStyleClass().setAll(STYLE_CLASS);
 
         getRoot().setPickOnBounds(false);
-        getRoot().setSnapToGridOffset(new Point2D(SNAP_OFFSET, SNAP_OFFSET));
+        getRoot().setSnapToGridOffset(SNAP_OFFSET);
     }
 
     @Override

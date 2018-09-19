@@ -22,4 +22,11 @@ public interface ConnectionLayouter {
      * Redraws all connections according to the latest layout values.
      */
     void redraw();
+
+    /**
+     * Redraws only the visible connections (e.g. visible in the viewport).
+     *
+     * @since 19.09.2018
+     */
+    void redrawViewport();
 }

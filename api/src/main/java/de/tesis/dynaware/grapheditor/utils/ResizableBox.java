@@ -18,8 +18,6 @@ public class ResizableBox extends DraggableBox {
 
     private static final int DEFAULT_RESIZE_BORDER_TOLERANCE = 8;
 
-    private boolean isResizeEnabled = true;
-
     private int resizeBorderTolerance = DEFAULT_RESIZE_BORDER_TOLERANCE;
 
     private double lastWidth;
@@ -42,25 +40,6 @@ public class ResizableBox extends DraggableBox {
                 setCursor(null);
             }
         });
-    }
-
-    /**
-     * Gets whether or not the box is resizable.
-     *
-     * @return {@code true} if the box is resizable, {@code false} if not
-     */
-    public boolean isResizeEnabled() {
-        return isResizeEnabled;
-    }
-
-    /**
-     * Sets whether the box is resizable.
-     *
-     * @param resizeEnabled {@code true} if the box is resizable, {@code false}
-     * if not
-     */
-    public void setResizeEnabled(final boolean resizeEnabled) {
-        isResizeEnabled = resizeEnabled;
     }
 
     /**
@@ -94,14 +73,9 @@ public class ResizableBox extends DraggableBox {
         resizeBorderTolerance = pResizeBorderTolerance;
     }
 
-    /**
-     * Gets whether or not the current mouse position would lead to a resize
-     * operation.
-     *
-     * @return {@code true} if the mouse is near the edge of the rectangle so
-     * that a resize would occur
-     */
-    public boolean isMouseInPositionForResize() {
+    @Override
+    public boolean isMouseInPositionForResize()
+    {
         return mouseInPositionForResize;
     }
 
@@ -413,10 +387,6 @@ public class ResizableBox extends DraggableBox {
         final boolean isSouth = y > height - resizeBorderTolerance;
         final boolean isEast = x > width - resizeBorderTolerance;
         final boolean isWest = x < resizeBorderTolerance;
-
-        if (!isResizeEnabled) {
-            return RectangleMouseRegion.INSIDE;
-        }
 
         if (isNorth && isEast) {
             return RectangleMouseRegion.NORTHEAST;

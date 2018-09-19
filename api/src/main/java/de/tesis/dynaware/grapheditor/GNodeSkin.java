@@ -5,9 +5,10 @@ package de.tesis.dynaware.grapheditor;
 
 import java.util.List;
 
-import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.ResizableBox;
+import javafx.geometry.Point2D;
 
 /**
  * The skin class for a {@link GNode}. Responsible for visualizing nodes in the graph editor.
@@ -27,7 +28,7 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
  */
 public abstract class GNodeSkin extends GSkin<GNode> {
 
-    private final ResizableBox root;
+    private final DraggableBox root;
 
     /**
      * Creates a new {@link GNodeSkin}.
@@ -36,7 +37,7 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      */
     public GNodeSkin(final GNode node) {
         super(node);
-        this.root = createResizableBox();
+        root = createContainer();
     }
 
     /**
@@ -45,7 +46,8 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      * @return a {@link ResizableBox} containing the skin's root JavaFX node
      */
     @Override
-    public ResizableBox getRoot() {
+    public DraggableBox getRoot()
+    {
         return root;
     }
 
@@ -93,14 +95,17 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      * @return the x and y coordinates of the connector
      */
     public abstract Point2D getConnectorPosition(GConnectorSkin connectorSkin);
-    
+
     /**
-     * Creates and returns the {@link ResizableBox} that serves as the root for
-     * this node skin.
-     * 
-     * @return {@link ResizableBox}
+     * Creates and returns the {@link DraggableBox} that serves as the root for
+     * this node skin.<br>
+     * By default a {@link ResizableBox} will be created and return as most
+     * nodes will be draggable and resizable.
+     *
+     * @return {@link DraggableBox}
      */
-    protected ResizableBox createResizableBox() {
+    protected DraggableBox createContainer()
+    {
         return new ResizableBox() {
 
             @Override

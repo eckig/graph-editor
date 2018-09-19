@@ -51,8 +51,26 @@ public class GraphEditorView extends Region
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
 
-    private final Pane nodeLayer = new Pane();
-    private final Pane connectionLayer = new Pane();
+    private final Pane nodeLayer = new Pane()
+    {
+
+        @Override
+        protected void layoutChildren()
+        {
+            super.layoutChildren();
+            redrawViewport();
+        }
+    };
+    private final Pane connectionLayer = new Pane()
+    {
+
+        @Override
+        protected void layoutChildren()
+        {
+            super.layoutChildren();
+            redrawViewport();
+        }
+    };
 
     private final GraphEditorGrid grid = new GraphEditorGrid();
     private ConnectionLayouter connectionLayouter;
@@ -284,6 +302,21 @@ public class GraphEditorView extends Region
         connectionLayer.resizeRelocate(0, 0, width, height);
         connectionLayouter.redraw();
         grid.resizeRelocate(0, 0, width, height);
+    }
+
+    void redrawViewport()
+    {
+        if (connectionLayouter != null)
+        {
+            connectionLayouter.redrawViewport();
+        }
+    }
+
+    @Override
+    public void relocate(double x, double y)
+    {
+        super.relocate(x, y);
+        redrawViewport();
     }
 
     /**

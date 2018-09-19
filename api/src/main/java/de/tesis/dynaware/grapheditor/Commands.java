@@ -8,9 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Region;
-
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EAttribute;
@@ -29,7 +26,8 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
-import de.tesis.dynaware.grapheditor.utils.LogMessages;
+import javafx.geometry.Point2D;
+import javafx.scene.layout.Region;
 
 /**
  * Provides utility methods for editing a {@link GModel} via EMF commands.
@@ -40,12 +38,12 @@ import de.tesis.dynaware.grapheditor.utils.LogMessages;
  * <pre>
  * <code>GModel model = GraphFactory.eINSTANCE.createGModel();
  * GNode node = GraphFactory.eINSTANCE.createGNode();
- * 
+ *
  * node.setX(100);
  * node.setY(50);
  * node.setWidth(150);
  * node.setHeight(200);
- * 
+ *
  * Commands.addNode(model, node);
  * Commands.undo(model);
  * Commands.redo(model);</code>
@@ -104,7 +102,7 @@ public class Commands
 
     /**
      * Removes a node from the model.
-     * 
+     *
      * <p>
      * Also removes any connections that were attached to the node.
      * </p>
@@ -184,7 +182,7 @@ public class Commands
 
     /**
      * Removes all connectors from the given nodes, and all connections attached to them.
-     * 
+     *
      * @param model the {@link GModel} being edited
      * @param nodes a list of {@link GNode} instances whose connectors should be removed
      */
@@ -422,11 +420,11 @@ public class Commands
 
     /**
      * Gets the editing domain associated to the model.
-     * 
+     *
      * <p>
      * Logs an error if none is found.
      * </p>
-     * 
+     *
      * @param model a {@link GModel} instance
      * @return the {@link EditingDomain} associated to this model instance
      */
@@ -436,7 +434,7 @@ public class Commands
 
         if (editingDomain == null)
         {
-            LOGGER.error(LogMessages.NO_EDITING_DOMAIN);
+            LOGGER.error("No editing domain found for this model. Maybe it hasn't been set inside a graph editor?"); //$NON-NLS-1$
         }
 
         return editingDomain;

@@ -56,7 +56,7 @@
 		<org.eclipse.emf.common.version>2.9.2-v20131212-0545</org.eclipse.emf.common.version>
 		<org.eclipse.emf.ecore.xmi.version>2.9.1-v20131212-0545</org.eclipse.emf.ecore.xmi.version>
 		<org.eclipse.emf.edit.version>2.3.0-v200706262000</org.eclipse.emf.edit.version>
-		<revision>1.4.4</revision>
+		<revision>1.4.5</revision>
 		<junit.version>4.11</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<org.slf4j.version>1.7.5</org.slf4j.version>
