@@ -371,44 +371,47 @@ public class SelectionCreator {
     /**
      * Handles mouse-pressed events on the view.
      *
-     * @param event a mouse-pressed event
+     * @param pEvent
+     *            a mouse-pressed event
      */
-    private void handleViewPressed(final MouseEvent event) {
-
-        if (model == null || !selectionActive.call(event) || event.isConsumed()) {
+    private void handleViewPressed(final MouseEvent pEvent)
+    {
+        if (model == null || !selectionActive.call(pEvent) || pEvent.isConsumed())
+        {
             return;
         }
 
-        if (!event.isShortcutDown()) {
-        	selectionManager.clearSelection();
-        } else {
+        if (!pEvent.isShortcutDown())
+        {
+            selectionManager.clearSelection();
+        }
+        else
+        {
             backupSelections();
         }
 
-        final double scale = view.getLocalToSceneTransform().getMxx();
-
-        selectionBoxStart = new Point2D(event.getX() / scale, event.getY() / scale);
+        selectionBoxStart = new Point2D(pEvent.getX(), pEvent.getY());
     }
 
     /**
      * Handles mouse-dragged events on the view.
      *
-     * @param event a mouse-dragged event
+     * @param pEvent
+     *            a mouse-dragged event
      */
-    private void handleViewDragged(final MouseEvent event) {
-
-        if (model == null || !selectionActive.call(event) || event.isConsumed() || selectionBoxStart == null) {
+    private void handleViewDragged(final MouseEvent pEvent)
+    {
+        if (model == null || !selectionActive.call(pEvent) || pEvent.isConsumed() || selectionBoxStart == null)
+        {
             return;
         }
 
-        final double scale = view.getLocalToSceneTransform().getMxx();
-
-        selectionBoxEnd = new Point2D(event.getX() / scale, event.getY() / scale);
+        selectionBoxEnd = new Point2D(pEvent.getX(), pEvent.getY());
 
         evaluateSelectionBoxParameters();
 
         view.drawSelectionBox(selection.getMinX(), selection.getMinY(), selection.getWidth(), selection.getHeight());
-        updateSelection(event.isShortcutDown());
+        updateSelection(pEvent.isShortcutDown());
     }
 
     /**
