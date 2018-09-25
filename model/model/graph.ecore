@@ -12,8 +12,6 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="3000"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="contentHeight" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="2250"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="supergraph" eType="#//GNode"
-        changeable="false" eOpposite="#//GNode/subgraph"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GNode">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -27,8 +25,6 @@
         defaultValueLiteral="151"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="height" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="101"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="subgraph" eType="#//GModel"
-        containment="true" eOpposite="#//GModel/supergraph"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="connectors" upperBound="-1"
         eType="#//GConnector" containment="true" eOpposite="#//GConnector/parent"/>
   </eClassifiers>

@@ -36,7 +36,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GModelImpl#getType <em>Type</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GModelImpl#getContentWidth <em>Content Width</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GModelImpl#getContentHeight <em>Content Height</em>}</li>
- *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GModelImpl#getSupergraph <em>Supergraph</em>}</li>
  * </ul>
  *
  * @generated
@@ -233,32 +232,6 @@ public class GModelImpl extends MinimalEObjectImpl.Container implements GModel {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public GNode getSupergraph() {
-		if (eContainerFeatureID() != GraphPackage.GMODEL__SUPERGRAPH) return null;
-		return (GNode)eInternalContainer();
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case GraphPackage.GMODEL__SUPERGRAPH:
-				if (eInternalContainer() != null)
-					msgs = eBasicRemoveFromContainer(msgs);
-				return eBasicSetContainer(otherEnd, GraphPackage.GMODEL__SUPERGRAPH, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -266,24 +239,8 @@ public class GModelImpl extends MinimalEObjectImpl.Container implements GModel {
 				return ((InternalEList<?>)getNodes()).basicRemove(otherEnd, msgs);
 			case GraphPackage.GMODEL__CONNECTIONS:
 				return ((InternalEList<?>)getConnections()).basicRemove(otherEnd, msgs);
-			case GraphPackage.GMODEL__SUPERGRAPH:
-				return eBasicSetContainer(null, GraphPackage.GMODEL__SUPERGRAPH, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
-		switch (eContainerFeatureID()) {
-			case GraphPackage.GMODEL__SUPERGRAPH:
-				return eInternalContainer().eInverseRemove(this, GraphPackage.GNODE__SUBGRAPH, GNode.class, msgs);
-		}
-		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
@@ -304,8 +261,6 @@ public class GModelImpl extends MinimalEObjectImpl.Container implements GModel {
 				return getContentWidth();
 			case GraphPackage.GMODEL__CONTENT_HEIGHT:
 				return getContentHeight();
-			case GraphPackage.GMODEL__SUPERGRAPH:
-				return getSupergraph();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -385,8 +340,6 @@ public class GModelImpl extends MinimalEObjectImpl.Container implements GModel {
 				return contentWidth != CONTENT_WIDTH_EDEFAULT;
 			case GraphPackage.GMODEL__CONTENT_HEIGHT:
 				return contentHeight != CONTENT_HEIGHT_EDEFAULT;
-			case GraphPackage.GMODEL__SUPERGRAPH:
-				return getSupergraph() != null;
 		}
 		return super.eIsSet(featureID);
 	}

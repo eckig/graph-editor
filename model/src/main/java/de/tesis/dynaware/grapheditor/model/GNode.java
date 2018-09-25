@@ -21,7 +21,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getY <em>Y</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getWidth <em>Width</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getHeight <em>Height</em>}</li>
- *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getSubgraph <em>Subgraph</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GNode#getConnectors <em>Connectors</em>}</li>
  * </ul>
  *
@@ -189,34 +188,6 @@ public interface GNode extends EObject {
 	 * @generated
 	 */
 	void setHeight(double value);
-
-	/**
-	 * Returns the value of the '<em><b>Subgraph</b></em>' containment reference.
-	 * It is bidirectional and its opposite is '{@link de.tesis.dynaware.grapheditor.model.GModel#getSupergraph <em>Supergraph</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Subgraph</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Subgraph</em>' containment reference.
-	 * @see #setSubgraph(GModel)
-	 * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGNode_Subgraph()
-	 * @see de.tesis.dynaware.grapheditor.model.GModel#getSupergraph
-	 * @model opposite="supergraph" containment="true"
-	 * @generated
-	 */
-	GModel getSubgraph();
-
-	/**
-	 * Sets the value of the '{@link de.tesis.dynaware.grapheditor.model.GNode#getSubgraph <em>Subgraph</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Subgraph</em>' containment reference.
-	 * @see #getSubgraph()
-	 * @generated
-	 */
-	void setSubgraph(GModel value);
 
 	/**
 	 * Returns the value of the '<em><b>Connectors</b></em>' containment reference list.

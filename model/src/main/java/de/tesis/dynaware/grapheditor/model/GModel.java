@@ -20,7 +20,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GModel#getType <em>Type</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GModel#getContentWidth <em>Content Width</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GModel#getContentHeight <em>Content Height</em>}</li>
- *   <li>{@link de.tesis.dynaware.grapheditor.model.GModel#getSupergraph <em>Supergraph</em>}</li>
  * </ul>
  *
  * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGModel()
@@ -139,22 +138,5 @@ public interface GModel extends EObject {
 	 * @generated
 	 */
 	void setContentHeight(double value);
-
-	/**
-	 * Returns the value of the '<em><b>Supergraph</b></em>' container reference.
-	 * It is bidirectional and its opposite is '{@link de.tesis.dynaware.grapheditor.model.GNode#getSubgraph <em>Subgraph</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Supergraph</em>' container reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Supergraph</em>' container reference.
-	 * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGModel_Supergraph()
-	 * @see de.tesis.dynaware.grapheditor.model.GNode#getSubgraph
-	 * @model opposite="subgraph" transient="false" changeable="false"
-	 * @generated
-	 */
-	GNode getSupergraph();
 
 } // GModel

@@ -112,22 +112,13 @@ public interface GraphPackage extends EPackage {
 	int GMODEL__CONTENT_HEIGHT = 4;
 
 	/**
-	 * The feature id for the '<em><b>Supergraph</b></em>' container reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GMODEL__SUPERGRAPH = 5;
-
-	/**
 	 * The number of structural features of the '<em>GModel</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GMODEL_FEATURE_COUNT = 6;
+	int GMODEL_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>GModel</em>' class.
@@ -203,22 +194,13 @@ public interface GraphPackage extends EPackage {
 	int GNODE__HEIGHT = 5;
 
 	/**
-	 * The feature id for the '<em><b>Subgraph</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GNODE__SUBGRAPH = 6;
-
-	/**
 	 * The feature id for the '<em><b>Connectors</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GNODE__CONNECTORS = 7;
+	int GNODE__CONNECTORS = 6;
 
 	/**
 	 * The number of structural features of the '<em>GNode</em>' class.
@@ -227,7 +209,7 @@ public interface GraphPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GNODE_FEATURE_COUNT = 8;
+	int GNODE_FEATURE_COUNT = 7;
 
 	/**
 	 * The number of operations of the '<em>GNode</em>' class.
@@ -542,17 +524,6 @@ public interface GraphPackage extends EPackage {
 	EAttribute getGModel_ContentHeight();
 
 	/**
-	 * Returns the meta object for the container reference '{@link de.tesis.dynaware.grapheditor.model.GModel#getSupergraph <em>Supergraph</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the container reference '<em>Supergraph</em>'.
-	 * @see de.tesis.dynaware.grapheditor.model.GModel#getSupergraph()
-	 * @see #getGModel()
-	 * @generated
-	 */
-	EReference getGModel_Supergraph();
-
-	/**
 	 * Returns the meta object for class '{@link de.tesis.dynaware.grapheditor.model.GNode <em>GNode</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -627,17 +598,6 @@ public interface GraphPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getGNode_Height();
-
-	/**
-	 * Returns the meta object for the containment reference '{@link de.tesis.dynaware.grapheditor.model.GNode#getSubgraph <em>Subgraph</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Subgraph</em>'.
-	 * @see de.tesis.dynaware.grapheditor.model.GNode#getSubgraph()
-	 * @see #getGNode()
-	 * @generated
-	 */
-	EReference getGNode_Subgraph();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link de.tesis.dynaware.grapheditor.model.GNode#getConnectors <em>Connectors</em>}'.
@@ -941,14 +901,6 @@ public interface GraphPackage extends EPackage {
 		EAttribute GMODEL__CONTENT_HEIGHT = eINSTANCE.getGModel_ContentHeight();
 
 		/**
-		 * The meta object literal for the '<em><b>Supergraph</b></em>' container reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference GMODEL__SUPERGRAPH = eINSTANCE.getGModel_Supergraph();
-
-		/**
 		 * The meta object literal for the '{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl <em>GNode</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1005,14 +957,6 @@ public interface GraphPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute GNODE__HEIGHT = eINSTANCE.getGNode_Height();
-
-		/**
-		 * The meta object literal for the '<em><b>Subgraph</b></em>' containment reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference GNODE__SUBGRAPH = eINSTANCE.getGNode_Subgraph();
 
 		/**
 		 * The meta object literal for the '<em><b>Connectors</b></em>' containment reference list feature.

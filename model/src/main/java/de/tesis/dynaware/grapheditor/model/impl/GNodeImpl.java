@@ -3,7 +3,6 @@
 package de.tesis.dynaware.grapheditor.model.impl;
 
 import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
 
@@ -37,7 +36,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getY <em>Y</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getWidth <em>Width</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getHeight <em>Height</em>}</li>
- *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getSubgraph <em>Subgraph</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getConnectors <em>Connectors</em>}</li>
  * </ul>
  *
@@ -163,16 +161,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 	 * @ordered
 	 */
 	protected double height = HEIGHT_EDEFAULT;
-
-	/**
-	 * The cached value of the '{@link #getSubgraph() <em>Subgraph</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSubgraph()
-	 * @generated
-	 * @ordered
-	 */
-	protected GModel subgraph;
 
 	/**
 	 * The cached value of the '{@link #getConnectors() <em>Connectors</em>}' containment reference list.
@@ -334,49 +322,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public GModel getSubgraph() {
-		return subgraph;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetSubgraph(GModel newSubgraph, NotificationChain msgs) {
-		GModel oldSubgraph = subgraph;
-		subgraph = newSubgraph;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, GraphPackage.GNODE__SUBGRAPH, oldSubgraph, newSubgraph);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setSubgraph(GModel newSubgraph) {
-		if (newSubgraph != subgraph) {
-			NotificationChain msgs = null;
-			if (subgraph != null)
-				msgs = ((InternalEObject)subgraph).eInverseRemove(this, GraphPackage.GMODEL__SUPERGRAPH, GModel.class, msgs);
-			if (newSubgraph != null)
-				msgs = ((InternalEObject)newSubgraph).eInverseAdd(this, GraphPackage.GMODEL__SUPERGRAPH, GModel.class, msgs);
-			msgs = basicSetSubgraph(newSubgraph, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GNODE__SUBGRAPH, newSubgraph, newSubgraph));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EList<GConnector> getConnectors() {
 		if (connectors == null) {
 			connectors = new EObjectContainmentWithInverseEList<GConnector>(GConnector.class, this, GraphPackage.GNODE__CONNECTORS, GraphPackage.GCONNECTOR__PARENT);
@@ -393,10 +338,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case GraphPackage.GNODE__SUBGRAPH:
-				if (subgraph != null)
-					msgs = ((InternalEObject)subgraph).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - GraphPackage.GNODE__SUBGRAPH, null, msgs);
-				return basicSetSubgraph((GModel)otherEnd, msgs);
 			case GraphPackage.GNODE__CONNECTORS:
 				return ((InternalEList<InternalEObject>)(InternalEList<?>)getConnectors()).basicAdd(otherEnd, msgs);
 		}
@@ -411,8 +352,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case GraphPackage.GNODE__SUBGRAPH:
-				return basicSetSubgraph(null, msgs);
 			case GraphPackage.GNODE__CONNECTORS:
 				return ((InternalEList<?>)getConnectors()).basicRemove(otherEnd, msgs);
 		}
@@ -439,8 +378,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 				return getWidth();
 			case GraphPackage.GNODE__HEIGHT:
 				return getHeight();
-			case GraphPackage.GNODE__SUBGRAPH:
-				return getSubgraph();
 			case GraphPackage.GNODE__CONNECTORS:
 				return getConnectors();
 		}
@@ -473,9 +410,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 				return;
 			case GraphPackage.GNODE__HEIGHT:
 				setHeight((Double)newValue);
-				return;
-			case GraphPackage.GNODE__SUBGRAPH:
-				setSubgraph((GModel)newValue);
 				return;
 			case GraphPackage.GNODE__CONNECTORS:
 				getConnectors().clear();
@@ -511,9 +445,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 			case GraphPackage.GNODE__HEIGHT:
 				setHeight(HEIGHT_EDEFAULT);
 				return;
-			case GraphPackage.GNODE__SUBGRAPH:
-				setSubgraph((GModel)null);
-				return;
 			case GraphPackage.GNODE__CONNECTORS:
 				getConnectors().clear();
 				return;
@@ -541,8 +472,6 @@ public class GNodeImpl extends MinimalEObjectImpl.Container implements GNode {
 				return width != WIDTH_EDEFAULT;
 			case GraphPackage.GNODE__HEIGHT:
 				return height != HEIGHT_EDEFAULT;
-			case GraphPackage.GNODE__SUBGRAPH:
-				return subgraph != null;
 			case GraphPackage.GNODE__CONNECTORS:
 				return connectors != null && !connectors.isEmpty();
 		}
