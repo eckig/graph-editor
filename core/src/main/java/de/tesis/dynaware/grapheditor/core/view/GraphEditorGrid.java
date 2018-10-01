@@ -19,7 +19,9 @@ import javafx.css.StyleableProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 
 
 /**
@@ -39,6 +41,7 @@ public class GraphEditorGrid extends Region
 
     private double mLastWidth = -1;
     private double mLastHeight = -1;
+    private final Path mGrid = new Path();
 
     private final StyleableObjectProperty<Color> mGridColor = new StyleableObjectProperty<Color>(DEFAULT_GRID_COLOR)
     {
@@ -102,22 +105,8 @@ public class GraphEditorGrid extends Region
         setManaged(false);
         setMouseTransparent(true);
         getStyleClass().add(STYLE_CLASS);
-    }
-
-    @Override
-    protected void layoutChildren()
-    {
-        super.layoutChildren();
-
-        // Unless this Grid is resized, there is no need to repaint everything..
-        // just adjust the color:
-        for (final Node child : getChildren())
-        {
-            if (child instanceof Line)
-            {
-                ((Line) child).setStroke(mGridColor.get());
-            }
-        }
+        mGrid.strokeProperty().bind(mGridColor);
+        getChildren().add(mGrid);
     }
 
     @Override
@@ -143,38 +132,22 @@ public class GraphEditorGrid extends Region
      */
     void draw(final double pWidth, final double pHeight)
     {
-        getChildren().clear();
-
         final double spacing = getGridSpacing();
         final int hLineCount = (int) Math.floor((pHeight + 1) / spacing);
         final int vLineCount = (int) Math.floor((pWidth + 1) / spacing);
 
         for (int i = 0; i < hLineCount; i++)
         {
-            final Line hLine = new Line();
             final double y = (i + 1) * spacing + HALF_PIXEL_OFFSET;
-
-            hLine.setStartX(0);
-            hLine.setEndX(pWidth);
-            hLine.setStartY(y);
-            hLine.setEndY(y);
-            hLine.setStroke(mGridColor.get());
-
-            getChildren().add(hLine);
+            mGrid.getElements().add(new MoveTo(0, y));
+            mGrid.getElements().add(new LineTo(pWidth, y));
         }
 
         for (int i = 0; i < vLineCount; i++)
         {
-            final Line vLine = new Line();
             final double x = (i + 1) * spacing + HALF_PIXEL_OFFSET;
-
-            vLine.setStartX(x);
-            vLine.setEndX(x);
-            vLine.setStartY(0);
-            vLine.setEndY(pHeight);
-            vLine.setStroke(mGridColor.get());
-
-            getChildren().add(vLine);
+            mGrid.getElements().add(new MoveTo(x, 0));
+            mGrid.getElements().add(new LineTo(x, pHeight));
         }
     }
 
