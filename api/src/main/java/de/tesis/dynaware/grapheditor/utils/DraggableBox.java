@@ -17,7 +17,8 @@ import javafx.scene.layout.StackPane;
  * via {@code resize(width, height)}, and will not be affected by parent layout.
  * </p>
  */
-public class DraggableBox extends StackPane {
+public class DraggableBox extends StackPane
+{
 
     private static final double DEFAULT_ALIGNMENT_THRESHOLD = 5;
 
@@ -25,15 +26,15 @@ public class DraggableBox extends StackPane {
      * Safety mechanism for exceptional case when 'drag' events occur without a
      * 'pressed' event occurring first.
      */
-    protected boolean dragActive;
+    boolean dragActive;
 
-    protected double lastLayoutX;
-    protected double lastLayoutY;
+    double lastLayoutX;
+    double lastLayoutY;
 
-    protected double lastMouseX;
-    protected double lastMouseY;
+    double lastMouseX;
+    double lastMouseY;
 
-    protected GraphEditorProperties editorProperties;
+    GraphEditorProperties editorProperties;
 
     // Note that ResizableBox subclass currently pays no attention to alignment targets!
     private double[] alignmentTargetsX;
@@ -428,37 +429,43 @@ public class DraggableBox extends StackPane {
     /**
      * Handles the x component of a drag event to the given cursor x position.
      *
-     * @param x the cursor x position
+     * @param pX
+     *            the cursor x position
      */
-    private void handleDragX(final double x) {
-
+    private void handleDragX(final double pX)
+    {
         final double maxParentWidth = getParent().getLayoutBounds().getWidth();
 
         final double minLayoutX = editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
                 : editorProperties.getWestBoundValue();
         final double maxLayoutX = maxParentWidth - getWidth()
-                - (editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
-                        : editorProperties.getEastBoundValue());
+                - (editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE : editorProperties.getEastBoundValue());
 
         final double scaleFactor = getLocalToSceneTransform().getMxx();
 
-        double newLayoutX = lastLayoutX + (x - lastMouseX) / scaleFactor;
+        double newLayoutX = lastLayoutX + (pX - lastMouseX) / scaleFactor;
 
-        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
-            // The -1 here is to put the rectangle border exactly on top of a grid line.
-            newLayoutX = roundToGridSpacing(newLayoutX - snapToGridOffset.getX()) + snapToGridOffset.getX() - 1;
-        } else {
+        if (editorProperties != null && editorProperties.isSnapToGridOn())
+        {
+            newLayoutX = roundToGridSpacing(newLayoutX - snapToGridOffset.getX()) + snapToGridOffset.getX();
+        }
+        else
+        {
             // Even if snap-to-grid is off, we use Math.round to ensure drawing 'on-pixel' when zoomed in past 100%.
             newLayoutX = Math.round(newLayoutX);
 
-            if (alignmentTargetsX != null) {
+            if (alignmentTargetsX != null)
+            {
                 newLayoutX = align(newLayoutX, alignmentTargetsX);
             }
         }
 
-        if (editorProperties != null && newLayoutX < minLayoutX) {
+        if (editorProperties != null && newLayoutX < minLayoutX)
+        {
             newLayoutX = minLayoutX;
-        } else if (newLayoutX > maxLayoutX) {
+        }
+        else if (newLayoutX > maxLayoutX)
+        {
             newLayoutX = maxLayoutX;
         }
 
@@ -468,10 +475,11 @@ public class DraggableBox extends StackPane {
     /**
      * Handles the y component of a drag event to the given cursor y position.
      *
-     * @param y the cursor y position
+     * @param pY
+     *            the cursor y position
      */
-    private void handleDragY(final double y) {
-
+    private void handleDragY(final double pY)
+    {
         final double maxParentHeight = getParent().getLayoutBounds().getHeight();
 
         final double minLayoutY = editorProperties.getNorthBoundValue();
@@ -479,23 +487,29 @@ public class DraggableBox extends StackPane {
 
         final double scaleFactor = getLocalToSceneTransform().getMxx();
 
-        double newLayoutY = lastLayoutY + (y - lastMouseY) / scaleFactor;
+        double newLayoutY = lastLayoutY + (pY - lastMouseY) / scaleFactor;
 
-        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
-            // The -1 here is to put the rectangle border exactly on top of a grid line.
-            newLayoutY = roundToGridSpacing(newLayoutY - snapToGridOffset.getY()) + snapToGridOffset.getY() - 1;
-        } else {
+        if (editorProperties != null && editorProperties.isSnapToGridOn())
+        {
+            newLayoutY = roundToGridSpacing(newLayoutY - snapToGridOffset.getY()) + snapToGridOffset.getY();
+        }
+        else
+        {
             // Even if snap-to-grid is off, we use Math.round to ensure drawing 'on-pixel' when zoomed in past 100%.
             newLayoutY = Math.round(newLayoutY);
 
-            if (alignmentTargetsY != null) {
+            if (alignmentTargetsY != null)
+            {
                 newLayoutY = align(newLayoutY, alignmentTargetsY);
             }
         }
 
-        if (editorProperties != null && newLayoutY < minLayoutY) {
+        if (editorProperties != null && newLayoutY < minLayoutY)
+        {
             newLayoutY = minLayoutY;
-        } else if (newLayoutY > maxLayoutY) {
+        }
+        else if (newLayoutY > maxLayoutY)
+        {
             newLayoutY = maxLayoutY;
         }
 

@@ -36,9 +36,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
 
     @Override
     public void initialize(final GModel model) {
-
         this.model = model;
-        redraw();
     }
 
     @Override
@@ -68,6 +66,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
     public void redrawViewport()
     {
         // TODO implement as soon as the EMF model watcher is done..
+        redraw();
     }
 
     /**

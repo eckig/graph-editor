@@ -84,8 +84,8 @@ public class DraggableBoxTest {
         final double x = box.getLayoutX();
         final double y = box.getLayoutY();
 
-        assertTrue(x == Math.round(x / GRID_SPACING) * GRID_SPACING - 1);
-        assertTrue(y == Math.round(y / GRID_SPACING) * GRID_SPACING - 1);
+        assertTrue(x == Math.round(x / GRID_SPACING) * GRID_SPACING);
+        assertTrue(y == Math.round(y / GRID_SPACING) * GRID_SPACING);
     }
 
     @Test

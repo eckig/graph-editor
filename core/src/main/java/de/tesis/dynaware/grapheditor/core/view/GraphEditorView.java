@@ -51,7 +51,7 @@ public class GraphEditorView extends Region
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
 
-    private final Pane nodeLayer = new Pane()
+    private final Pane mNodeLayer = new Pane()
     {
 
         @Override
@@ -61,7 +61,7 @@ public class GraphEditorView extends Region
             redrawViewport();
         }
     };
-    private final Pane connectionLayer = new Pane()
+    private final Pane mConnectionLayer = new Pane()
     {
 
         @Override
@@ -72,12 +72,12 @@ public class GraphEditorView extends Region
         }
     };
 
-    private final GraphEditorGrid grid = new GraphEditorGrid();
-    private ConnectionLayouter connectionLayouter;
+    private final GraphEditorGrid mGrid = new GraphEditorGrid();
+    private ConnectionLayouter mConnectionLayouter;
 
-    private final SelectionBox selectionBox = new SelectionBox();
+    private final SelectionBox mSelectionBox = new SelectionBox();
 
-    private GraphEditorProperties editorProperties;
+    private GraphEditorProperties mEditorProperties;
 
     /**
      * Creates a new {@link GraphEditorView} to which skin instances can be
@@ -96,12 +96,12 @@ public class GraphEditorView extends Region
     /**
      * Sets the connection-layouter to be used by the view.
      *
-     * @param connectionLayouter
+     * @param pConnectionLayouter
      *            the graph editor's {@link ConnectionLayouter} instance
      */
-    public void setConnectionLayouter(final ConnectionLayouter connectionLayouter)
+    public void setConnectionLayouter(final ConnectionLayouter pConnectionLayouter)
     {
-        this.connectionLayouter = connectionLayouter;
+        mConnectionLayouter = pConnectionLayouter;
     }
 
     /**
@@ -109,63 +109,63 @@ public class GraphEditorView extends Region
      */
     public void clear()
     {
-        nodeLayer.getChildren().clear();
-        connectionLayer.getChildren().clear();
+        mNodeLayer.getChildren().clear();
+        mConnectionLayer.getChildren().clear();
     }
 
     /**
      * Adds a node skin to the view.
      *
-     * @param nodeSkin
+     * @param pNodeSkin
      *            the {@link GNodeSkin} instance to be added
      */
-    public void add(final GNodeSkin nodeSkin)
+    public void add(final GNodeSkin pNodeSkin)
     {
-        if (nodeSkin != null)
+        if (pNodeSkin != null)
         {
-            nodeLayer.getChildren().add(nodeSkin.getRoot());
+            mNodeLayer.getChildren().add(pNodeSkin.getRoot());
         }
     }
 
     /**
      * Adds a connection skin to the view.
      *
-     * @param connectionSkin
+     * @param pConnectionSkin
      *            the {@link GConnectionSkin} instance to be added
      */
-    public void add(final GConnectionSkin connectionSkin)
+    public void add(final GConnectionSkin pConnectionSkin)
     {
-        if (connectionSkin != null)
+        if (pConnectionSkin != null)
         {
-            connectionLayer.getChildren().add(connectionSkin.getRoot());
+            mConnectionLayer.getChildren().add(pConnectionSkin.getRoot());
         }
     }
 
     /**
      * Adds a joint skin to the view.
      *
-     * @param jointSkin
+     * @param pJointSkin
      *            the {@link GJointSkin} instance to be added
      */
-    public void add(final GJointSkin jointSkin)
+    public void add(final GJointSkin pJointSkin)
     {
-        if (jointSkin != null)
+        if (pJointSkin != null)
         {
-            connectionLayer.getChildren().add(jointSkin.getRoot());
+            mConnectionLayer.getChildren().add(pJointSkin.getRoot());
         }
     }
 
     /**
      * Adds a tail skin to the view.
      *
-     * @param tailSkin
+     * @param pTailSkin
      *            the {@link GTailSkin} instance to be added
      */
-    public void add(final GTailSkin tailSkin)
+    public void add(final GTailSkin pTailSkin)
     {
-        if (tailSkin != null)
+        if (pTailSkin != null)
         {
-            connectionLayer.getChildren().add(tailSkin.getRoot());
+            mConnectionLayer.getChildren().add(pTailSkin.getRoot());
         }
     }
 
@@ -173,14 +173,14 @@ public class GraphEditorView extends Region
      * Removes a node skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param nodeSkin
+     * @param pNodeSkin
      *            the {@link GNodeSkin} instance to remove
      */
-    public void remove(final GNodeSkin nodeSkin)
+    public void remove(final GNodeSkin pNodeSkin)
     {
-        if (nodeSkin != null)
+        if (pNodeSkin != null)
         {
-            nodeLayer.getChildren().remove(nodeSkin.getRoot());
+            mNodeLayer.getChildren().remove(pNodeSkin.getRoot());
         }
     }
 
@@ -188,14 +188,14 @@ public class GraphEditorView extends Region
      * Removes a connection skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param connectionSkin
+     * @param pConnectionSkin
      *            the {@link GConnectionSkin} instance to remove
      */
-    public void remove(final GConnectionSkin connectionSkin)
+    public void remove(final GConnectionSkin pConnectionSkin)
     {
-        if (connectionSkin != null)
+        if (pConnectionSkin != null)
         {
-            connectionLayer.getChildren().remove(connectionSkin.getRoot());
+            mConnectionLayer.getChildren().remove(pConnectionSkin.getRoot());
         }
     }
 
@@ -203,14 +203,14 @@ public class GraphEditorView extends Region
      * Removes a joint skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param jointSkin
+     * @param pJointSkin
      *            the {@link GJointSkin} instance to remove
      */
-    public void remove(final GJointSkin jointSkin)
+    public void remove(final GJointSkin pJointSkin)
     {
-        if (jointSkin != null)
+        if (pJointSkin != null)
         {
-            connectionLayer.getChildren().remove(jointSkin.getRoot());
+            mConnectionLayer.getChildren().remove(pJointSkin.getRoot());
         }
     }
 
@@ -218,14 +218,14 @@ public class GraphEditorView extends Region
      * Removes a tail skin from the view. Does nothing if the skin is not
      * present.
      *
-     * @param tailSkin
+     * @param pTailSkin
      *            the {@link GTailSkin} instance to remove
      */
-    public void remove(final GTailSkin tailSkin)
+    public void remove(final GTailSkin pTailSkin)
     {
-        if (tailSkin != null)
+        if (pTailSkin != null)
         {
-            connectionLayer.getChildren().remove(tailSkin.getRoot());
+            mConnectionLayer.getChildren().remove(pTailSkin.getRoot());
         }
     }
 
@@ -243,17 +243,17 @@ public class GraphEditorView extends Region
      */
     public void setEditorProperties(final GraphEditorProperties pEditorProperties)
     {
-        editorProperties = pEditorProperties;
+        mEditorProperties = pEditorProperties;
 
-        if (editorProperties != null)
+        if (mEditorProperties != null)
         {
-            grid.visibleProperty().bind(editorProperties.gridVisibleProperty());
-            grid.gridSpacingProperty().bind(editorProperties.gridSpacingProperty());
+            mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
+            mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
         }
         else
         {
-            grid.visibleProperty().unbind();
-            grid.gridSpacingProperty().unbind();
+            mGrid.visibleProperty().unbind();
+            mGrid.gridSpacingProperty().unbind();
         }
     }
 
@@ -265,24 +265,24 @@ public class GraphEditorView extends Region
      */
     public GraphEditorProperties getEditorProperties()
     {
-        return editorProperties;
+        return mEditorProperties;
     }
 
     /**
      * Draws a selection box in the view.
      *
-     * @param x
+     * @param pX
      *            the x position of the selection box
-     * @param y
+     * @param pY
      *            the y position of the selection box
-     * @param width
+     * @param pWidth
      *            the width of the selection box
-     * @param height
+     * @param pHeight
      *            the height of the selection box
      */
-    public void drawSelectionBox(final double x, final double y, final double width, final double height)
+    public void drawSelectionBox(final double pX, final double pY, final double pWidth, final double pHeight)
     {
-        selectionBox.draw(x, y, width, height);
+        mSelectionBox.draw(pX, pY, pWidth, pHeight);
     }
 
     /**
@@ -290,7 +290,7 @@ public class GraphEditorView extends Region
      */
     public void hideSelectionBox()
     {
-        selectionBox.setVisible(false);
+        mSelectionBox.setVisible(false);
     }
 
     @Override
@@ -298,24 +298,23 @@ public class GraphEditorView extends Region
     {
         final double width = getWidth();
         final double height = getHeight();
-        nodeLayer.resizeRelocate(0, 0, width, height);
-        connectionLayer.resizeRelocate(0, 0, width, height);
-        connectionLayouter.redraw();
-        grid.resizeRelocate(0, 0, width, height);
+        mNodeLayer.resizeRelocate(0, 0, width, height);
+        mConnectionLayer.resizeRelocate(0, 0, width, height);
+        mGrid.resizeRelocate(0, 0, width, height);
     }
 
     void redrawViewport()
     {
-        if (connectionLayouter != null)
+        if (mConnectionLayouter != null)
         {
-            connectionLayouter.redrawViewport();
+            mConnectionLayouter.redrawViewport();
         }
     }
 
     @Override
-    public void relocate(double x, double y)
+    public void relocate(double pX, double pY)
     {
-        super.relocate(x, y);
+        super.relocate(pX, pY);
         redrawViewport();
     }
 
@@ -325,16 +324,16 @@ public class GraphEditorView extends Region
      */
     private void initializeLayers()
     {
-        nodeLayer.setPickOnBounds(false);
-        connectionLayer.setPickOnBounds(false);
+        mNodeLayer.setPickOnBounds(false);
+        mConnectionLayer.setPickOnBounds(false);
 
-        nodeLayer.setCacheHint(CacheHint.SPEED);
-        connectionLayer.setCacheHint(CacheHint.SPEED);
+        mNodeLayer.setCacheHint(CacheHint.SPEED);
+        mConnectionLayer.setCacheHint(CacheHint.SPEED);
 
-        nodeLayer.getStyleClass().add(STYLE_CLASS_NODE_LAYER);
-        connectionLayer.getStyleClass().add(STYLE_CLASS_CONNECTION_LAYER);
+        mNodeLayer.getStyleClass().add(STYLE_CLASS_NODE_LAYER);
+        mConnectionLayer.getStyleClass().add(STYLE_CLASS_CONNECTION_LAYER);
 
         // Node layer should be on top of connection layer, so we add it second.
-        getChildren().addAll(grid, connectionLayer, nodeLayer, selectionBox);
+        getChildren().addAll(mGrid, mConnectionLayer, mNodeLayer, mSelectionBox);
     }
 }

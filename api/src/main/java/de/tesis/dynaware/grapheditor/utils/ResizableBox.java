@@ -14,7 +14,8 @@ import javafx.scene.layout.Region;
  * See {@link DraggableBox} for more information.
  * </p>
  */
-public class ResizableBox extends DraggableBox {
+public class ResizableBox extends DraggableBox
+{
 
     private static final int DEFAULT_RESIZE_BORDER_TOLERANCE = 8;
 
@@ -420,10 +421,10 @@ public class ResizableBox extends DraggableBox {
      * @param mouseRegion the {@link RectangleMouseRegion} where the cursor is
      * located
      */
-    private void updateCursor(final RectangleMouseRegion mouseRegion) {
-
-        switch (mouseRegion) {
-
+    private void updateCursor(final RectangleMouseRegion mouseRegion)
+    {
+        switch (mouseRegion)
+        {
             case NORTHEAST:
                 setCursor(Cursor.NE_RESIZE);
                 break;
@@ -449,10 +450,8 @@ public class ResizableBox extends DraggableBox {
                 setCursor(Cursor.W_RESIZE);
                 break;
             case INSIDE:
-                // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
-                setCursor(null);
-                break;
             case OUTSIDE:
+                // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
                 setCursor(null);
                 break;
         }
