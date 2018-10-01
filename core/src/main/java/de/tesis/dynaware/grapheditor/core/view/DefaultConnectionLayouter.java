@@ -20,44 +20,49 @@ import javafx.geometry.Point2D;
  */
 public class DefaultConnectionLayouter implements ConnectionLayouter {
 
-    private final SkinLookup skinLookup;
-    private GModel model;
+    private final SkinLookup mSkinLookup;
+    private GModel mModel;
 
     /**
-     * Creates a new {@link DefaultConnectionLayouter} instance. Only one instance
-     * should exist per {@link DefaultGraphEditor} instance.
+     * Creates a new {@link DefaultConnectionLayouter} instance. Only one
+     * instance should exist per {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup
+     * @param pSkinLookup
      *            the {@link SkinLookup} used to look up skins
      */
-    public DefaultConnectionLayouter(final SkinLookup skinLookup) {
-        this.skinLookup = skinLookup;
+    public DefaultConnectionLayouter(final SkinLookup pSkinLookup)
+    {
+        this.mSkinLookup = pSkinLookup;
     }
 
     @Override
-    public void initialize(final GModel model) {
-        this.model = model;
+    public void initialize(final GModel pModel)
+    {
+        this.mModel = pModel;
     }
 
     @Override
-    public void redraw() {
-
-        if (model == null || model.getConnections().isEmpty()) {
+    public void redraw()
+    {
+        if (mModel == null || mModel.getConnections().isEmpty())
+        {
             return;
         }
 
         final Map<GConnection, List<Point2D>> allPoints = new HashMap<>();
 
-        for (int i = 0; i < model.getConnections().size(); i++) {
-            final GConnection connection = model.getConnections().get(i);
-            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(connection);
+        for (int i = 0; i < mModel.getConnections().size(); i++)
+        {
+            final GConnection connection = mModel.getConnections().get(i);
+            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
             final List<Point2D> points = createPoints(connection);
             connectionSkin.applyConstraints(points);
             allPoints.put(connection, points);
         }
 
-        for (final Map.Entry<GConnection, List<Point2D>> entry : allPoints.entrySet()) {
-            final GConnectionSkin connectionSkin = skinLookup.lookupConnection(entry.getKey());
+        for (final Map.Entry<GConnection, List<Point2D>> entry : allPoints.entrySet())
+        {
+            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(entry.getKey());
             connectionSkin.draw(entry.getValue(), allPoints);
         }
     }
@@ -67,6 +72,12 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
     {
         // TODO implement as soon as the EMF model watcher is done..
         redraw();
+    }
+
+    @Override
+    public void viewportMoved()
+    {
+        // TODO implement as soon as the EMF model watcher is done..
     }
 
     /**
@@ -89,16 +100,16 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
      *
      * @return a list of the given connection's points
      */
-    private List<Point2D> createPoints(final GConnection connection) {
-
+    private List<Point2D> createPoints(final GConnection connection)
+    {
         // Middle: joint positions
-        final List<Point2D> points = GeometryUtils.getJointPositions(connection, skinLookup);
+        final List<Point2D> points = GeometryUtils.getJointPositions(connection, mSkinLookup);
 
         // Start: Source position
-        points.add(0, GeometryUtils.getConnectorPosition(connection.getSource(), skinLookup));
+        points.add(0, GeometryUtils.getConnectorPosition(connection.getSource(), mSkinLookup));
 
         // End: Target position
-        points.add(GeometryUtils.getConnectorPosition(connection.getTarget(), skinLookup));
+        points.add(GeometryUtils.getConnectorPosition(connection.getTarget(), mSkinLookup));
 
         return points;
     }

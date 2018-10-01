@@ -29,4 +29,13 @@ public interface ConnectionLayouter {
      * @since 19.09.2018
      */
     void redrawViewport();
+
+    /**
+     * Will be called when the graph editor view is part of a scroll pane and
+     * the visible part of the view has changed (in other words: view has been
+     * moved).
+     *
+     * @since 19.09.2018
+     */
+    void viewportMoved();
 }

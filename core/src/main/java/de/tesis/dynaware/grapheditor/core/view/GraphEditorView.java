@@ -311,11 +311,19 @@ public class GraphEditorView extends Region
         }
     }
 
+    void viewportMoved()
+    {
+        if (mConnectionLayouter != null)
+        {
+            mConnectionLayouter.viewportMoved();
+        }
+    }
+
     @Override
     public void relocate(double pX, double pY)
     {
         super.relocate(pX, pY);
-        redrawViewport();
+        viewportMoved();
     }
 
     /**
