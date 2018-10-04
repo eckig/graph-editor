@@ -163,11 +163,19 @@ public class GraphEditorController {
 
     /**
      * Sets the validator that determines what connections can be created.
-     * 
+     *
      * @param validator a {@link GConnectorValidator} implementaiton, or null to use the default
      */
     public void setConnectorValidator(final GConnectorValidator validator) {
         connectorDragManager.setValidator(validator);
+    }
+
+    /**
+     * @return {@link ModelEditingManager}
+     */
+    public ModelEditingManager getModelEditingManager()
+    {
+        return modelEditingManager;
     }
 
     /**
@@ -242,7 +250,7 @@ public class GraphEditorController {
         skinManager.removeConnections(modelMemory.getConnectionsToRemove());
 
         modelMemory.getJointsToRemove().values().forEach(skinManager::removeJoints);
-        
+
         modelMemory.getJointsToAdd().forEach(skinManager::addJoints);
 
         skinManager.initializeAll();

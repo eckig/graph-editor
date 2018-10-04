@@ -1,8 +1,8 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
-import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.Command;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
@@ -11,50 +11,48 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
  */
 public class ConnectionEventManager {
 
-    private BiConsumer<GConnection, CompoundCommand> connectionCreatedHandler;
-    private BiConsumer<GConnection, CompoundCommand> connectionRemovedHandler;
+    private Function<GConnection, Command> connectionCreatedHandler;
+    private Function<GConnection, Command> connectionRemovedHandler;
 
     /**
      * Sets the handler to be called when connections are created.
-     * 
+     *
      * @param connectionCreatedHandler the handler to be called when connections are created
      */
-    public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> connectionCreatedHandler) {
+    public void setOnConnectionCreated(final Function<GConnection, Command> connectionCreatedHandler)
+    {
         this.connectionCreatedHandler = connectionCreatedHandler;
     }
 
     /**
      * Sets the handler to be called when connections are removed.
-     * 
+     *
      * @param connectionRemovedHandler the handler to be called when connections are removed
      */
-    public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> connectionRemovedHandler) {
+    public void setOnConnectionRemoved(final Function<GConnection, Command> connectionRemovedHandler)
+    {
         this.connectionRemovedHandler = connectionRemovedHandler;
     }
 
     /**
      * Calls the connection-created handler (if it exists) after a connection was created.
-     * 
+     *
      * @param connection the connection that was created
      * @param command the compound command that created it
      */
-    public void notifyConnectionAdded(final GConnection connection, final CompoundCommand command) {
-
-        if (connectionCreatedHandler != null) {
-            connectionCreatedHandler.accept(connection, command);
-        }
+    public Command notifyConnectionAdded(final GConnection connection)
+    {
+        return connectionCreatedHandler == null ? null : connectionCreatedHandler.apply(connection);
     }
 
     /**
      * Calls the connection-removed handler (if it exists) after a connection was removed.
-     * 
+     *
      * @param connection the connection that was removed
      * @param command the compound command that removed it
      */
-    public void notifyConnectionRemoved(final GConnection connection, final CompoundCommand command) {
-
-        if (connectionRemovedHandler != null) {
-            connectionRemovedHandler.accept(connection, command);
-        }
+    public Command notifyConnectionRemoved(final GConnection connection)
+    {
+        return connectionRemovedHandler == null ? null : connectionRemovedHandler.apply(connection);
     }
 }

@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.command.CompoundCommand;
-
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
@@ -503,11 +501,7 @@ public class ConnectorDragManager {
             joints.add(joint);
         }
 
-        final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, connectionType, joints);
-
-        // Notify the event manager so additional commands may be appended to this compound command.
-        final GConnection addedConnection = model.getConnections().get(model.getConnections().size() - 1);
-        connectionEventManager.notifyConnectionAdded(addedConnection, command);
+        ConnectionCommands.addConnection(model, source, target, connectionType, joints, connectionEventManager);
     }
 
     /**
@@ -547,9 +541,7 @@ public class ConnectorDragManager {
                 newSource = connection.getSource();
             }
 
-            final CompoundCommand command = ConnectionCommands.removeConnection(model, connection);
-            // Notify the event manager so additional commands may be appended to this compound command.
-            connectionEventManager.notifyConnectionRemoved(connection, command);
+            ConnectionCommands.removeConnection(model, connection, connectionEventManager);
 
             // check if the new source connector allows to create a new connection on the fly:
             if (!followUpCreated && checkCreatable(opposingConnector))

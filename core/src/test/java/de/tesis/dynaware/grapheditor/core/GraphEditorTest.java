@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.common.command.CommandStack;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.junit.Before;
@@ -104,7 +105,7 @@ public class GraphEditorTest {
         joints.add(GraphFactory.eINSTANCE.createGJoint());
         joints.add(GraphFactory.eINSTANCE.createGJoint());
 
-        ConnectionCommands.addConnection(model, firstNodeOutput, secondNodeInput, null, joints);
+        ConnectionCommands.addConnection(model, firstNodeOutput, secondNodeInput, null, joints, null);
 
         assertFalse("A connection should be present.", model.getConnections().isEmpty());
 
@@ -129,7 +130,8 @@ public class GraphEditorTest {
     public void selectAllAndDelete() {
 
         graphEditor.getSelectionManager().selectAll();
-        graphEditor.getSelectionManager().deleteSelection();
+        final List<EObject> selection = new ArrayList<>(graphEditor.getSelectionManager().getSelectedItems());
+        graphEditor.delete(selection);
 
         assertTrue("All nodes should have gone.", model.getNodes().isEmpty());
         assertTrue("All connections should have gone.", model.getConnections().isEmpty());

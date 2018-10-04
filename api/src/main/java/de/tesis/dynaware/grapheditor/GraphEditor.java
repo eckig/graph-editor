@@ -3,16 +3,18 @@
  */
 package de.tesis.dynaware.grapheditor;
 
-import java.util.function.BiConsumer;
+import java.util.Collection;
+import java.util.function.Function;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.layout.Region;
-
-import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
+import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.layout.Region;
 
 /**
  * Provides functionality for displaying and editing graph-like diagrams in JavaFX.
@@ -22,10 +24,10 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
  *
  * <pre>
  * <code>GModel model = GraphFactory.eINSTANCE.createGModel();
- * 
+ *
  * GraphEditor graphEditor = new DefaultGraphEditor();
  * graphEditor.setModel(model);
- * 
+ *
  * Region view = graphEditor.getView();</code>
  * </pre>
  *
@@ -147,7 +149,8 @@ public interface GraphEditor extends GraphEditorSkins {
      * Gets the selection manager.
      *
      * <p>
-     * This provides access to actions like 'select all', 'delete selection', cut, copy, paste, and so on.
+     * The selection manager keeps track of the selected nodes, connections,
+     * etc.
      * </p>
      *
      * @return the {@link SelectionManager}
@@ -163,16 +166,39 @@ public interface GraphEditor extends GraphEditorSkins {
      *
      * @param consumer a consumer to append additional commands
      */
-    void setOnConnectionCreated(BiConsumer<GConnection, CompoundCommand> consumer);
+    void setOnConnectionCreated(Function<GConnection, Command> consumer);
 
     /**
      * Sets a method to be called when a connection is removed in the editor.
      *
      * <p>
-     * This can be used to append additional commands to the one that removed the connection.
+     * This can be used to create additional commands to the one that removed
+     * the connection.
      * </p>
      *
-     * @param consumer a consumer to append additional commands
+     * @param pOnConnectionRemoved
+     *            a {@link Function} creating the additional command
      */
-    void setOnConnectionRemoved(BiConsumer<GConnection, CompoundCommand> consumer);
+    void setOnConnectionRemoved(final Function<GConnection, Command> pOnConnectionRemoved);
+
+    /**
+     * Sets a method to be called when a node is removed in the editor.
+     *
+     * <p>
+     * This can be used to create additional commands to the one that removed
+     * the node.
+     * </p>
+     *
+     * @param pOnNodeRemoved
+     *            a {@link Function} creating the additional command
+     */
+    void setOnNodeRemoved(Function<GNode, Command> pOnNodeRemoved);
+
+    /**
+     * Deletes all elements that are currently selected.
+     *
+     * @param pItems
+     *            the items to remove from the graph
+     */
+    void delete(Collection<EObject> pItems);
 }

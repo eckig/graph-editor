@@ -4,18 +4,14 @@
 package de.tesis.dynaware.grapheditor;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
-import javafx.collections.ObservableSet;
-import javafx.util.Pair;
-
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.collections.ObservableSet;
 
 /**
  * Provides actions related to selections in the graph editor.
@@ -100,22 +96,6 @@ public interface SelectionManager {
      * Clears the selection, i.e. de-selects all elements.
      */
     void clearSelection();
-
-    /**
-     * Deletes all elements that are currently selected.
-     */
-    void deleteSelection();
-
-    /**
-     * Deletes all nodes and connections that are currently selected.
-     *
-     * <p>
-     * Additionally calls the given method for the compound command that did the deletion.
-     * </p>
-     *
-     * @param consumer a consumer to append additional commands to this one
-     */
-    void deleteSelection(BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer);
 
     /**
      * Sets the editor properties instance for the graph editor.

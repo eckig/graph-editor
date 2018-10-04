@@ -4,16 +4,13 @@
 package de.tesis.dynaware.grapheditor.core;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionCreator;
-import de.tesis.dynaware.grapheditor.core.selections.SelectionDeleter;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionDragManager;
 import de.tesis.dynaware.grapheditor.core.selections.SelectionTracker;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
@@ -26,7 +23,6 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.collections.ObservableSet;
 import javafx.scene.input.MouseEvent;
-import javafx.util.Pair;
 
 /**
  * Manages all graph editor logic relating to selections of one or more nodes and/or joints.
@@ -37,10 +33,7 @@ import javafx.util.Pair;
  * <ol>
  * <li>SelectionCreator - creates selections of objects via clicking or dragging
  * <li>SelectionDragManager - ensures selected objects move together when one is dragged
- * <li>SelectionDeleter - deletes selected nodes and dependent connectors, connections, etc
- * <li>SelectionBackup - used to backup the current selection and restore it later
  * <li>SelectionTracker - keeps track of the current selection
- * <li>SelectionCopier - copies and stores the current selection to be pasted later
  * </ol>
  *
  * </p>
@@ -49,24 +42,25 @@ public class DefaultSelectionManager implements SelectionManager {
 
     private final SelectionCreator selectionCreator;
     private final SelectionDragManager selectionDragManager;
-    private final SelectionDeleter selectionDeleter;
     private final SelectionTracker selectionTracker;
 
     private GraphEditorProperties editorProperties;
     private GModel model;
 
     /**
-     * Creates a new default selection manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
+     * Creates a new default selection manager. Only one instance should exist
+     * per {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup the {@link SkinLookup} instance in use
-     * @param view the {@link GraphEditorView} instance in use
-     * @param modelEditingManager the {@link ModelEditingManager} in use
+     * @param skinLookup
+     *            the {@link SkinLookup} instance in use
+     * @param view
+     *            the {@link GraphEditorView} instance in use
+     * @param modelEditingManager
+     *            the {@link ModelEditingManager} in use
      */
-    public DefaultSelectionManager(final SkinLookup skinLookup, final GraphEditorView view,
-            final ModelEditingManager modelEditingManager) {
-
+    public DefaultSelectionManager(final SkinLookup skinLookup, final GraphEditorView view, final ModelEditingManager modelEditingManager)
+    {
         selectionDragManager = new SelectionDragManager(skinLookup, view, this);
-        selectionDeleter = new SelectionDeleter(skinLookup, modelEditingManager);
         selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager, this::canSelect);
         selectionTracker = new SelectionTracker(skinLookup);
     }
@@ -83,68 +77,69 @@ public class DefaultSelectionManager implements SelectionManager {
         selectionCreator.initialize(model);
         selectionTracker.initialize(model);
     }
-    
+
 	private boolean canSelect(final MouseEvent event) {
 		return !event.isSecondaryButtonDown() && editorProperties != null
 				&& editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.SELECTION;
 	}
-    
+
     /**
      * Sets the editor properties instance for the graph editor.
      *
      * @param editorProperties a {@link GraphEditorProperties} instance to be used
      */
+    @Override
     public void setEditorProperties(final GraphEditorProperties editorProperties) {
     	this.editorProperties = editorProperties;
     }
-    
+
     public void addNode(final GNode node) {
         selectionCreator.addNode(node);
     }
-    
+
     public void removeNode(final GNode node) {
         selectionCreator.removeNode(node);
     }
-    
+
     public void addConnector(final GConnector connector) {
         selectionCreator.addConnector(connector);
     }
-    
+
     public void removeConnector(final GConnector connector) {
         selectionCreator.removeConnector(connector);
     }
-    
+
     public void addConnection(final GConnection connection) {
         selectionCreator.addConnection(connection);
     }
-    
+
     public void removeConnection(final GConnection connection) {
         selectionCreator.removeConnection(connection);
     }
-    
+
     public void addJoint(final GJoint joint) {
         selectionCreator.addJoint(joint);
     }
-    
+
     public void removeJoint(final GJoint joint) {
         selectionCreator.removeJoint(joint);
     }
-    
+
     @Override
     public ObservableSet<EObject> getSelectedItems() {
     	return selectionTracker.getSelectedItems();
     }
-    
+
     @Override
     public void select(final EObject object) {
 		getSelectedItems().add(object);
     }
-    
+
     @Override
     public void clearSelection(final EObject object) {
     	getSelectedItems().remove(object);
     }
-    
+
     @Override
     public boolean isSelected(EObject object) {
     	return getSelectedItems().contains(object);
@@ -175,16 +170,6 @@ public class DefaultSelectionManager implements SelectionManager {
 	    		getSelectedItems().remove(remove);
 	    	}
     	}
-    }
-
-    @Override
-    public void deleteSelection() {
-        selectionDeleter.deleteSelection(model, null);
-    }
-
-    @Override
-    public void deleteSelection(final BiConsumer<Pair<List<GNode>, List<GConnection>>, CompoundCommand> consumer) {
-        selectionDeleter.deleteSelection(model, consumer);
     }
 
     @Override

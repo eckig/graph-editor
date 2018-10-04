@@ -3,13 +3,11 @@
  */
 package de.tesis.dynaware.grapheditor.core;
 
-import java.util.function.BiConsumer;
+import java.util.Collection;
+import java.util.function.Function;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.layout.Region;
-
-import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -21,6 +19,7 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
+import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -28,122 +27,176 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
+import javafx.scene.layout.Region;
 import javafx.util.Callback;
+
 
 /**
  * Default implementation of the {@link GraphEditor}.
  */
-public class DefaultGraphEditor implements GraphEditor {
+public class DefaultGraphEditor implements GraphEditor
+{
 
-    private final SkinManager skinManager;
-    private final ConnectionEventManager connectionEventManager = new ConnectionEventManager();
-    private final GraphEditorController controller;
-    private final ObjectProperty<GModel> modelProperty = new SimpleObjectProperty<GModel>() {
+    private final SkinManager mSkinManager;
+    private final ConnectionEventManager mConnectionEventManager = new ConnectionEventManager();
+    private final GraphEditorController mController;
+
+    private final ObjectProperty<GModel> mModelProperty = new ObjectPropertyBase<GModel>()
+    {
 
         @Override
-        protected void invalidated() {
-            super.invalidated();
-            controller.setModel(get());
+        protected void invalidated()
+        {
+            mController.setModel(get());
         }
-        
+
+        @Override
+        public Object getBean()
+        {
+            return DefaultGraphEditor.this;
+        }
+
+        @Override
+        public String getName()
+        {
+            return "model";
+        }
+
     };
 
     /**
      * Creates a new default implementation of the {@link GraphEditor}.
      */
-    public DefaultGraphEditor() {
-
+    public DefaultGraphEditor()
+    {
         // Skin manager needs 'this' reference so users can access GraphEditor inside their custom skins.
-        skinManager = new SkinManager(this);
+        mSkinManager = new SkinManager(this);
 
-        controller = new GraphEditorController(skinManager, connectionEventManager);
+        mController = new GraphEditorController(mSkinManager, mConnectionEventManager);
 
         // Create some default layout properties in case the user never sets any.
         setProperties(new GraphEditorProperties());
     }
 
     @Override
-    public void setNodeSkinFactory(final Callback<GNode, GNodeSkin> skinFactory) {
-        skinManager.setNodeSkinFactory(skinFactory);
+    public void setNodeSkinFactory(final Callback<GNode, GNodeSkin> pSkinFactory)
+    {
+        mSkinManager.setNodeSkinFactory(pSkinFactory);
     }
 
     @Override
-    public void setConnectorSkinFactory(final Callback<GConnector, GConnectorSkin> connectorSkinFactory) {
-        skinManager.setConnectorSkinFactory(connectorSkinFactory);
+    public void setConnectorSkinFactory(final Callback<GConnector, GConnectorSkin> pConnectorSkinFactory)
+    {
+        mSkinManager.setConnectorSkinFactory(pConnectorSkinFactory);
     }
 
     @Override
-    public void setConnectionSkinFactory(final Callback<GConnection, GConnectionSkin> connectionSkinFactory) {
-        skinManager.setConnectionSkinFactory(connectionSkinFactory);
+    public void setConnectionSkinFactory(final Callback<GConnection, GConnectionSkin> pConnectionSkinFactory)
+    {
+        mSkinManager.setConnectionSkinFactory(pConnectionSkinFactory);
     }
 
     @Override
-    public void setJointSkinFactory(final Callback<GJoint, GJointSkin> jointSkinFactory) {
-        skinManager.setJointSkinFactory(jointSkinFactory);
+    public void setJointSkinFactory(final Callback<GJoint, GJointSkin> pJointSkinFactory)
+    {
+        mSkinManager.setJointSkinFactory(pJointSkinFactory);
     }
 
     @Override
-    public void setTailSkinFactory(final Callback<GConnector, GTailSkin> tailSkinFactory) {
-        skinManager.setTailSkinFactory(tailSkinFactory);
+    public void setTailSkinFactory(final Callback<GConnector, GTailSkin> pTailSkinFactory)
+    {
+        mSkinManager.setTailSkinFactory(pTailSkinFactory);
     }
 
     @Override
-    public void setConnectorValidator(final GConnectorValidator validator) {
-        controller.setConnectorValidator(validator);
+    public void setConnectorValidator(final GConnectorValidator pValidator)
+    {
+        mController.setConnectorValidator(pValidator);
     }
 
     @Override
-    public void setModel(final GModel model) {
-        modelProperty.set(model);
+    public void setModel(final GModel pModel)
+    {
+        mModelProperty.set(pModel);
     }
 
     @Override
-    public GModel getModel() {
-        return modelProperty.get();
+    public GModel getModel()
+    {
+        return mModelProperty.get();
     }
 
     @Override
-    public void reload() {
-        controller.initializeAll();
+    public void reload()
+    {
+        mController.initializeAll();
     }
 
     @Override
-    public ObjectProperty<GModel> modelProperty() {
-        return modelProperty;
+    public ObjectProperty<GModel> modelProperty()
+    {
+        return mModelProperty;
     }
 
     @Override
-    public Region getView() {
-        return controller.getView();
+    public Region getView()
+    {
+        return mController.getView();
     }
 
     @Override
-    public GraphEditorProperties getProperties() {
-        return controller.getEditorProperties();
+    public GraphEditorProperties getProperties()
+    {
+        return mController.getEditorProperties();
     }
 
     @Override
-    public void setProperties(final GraphEditorProperties editorProperties) {
-        controller.setEditorProperties(editorProperties);
+    public void setProperties(final GraphEditorProperties pEditorProperties)
+    {
+        mController.setEditorProperties(pEditorProperties);
     }
 
     @Override
-    public SkinLookup getSkinLookup() {
-        return skinManager;
+    public SkinLookup getSkinLookup()
+    {
+        return mSkinManager;
     }
 
     @Override
-    public SelectionManager getSelectionManager() {
-        return controller.getSelectionManager();
+    public SelectionManager getSelectionManager()
+    {
+        return mController.getSelectionManager();
     }
 
     @Override
-    public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> consumer) {
-        connectionEventManager.setOnConnectionCreated(consumer);
+    public void setOnConnectionCreated(final Function<GConnection, Command> pConsumer)
+    {
+        mConnectionEventManager.setOnConnectionCreated(pConsumer);
     }
 
     @Override
-    public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> consumer) {
-        connectionEventManager.setOnConnectionRemoved(consumer);
+    public void setOnConnectionRemoved(final Function<GConnection, Command> pOnConnectionRemoved)
+    {
+        mConnectionEventManager.setOnConnectionRemoved(pOnConnectionRemoved);
+        getModelEditingManager().setOnConnectionRemoved(pOnConnectionRemoved);
+    }
+
+    @Override
+    public void setOnNodeRemoved(Function<GNode, Command> pOnNodeRemoved)
+    {
+        getModelEditingManager().setOnNodeRemoved(pOnNodeRemoved);
+    }
+
+    @Override
+    public void delete(Collection<EObject> pItems)
+    {
+        getModelEditingManager().remove(pItems);
+    }
+
+    private ModelEditingManager getModelEditingManager()
+    {
+        return mController.getModelEditingManager();
     }
 }

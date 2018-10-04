@@ -3,6 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.demo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
@@ -221,7 +223,8 @@ public class GraphEditorDemoController {
 
     @FXML
     public void deleteSelection() {
-        graphEditor.getSelectionManager().deleteSelection();
+        final List<EObject> selection = new ArrayList<>(graphEditor.getSelectionManager().getSelectedItems());
+        graphEditor.delete(selection);
     }
 
     @FXML
