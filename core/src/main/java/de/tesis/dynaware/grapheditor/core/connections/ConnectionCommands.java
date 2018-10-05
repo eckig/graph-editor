@@ -7,11 +7,8 @@ import java.util.List;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.RemoveCommand;
-import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
@@ -29,15 +26,6 @@ import de.tesis.dynaware.grapheditor.model.GraphPackage;
  */
 public class ConnectionCommands
 {
-
-    private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
-
-    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
-
-    private static final EAttribute CONNECTION_TYPE = GraphPackage.Literals.GCONNECTION__TYPE;
-    private static final EReference SOURCE = GraphPackage.Literals.GCONNECTION__SOURCE;
-    private static final EReference TARGET = GraphPackage.Literals.GCONNECTION__TARGET;
-    private static final EReference JOINTS = GraphPackage.Literals.GCONNECTION__JOINTS;
 
     /**
      * Static class, not to be instantiated.
@@ -69,24 +57,18 @@ public class ConnectionCommands
         if (editingDomain != null)
         {
             final CompoundCommand command = new CompoundCommand();
+
+            // prepare new connection:
             final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
+            connection.setType(type);
+            connection.setSource(source);
+            connection.setTarget(target);
+            connection.getJoints().addAll(joints);
 
-            command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));
-
-            if (type != null)
-            {
-                command.append(SetCommand.create(editingDomain, connection, CONNECTION_TYPE, type));
-            }
-
-            command.append(SetCommand.create(editingDomain, connection, SOURCE, source));
-            command.append(SetCommand.create(editingDomain, connection, TARGET, target));
-            command.append(AddCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
-            command.append(AddCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
-
-            for (final GJoint joint : joints)
-            {
-                command.append(AddCommand.create(editingDomain, connection, JOINTS, joint));
-            }
+            // attributes that involve other members of the model, are modified through commands:
+            command.append(AddCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__CONNECTIONS, connection));
+            command.append(AddCommand.create(editingDomain, source, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, connection));
+            command.append(AddCommand.create(editingDomain, target, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, connection));
 
             final Command onCreate;
             if (connectionEventManager != null && (onCreate = connectionEventManager.notifyConnectionAdded(connection)) != null)
@@ -121,9 +103,9 @@ public class ConnectionCommands
             final GConnector source = connection.getSource();
             final GConnector target = connection.getTarget();
 
-            command.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, connection));
-            command.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
-            command.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
+            command.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__CONNECTIONS, connection));
+            command.append(RemoveCommand.create(editingDomain, source, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, connection));
+            command.append(RemoveCommand.create(editingDomain, target, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, connection));
 
             final Command onRemove;
             if (connectionEventManager != null && (onRemove = connectionEventManager.notifyConnectionRemoved(connection)) != null)
