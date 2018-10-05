@@ -60,7 +60,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
 
     private List<GJointSkin> jointSkins;
     private List<Point2D> points;
-    private Map<Integer, List<Double>> intersections;
 
     /**
      * Creates a new simple connection skin instance.
@@ -112,22 +111,12 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     {
         super.draw(points, allPoints);
 
-        final boolean pointsRequireRedraw = !points.equals(this.points);
-
         // If we are showing detours, get all intersections with connections *behind* this one. Otherwise in front.
-        final Map<Integer, List<Double>> intersections = IntersectionFinder.find(this, allPoints, checkShowDetours());
+        final double[][] intersections = IntersectionFinder.find(this, allPoints, checkShowDetours());
 
-        final boolean intersectionsStayedNull = this.intersections == null && intersections == null;
-        final boolean intersectionsSame = intersections != null && intersections.equals(this.intersections);
-        final boolean intersectionsRequireRedraw = !(intersectionsStayedNull || intersectionsSame);
-
-        if (pointsRequireRedraw || intersectionsRequireRedraw)
-        {
-            drawAllSegments(points, intersections);
-        }
+        drawAllSegments(points, intersections);
 
         this.points = points;
-        this.intersections = intersections;
     }
 
     /**
@@ -257,7 +246,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      * @param points all points that the connection should pass through (both connector and joint positions)
      * @param intersections all intersection-points of this connection with other connections
      */
-    private void drawAllSegments(final List<Point2D> points, final Map<Integer, List<Double>> intersections)
+    private void drawAllSegments(final List<Point2D> points, final double[][] intersections)
     {
         final double startX = points.get(0).getX();
         final double startY = points.get(0).getY();
@@ -273,19 +262,16 @@ public class SimpleConnectionSkin extends GConnectionSkin {
             final Point2D start = points.get(i);
             final Point2D end = points.get(i + 1);
 
-            List<Double> segmentIntersections;
-
-            if (intersections != null && intersections.get(i) != null) {
-                segmentIntersections = intersections.get(i);
-            } else {
-                segmentIntersections = new ArrayList<>();
-            }
+            final double[] segmentIntersections = intersections != null && intersections[i] != null ? intersections[i] : null;
 
             final ConnectionSegment segment;
 
-            if (checkShowDetours()) {
+            if (checkShowDetours())
+            {
                 segment = new DetouredConnectionSegment(start, end, segmentIntersections);
-            } else {
+            }
+            else
+            {
                 segment = new GappedConnectionSegment(start, end, segmentIntersections);
             }
 
@@ -304,20 +290,22 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      *
      * @return {@code true} if the custom property to show detours has been set
      */
-    private boolean checkShowDetours() {
-
+    private boolean checkShowDetours()
+    {
         boolean showDetours = false;
 
         final String value = getGraphEditor().getProperties().getCustomProperties().get(SHOW_DETOURS_KEY);
-        if (Boolean.toString(true).equals(value)) {
+        if (Boolean.toString(true).equals(value))
+        {
             showDetours = true;
         }
 
         return showDetours;
     }
-    
+
     @Override
-    protected void selectionChanged(boolean isSelected) {
+    protected void selectionChanged(boolean isSelected)
+    {
         // Not implemented
     }
 }
