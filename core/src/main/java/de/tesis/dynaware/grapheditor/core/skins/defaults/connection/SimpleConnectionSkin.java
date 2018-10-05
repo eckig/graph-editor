@@ -7,16 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.layout.Region;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
-import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.DetouredConnectionSegment;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.GappedConnectionSegment;
@@ -24,10 +17,16 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnec
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.layout.Region;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 
 /**
  * A simple rectangular connection skin.
- * 
+ *
  * <p>
  * Shows a rectangular connection shape based on the positions of its joints. Shows a graphical effect at points where
  * the connection intersects other connections.
@@ -59,8 +58,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     private static final String STYLE_CLASS = "default-connection";
     private static final String STYLE_CLASS_BACKGROUND = "default-connection-background";
 
-    private final IntersectionFinder intersectionFinder;
-
     private List<GJointSkin> jointSkins;
     private List<Point2D> points;
     private Map<Integer, List<Double>> intersections;
@@ -76,8 +73,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
 
         root.setManaged(false);
 
-        intersectionFinder = new IntersectionFinder(connection);
-
         // Background path is invisible and used only to capture hover events.
         root.getChildren().add(backgroundPath);
         root.getChildren().add(path);
@@ -91,13 +86,6 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     @Override
     public Node getRoot() {
         return root;
-    }
-
-    @Override
-    public void setGraphEditor(final GraphEditor graphEditor) {
-
-        super.setGraphEditor(graphEditor);
-        intersectionFinder.setSkinLookup(graphEditor.getSkinLookup());
     }
 
     @Override
@@ -120,20 +108,21 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     }
 
     @Override
-    public void draw(final List<Point2D> points, final Map<GConnection, List<Point2D>> allPoints) {
-
+    public void draw(final List<Point2D> points, final Map<GConnectionSkin, List<Point2D>> allPoints)
+    {
         super.draw(points, allPoints);
-        
+
         final boolean pointsRequireRedraw = !points.equals(this.points);
 
         // If we are showing detours, get all intersections with connections *behind* this one. Otherwise in front.
-        final Map<Integer, List<Double>> intersections = intersectionFinder.find(allPoints, checkShowDetours());
+        final Map<Integer, List<Double>> intersections = IntersectionFinder.find(this, allPoints, checkShowDetours());
 
         final boolean intersectionsStayedNull = this.intersections == null && intersections == null;
         final boolean intersectionsSame = intersections != null && intersections.equals(this.intersections);
         final boolean intersectionsRequireRedraw = !(intersectionsStayedNull || intersectionsSame);
 
-        if (pointsRequireRedraw || intersectionsRequireRedraw) {
+        if (pointsRequireRedraw || intersectionsRequireRedraw)
+        {
             drawAllSegments(points, intersections);
         }
 
@@ -196,8 +185,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
         if(getItem().getSource() == null || getItem().getTarget() == null) {
             return;
         }
-        
-        final GNode sourceNode = (GNode) getItem().getSource().getParent();
+
+        final GNode sourceNode = getItem().getSource().getParent();
         final GNodeSkin sourceNodeSkin = getGraphEditor().getSkinLookup().lookupNode(sourceNode);
 
         if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), 0)) {
@@ -206,7 +195,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
             jointSkins.get(0).getRoot().dragEnabledXProperty().bind(sourceNodeSkin.selectedProperty());
         }
 
-        final GNode targetNode = (GNode) getItem().getTarget().getParent();
+        final GNode targetNode = getItem().getTarget().getParent();
         final GNodeSkin targetNodeSkin = getGraphEditor().getSkinLookup().lookupNode(targetNode);
         final int lastIndex = jointSkins.size() - 1;
 
@@ -268,8 +257,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      * @param points all points that the connection should pass through (both connector and joint positions)
      * @param intersections all intersection-points of this connection with other connections
      */
-    private void drawAllSegments(final List<Point2D> points, final Map<Integer, List<Double>> intersections) {
-
+    private void drawAllSegments(final List<Point2D> points, final Map<Integer, List<Double>> intersections)
+    {
         final double startX = points.get(0).getX();
         final double startY = points.get(0).getY();
 
@@ -279,8 +268,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
         path.getElements().clear();
         path.getElements().add(moveTo);
 
-        for (int i = 0; i < points.size() - 1; i++) {
-
+        for (int i = 0; i < points.size() - 1; i++)
+        {
             final Point2D start = points.get(i);
             final Point2D end = points.get(i + 1);
 

@@ -6,17 +6,17 @@ package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 import java.util.List;
 import java.util.Map;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Line;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Line;
 
 /**
  * Connection skin for the 'tree-like' graph. Pretty much just an arrow.
@@ -75,17 +75,20 @@ public class TreeConnectionSkin extends GConnectionSkin {
     }
 
     @Override
-    public void draw(final List<Point2D> points, final Map<GConnection, List<Point2D>> allPoints) {
-
-        if (!points.equals(this.points) && points.size() == 2) {
-
+    public void draw(final List<Point2D> points, final Map<GConnectionSkin, List<Point2D>> allPoints)
+    {
+        if (!points.equals(this.points) && points.size() == 2)
+        {
             final Point2D start = points.get(0);
             final Point2D end = points.get(1);
 
-            if (getItem().getSource().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR)) {
+            if (getItem().getSource().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR))
+            {
                 ArrowUtils.draw(arrow, start, end, OFFSET_FROM_CONNECTOR);
                 ArrowUtils.draw(background, start, end, OFFSET_FROM_CONNECTOR);
-            } else {
+            }
+            else
+            {
                 ArrowUtils.draw(arrow, end, start, OFFSET_FROM_CONNECTOR);
                 ArrowUtils.draw(background, start, end, OFFSET_FROM_CONNECTOR);
             }
@@ -93,7 +96,8 @@ public class TreeConnectionSkin extends GConnectionSkin {
             this.points = points;
         }
 
-        if (isSelected()) {
+        if (isSelected())
+        {
             drawSelectionHalo();
         }
     }

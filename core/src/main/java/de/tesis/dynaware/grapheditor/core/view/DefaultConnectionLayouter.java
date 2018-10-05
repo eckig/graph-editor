@@ -32,13 +32,13 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
      */
     public DefaultConnectionLayouter(final SkinLookup pSkinLookup)
     {
-        this.mSkinLookup = pSkinLookup;
+        mSkinLookup = pSkinLookup;
     }
 
     @Override
     public void initialize(final GModel pModel)
     {
-        this.mModel = pModel;
+        mModel = pModel;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
             return;
         }
 
-        final Map<GConnection, List<Point2D>> allPoints = new HashMap<>();
+        final Map<GConnectionSkin, List<Point2D>> allPoints = new HashMap<>();
 
         for (int i = 0; i < mModel.getConnections().size(); i++)
         {
@@ -57,13 +57,12 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
             final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
             final List<Point2D> points = createPoints(connection);
             connectionSkin.applyConstraints(points);
-            allPoints.put(connection, points);
+            allPoints.put(connectionSkin, points);
         }
 
-        for (final Map.Entry<GConnection, List<Point2D>> entry : allPoints.entrySet())
+        for (final Map.Entry<GConnectionSkin, List<Point2D>> entry : allPoints.entrySet())
         {
-            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(entry.getKey());
-            connectionSkin.draw(entry.getValue(), allPoints);
+            entry.getKey().draw(entry.getValue(), allPoints);
         }
     }
 

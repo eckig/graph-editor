@@ -6,9 +6,9 @@ package de.tesis.dynaware.grapheditor;
 import java.util.List;
 import java.util.Map;
 
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
-import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
  * The skin class for a {@link GConnection}. Responsible for visualizing connections in the graph editor.
@@ -32,7 +32,7 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * up a considerable amount of time.
      */
     private int connectionIndex;
-    
+
     /**
      * Creates a new {@link GConnectionSkin}.
      *
@@ -78,33 +78,43 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * @param points all the {@link Point2D} instances that specify the connection position
      * @param allConnections the lists of points for all connections (can be ignored in a simple skin)
      */
-    public void draw(final List<Point2D> points, final Map<GConnection, List<Point2D>> allConnections) {
-        
-        if(getRoot() != null && getRoot().getParent() != null) {
+    public void draw(@SuppressWarnings("unused") final List<Point2D> points,
+            @SuppressWarnings("unused") final Map<GConnectionSkin, List<Point2D>> allConnections)
+    {
+        if (getRoot() != null && getRoot().getParent() != null)
+        {
             connectionIndex = getRoot().getParent().getChildrenUnmodifiable().indexOf(getRoot());
-        } else {
+        }
+        else
+        {
             connectionIndex = -1;
         }
     }
 
     /**
-     * Applies constraints to the given set of points before any connections are drawn.
+     * Applies constraints to the given set of points before any connections are
+     * drawn.
      *
      * <p>
-     * This method is called on <b>all</b> connection skins <b>before</b> the draw method is called on any connection
-     * skin. It can safely be ignored by simple skin implementations.
+     * This method is called on <b>all</b> connection skins <b>before</b> the
+     * draw method is called on any connection skin. It can safely be ignored by
+     * simple skin implementations.
      * </p>
      *
      * <p>
-     * Overriding this method allows the connection skin to apply constraints to its set of points, and these
-     * constraints will be taken into account during the draw methods of other connections, even if they are drawn
+     * Overriding this method allows the connection skin to apply constraints to
+     * its set of points, and these constraints will be taken into account
+     * during the draw methods of other connections, even if they are drawn
      * before this connection.
      * </p>
+     * 
+     * @param points
      */
-    public void applyConstraints(final List<Point2D> points) {
+    public void applyConstraints(@SuppressWarnings("unused") final List<Point2D> points)
+    {
         // No default implementation.
     }
-    
+
     /**
      * @return cached position (index) of this connection skin inside the child-list
      *         of the parent connection layer.
