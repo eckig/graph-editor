@@ -3,10 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.core.skins.defaults.connection;
 
+import java.util.BitSet;
 import java.util.List;
-import java.util.Set;
-
-import javafx.geometry.Point2D;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -19,6 +17,7 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
+import javafx.geometry.Point2D;
 
 /**
  * A set of helper methods to add and remove joints from the default connection skin using EMF commands.
@@ -75,13 +74,15 @@ public class JointCommands {
      * @param indices the indices within the connection's list of joints specifying the joints to be removed
      * @param connection the connection whose joints are to be removed
      */
-    public static void removeJoints(final CompoundCommand command, final Set<Integer> indices,
-            final GConnection connection) {
-
+    public static void removeJoints(final CompoundCommand command, final BitSet indices,
+            final GConnection connection)
+    {
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(connection);
 
-        for (int i = 0; i < connection.getJoints().size(); i++) {
-            if (indices.contains(i)) {
+        for (int i = 0; i < connection.getJoints().size(); i++)
+        {
+            if (indices.get(i))
+            {
                 final GJoint joint = connection.getJoints().get(i);
                 command.append(RemoveCommand.create(editingDomain, connection, JOINTS, joint));
             }

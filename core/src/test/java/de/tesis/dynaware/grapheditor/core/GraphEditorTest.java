@@ -23,6 +23,7 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.data.DummyDataFactory;
+import de.tesis.dynaware.grapheditor.core.utils.FXTestUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -60,6 +61,9 @@ public class GraphEditorTest {
         if (editingDomain != null) {
             commandStack = editingDomain.getCommandStack();
         }
+
+        graphEditor.getView().autosize();
+        graphEditor.getView().layout();
     }
 
     @Test
@@ -143,10 +147,9 @@ public class GraphEditorTest {
         final GJoint firstJoint = model.getConnections().get(0).getJoints().get(0);
         final GJoint secondJoint = model.getConnections().get(0).getJoints().get(1);
 
-        final double firstJointInitialX = skinLookup.lookupJoint(firstJoint).getRoot().getLayoutX();
         final double secondJointInitialX = skinLookup.lookupJoint(secondJoint).getRoot().getLayoutX();
 
-        skinLookup.lookupJoint(firstJoint).getRoot().setLayoutX(firstJointInitialX + 17);
+        FXTestUtils.dragBy(skinLookup.lookupJoint(firstJoint).getRoot(), 17, 0);
 
         // This will call layoutChildren method of view and trigger connection redraw.
         graphEditor.getView().layout();

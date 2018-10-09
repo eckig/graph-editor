@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
 
@@ -31,7 +32,8 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * connection layer. As the graph editor grows the indexOf() lookup calls take
      * up a considerable amount of time.
      */
-    private int connectionIndex;
+    private int mConnectionIndex;
+    private Point2D[] mPoints;
 
     /**
      * Creates a new {@link GConnectionSkin}.
@@ -56,44 +58,55 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
     public abstract void setJointSkins(final List<GJointSkin> jointSkins);
 
     /**
-     * Draws the connection skin based on the given points. This is called every time the connection's position could
-     * change, for example if one of its connectors is moved.
+     * Draws the connection skin. This is called every time the connection's
+     * position could change, for example if one of its connectors is moved,
+     * after {@link #update()}.
      *
+     * <p>
+     * A simple connection skin may ignore the given parameter. This parameter
+     * can for example be used to display a 'rerouting' effect when the
+     * connection passes over another connection.
+     * </p>
+     *
+     * @param allConnections
+     *            the lists of points for all connections (can be ignored in a
+     *            simple skin)
+     */
+    public void draw(@SuppressWarnings("unused") final Map<GConnectionSkin, Point2D[]> allConnections)
+    {
+        if (getRoot() != null && getRoot().getParent() != null)
+        {
+            mConnectionIndex = getRoot().getParent().getChildrenUnmodifiable().indexOf(getRoot());
+        }
+        else
+        {
+            mConnectionIndex = -1;
+        }
+    }
+
+    /**
+     * @return current points of this connection
+     */
+    protected Point2D[] getPoints()
+    {
+        return mPoints;
+    }
+
+    /**
+     * Update and return the points of this connection. This is called every
+     * time the connection's position could change, for example if one of its
+     * connectors is moved before {@link #draw(Map)}.
      * <p>
      * The order of the points is as follows:
      *
      * <ol>
      * <li>Source position.
-     * <li>Joint positions in same order the joints appear in their {@link GConnection}.
+     * <li>Joint positions in same order the joints appear in their
+     * {@link GConnection}.
      * <li>Target position.
      * </ol>
      *
      * </p>
-     *
-     * <p>
-     * A simple connection skin may ignore the second parameter. This parameter can for example be used to display a
-     * 'rerouting' effect when the connection passes over another connection.
-     * </p>
-     *
-     * @param points all the {@link Point2D} instances that specify the connection position
-     * @param allConnections the lists of points for all connections (can be ignored in a simple skin)
-     */
-    public void draw(@SuppressWarnings("unused") final List<Point2D> points,
-            @SuppressWarnings("unused") final Map<GConnectionSkin, List<Point2D>> allConnections)
-    {
-        if (getRoot() != null && getRoot().getParent() != null)
-        {
-            connectionIndex = getRoot().getParent().getChildrenUnmodifiable().indexOf(getRoot());
-        }
-        else
-        {
-            connectionIndex = -1;
-        }
-    }
-
-    /**
-     * Applies constraints to the given set of points before any connections are
-     * drawn.
      *
      * <p>
      * This method is called on <b>all</b> connection skins <b>before</b> the
@@ -107,12 +120,46 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * during the draw methods of other connections, even if they are drawn
      * before this connection.
      * </p>
-     * 
-     * @param points
+     *
+     * @return points
      */
-    public void applyConstraints(@SuppressWarnings("unused") final List<Point2D> points)
+    public Point2D[] update()
     {
-        // No default implementation.
+        final GConnection item = getItem();
+        final SkinLookup skinLookup = getGraphEditor() == null ? null : getGraphEditor().getSkinLookup();
+        if (item == null || skinLookup == null)
+        {
+            mPoints = null;
+        }
+        else if (item.getJoints().isEmpty())
+        {
+            final Point2D[] points = new Point2D[2];
+
+            // Start: Source position
+            points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+
+            // End: Target position
+            points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+
+            mPoints = points;
+        }
+        else
+        {
+            final int len = item.getJoints().size() + 2;
+            final Point2D[] points = new Point2D[len];
+
+            // Middle: joint positions
+            GeometryUtils.fillJointPositions(item, skinLookup, points);
+
+            // Start: Source position
+            points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+
+            // End: Target position
+            points[len - 1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+
+            mPoints = points;
+        }
+        return mPoints;
     }
 
     /**
@@ -120,6 +167,6 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      *         of the parent connection layer.
      */
     public int getParentIndex() {
-        return connectionIndex;
+        return mConnectionIndex;
     }
 }

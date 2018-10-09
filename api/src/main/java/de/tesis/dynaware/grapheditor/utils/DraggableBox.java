@@ -3,8 +3,6 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -34,7 +32,7 @@ public class DraggableBox extends StackPane
     double lastMouseX;
     double lastMouseY;
 
-    GraphEditorProperties editorProperties;
+    private GraphEditorProperties editorProperties;
 
     // Note that ResizableBox subclass currently pays no attention to alignment targets!
     private double[] alignmentTargetsX;
@@ -42,10 +40,10 @@ public class DraggableBox extends StackPane
 
     private double alignmentThreshold = DEFAULT_ALIGNMENT_THRESHOLD;
 
-    private BooleanProperty mDragEnabledXProperty;
-    private BooleanProperty mDragEnabledYProperty;
-
     private Point2D snapToGridOffset = Point2D.ZERO;
+
+    private DraggableBox dependencyX;
+    private DraggableBox dependencyY;
 
     /**
      * Creates an empty draggable box.
@@ -78,94 +76,6 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Gets whether dragging of the box is enabled in the x (horizontal)
-     * direction.
-     *
-     * @return {@code true} if dragging is enabled in the x direction,
-     *         {@code false} if not
-     */
-    public boolean isDragEnabledX()
-    {
-        return mDragEnabledXProperty == null ? true : mDragEnabledXProperty.get();
-    }
-
-    /**
-     * Sets whether dragging of the box is enabled in the x (horizontal)
-     * direction.
-     *
-     * @param pDragEnabledX
-     *            {@code true} if dragging is enabled in the x direction,
-     *            {@code false} if not
-     */
-    public void setDragEnabledX(final boolean pDragEnabledX)
-    {
-        if (mDragEnabledXProperty != null || !pDragEnabledX)
-        {
-            dragEnabledXProperty().set(pDragEnabledX);
-        }
-    }
-
-    /**
-     * The property for whether dragging of the box is enabled in the x
-     * (horizontal) direction.
-     *
-     * @return the {@link BooleanProperty} for whether dragging is enabled in
-     *         the x direction
-     */
-    public BooleanProperty dragEnabledXProperty()
-    {
-        if (mDragEnabledXProperty == null)
-        {
-            mDragEnabledXProperty = new SimpleBooleanProperty(true);
-        }
-        return mDragEnabledXProperty;
-    }
-
-    /**
-     * Gets whether dragging of the box is enabled in the y (vertical)
-     * direction.
-     *
-     * @return {@code true} if dragging is enabled in the y direction,
-     *         {@code false} if not
-     */
-    public boolean isDragEnabledY()
-    {
-        return mDragEnabledYProperty == null ? true : mDragEnabledYProperty.get();
-    }
-
-    /**
-     * Sets whether dragging of the box is enabled in the y (vertical)
-     * direction.
-     *
-     * @param pDragEnabledY
-     *            {@code true} if dragging is enabled in the y direction,
-     *            {@code false} if not
-     */
-    public void setDragEnabledY(final boolean pDragEnabledY)
-    {
-        if (mDragEnabledYProperty != null || !pDragEnabledY)
-        {
-            dragEnabledYProperty().set(pDragEnabledY);
-        }
-    }
-
-    /**
-     * The property for whether dragging of the box is enabled in the y
-     * (vertical) direction.
-     *
-     * @return the {@link BooleanProperty} for whether dragging is enabled in
-     *         the y direction
-     */
-    public BooleanProperty dragEnabledYProperty()
-    {
-        if (mDragEnabledYProperty == null)
-        {
-            mDragEnabledYProperty = new SimpleBooleanProperty(true);
-        }
-        return mDragEnabledYProperty;
-    }
-
-    /**
      * Gets the set of x values that the box will align to when dragged close enough.
      *
      * <p>
@@ -178,6 +88,30 @@ public class DraggableBox extends StackPane
     public double[] getAlignmentTargetsX()
     {
         return alignmentTargetsX;
+    }
+
+    /**
+     * Set a dependent {@link DraggableBox} that will be moved (on the X axis)
+     * when this box is moved on the X-Axis.
+     *
+     * @param pDependencyX
+     *            dependent {@link DraggableBox}
+     */
+    public void bindLayoutX(DraggableBox pDependencyX)
+    {
+        dependencyX = pDependencyX;
+    }
+
+    /**
+     * Set a dependent {@link DraggableBox} that will be moved (on the Y axis)
+     * when this box is moved on the Y-Axis.
+     *
+     * @param pDependencyY
+     *            dependent {@link DraggableBox}
+     */
+    public void bindLayoutY(DraggableBox pDependencyY)
+    {
+        dependencyY = pDependencyY;
     }
 
     /**
@@ -294,6 +228,9 @@ public class DraggableBox extends StackPane
         return false;
     }
 
+    /**
+     * @return negated value of {@link GraphEditorProperties#isReadOnly()}
+     */
     protected boolean isEditable()
     {
         return editorProperties != null && !editorProperties.isReadOnly();
@@ -415,15 +352,48 @@ public class DraggableBox extends StackPane
      */
     private void handleDrag(final double pX, final double pY)
     {
-        if (isDragEnabledX())
-        {
-            handleDragX(pX);
-        }
+        handleDragX(pX);
+        handleDragY(pY);
+    }
 
-        if (isDragEnabledY())
-        {
-            handleDragY(pY);
-        }
+    /**
+     * @return {@link GraphEditorProperties#isSnapToGridOn()}
+     */
+    protected boolean isSnapToGrid()
+    {
+        return editorProperties != null && editorProperties.isSnapToGridOn();
+    }
+
+    /**
+     * @return {@link GraphEditorProperties#getWestBoundValue()}
+     */
+    protected double getWestBoundValue()
+    {
+        return editorProperties != null ? editorProperties.getWestBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+    }
+
+    /**
+     * @return {@link GraphEditorProperties#getNorthBoundValue()}
+     */
+    protected double getNorthBoundValue()
+    {
+        return editorProperties != null ? editorProperties.getNorthBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+    }
+
+    /**
+     * @return {@link GraphEditorProperties#getSouthBoundValue()}
+     */
+    protected double getSouthBoundValue()
+    {
+        return editorProperties != null ? editorProperties.getSouthBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+    }
+
+    /**
+     * @return {@link GraphEditorProperties#getEastBoundValue()}
+     */
+    protected double getEastBoundValue()
+    {
+        return editorProperties != null ? editorProperties.getEastBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
     }
 
     /**
@@ -436,16 +406,14 @@ public class DraggableBox extends StackPane
     {
         final double maxParentWidth = getParent().getLayoutBounds().getWidth();
 
-        final double minLayoutX = editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
-                : editorProperties.getWestBoundValue();
-        final double maxLayoutX = maxParentWidth - getWidth()
-                - (editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE : editorProperties.getEastBoundValue());
+        final double minLayoutX = getWestBoundValue();
+        final double maxLayoutX = maxParentWidth - getWidth() - getEastBoundValue();
 
         final double scaleFactor = getLocalToSceneTransform().getMxx();
 
         double newLayoutX = lastLayoutX + (pX - lastMouseX) / scaleFactor;
 
-        if (editorProperties != null && editorProperties.isSnapToGridOn())
+        if (isSnapToGrid())
         {
             newLayoutX = roundToGridSpacing(newLayoutX - snapToGridOffset.getX()) + snapToGridOffset.getX();
         }
@@ -470,6 +438,10 @@ public class DraggableBox extends StackPane
         }
 
         setLayoutX(newLayoutX);
+        if (dependencyX != null)
+        {
+            dependencyX.setLayoutX(newLayoutX);
+        }
     }
 
     /**
@@ -482,14 +454,14 @@ public class DraggableBox extends StackPane
     {
         final double maxParentHeight = getParent().getLayoutBounds().getHeight();
 
-        final double minLayoutY = editorProperties.getNorthBoundValue();
-        final double maxLayoutY = maxParentHeight - getHeight() - editorProperties.getSouthBoundValue();
+        final double minLayoutY = getNorthBoundValue();
+        final double maxLayoutY = maxParentHeight - getHeight() - getSouthBoundValue();
 
         final double scaleFactor = getLocalToSceneTransform().getMxx();
 
         double newLayoutY = lastLayoutY + (pY - lastMouseY) / scaleFactor;
 
-        if (editorProperties != null && editorProperties.isSnapToGridOn())
+        if (isSnapToGrid())
         {
             newLayoutY = roundToGridSpacing(newLayoutY - snapToGridOffset.getY()) + snapToGridOffset.getY();
         }
@@ -514,6 +486,10 @@ public class DraggableBox extends StackPane
         }
 
         setLayoutY(newLayoutY);
+        if (dependencyY != null)
+        {
+            dependencyY.setLayoutY(newLayoutY);
+        }
     }
 
     /**

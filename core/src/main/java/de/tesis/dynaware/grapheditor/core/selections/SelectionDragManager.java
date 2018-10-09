@@ -8,9 +8,6 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 
-import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
@@ -21,6 +18,9 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import javafx.beans.value.ChangeListener;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 
 /**
  * Handles how a selection of multiple objects is dragged.
@@ -33,14 +33,14 @@ public class SelectionDragManager {
 
     private final ChangeListener<Number> layoutXListener = (v, o, n) -> masterMovedX(n.doubleValue());
     private final ChangeListener<Number> layoutYListener = (v, o, n) -> masterMovedY(n.doubleValue());
-            
+
     private final List<DraggableBox> currentSelectedElements = new ArrayList<>();
     private double[] elementLayoutXOffsets; // array index == List index
     private double[] elementLayoutYOffsets; // array index == List index
 
     private DraggableBox master;
     private EventHandler<MouseEvent> removeOnReleased;
-    
+
     /**
      * Creates a new selection drag manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
@@ -54,7 +54,7 @@ public class SelectionDragManager {
         this.view = view;
         this.selectionManager = selectionManager;
     }
-    
+
     private void masterMovedX(final double x) {
 
         if (master != null) {
@@ -66,7 +66,7 @@ public class SelectionDragManager {
             }
         }
     }
-    
+
     private void masterMovedY(final double y) {
 
         if (master != null) {
@@ -110,7 +110,7 @@ public class SelectionDragManager {
                 }
             }
         }
-        
+
         // shortcut: if no element is selected or
         // if only the master element is selected we do not need to attach any listeners
         if (currentSelectedElements.isEmpty()
@@ -156,8 +156,8 @@ public class SelectionDragManager {
 
             final DraggableBox node = currentSelectedElements.get(i);
             if (node != master) {
-                elementLayoutXOffsets[i] = (node.getLayoutX() - master.getLayoutX());
-                elementLayoutYOffsets[i] = (node.getLayoutY() - master.getLayoutY());
+                elementLayoutXOffsets[i] = node.getLayoutX() - master.getLayoutX();
+                elementLayoutYOffsets[i] = node.getLayoutY() - master.getLayoutY();
             }
         }
     }
@@ -200,35 +200,29 @@ public class SelectionDragManager {
      */
     private void addOffsets(final DraggableBox master, final DraggableBox slave, final BoundOffsets maxOffsets) {
 
-        if (slave.isDragEnabledX()) {
+        final double masterX = master.getLayoutX();
+        final double masterWidth = master.getWidth();
 
-            final double masterX = master.getLayoutX();
-            final double masterWidth = master.getWidth();
+        final double slaveX = slave.getLayoutX();
+        final double slaveWidth = slave.getWidth();
 
-            final double slaveX = slave.getLayoutX();
-            final double slaveWidth = slave.getWidth();
+        final double westOffset = masterX - slaveX;
+        maxOffsets.westOffset = Math.max(maxOffsets.westOffset, westOffset);
 
-            final double westOffset = masterX - slaveX;
-            maxOffsets.westOffset = Math.max(maxOffsets.westOffset, westOffset);
+        final double eastOffset = slaveX + slaveWidth - (masterX + masterWidth);
+        maxOffsets.eastOffset = Math.max(maxOffsets.eastOffset, eastOffset);
 
-            final double eastOffset = slaveX + slaveWidth - (masterX + masterWidth);
-            maxOffsets.eastOffset = Math.max(maxOffsets.eastOffset, eastOffset);
-        }
+        final double masterY = master.getLayoutY();
+        final double masterHeight = master.getHeight();
 
-        if (slave.isDragEnabledY()) {
+        final double slaveY = slave.getLayoutY();
+        final double slaveHeight = slave.getHeight();
 
-            final double masterY = master.getLayoutY();
-            final double masterHeight = master.getHeight();
+        final double northOffset = master.getLayoutY() - slave.getLayoutY();
+        maxOffsets.northOffset = Math.max(maxOffsets.northOffset, northOffset);
 
-            final double slaveY = slave.getLayoutY();
-            final double slaveHeight = slave.getHeight();
-
-            final double northOffset = master.getLayoutY() - slave.getLayoutY();
-            maxOffsets.northOffset = Math.max(maxOffsets.northOffset, northOffset);
-
-            final double southOffset = slaveY + slaveHeight - (masterY + masterHeight);
-            maxOffsets.southOffset = Math.max(maxOffsets.southOffset, southOffset);
-        }
+        final double southOffset = slaveY + slaveHeight - (masterY + masterHeight);
+        maxOffsets.southOffset = Math.max(maxOffsets.southOffset, southOffset);
     }
 
     /**
@@ -249,9 +243,9 @@ public class SelectionDragManager {
 
         master.layoutXProperty().addListener(layoutXListener);
         master.layoutYProperty().addListener(layoutYListener);
-        
+
         removeOnReleased = new EventHandler<MouseEvent>() {
-            
+
             @Override
             public void handle(MouseEvent event) {
                 unbindPositions(master);
@@ -270,7 +264,7 @@ public class SelectionDragManager {
 
         master.layoutXProperty().removeListener(layoutXListener);
         master.layoutYProperty().removeListener(layoutYListener);
-        
+
         if (removeOnReleased != null) {
             master.removeEventHandler(MouseEvent.MOUSE_RELEASED, removeOnReleased);
             removeOnReleased = null;

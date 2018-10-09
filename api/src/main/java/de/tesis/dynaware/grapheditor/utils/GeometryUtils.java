@@ -89,7 +89,7 @@ public class GeometryUtils {
      */
     public static List<Point2D> getJointPositions(final List<GJointSkin> jointSkins) {
 
-        final List<Point2D> jointPositions = new ArrayList<>();
+        final List<Point2D> jointPositions = new ArrayList<>(jointSkins.size());
 
         for (final GJointSkin jointSkin : jointSkins) {
 
@@ -108,31 +108,78 @@ public class GeometryUtils {
      * Gets the layout x and y values from all joints within a connection.
      *
      * <p>
-     * Uses the JavaFX properties of the skins, not the model values. Is therefore always up-to-date, even during a drag
-     * gesture where the model is not necessarily updated.
+     * Uses the JavaFX properties of the skins, not the model values. Is
+     * therefore always up-to-date, even during a drag gesture where the model
+     * is not necessarily updated.
      * <p>
      *
-     * @param connection the {@link GConnection} for which the positions are desired
-     * @param skinLookup the {@link SkinLookup} instance for this graph editor
-     *
-     * @return a {@link List} of {@link Point2D} objects containing joint x and y values
+     * @param connection
+     *            the {@link GConnection} for which the positions are desired
+     * @param skinLookup
+     *            the {@link SkinLookup} instance for this graph editor
+     * @param pTarget
+     *            the array where to write the points to
      */
-    public static List<Point2D> getJointPositions(final GConnection connection, final SkinLookup skinLookup) {
-
-        final List<Point2D> jointPositions = new ArrayList<>();
-
-        for (final GJoint joint : connection.getJoints()) {
-
-            final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-            final Region region = jointSkin.getRoot();
-
-            final double x = region.getLayoutX() + jointSkin.getWidth() / 2;
-            final double y = region.getLayoutY() + jointSkin.getHeight() / 2;
-
-            jointPositions.add(new Point2D(x, y));
+    public static void fillJointPositions(final GConnection connection, final SkinLookup skinLookup, final Point2D[] pTarget)
+    {
+        for (int i = 0; i < connection.getJoints().size(); i++)
+        {
+            final GJoint joint = connection.getJoints().get(i);
+            pTarget[i + 1] = getJointPosition(joint, skinLookup);
         }
+    }
 
+    /**
+     * Gets the layout x and y values from all joints within a connection.
+     *
+     * <p>
+     * Uses the JavaFX properties of the skins, not the model values. Is
+     * therefore always up-to-date, even during a drag gesture where the model
+     * is not necessarily updated.
+     * <p>
+     *
+     * @param connection
+     *            the {@link GConnection} for which the positions are desired
+     * @param skinLookup
+     *            the {@link SkinLookup} instance for this graph editor
+     *
+     * @return a {@link List} of {@link Point2D} objects containing joint x and
+     *         y values
+     */
+    public static List<Point2D> getJointPositions(final GConnection connection, final SkinLookup skinLookup)
+    {
+        final List<Point2D> jointPositions = new ArrayList<>(connection.getJoints().size());
+        for (final GJoint joint : connection.getJoints())
+        {
+            jointPositions.add(getJointPosition(joint, skinLookup));
+        }
         return jointPositions;
+    }
+
+    /**
+     * Gets the layout x and y values from all joints within a connection.
+     *
+     * <p>
+     * Uses the JavaFX properties of the skins, not the model values. Is
+     * therefore always up-to-date, even during a drag gesture where the model
+     * is not necessarily updated.
+     * <p>
+     *
+     * @param joint
+     *            the {@link GJoint} for which the position is desired
+     * @param skinLookup
+     *            the {@link SkinLookup} instance for this graph editor
+     * @return {@link Point2D} object containing joint x and y values
+     */
+    public static Point2D getJointPosition(final GJoint joint, final SkinLookup skinLookup)
+    {
+        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        final Region region = jointSkin.getRoot();
+
+        final double x = region.getLayoutX() + jointSkin.getWidth() / 2;
+        final double y = region.getLayoutY() + jointSkin.getHeight() / 2;
+
+        return new Point2D(x, y);
     }
 
     /**
@@ -144,7 +191,7 @@ public class GeometryUtils {
      */
     public static List<Point2D> getJointPositions(final GConnection connection) {
 
-        final List<Point2D> jointPositions = new ArrayList<>();
+        final List<Point2D> jointPositions = new ArrayList<>(connection.getJoints().size());
 
         for (final GJoint joint : connection.getJoints()) {
             jointPositions.add(new Point2D(joint.getX(), joint.getY()));

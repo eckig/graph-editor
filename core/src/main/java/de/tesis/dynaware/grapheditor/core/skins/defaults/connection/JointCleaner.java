@@ -4,11 +4,10 @@
 package de.tesis.dynaware.grapheditor.core.skins.defaults.connection;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -45,7 +44,7 @@ public class JointCleaner {
      * @param pConnection the connection whose joints should be cleaned up / removed
      */
     public JointCleaner(final GConnection pConnection) {
-        this.mConnection = pConnection;
+        mConnection = pConnection;
     }
 
     /**
@@ -54,7 +53,7 @@ public class JointCleaner {
      * @param pGraphEditor the {@link GraphEditor} instance currently in use
      */
     public void setGraphEditor(final GraphEditor pGraphEditor) {
-        this.mGraphEditor = pGraphEditor;
+        mGraphEditor = pGraphEditor;
     }
 
     /**
@@ -80,7 +79,7 @@ public class JointCleaner {
                 }
 
                 final List<Point2D> jointPositions = GeometryUtils.getJointPositions(pJointSkins);
-                final Set<Integer> jointsToCleanUp = findJointsToCleanUp(jointPositions);
+                final BitSet jointsToCleanUp = findJointsToCleanUp(jointPositions);
 
                 if (!jointsToCleanUp.isEmpty())
                 {
@@ -113,9 +112,9 @@ public class JointCleaner {
      * @param jointPositions a list of {@link Point2D} instances containing the x and y values of the joints
      * @return a set of integers specifying the indices of the joints to be removed
      */
-    public static Set<Integer> findJointsToCleanUp(final List<Point2D> jointPositions) {
-
-        final Set<Integer> jointsToCleanUp = new HashSet<>();
+    public static BitSet findJointsToCleanUp(final List<Point2D> jointPositions)
+    {
+        final BitSet jointsToCleanUp = new BitSet(jointPositions.size());
         final List<Point2D> remainingJointPositions = new ArrayList<>(jointPositions);
 
         Point2D removed = removeJointPair(remainingJointPositions);
@@ -126,10 +125,10 @@ public class JointCleaner {
             for (int i = 0; i < jointPositions.size(); i++) {
 
                 final boolean positionMatch = removed.equals(jointPositions.get(i));
-                final boolean alreadyCounted = jointsToCleanUp.contains(i);
+                final boolean alreadyCounted = jointsToCleanUp.get(i);
 
                 if (positionMatch && !alreadyCounted) {
-                    jointsToCleanUp.add(i);
+                    jointsToCleanUp.set(i);
                     jointsCleaned++;
                 }
 

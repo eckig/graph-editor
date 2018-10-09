@@ -4,14 +4,9 @@
 package de.tesis.dynaware.grapheditor.core.skins.defaults.connection;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
-import java.util.Set;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Rectangle;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
@@ -20,6 +15,11 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Rectangle;
 
 /**
  * Responsible for creating joints when a click + drag gesture occurs on a connection.
@@ -77,7 +77,7 @@ public class JointCreator {
     public Rectangle getHoverEffect() {
         return hoverEffect;
     }
-    
+
     private boolean checkEditable() {
         return graphEditor != null && !graphEditor.getProperties().isReadOnly();
     }
@@ -285,17 +285,18 @@ public class JointCreator {
      *
      * @return the list of positions of the temporary joints
      */
-    private List<Point2D> getNewJointPositions() {
-
+    private List<Point2D> getNewJointPositions()
+    {
         final SkinLookup skinLookup = graphEditor.getSkinLookup();
         final List<Point2D> allJointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
 
-        final Set<Integer> jointsToCleanUp = JointCleaner.findJointsToCleanUp(allJointPositions);
-
+        final BitSet jointsToCleanUp = JointCleaner.findJointsToCleanUp(allJointPositions);
         final List<Point2D> newJointPositions = new ArrayList<>();
 
-        for (int i = 0; i < allJointPositions.size(); i++) {
-            if (!jointsToCleanUp.contains(i)) {
+        for (int i = 0; i < allJointPositions.size(); i++)
+        {
+            if (!jointsToCleanUp.get(i))
+            {
                 newJointPositions.add(allJointPositions.get(i));
             }
         }

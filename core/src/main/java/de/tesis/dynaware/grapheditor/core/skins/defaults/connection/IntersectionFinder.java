@@ -4,7 +4,6 @@
 package de.tesis.dynaware.grapheditor.core.skins.defaults.connection;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
@@ -32,13 +31,17 @@ public class IntersectionFinder
      *            are behind
      * @return array of intersection points for each segment of the connection
      */
-    public static double[][] find(final GConnectionSkin pSkin, final Map<GConnectionSkin, List<Point2D>> allPoints,
+    public static double[][] find(final GConnectionSkin pSkin, final Map<GConnectionSkin, Point2D[]> allPoints,
             final boolean behind)
     {
-        final List<Point2D> points = allPoints.get(pSkin);
-        final double[][] intersections = new double[points.size()][];
+        final Point2D[] points = allPoints.get(pSkin);
+        if (points == null)
+        {
+            return null;
+        }
+        double[][] intersections = null;
 
-        for (int i = 0; i < points.size() - 1; i++)
+        for (int i = 0; i < points.length - 1; i++)
         {
             final boolean isHorizontal = RectangularConnectionUtils.isSegmentHorizontal(pSkin.getItem(), i);
             final double[] segmentIntersections = findSegmentIntersections(pSkin, allPoints, behind, i, isHorizontal);
@@ -46,11 +49,11 @@ public class IntersectionFinder
             final boolean isDecreasing;
             if (isHorizontal)
             {
-                isDecreasing = points.get(i + 1).getX() < points.get(i).getX();
+                isDecreasing = points[i + 1].getX() < points[i].getX();
             }
             else
             {
-                isDecreasing = points.get(i + 1).getY() < points.get(i).getY();
+                isDecreasing = points[i + 1].getY() < points[i].getY();
             }
 
             if (segmentIntersections != null && segmentIntersections.length > 0)
@@ -59,6 +62,11 @@ public class IntersectionFinder
                 if (isDecreasing)
                 {
                     reverse(segmentIntersections);
+                }
+
+                if(intersections == null)
+                {
+                    intersections = new double[points.length][];
                 }
                 intersections[i] = segmentIntersections;
             }
@@ -89,23 +97,32 @@ public class IntersectionFinder
      *            {@code true} if the connection segment is horizontal
      * @return a list of positions along the segment where intersections occur
      */
-    private static double[] findSegmentIntersections(final GConnectionSkin connection, final Map<GConnectionSkin, List<Point2D>> allPoints,
+    private static double[] findSegmentIntersections(final GConnectionSkin connection, final Map<GConnectionSkin, Point2D[]> allPoints,
             final boolean behind, final int index, final boolean isHorizontal)
     {
         double[] segmentIntersections = null;
         int resultLen = 0;
-        final List<Point2D> points = allPoints.get(connection);
+        final Point2D[] points = allPoints.get(connection);
 
-        for (final Map.Entry<GConnectionSkin, List<Point2D>> entry : allPoints.entrySet())
+        if (points == null)
+        {
+            return null;
+        }
+
+        for (final Map.Entry<GConnectionSkin, Point2D[]> entry : allPoints.entrySet())
         {
             if (!filterConnection(connection, behind, entry.getKey()))
             {
                 continue;
             }
 
-            final List<Point2D> otherPoints = entry.getValue();
+            final Point2D[] otherPoints = entry.getValue();
+            if (otherPoints == null)
+            {
+                continue;
+            }
 
-            for (int j = 0; j < otherPoints.size() - 1; j++)
+            for (int j = 0; j < otherPoints.length - 1; j++)
             {
                 if (connection.equals(entry.getKey()) && index > j ^ behind)
                 {
@@ -114,10 +131,10 @@ public class IntersectionFinder
 
                 if (isHorizontal)
                 {
-                    final Point2D a = points.get(index);
-                    final Point2D b = points.get(index + 1);
-                    final Point2D c = otherPoints.get(j);
-                    final Point2D d = otherPoints.get(j + 1);
+                    final Point2D a = points[index];
+                    final Point2D b = points[index + 1];
+                    final Point2D c = otherPoints[j];
+                    final Point2D d = otherPoints[j + 1];
 
                     if (GeometryUtils.checkIntersection(a, b, c, d))
                     {
@@ -127,17 +144,17 @@ public class IntersectionFinder
                         }
                         if (resultLen >= segmentIntersections.length)
                         {
-                            segmentIntersections = Arrays.copyOf(segmentIntersections, segmentIntersections.length * 2);
+                            segmentIntersections = Arrays.copyOf(segmentIntersections, segmentIntersections.length + 5);
                         }
-                        segmentIntersections[resultLen++] = a.getY();
+                        segmentIntersections[resultLen++] = c.getX();
                     }
                 }
                 else
                 {
-                    final Point2D a = otherPoints.get(j);
-                    final Point2D b = otherPoints.get(j + 1);
-                    final Point2D c = points.get(index);
-                    final Point2D d = points.get(index + 1);
+                    final Point2D a = otherPoints[j];
+                    final Point2D b = otherPoints[j + 1];
+                    final Point2D c = points[index];
+                    final Point2D d = points[index + 1];
 
                     if (GeometryUtils.checkIntersection(a, b, c, d))
                     {
@@ -147,7 +164,7 @@ public class IntersectionFinder
                         }
                         if (resultLen >= segmentIntersections.length)
                         {
-                            segmentIntersections = Arrays.copyOf(segmentIntersections, segmentIntersections.length * 2);
+                            segmentIntersections = Arrays.copyOf(segmentIntersections, segmentIntersections.length + 5);
                         }
                         segmentIntersections[resultLen++] = a.getY();
                     }

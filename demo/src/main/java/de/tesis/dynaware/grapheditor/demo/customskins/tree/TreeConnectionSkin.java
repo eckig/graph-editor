@@ -23,9 +23,9 @@ import javafx.scene.shape.Line;
  */
 public class TreeConnectionSkin extends GConnectionSkin {
 
-    private static final String STYLE_CLASS = "tree-connection";
-    private static final String STYLE_CLASS_BACKGROUND = "tree-connection-background";
-    private static final String STYLE_CLASS_SELECTION_HALO = "tree-connection-selection-halo";
+    private static final String STYLE_CLASS = "tree-connection"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_BACKGROUND = "tree-connection-background"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_SELECTION_HALO = "tree-connection-selection-halo"; //$NON-NLS-1$
 
     private static final double OFFSET_FROM_CONNECTOR = 15;
     private static final double HALO_BREADTH_OFFSET = 5;
@@ -38,8 +38,6 @@ public class TreeConnectionSkin extends GConnectionSkin {
     private final Line haloSecondSide = new Line();
     private final Group selectionHalo = new Group(haloFirstSide, haloSecondSide);
     private final Group root = new Group(background, selectionHalo, arrow);
-
-    private List<Point2D> points;
 
     /**
      * Creates a new {@link TreeConnectionSkin} instance.
@@ -75,12 +73,13 @@ public class TreeConnectionSkin extends GConnectionSkin {
     }
 
     @Override
-    public void draw(final List<Point2D> points, final Map<GConnectionSkin, List<Point2D>> allPoints)
+    public void draw(final Map<GConnectionSkin, Point2D[]> allPoints)
     {
-        if (!points.equals(this.points) && points.size() == 2)
+        final Point2D[] points = getPoints();
+        if (points != null && points.length == 2)
         {
-            final Point2D start = points.get(0);
-            final Point2D end = points.get(1);
+            final Point2D start = points[0];
+            final Point2D end = points[1];
 
             if (getItem().getSource().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR))
             {
@@ -92,8 +91,6 @@ public class TreeConnectionSkin extends GConnectionSkin {
                 ArrowUtils.draw(arrow, end, start, OFFSET_FROM_CONNECTOR);
                 ArrowUtils.draw(background, start, end, OFFSET_FROM_CONNECTOR);
             }
-
-            this.points = points;
         }
 
         if (isSelected())

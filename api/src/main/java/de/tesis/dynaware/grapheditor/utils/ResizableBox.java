@@ -219,14 +219,15 @@ public class ResizableBox extends DraggableBox
         double newHeight = lastHeight - yDragDistance;
 
         // Snap-to-grid logic here.
-        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
-
+        if (isSnapToGrid())
+        {
             // The -1 here is to put the rectangle border exactly on top of a grid line.
             final double roundedLayoutY = roundToGridSpacing(newLayoutY) - 1;
             newHeight = newHeight - roundedLayoutY + newLayoutY;
             newLayoutY = roundedLayoutY;
-        } else {
-
+        }
+        else
+        {
             // Even if snap-to-grid is off, we use Math.round to ensure drawing 'on-pixel' when zoomed in past 100%.
             final double roundedLayoutY = Math.round(newLayoutY);
             newHeight = Math.round(newHeight - roundedLayoutY + newLayoutY);
@@ -234,10 +235,13 @@ public class ResizableBox extends DraggableBox
         }
 
         // Min & max resize logic here.
-        if (editorProperties != null && newLayoutY < editorProperties.getNorthBoundValue()) {
-            newLayoutY = editorProperties.getNorthBoundValue();
-            newHeight = lastLayoutY + lastHeight - editorProperties.getNorthBoundValue();
-        } else if (newHeight < minResizeHeight) {
+        if (newLayoutY < getNorthBoundValue())
+        {
+            newLayoutY = getNorthBoundValue();
+            newHeight = lastLayoutY + lastHeight - getNorthBoundValue();
+        }
+        else if (newHeight < minResizeHeight)
+        {
             newLayoutY = lastLayoutY + lastHeight - minResizeHeight;
             newHeight = minResizeHeight;
         }
@@ -260,16 +264,17 @@ public class ResizableBox extends DraggableBox
         final double maxParentHeight = getParent().getLayoutBounds().getHeight();
 
         final double minResizeHeight = Math.max(getMinHeight(), 0);
-        final double maxAvailableHeight = maxParentHeight - getLayoutY()
-                - (editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
-                        : editorProperties.getSouthBoundValue());
+        final double maxAvailableHeight = maxParentHeight - getLayoutY() - getSouthBoundValue();
 
         double newHeight = lastHeight + yDragDistance;
 
         // Snap-to-grid logic here.
-        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
+        if (isSnapToGrid())
+        {
             newHeight = roundToGridSpacing(newHeight + lastLayoutY) - lastLayoutY;
-        } else {
+        }
+        else
+        {
             // Even if snap-to-grid is off, we use Math.round to ensure drawing 'on-pixel' when zoomed in past 100%.
             newHeight = Math.round(newHeight);
         }
@@ -298,16 +303,17 @@ public class ResizableBox extends DraggableBox
         final double maxParentWidth = getParent().getLayoutBounds().getWidth();
 
         final double minResizeWidth = Math.max(getMinWidth(), 0);
-        final double maxAvailableWidth = maxParentWidth - getLayoutX()
-                - (editorProperties == null ? GraphEditorProperties.DEFAULT_BOUND_VALUE
-                        : editorProperties.getEastBoundValue());
+        final double maxAvailableWidth = maxParentWidth - getLayoutX() - getEastBoundValue();
 
         double newWidth = lastWidth + xDragDistance;
 
         // Snap-to-grid logic here.
-        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
+        if (isSnapToGrid())
+        {
             newWidth = roundToGridSpacing(newWidth + lastLayoutX) - lastLayoutX;
-        } else {
+        }
+        else
+        {
             // Even if snap-to-grid is off, we use Math.round to ensure drawing 'on-pixel' when zoomed in past 100%.
             newWidth = Math.round(newWidth);
         }
@@ -339,14 +345,15 @@ public class ResizableBox extends DraggableBox
         double newWidth = lastWidth - xDragDistance;
 
         // Snap-to-grid logic here.
-        if (editorProperties != null && editorProperties.isSnapToGridOn()) {
-
+        if (isSnapToGrid())
+        {
             // The -1 here is to put the rectangle border exactly on top of a grid line.
             final double roundedLayoutX = roundToGridSpacing(newLayoutX) - 1;
             newWidth = newWidth - roundedLayoutX + newLayoutX;
             newLayoutX = roundedLayoutX;
-        } else {
-
+        }
+        else
+        {
             // Even if snap-to-grid is off, we use Math.round to ensure drawing 'on-pixel' when zoomed in past 100%.
             final double roundedLayoutX = Math.round(newLayoutX);
             newWidth = Math.round(newWidth - roundedLayoutX + newLayoutX);
@@ -354,10 +361,13 @@ public class ResizableBox extends DraggableBox
         }
 
         // Min & max resize logic here.
-        if (editorProperties != null && newLayoutX < editorProperties.getWestBoundValue()) {
-            newLayoutX = editorProperties.getWestBoundValue();
-            newWidth = lastLayoutX + lastWidth - editorProperties.getWestBoundValue();
-        } else if (newWidth < minResizeWidth) {
+        if (newLayoutX < getWestBoundValue())
+        {
+            newLayoutX = getWestBoundValue();
+            newWidth = lastLayoutX + lastWidth - getWestBoundValue();
+        }
+        else if (newWidth < minResizeWidth)
+        {
             newLayoutX = lastLayoutX + lastWidth - minResizeWidth;
             newWidth = minResizeWidth;
         }
