@@ -46,6 +46,22 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${org.openjfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${org.openjfx.version}</version>
+        </dependency>
+        <dependency>
+		    <groupId>org.testfx</groupId>
+		    <artifactId>openjfx-monocle</artifactId>
+		    <version>${openjfx-monocle.version}</version>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
