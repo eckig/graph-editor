@@ -9,7 +9,6 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-import javafx.scene.CacheHint;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
@@ -137,7 +136,7 @@ public class GraphEditorView extends Region
     {
         if (pConnectionSkin != null)
         {
-            mConnectionLayer.getChildren().add(pConnectionSkin.getRoot());
+            mConnectionLayer.getChildren().add(0, pConnectionSkin.getRoot());
         }
     }
 
@@ -334,9 +333,6 @@ public class GraphEditorView extends Region
     {
         mNodeLayer.setPickOnBounds(false);
         mConnectionLayer.setPickOnBounds(false);
-
-        mNodeLayer.setCacheHint(CacheHint.SPEED);
-        mConnectionLayer.setCacheHint(CacheHint.SPEED);
 
         mNodeLayer.getStyleClass().add(STYLE_CLASS_NODE_LAYER);
         mConnectionLayer.getStyleClass().add(STYLE_CLASS_CONNECTION_LAYER);
