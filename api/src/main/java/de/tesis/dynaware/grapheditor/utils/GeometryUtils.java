@@ -69,15 +69,13 @@ public class GeometryUtils {
      *
      * @return the position of the cursor relative to the node origin
      */
-    public static Point2D getCursorPosition(final MouseEvent event, final Node node) {
-
+    public static Point2D getCursorPosition(final MouseEvent event, final Node node)
+    {
         final double sceneX = event.getSceneX();
         final double sceneY = event.getSceneY();
 
-        final double containerSceneX = node.localToScene(0, 0).getX();
-        final double containerSceneY = node.localToScene(0, 0).getY();
-
-        return new Point2D(sceneX - containerSceneX, sceneY - containerSceneY);
+        final Point2D containerScene = node.localToScene(0, 0);
+        return new Point2D(sceneX - containerScene.getX(), sceneY - containerScene.getY());
     }
 
     /**

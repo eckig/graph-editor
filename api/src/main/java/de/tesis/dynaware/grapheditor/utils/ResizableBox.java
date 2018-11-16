@@ -3,7 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
@@ -31,16 +33,12 @@ public class ResizableBox extends DraggableBox
     /**
      * Creates an empty resizable box.
      */
-    public ResizableBox() {
+    public ResizableBox()
+    {
 
         addEventHandler(MouseEvent.MOUSE_ENTERED, this::processMousePosition);
         addEventHandler(MouseEvent.MOUSE_MOVED, this::processMousePosition);
-
-        addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
-            if (!event.isPrimaryButtonDown()) {
-                setCursor(null);
-            }
-        });
+        addEventHandler(MouseEvent.MOUSE_EXITED, this::handleMouseExited);
     }
 
     /**
@@ -81,13 +79,16 @@ public class ResizableBox extends DraggableBox
     }
 
     @Override
-    protected void handleMousePressed(final MouseEvent event) {
-
+    protected void handleMousePressed(final MouseEvent event)
+    {
         super.handleMousePressed(event);
 
-        if (!(getParent() instanceof Region)) {
+        if (!(getParent() instanceof Region))
+        {
             return;
-        } else if (!event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
+        }
+        else if (event.getButton() != MouseButton.PRIMARY || !isEditable())
+        {
             setCursor(null);
             return;
         }
@@ -98,47 +99,63 @@ public class ResizableBox extends DraggableBox
     @Override
     protected void handleMouseDragged(final MouseEvent pEvent)
     {
-        if (!dragActive || !(getParent() instanceof Region) || !pEvent.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive())
+        if (!(getParent() instanceof Region) || pEvent.getButton() != MouseButton.PRIMARY || !isEditable())
         {
             setCursor(null);
             return;
+        }
+
+        final GraphInputGesture currentGesture = getCurrentGesture();
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
+        if (currentGesture == null)
+        {
+            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
+            storeClickValuesForResize(pEvent.getX(), pEvent.getY());
         }
 
         if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE))
         {
             super.handleMouseDragged(pEvent);
         }
-        else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE))
+        else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)
+                && (currentGesture == null || currentGesture == GraphInputGesture.DRAG))
         {
-            handleResize(pEvent.getSceneX(), pEvent.getSceneY());
+            handleResize(cursorPosition.getX(), cursorPosition.getY());
+            notifyDragActive();
+            pEvent.consume();
         }
-
-        notifyDragActive();
-        pEvent.consume();
     }
 
     @Override
-    protected void handleMouseReleased(final MouseEvent event) {
+    protected void handleMouseReleased(final MouseEvent pEvent)
+    {
+        super.handleMouseReleased(pEvent);
+        processMousePosition(pEvent);
+    }
 
-        super.handleMouseReleased(event);
-        if (event.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive()) {
-            processMousePosition(event);
+    private void handleMouseExited(final MouseEvent pEvent)
+    {
+        if (!pEvent.isPrimaryButtonDown())
+        {
+            setCursor(null);
         }
     }
 
     /**
      * Processes the current mouse position, updating the cursor accordingly.
      *
-     * @param event the latest {@link MouseEvent} for the mouse entering or
-     * moving inside the rectangle
+     * @param pEvent
+     *            the latest {@link MouseEvent} for the mouse entering or moving
+     *            inside the rectangle
      */
-    private void processMousePosition(final MouseEvent event) {
-
-        if (event.isPrimaryButtonDown() || !isEditable()) {
+    private void processMousePosition(final MouseEvent pEvent)
+    {
+        if (pEvent.isPrimaryButtonDown() || !isEditable())
+        {
             return;
         }
 
-        final RectangleMouseRegion mouseRegion = getMouseRegion(event.getX(), event.getY());
+        final RectangleMouseRegion mouseRegion = getMouseRegion(pEvent.getX(), pEvent.getY());
         mouseInPositionForResize = mouseRegion != RectangleMouseRegion.INSIDE;
         updateCursor(mouseRegion);
     }
