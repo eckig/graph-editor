@@ -20,6 +20,9 @@ import javafx.scene.layout.Region;
  */
 public class PanningWindowMinimap extends Pane {
 
+    /**
+     * minimap padding
+     */
     protected static final double MINIMAP_PADDING = 5;
 
     private static final String STYLE_CLASS = "minimap"; //$NON-NLS-1$
@@ -33,7 +36,6 @@ public class PanningWindowMinimap extends Pane {
 
     private final InvalidationListener drawListener = observable -> requestLayout();
 
-    private double scaleFactor = 0.75;
     private boolean locatorPositionListenersMuted;
     private boolean drawLocatorListenerMuted;
 
@@ -66,23 +68,29 @@ public class PanningWindowMinimap extends Pane {
         getChildren().addAll(zoomIn, zoomOut, zoomExact);
     }
 
-    private void zoomIn(final ActionEvent event) {
-        if(window != null) {
-            window.zoom(1.1);
+    private void zoomIn(final ActionEvent event)
+    {
+        if (window != null)
+        {
+            window.setZoom(window.getZoom() + 0.06);
         }
         event.consume();
     }
 
-    private void zoomExact(final ActionEvent event) {
-        if(window != null) {
-            window.zoom(1 / window.getZoom());
+    private void zoomExact(final ActionEvent event)
+    {
+        if (window != null)
+        {
+            window.setZoom(1);
         }
         event.consume();
     }
 
-    private void zoomOut(final ActionEvent event) {
-        if(window != null) {
-            window.zoom(0.9);
+    private void zoomOut(final ActionEvent event)
+    {
+        if (window != null)
+        {
+            window.setZoom(window.getZoom() - 0.06);
         }
         event.consume();
     }
@@ -90,19 +98,21 @@ public class PanningWindowMinimap extends Pane {
     /**
      * Sets the content representation to be displayed in this minimap.
      *
-     * @param contentRepresentation
+     * @param pContentRepresentation
      *            a {@link MinimapNodeGroup} to be displayed
      */
-    public void setContentRepresentation(final MinimapNodeGroup contentRepresentation) {
-
-        if (this.contentRepresentation != null) {
-            getChildren().remove(this.contentRepresentation);
+    public void setContentRepresentation(final MinimapNodeGroup pContentRepresentation)
+    {
+        if (contentRepresentation != null)
+        {
+            getChildren().remove(contentRepresentation);
         }
 
-        this.contentRepresentation = contentRepresentation;
+        contentRepresentation = pContentRepresentation;
 
-        if (contentRepresentation != null) {
-            getChildren().add(0, contentRepresentation);
+        if (pContentRepresentation != null)
+        {
+            getChildren().add(0, pContentRepresentation);
         }
     }
 
@@ -110,24 +120,28 @@ public class PanningWindowMinimap extends Pane {
      * Sets the {@link PanningWindow} that this minimap is representing.
      *
      * <p>
-     * This window will be visualised inside the minimap as a a rectangular shape, showing the user the current position
-     * of the window over its content.
+     * This window will be visualized inside the minimap as a a rectangular
+     * shape, showing the user the current position of the window over its
+     * content.
      * <p>
      *
-     * @param window a {@link PanningWindow} instance
+     * @param pWindow
+     *            a {@link PanningWindow} instance
      */
-    public void setWindow(final PanningWindow window) {
-
-        if (this.window != null) {
-            this.window.widthProperty().removeListener(drawListener);
-            this.window.heightProperty().removeListener(drawListener);
+    public void setWindow(final PanningWindow pWindow)
+    {
+        if (window != null)
+        {
+            window.widthProperty().removeListener(drawListener);
+            window.heightProperty().removeListener(drawListener);
         }
 
-        this.window = window;
+        window = pWindow;
 
-        if (this.window != null) {
-            window.widthProperty().addListener(drawListener);
-            window.heightProperty().addListener(drawListener);
+        if (window != null)
+        {
+            pWindow.widthProperty().addListener(drawListener);
+            pWindow.heightProperty().addListener(drawListener);
         }
 
         requestLayout();
@@ -137,29 +151,34 @@ public class PanningWindowMinimap extends Pane {
      * Sets the content that this minimap is representing.
      *
      * <p>
-     * For sensible behaviour, this instance should be the same as the content inside the {@link PanningWindow}.
+     * For sensible behaviour, this instance should be the same as the content
+     * inside the {@link PanningWindow}.
      * </p>
      *
-     * @param content a {@link Region} containing some content to be visualised in the minimap
+     * @param pContent
+     *            a {@link Region} containing some content to be visualized in
+     *            the minimap
      */
-    public void setContent(final Region content) {
-
-        if (this.content != null) {
-            this.content.layoutXProperty().removeListener(drawListener);
-            this.content.layoutYProperty().removeListener(drawListener);
-            this.content.widthProperty().removeListener(drawListener);
-            this.content.heightProperty().removeListener(drawListener);
-            this.content.localToSceneTransformProperty().removeListener(drawListener);
+    public void setContent(final Region pContent)
+    {
+        if (content != null)
+        {
+            content.layoutXProperty().removeListener(drawListener);
+            content.layoutYProperty().removeListener(drawListener);
+            content.widthProperty().removeListener(drawListener);
+            content.heightProperty().removeListener(drawListener);
+            content.localToSceneTransformProperty().removeListener(drawListener);
         }
 
-        this.content = content;
+        content = pContent;
 
-        if (content != null) {
-            content.widthProperty().addListener(drawListener);
-            content.heightProperty().addListener(drawListener);
-            content.layoutXProperty().addListener(drawListener);
-            content.layoutYProperty().addListener(drawListener);
-            content.localToSceneTransformProperty().addListener(drawListener);
+        if (pContent != null)
+        {
+            pContent.widthProperty().addListener(drawListener);
+            pContent.heightProperty().addListener(drawListener);
+            pContent.layoutXProperty().addListener(drawListener);
+            pContent.layoutYProperty().addListener(drawListener);
+            pContent.localToSceneTransformProperty().addListener(drawListener);
         }
 
         requestLayout();
@@ -171,14 +190,6 @@ public class PanningWindowMinimap extends Pane {
      */
     public Region getContent() {
         return content;
-    }
-
-    /**
-     * @return the scale factor that indicates how much smaller the minimap is
-     *         than the content it is representing.
-     */
-    protected final double getScaleFactor() {
-        return scaleFactor;
     }
 
     /**
@@ -203,7 +214,7 @@ public class PanningWindowMinimap extends Pane {
     protected void layoutChildren() {
         super.layoutChildren();
 
-        scaleFactor = calculateScaleFactor();
+        final double scaleFactor = calculateScaleFactor();
 
         final double width = getWidth();
         final double height = getHeight();
@@ -250,26 +261,26 @@ public class PanningWindowMinimap extends Pane {
      * infinite cycle of listeners firing each other.
      * </p>
      */
-    private void createLocatorPositionListeners() {
-
-        locator.layoutXProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists()) {
-
+    private void createLocatorPositionListeners()
+    {
+        locator.layoutXProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists())
+            {
                 drawLocatorListenerMuted = true;
-                final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
+                final double effectiveScaleFactor = calculateScaleFactor() / calculateZoomFactor();
                 final double targetX = (newValue.doubleValue() - MINIMAP_PADDING) / effectiveScaleFactor;
                 window.panToX(targetX);
                 drawLocatorListenerMuted = false;
             }
         });
 
-        locator.layoutYProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists()) {
-
+        locator.layoutYProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists())
+            {
                 drawLocatorListenerMuted = true;
-                final double effectiveScaleFactor = scaleFactor / calculateZoomFactor();
+                final double effectiveScaleFactor = calculateScaleFactor() / calculateZoomFactor();
                 final double targetY = (newValue.doubleValue() - MINIMAP_PADDING) / effectiveScaleFactor;
                 window.panToY(targetY);
                 drawLocatorListenerMuted = false;
@@ -297,7 +308,7 @@ public class PanningWindowMinimap extends Pane {
 
             final double zoomFactor = calculateZoomFactor();
 
-            window.panTo(x / scaleFactor * zoomFactor, y / scaleFactor * zoomFactor);
+            window.panTo(x / calculateScaleFactor() * zoomFactor, y / calculateScaleFactor() * zoomFactor);
         });
     }
 
