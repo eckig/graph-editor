@@ -11,9 +11,11 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
@@ -40,8 +42,26 @@ public class PanningWindow extends Region {
 
     private Region content;
 
-    private final DoubleProperty contentX = new SimpleDoubleProperty();
-    private final DoubleProperty contentY = new SimpleDoubleProperty();
+    private final DoubleProperty contentX = new SimpleDoubleProperty()
+    {
+
+        @Override
+        protected void invalidated()
+        {
+            requestLayout();
+        }
+    };
+    private final DoubleProperty contentY = new SimpleDoubleProperty()
+    {
+
+        @Override
+        protected void invalidated()
+        {
+            requestLayout();
+        }
+    };
+    private final ScrollBar scrollX = new ScrollBar();
+    private final ScrollBar scrollY = new ScrollBar();
 
     private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
     private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
@@ -54,7 +74,7 @@ public class PanningWindow extends Region {
     private final Scale scale = new Scale();
 
     private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
-    private final EventHandler<ScrollEvent> scrollHandler = this::handleScrollForZoom;
+    private final EventHandler<ScrollEvent> scrollHandler = this::handleScroll;
 
     private GraphEventManager eventManager;
 
@@ -69,6 +89,16 @@ public class PanningWindow extends Region {
 
         scale.xProperty().bind(zoom);
         scale.yProperty().bind(zoom);
+
+        getChildren().addAll(scrollX, scrollY);
+
+        scrollX.setOrientation(Orientation.HORIZONTAL);
+        scrollX.valueProperty().bindBidirectional(contentX);
+        scrollX.getStyleClass().add("graph-editor-scroll-bar"); //$NON-NLS-1$
+
+        scrollY.valueProperty().bindBidirectional(contentY);
+        scrollY.setOrientation(Orientation.VERTICAL);
+        scrollY.getStyleClass().add("graph-editor-scroll-bar"); //$NON-NLS-1$
     }
 
     /**
@@ -110,8 +140,8 @@ public class PanningWindow extends Region {
         final double newY = checkContentY(y);
         if (newX != getContentX() || newY != getContentY())
         {
-            contentX.set(-newX);
-            contentY.set(-newY);
+            contentX.set(newX);
+            contentY.set(newY);
         }
     }
 
@@ -132,7 +162,7 @@ public class PanningWindow extends Region {
         final double newX = checkContentX(x);
         if (newX != getContentX())
         {
-            contentX.set(-newX);
+            contentX.set(newX);
         }
     }
 
@@ -153,7 +183,7 @@ public class PanningWindow extends Region {
         final double newY = checkContentY(y);
         if (newY != contentY.get())
         {
-            contentY.set(-newY);
+            contentY.set(newY);
         }
     }
 
@@ -163,7 +193,7 @@ public class PanningWindow extends Region {
      */
     public double getContentX()
     {
-        return -contentX.get();
+        return contentX.get();
     }
 
     /**
@@ -172,7 +202,7 @@ public class PanningWindow extends Region {
      */
     public double getContentY()
     {
-        return -contentY.get();
+        return contentY.get();
     }
 
     /**
@@ -226,6 +256,31 @@ public class PanningWindow extends Region {
         return zoom.get();
     }
 
+    @Override
+    protected void layoutChildren()
+    {
+        super.layoutChildren();
+        final double height = getHeight();
+        final double width = getWidth();
+
+        // content
+        content.relocate(-contentX.get(), -contentY.get());
+
+        // scrollbars
+        final double w = scrollY.getWidth();
+        final double h = scrollX.getHeight();
+
+        scrollX.resizeRelocate(0, snapPosition(height - h), snapSize(width - w), h);
+        scrollY.resizeRelocate(snapPosition(width - w), 0, w, snapSize(height - h));
+
+        scrollX.setMin(0);
+        scrollX.setMax(getMaxX());
+        scrollX.setVisibleAmount(width);
+        scrollY.setMin(0);
+        scrollY.setMax(getMaxY());
+        scrollY.setVisibleAmount(height);
+    }
+
     private static float constrainZoom(final float zoom)
     {
         final float a = zoom >= SCALE_MIN ? zoom : SCALE_MIN;
@@ -246,26 +301,24 @@ public class PanningWindow extends Region {
         panTo(getContentX(), getContentY());
     }
 
+    private double getMaxX()
+    {
+        return content != null ? content.getBoundsInParent().getWidth() - getWidth() : 0;
+    }
+
+    private double getMaxY()
+    {
+        return content != null ? content.getBoundsInParent().getHeight() - getHeight() : 0;
+    }
+
     private double checkContentX(final double xToCheck)
     {
-        double x = Math.max(xToCheck, 0);
-        if (content != null)
-        {
-            final double maxX = content.getBoundsInParent().getWidth() - getWidth();
-            x = Math.min(maxX, x);
-        }
-        return snapPosition(x);
+        return snapPosition(Math.min(getMaxX(), Math.max(xToCheck, 0)));
     }
 
     private double checkContentY(final double yToCheck)
     {
-        double y = Math.max(yToCheck, 0);
-        if (content != null)
-        {
-            final double maxY = content.getBoundsInParent().getHeight() - getHeight();
-            y = Math.min(maxY, y);
-        }
-        return snapPosition(y);
+        return snapPosition(Math.min(getMaxY(), Math.max(yToCheck, 0)));
     }
 
     @Override
@@ -295,8 +348,6 @@ public class PanningWindow extends Region {
             removeMouseHandlersFromContent(prevContent);
             getChildren().remove(prevContent);
             prevContent.getTransforms().remove(scale);
-            prevContent.layoutXProperty().unbind();
-            prevContent.layoutYProperty().unbind();
         }
 
         content = pContent;
@@ -306,10 +357,15 @@ public class PanningWindow extends Region {
             pContent.setManaged(false);
             getChildren().add(pContent);
             addMouseHandlersToContent(pContent);
-
             pContent.getTransforms().add(scale);
-            pContent.layoutXProperty().bind(contentX);
-            pContent.layoutYProperty().bind(contentY);
+
+            scrollX.setVisible(true);
+            scrollY.setVisible(true);
+        }
+        else
+        {
+            scrollX.setVisible(false);
+            scrollY.setVisible(false);
         }
     }
 
@@ -376,7 +432,7 @@ public class PanningWindow extends Region {
         event.consume();
     }
 
-    private void handleScrollForZoom(final ScrollEvent pEvent)
+    private void handleScroll(final ScrollEvent pEvent)
     {
         // this intended for mouse-scroll events (event direct == false)
         // the event also gets synthesized from touch events, which we want to ignore as they are handled in handleZoom()
@@ -388,9 +444,16 @@ public class PanningWindow extends Region {
 
         pEvent.consume();
 
-        final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
-        final double newZoomLevel = getZoom() + modifier;
-        setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
+        if (pEvent.isControlDown())
+        {
+            final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
+            final double newZoomLevel = getZoom() + modifier;
+            setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
+        }
+        else
+        {
+            panTo(getContentX() - pEvent.getDeltaX(), getContentY() - pEvent.getDeltaY());
+        }
     }
 
     private void handleZoom(final ZoomEvent pEvent)
