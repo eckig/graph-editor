@@ -19,10 +19,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.collections.ObservableSet;
-import javafx.scene.input.MouseEvent;
 
 /**
  * Manages all graph editor logic relating to selections of one or more nodes and/or joints.
@@ -44,7 +41,6 @@ public class DefaultSelectionManager implements SelectionManager {
     private final SelectionDragManager selectionDragManager;
     private final SelectionTracker selectionTracker;
 
-    private GraphEditorProperties editorProperties;
     private GModel model;
 
     /**
@@ -61,7 +57,7 @@ public class DefaultSelectionManager implements SelectionManager {
     public DefaultSelectionManager(final SkinLookup skinLookup, final GraphEditorView view, final ModelEditingManager modelEditingManager)
     {
         selectionDragManager = new SelectionDragManager(skinLookup, view, this);
-        selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager, this::canSelect);
+        selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager);
         selectionTracker = new SelectionTracker(skinLookup);
     }
 
@@ -76,21 +72,6 @@ public class DefaultSelectionManager implements SelectionManager {
 
         selectionCreator.initialize(model);
         selectionTracker.initialize(model);
-    }
-
-	private boolean canSelect(final MouseEvent event) {
-		return !event.isSecondaryButtonDown() && editorProperties != null
-				&& editorProperties.getGraphEventManager().getInputMode() == GraphInputMode.SELECTION;
-	}
-
-    /**
-     * Sets the editor properties instance for the graph editor.
-     *
-     * @param editorProperties a {@link GraphEditorProperties} instance to be used
-     */
-    @Override
-    public void setEditorProperties(final GraphEditorProperties editorProperties) {
-    	this.editorProperties = editorProperties;
     }
 
     public void addNode(final GNode node) {

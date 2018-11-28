@@ -3,6 +3,7 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -251,33 +252,34 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * @return currently active {@link GraphInputGesture} or {@code null}
+     * @param pGesture
+     *            {@link GraphInputGesture}
+     * @param pEvent
+     *            {@link Event}
+     * @return can active the given gesture
      */
-    protected GraphInputGesture getCurrentGesture()
+    boolean canActivate(final GraphInputGesture pGesture, final Event pEvent)
     {
-        return editorProperties == null ? null : editorProperties.getGraphEventManager().getInputGesture();
+        return editorProperties != null && editorProperties.getGraphEventManager().canActivate(pGesture, pEvent);
     }
 
     /**
-     * activate {@link GraphInputGesture#DRAG}
+     * activate the given {@link GraphInputGesture}
      */
-    void notifyDragActive()
+    void activateGesture(final GraphInputGesture pGesture)
     {
         if (editorProperties != null)
         {
-            editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.DRAG);
+            editorProperties.getGraphEventManager().activateInputGesture(pGesture);
         }
     }
 
     /**
-     * deactivate {@link GraphInputGesture#DRAG}
+     * deactivate the given {@link GraphInputGesture}
      */
-    void notifyDragInactive()
+    boolean finishGesture(final GraphInputGesture pGesture)
     {
-        if (editorProperties != null)
-        {
-            editorProperties.getGraphEventManager().finishInputGesture(GraphInputGesture.DRAG);
-        }
+        return editorProperties != null && editorProperties.getGraphEventManager().finishInputGesture(pGesture);
     }
 
     /**
@@ -293,12 +295,10 @@ public class DraggableBox extends StackPane
             return;
         }
 
-        final GraphInputGesture gesture = getCurrentGesture();
-        if (gesture == null || gesture == GraphInputGesture.DRAG)
+        if (canActivate(GraphInputGesture.MOVE, pEvent))
         {
             final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
             storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
-            notifyDragActive();
             pEvent.consume();
         }
     }
@@ -315,16 +315,11 @@ public class DraggableBox extends StackPane
             return;
         }
 
-        final GraphInputGesture gesture = getCurrentGesture();
-        final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
-        if (gesture == null)
+        if (canActivate(GraphInputGesture.MOVE, pEvent))
         {
-            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
-        }
-        if (gesture == null || gesture == GraphInputGesture.DRAG)
-        {
+            final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
             handleDrag(cursorPosition.getX(), cursorPosition.getY());
-            notifyDragActive();
+            activateGesture(GraphInputGesture.MOVE);
             pEvent.consume();
         }
     }
@@ -336,12 +331,10 @@ public class DraggableBox extends StackPane
      */
     protected void handleMouseReleased(final MouseEvent pEvent)
     {
-        if (pEvent.getButton() != MouseButton.PRIMARY)
+        if (finishGesture(GraphInputGesture.MOVE))
         {
-            return;
+            pEvent.consume();
         }
-        notifyDragInactive();
-        pEvent.consume();
     }
 
     /**

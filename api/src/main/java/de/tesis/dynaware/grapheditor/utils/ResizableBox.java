@@ -5,7 +5,6 @@ package de.tesis.dynaware.grapheditor.utils;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
@@ -87,7 +86,7 @@ public class ResizableBox extends DraggableBox
         {
             return;
         }
-        else if (event.getButton() != MouseButton.PRIMARY || !isEditable())
+        else if (!event.isPrimaryButtonDown() || !isEditable())
         {
             setCursor(null);
             return;
@@ -99,29 +98,22 @@ public class ResizableBox extends DraggableBox
     @Override
     protected void handleMouseDragged(final MouseEvent pEvent)
     {
-        if (!(getParent() instanceof Region) || pEvent.getButton() != MouseButton.PRIMARY || !isEditable())
+        if (lastMouseRegion == null || !(getParent() instanceof Region) || !pEvent.isPrimaryButtonDown() || !isEditable())
         {
             setCursor(null);
             return;
         }
 
-        final GraphInputGesture currentGesture = getCurrentGesture();
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
-        if (currentGesture == null)
-        {
-            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
-            storeClickValuesForResize(pEvent.getX(), pEvent.getY());
-        }
 
-        if (lastMouseRegion.equals(RectangleMouseRegion.INSIDE))
+        if (lastMouseRegion == RectangleMouseRegion.INSIDE)
         {
             super.handleMouseDragged(pEvent);
         }
-        else if (!lastMouseRegion.equals(RectangleMouseRegion.OUTSIDE)
-                && (currentGesture == null || currentGesture == GraphInputGesture.DRAG))
+        else if (lastMouseRegion != RectangleMouseRegion.OUTSIDE && canActivate(GraphInputGesture.RESIZE, pEvent))
         {
+            activateGesture(GraphInputGesture.RESIZE);
             handleResize(cursorPosition.getX(), cursorPosition.getY());
-            notifyDragActive();
             pEvent.consume();
         }
     }
@@ -131,6 +123,7 @@ public class ResizableBox extends DraggableBox
     {
         super.handleMouseReleased(pEvent);
         processMousePosition(pEvent);
+        finishGesture(GraphInputGesture.RESIZE);
     }
 
     private void handleMouseExited(final MouseEvent pEvent)
@@ -164,11 +157,13 @@ public class ResizableBox extends DraggableBox
      * Stores relevant layout values at the time of the last mouse click
      * (mouse-pressed event).
      *
-     * @param x the x position of the click event
-     * @param y the y position of the click event
+     * @param x
+     *            the x position of the click event
+     * @param y
+     *            the y position of the click event
      */
-    private void storeClickValuesForResize(final double x, final double y) {
-
+    private void storeClickValuesForResize(final double x, final double y)
+    {
         lastWidth = getWidth();
         lastHeight = getHeight();
 
@@ -178,12 +173,15 @@ public class ResizableBox extends DraggableBox
     /**
      * Handles a resize event to the given cursor position.
      *
-     * @param x the cursor container-x position
-     * @param y the cursor container-y position
+     * @param x
+     *            the cursor container-x position
+     * @param y
+     *            the cursor container-y position
      */
-    private void handleResize(final double x, final double y) {
-
-        switch (lastMouseRegion) {
+    private void handleResize(final double x, final double y)
+    {
+        switch (lastMouseRegion)
+        {
             case NORTHEAST:
                 handleResizeNorth(y);
                 handleResizeEast(x);
@@ -212,8 +210,8 @@ public class ResizableBox extends DraggableBox
             case WEST:
                 handleResizeWest(x);
                 break;
+
             case INSIDE:
-                break;
             case OUTSIDE:
                 break;
         }
@@ -476,6 +474,7 @@ public class ResizableBox extends DraggableBox
             case WEST:
                 setCursor(Cursor.W_RESIZE);
                 break;
+
             case INSIDE:
             case OUTSIDE:
                 // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.

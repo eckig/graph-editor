@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -24,6 +25,8 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GraphEventManager;
+import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
 import javafx.event.EventHandler;
 import javafx.event.WeakEventHandler;
 import javafx.geometry.Point2D;
@@ -32,7 +35,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.util.Callback;
 
 /**
  * Responsible for creating selections of nodes, connections, and joints in the graph editor.
@@ -42,7 +44,8 @@ import javafx.util.Callback;
  * selected by dragging a box around them.
  * </p>
  */
-public class SelectionCreator {
+public class SelectionCreator
+{
 
     private final SkinLookup skinLookup;
     private final GraphEditorView view;
@@ -64,8 +67,6 @@ public class SelectionCreator {
     private final List<GJoint> selectedJointsBackup = new ArrayList<>();
     private final List<GConnection> selectedConnectionsBackup = new ArrayList<>();
 
-    private final Callback<MouseEvent, Boolean> selectionActive;
-
     private Rectangle2D selection;
 
     private Point2D selectionBoxStart;
@@ -74,23 +75,21 @@ public class SelectionCreator {
     /**
      * Creates a new selection creator instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup the {@link SkinLookup} used to look up skins
-     * @param view the {@link GraphEditorView} instance
-     * @param selectionDragManager the {@link SelectionDragManager} instance for this graph editor
+     * @param pSkinLookup the {@link SkinLookup} used to look up skins
+     * @param pView the {@link GraphEditorView} instance
+     * @param pSelectionDragManager the {@link SelectionDragManager} instance for this graph editor
      */
-	public SelectionCreator(final SkinLookup skinLookup, final GraphEditorView view,
-			final SelectionManager selectionManager, final SelectionDragManager selectionDragManager,
-			final Callback<MouseEvent, Boolean> selectionActive) {
+	public SelectionCreator(final SkinLookup pSkinLookup, final GraphEditorView pView,
+            final SelectionManager pSelectionManager, final SelectionDragManager pSelectionDragManager)
+    {
+        selectionManager = pSelectionManager;
+        skinLookup = pSkinLookup;
+        view = pView;
+        selectionDragManager = pSelectionDragManager;
 
-		this.selectionManager = selectionManager;
-		this.skinLookup = skinLookup;
-		this.view = view;
-		this.selectionDragManager = selectionDragManager;
-		this.selectionActive = selectionActive;
-
-		view.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
-		view.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
-		view.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
+		pView.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
+		pView.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
+		pView.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
 	}
 
     /**
@@ -376,10 +375,12 @@ public class SelectionCreator {
      */
     private void handleViewPressed(final MouseEvent pEvent)
     {
-        if (model == null || !selectionActive.call(pEvent) || pEvent.isConsumed())
+        if (model == null || !canSelect(pEvent) || pEvent.isConsumed())
         {
             return;
         }
+
+        getEventManager().ifPresent(m -> m.activateInputGesture(GraphInputGesture.SELECT));
 
         if (!pEvent.isShortcutDown())
         {
@@ -401,7 +402,7 @@ public class SelectionCreator {
      */
     private void handleViewDragged(final MouseEvent pEvent)
     {
-        if (model == null || !selectionActive.call(pEvent) || pEvent.isConsumed() || selectionBoxStart == null)
+        if (model == null || !canSelect(pEvent) || pEvent.isConsumed() || selectionBoxStart == null)
         {
             return;
         }
@@ -417,10 +418,13 @@ public class SelectionCreator {
     /**
      * Handles mouse-released events on the view.
      *
-     * @param event a mouse-released event
+     * @param event
+     *            a mouse-released event
      */
-    private void handleViewReleased(final MouseEvent event) {
+    private void handleViewReleased(final MouseEvent event)
+    {
         selectionBoxStart = null;
+        getEventManager().ifPresent(m -> m.finishInputGesture(GraphInputGesture.SELECT));
         view.hideSelectionBox();
     }
 
@@ -435,6 +439,17 @@ public class SelectionCreator {
 
     private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown) {
         return isShortcutDown && selectedConnectionsBackup.contains(connection);
+    }
+
+    private Optional<GraphEventManager> getEventManager()
+    {
+        return view.getEditorProperties() == null ? Optional.empty()
+                : Optional.ofNullable(view.getEditorProperties().getGraphEventManager());
+    }
+
+    private boolean canSelect(final MouseEvent event)
+    {
+        return getEventManager().map(m -> m.canActivate(GraphInputGesture.SELECT, event)).orElse(false);
     }
 
     /**
