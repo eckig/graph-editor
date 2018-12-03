@@ -175,10 +175,11 @@ public class GraphEventManager
                 switch (pGesture)
                 {
                     case PAN:
-                        return pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isSecondaryButtonDown();
+                        return pEvent instanceof ScrollEvent && !((ScrollEvent) pEvent).isControlDown()
+                                || pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isSecondaryButtonDown();
 
                     case ZOOM:
-                        return pEvent instanceof ScrollEvent;
+                        return pEvent instanceof ScrollEvent && ((ScrollEvent) pEvent).isControlDown();
 
                     case SELECT:
                     case CONNECT:

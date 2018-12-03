@@ -420,17 +420,17 @@ public class PanningWindow extends Region {
             return;
         }
 
-        pEvent.consume();
-
-        if (pEvent.isControlDown() && eventManager.canActivate(GraphInputGesture.ZOOM, pEvent))
+        if (eventManager.canActivate(GraphInputGesture.ZOOM, pEvent))
         {
             final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
             final double newZoomLevel = getZoom() + modifier;
             setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
+            pEvent.consume();
         }
-        else if (!pEvent.isControlDown() && eventManager.canActivate(GraphInputGesture.PAN, pEvent))
+        else if (eventManager.canActivate(GraphInputGesture.PAN, pEvent))
         {
             panTo(getContentX() - pEvent.getDeltaX(), getContentY() - pEvent.getDeltaY());
+            pEvent.consume();
         }
     }
 
