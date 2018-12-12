@@ -4,11 +4,11 @@
 package de.tesis.dynaware.grapheditor.window;
 
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-import de.tesis.dynaware.grapheditor.utils.GraphEventManager;
 import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -64,7 +65,11 @@ public class PanningWindow extends Region {
 
     private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
     private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
-    private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningMouseReleased;
+    private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningFinished;
+
+    private final EventHandler<TouchEvent> touchPressedHandler = this::handlePanningTouchPressed;
+    private final EventHandler<TouchEvent> touchDraggedHandler = this::handlePanningTouchDragged;
+    private final EventHandler<TouchEvent> touchReleasedHandler = this::handlePanningFinished;
 
     private Point2D clickPosition;
     private Point2D windowPosAtClick;
@@ -75,7 +80,7 @@ public class PanningWindow extends Region {
     private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
     private final EventHandler<ScrollEvent> scrollHandler = this::handleScroll;
 
-    private GraphEventManager eventManager;
+    private GraphEditorProperties properties;
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -115,7 +120,7 @@ public class PanningWindow extends Region {
      */
     public void setEditorProperties(final GraphEditorProperties pEditorProperties)
     {
-        eventManager = pEditorProperties == null ? null : pEditorProperties.getGraphEventManager();
+        properties = pEditorProperties;
     }
 
     /**
@@ -368,9 +373,9 @@ public class PanningWindow extends Region {
         }
     }
 
-    private boolean canPan(final MouseEvent event)
+    private boolean canPan(final Event event)
     {
-        return eventManager != null && eventManager.canActivate(GraphInputGesture.PAN, event);
+        return properties != null && properties.canActivate(GraphInputGesture.PAN, event);
     }
 
     private void handlePanningMousePressed(final MouseEvent event)
@@ -383,31 +388,56 @@ public class PanningWindow extends Region {
 
     private void handlePanningMouseDragged(final MouseEvent event)
     {
-        if (!canPan(event))
+        if (canPan(event))
         {
-            return;
+            if (properties.getInputGesture() == null)
+            {
+                startPanning(event.getScreenX(), event.getScreenY());
+            }
+
+            final double deltaX = event.getScreenX() - clickPosition.getX();
+            final double deltaY = event.getScreenY() - clickPosition.getY();
+
+            final double newWindowX = windowPosAtClick.getX() - deltaX;
+            final double newWindowY = windowPosAtClick.getY() - deltaY;
+
+            panTo(newWindowX, newWindowY);
         }
-
-        if (eventManager.getInputGesture() == null)
-        {
-            startPanning(event.getScreenX(), event.getScreenY());
-        }
-
-        final double deltaX = event.getScreenX() - clickPosition.getX();
-        final double deltaY = event.getScreenY() - clickPosition.getY();
-
-        final double newWindowX = windowPosAtClick.getX() - deltaX;
-        final double newWindowY = windowPosAtClick.getY() - deltaY;
-
-        panTo(newWindowX, newWindowY);
     }
 
-    private void handlePanningMouseReleased(final MouseEvent event)
+    private void handlePanningFinished(final Event event)
     {
-        if (eventManager != null && eventManager.finishInputGesture(GraphInputGesture.PAN))
+        if (properties != null && properties.finishInputGesture(GraphInputGesture.PAN))
         {
             setCursor(null);
             event.consume();
+        }
+    }
+
+    private void handlePanningTouchPressed(final TouchEvent event)
+    {
+        if (canPan(event))
+        {
+            startPanning(event.getTouchPoint().getScreenX(), event.getTouchPoint().getScreenY());
+        }
+    }
+
+    private void handlePanningTouchDragged(final TouchEvent event)
+    {
+        if (canPan(event))
+        {
+            if (properties.getInputGesture() == null)
+            {
+                startPanning(event.getTouchPoint().getScreenX(), event.getTouchPoint().getScreenY());
+            }
+
+            final double deltaX = event.getTouchPoint().getScreenX() - clickPosition.getX();
+            final double deltaY = event.getTouchPoint().getScreenY() - clickPosition.getY();
+
+            final double newWindowX = windowPosAtClick.getX() - deltaX;
+            final double newWindowY = windowPosAtClick.getY() - deltaY;
+
+            panTo(newWindowX, newWindowY);
         }
     }
 
@@ -415,19 +445,19 @@ public class PanningWindow extends Region {
     {
         // this intended for mouse-scroll events (event direct == false)
         // the event also gets synthesized from touch events, which we want to ignore as they are handled in handleZoom()
-        if (pEvent.isDirect() || pEvent.getTouchCount() > 0 || eventManager == null)
+        if (pEvent.isDirect() || pEvent.getTouchCount() > 0 || properties == null)
         {
             return;
         }
 
-        if (eventManager.canActivate(GraphInputGesture.ZOOM, pEvent))
+        if (properties.canActivate(GraphInputGesture.ZOOM, pEvent))
         {
             final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
             final double newZoomLevel = getZoom() + modifier;
             setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
             pEvent.consume();
         }
-        else if (eventManager.canActivate(GraphInputGesture.PAN, pEvent))
+        else if (properties.canActivate(GraphInputGesture.PAN, pEvent))
         {
             panTo(getContentX() - pEvent.getDeltaX(), getContentY() - pEvent.getDeltaY());
             pEvent.consume();
@@ -436,18 +466,18 @@ public class PanningWindow extends Region {
 
     private void handleZoom(final ZoomEvent pEvent)
     {
-        if (eventManager == null || !eventManager.canActivate(GraphInputGesture.ZOOM, pEvent))
+        if (properties == null || !properties.canActivate(GraphInputGesture.ZOOM, pEvent))
         {
             return;
         }
 
         if (pEvent.getEventType() == ZoomEvent.ZOOM_STARTED)
         {
-            eventManager.activateInputGesture(GraphInputGesture.ZOOM);
+            properties.activateInputGesture(GraphInputGesture.ZOOM);
         }
         else if (pEvent.getEventType() == ZoomEvent.ZOOM_FINISHED)
         {
-            eventManager.finishInputGesture(GraphInputGesture.ZOOM);
+            properties.finishInputGesture(GraphInputGesture.ZOOM);
         }
         else
         {
@@ -469,6 +499,10 @@ public class PanningWindow extends Region {
         // sometimes MOUSE_RELEASED is not delivered but the MOUSE_CLICKED..
         pContent.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseReleasedHandler);
 
+        pContent.addEventHandler(TouchEvent.TOUCH_PRESSED, touchPressedHandler);
+        pContent.addEventHandler(TouchEvent.TOUCH_MOVED, touchDraggedHandler);
+        pContent.addEventHandler(TouchEvent.TOUCH_RELEASED, touchReleasedHandler);
+
         pContent.addEventHandler(ZoomEvent.ANY, zoomHandler);
         pContent.addEventHandler(ScrollEvent.SCROLL, scrollHandler);
     }
@@ -484,6 +518,10 @@ public class PanningWindow extends Region {
         pContent.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         // sometimes MOUSE_RELEASED is not delivered but the MOUSE_CLICKED..
         pContent.removeEventHandler(MouseEvent.MOUSE_CLICKED, mouseReleasedHandler);
+
+        pContent.removeEventHandler(TouchEvent.TOUCH_PRESSED, touchPressedHandler);
+        pContent.removeEventHandler(TouchEvent.TOUCH_MOVED, touchDraggedHandler);
+        pContent.removeEventHandler(TouchEvent.TOUCH_RELEASED, touchReleasedHandler);
 
         pContent.removeEventHandler(ZoomEvent.ANY, zoomHandler);
         pContent.removeEventHandler(ScrollEvent.SCROLL, scrollHandler);
@@ -501,7 +539,7 @@ public class PanningWindow extends Region {
      */
     private void startPanning(final double x, final double y)
     {
-        eventManager.activateInputGesture(GraphInputGesture.PAN);
+        properties.activateInputGesture(GraphInputGesture.PAN);
         setCursor(Cursor.MOVE);
 
         clickPosition = new Point2D(x, y);

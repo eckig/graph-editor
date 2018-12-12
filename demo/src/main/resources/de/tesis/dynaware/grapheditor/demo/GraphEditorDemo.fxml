@@ -3,9 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import de.tesis.dynaware.grapheditor.GraphEditorContainer?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.layout.HBox?>
 
 <AnchorPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="de.tesis.dynaware.grapheditor.demo.GraphEditorDemoController">
 	<VBox fillWidth="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
@@ -86,15 +83,6 @@
 				</Menu>
 			</menus>
 		</MenuBar>
-		<ToolBar>
-			<fx:define>
-			  <ToggleGroup fx:id="toggleGroup1"/>  
-			</fx:define>
-			<HBox> 
-				<ToggleButton styleClass="left-pill" text="Navigation" selected="false" toggleGroup="$toggleGroup1" onAction="#switchToNavigation" />
-				<ToggleButton styleClass="right-pill" text="Selection" selected="true" toggleGroup="$toggleGroup1" onAction="#switchToSelection" />
-			</HBox>
-		</ToolBar>
 		<GraphEditorContainer fx:id="graphEditorContainer" minWidth="0" minHeight="0" maxWidth="+Infinity" maxHeight="+Infinity" VBox.vgrow="ALWAYS"/>
 	</VBox>
 	<ToggleButton fx:id="minimapButton" onAction="#toggleMinimap" focusTraversable="false" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="4"/>

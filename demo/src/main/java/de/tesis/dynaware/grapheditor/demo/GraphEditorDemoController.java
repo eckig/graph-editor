@@ -29,7 +29,6 @@ import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
-import de.tesis.dynaware.grapheditor.utils.GraphInputMode;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -275,16 +274,6 @@ public class GraphEditorDemoController {
     @FXML
     public void toggleMinimap() {
         graphEditorContainer.getMinimap().visibleProperty().bind(minimapButton.selectedProperty());
-    }
-
-    @FXML
-    private void switchToNavigation() {
-    	graphEditor.getProperties().getGraphEventManager().setInputMode(GraphInputMode.NAVIGATION);
-    }
-
-    @FXML
-    private void switchToSelection() {
-    	graphEditor.getProperties().getGraphEventManager().setInputMode(GraphInputMode.SELECTION);
     }
 
     /**

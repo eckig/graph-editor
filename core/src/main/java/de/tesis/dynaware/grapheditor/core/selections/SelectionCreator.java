@@ -443,8 +443,7 @@ public class SelectionCreator
 
     private Optional<GraphEventManager> getEventManager()
     {
-        return view.getEditorProperties() == null ? Optional.empty()
-                : Optional.ofNullable(view.getEditorProperties().getGraphEventManager());
+        return Optional.ofNullable(view.getEditorProperties());
     }
 
     private boolean canSelect(final MouseEvent event)

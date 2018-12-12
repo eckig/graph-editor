@@ -605,14 +605,14 @@ public class ConnectorDragManager {
     private boolean canActivateGesture(final Event pEvent)
     {
         final GraphEditorProperties props = getEditorProperties();
-        return props != null && props.getGraphEventManager().canActivate(GraphInputGesture.CONNECT, pEvent);
+        return props != null && props.canActivate(GraphInputGesture.CONNECT, pEvent);
     }
 
     private void activateGesture()
     {
         if (getEditorProperties() != null)
         {
-            getEditorProperties().getGraphEventManager().activateInputGesture(GraphInputGesture.CONNECT);
+            getEditorProperties().activateInputGesture(GraphInputGesture.CONNECT);
         }
     }
 
@@ -620,7 +620,7 @@ public class ConnectorDragManager {
     {
         if (getEditorProperties() != null)
         {
-            getEditorProperties().getGraphEventManager().finishInputGesture(GraphInputGesture.CONNECT);
+            getEditorProperties().finishInputGesture(GraphInputGesture.CONNECT);
         }
     }
 }
