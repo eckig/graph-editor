@@ -242,7 +242,7 @@ public class PanningWindow extends Region {
     public void setZoomAt(final double pZoom, final double pPivotX, final double pPivotY)
     {
         final double oldZoomLevel = getZoom();
-        final float newZoomLevel = constrainZoom((float) pZoom);
+        final double newZoomLevel = constrainZoom(pZoom);
 
         if (newZoomLevel != oldZoomLevel)
         {
@@ -285,10 +285,14 @@ public class PanningWindow extends Region {
         scrollY.setVisibleAmount(height);
     }
 
-    private static float constrainZoom(final float zoom)
+    private static double constrainZoom(final double pZoom)
     {
-        final float a = zoom >= SCALE_MIN ? zoom : SCALE_MIN;
-        return a <= SCALE_MAX ? a : SCALE_MAX;
+        final double zoom = Math.round(pZoom * 100.0) / 100.0;
+        if (zoom <= 1.02 && zoom >= 0.98)
+        {
+            return 1.0;
+        }
+        return Math.min(Math.max(zoom, SCALE_MIN), SCALE_MAX);
     }
 
     /**
