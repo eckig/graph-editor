@@ -370,6 +370,17 @@ public class DraggableBox extends StackPane
     }
 
     /**
+     * will be called when the position of this draggable box has been moved by
+     * the user
+     *
+     * @since 16.01.2019
+     */
+    protected void positionMoved()
+    {
+        // empty, to be overridden by custom skin logic
+    }
+
+    /**
      * Handles a drag event to the given cursor position.
      *
      * @param pX
@@ -381,6 +392,8 @@ public class DraggableBox extends StackPane
     {
         handleDragX(pX);
         handleDragY(pY);
+        // notify
+        positionMoved();
     }
 
     /**

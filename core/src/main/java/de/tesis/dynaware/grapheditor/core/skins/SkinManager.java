@@ -7,11 +7,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorSkins;
@@ -22,12 +25,12 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultJointSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultNodeSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
+import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import java.util.stream.Collectors;
 import javafx.util.Callback;
 
 /**
@@ -54,6 +57,9 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
     private final Map<GJoint, GJointSkin> jointSkins = new HashMap<>();
     private final Map<GConnector, GTailSkin> tailSkins = new HashMap<>();
 
+    private ConnectionLayouter connectionLayouter;
+    private final Consumer<GSkin<?>> onPositionMoved = this::positionMoved;
+
     /**
      * Creates a new skin manager instance. Only one instance should exist per
      * {@link DefaultGraphEditor} instance.
@@ -62,9 +68,14 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
         this.graphEditor = graphEditor;
     }
 
+    public void setConnectionLayouter(ConnectionLayouter connectionLayouter)
+    {
+        this.connectionLayouter = connectionLayouter;
+    }
+
     @Override
     public void setNodeSkinFactory(final Callback<GNode, GNodeSkin> skinFactory) {
-        this.nodeSkinFactory = skinFactory;
+        nodeSkinFactory = skinFactory;
     }
 
     @Override
@@ -361,6 +372,7 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
         }
         skin.setGraphEditor(graphEditor);
         skin.getRoot().setEditorProperties(graphEditor.getProperties());
+        skin.impl_setOnPositionMoved(onPositionMoved);
         return skin;
     }
 
@@ -371,7 +383,32 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
         }
         skin.setGraphEditor(graphEditor);
         skin.getRoot().setEditorProperties(graphEditor.getProperties());
+        skin.impl_setOnPositionMoved(onPositionMoved);
         skin.initialize();
         return skin;
+    }
+
+    private void positionMoved(final GSkin<?> pMovedSkin)
+    {
+        final ConnectionLayouter layouter = connectionLayouter;
+        if (layouter == null)
+        {
+            return;
+        }
+        if (pMovedSkin instanceof GNodeSkin)
+        {
+            for (final GConnector connector : ((GNodeSkin) pMovedSkin).getItem().getConnectors())
+            {
+                for (final GConnection connection : connector.getConnections())
+                {
+                    layouter.markDirty(connection);
+                }
+            }
+        }
+        else if (pMovedSkin instanceof GJointSkin)
+        {
+            layouter.markDirty(((GJointSkin) pMovedSkin).getItem().getConnection());
+        }
+        layouter.redrawDirty();
     }
 }

@@ -100,18 +100,27 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      * Creates and returns the {@link DraggableBox} that serves as the root for
      * this node skin.<br>
      * By default a {@link ResizableBox} will be created and return as most
-     * nodes will be draggable and resizable.
+     * nodes will be both draggable and resizable.
      *
      * @return {@link DraggableBox}
      */
     protected DraggableBox createContainer()
     {
-        return new ResizableBox() {
+        return new ResizableBox()
+        {
 
             @Override
-            protected void layoutChildren() {
+            protected void layoutChildren()
+            {
                 super.layoutChildren();
                 layoutConnectors();
+            }
+
+            @Override
+            protected void positionMoved()
+            {
+                super.positionMoved();
+                GNodeSkin.this.impl_positionMoved();
             }
         };
     }

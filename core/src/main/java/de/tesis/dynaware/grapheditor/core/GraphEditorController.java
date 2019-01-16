@@ -79,7 +79,7 @@ public class GraphEditorController {
 		connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
 		selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
 
-		view.setConnectionLayouter(connectionLayouter);
+        skinManager.setConnectionLayouter(connectionLayouter);
 	}
 
     /**
@@ -137,17 +137,18 @@ public class GraphEditorController {
     }
 
     /**
-     * Gets the selection manager currently being used.
+     * @return the selection manager currently being used.
      */
-    public SelectionManager getSelectionManager() {
+    public SelectionManager getSelectionManager()
+    {
         return selectionManager;
     }
 
     /**
      * Initializes everything for the current model.
      */
-    public void initializeAll() {
-
+    public void initializeAll()
+    {
         ModelSanityChecker.validate(model);
 
         modelMemory.setNewModelState(model);
@@ -158,14 +159,19 @@ public class GraphEditorController {
         connectionLayouter.initialize(model);
         connectorDragManager.initialize(model);
         selectionManager.initialize(model);
+
+        connectionLayouter.redrawAll();
     }
 
     /**
      * Sets the validator that determines what connections can be created.
      *
-     * @param validator a {@link GConnectorValidator} implementaiton, or null to use the default
+     * @param validator
+     *            a {@link GConnectorValidator} implementation, or null to use
+     *            the default
      */
-    public void setConnectorValidator(final GConnectorValidator validator) {
+    public void setConnectorValidator(final GConnectorValidator validator)
+    {
         connectorDragManager.setValidator(validator);
     }
 

@@ -50,29 +50,10 @@ public class GraphEditorView extends Region
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
 
-    private final Pane mNodeLayer = new Pane()
-    {
-
-        @Override
-        protected void layoutChildren()
-        {
-            super.layoutChildren();
-            redrawViewport();
-        }
-    };
-    private final Pane mConnectionLayer = new Pane()
-    {
-
-        @Override
-        protected void layoutChildren()
-        {
-            super.layoutChildren();
-            redrawViewport();
-        }
-    };
+    private final Pane mNodeLayer = new Pane();
+    private final Pane mConnectionLayer = new Pane();
 
     private final GraphEditorGrid mGrid = new GraphEditorGrid();
-    private ConnectionLayouter mConnectionLayouter;
 
     private final SelectionBox mSelectionBox = new SelectionBox();
 
@@ -90,17 +71,6 @@ public class GraphEditorView extends Region
         setMaxHeight(GraphEditorProperties.DEFAULT_MAX_HEIGHT);
 
         initializeLayers();
-    }
-
-    /**
-     * Sets the connection-layouter to be used by the view.
-     *
-     * @param pConnectionLayouter
-     *            the graph editor's {@link ConnectionLayouter} instance
-     */
-    public void setConnectionLayouter(final ConnectionLayouter pConnectionLayouter)
-    {
-        mConnectionLayouter = pConnectionLayouter;
     }
 
     /**
@@ -300,29 +270,6 @@ public class GraphEditorView extends Region
         mNodeLayer.resizeRelocate(0, 0, width, height);
         mConnectionLayer.resizeRelocate(0, 0, width, height);
         mGrid.resizeRelocate(0, 0, width, height);
-    }
-
-    void redrawViewport()
-    {
-        if (mConnectionLayouter != null)
-        {
-            mConnectionLayouter.redrawViewport();
-        }
-    }
-
-    void viewportMoved()
-    {
-        if (mConnectionLayouter != null)
-        {
-            mConnectionLayouter.viewportMoved();
-        }
-    }
-
-    @Override
-    public void relocate(double pX, double pY)
-    {
-        super.relocate(pX, pY);
-        viewportMoved();
     }
 
     /**
