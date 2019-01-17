@@ -3,11 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,7 @@ import javafx.geometry.Point2D;
 
 
 /**
- * Responsible for telling connection skins to draw themselves.
+ * Default implementation of {@link ConnectionLayouter}
  */
 public class DefaultConnectionLayouter implements ConnectionLayouter
 {
@@ -30,7 +28,6 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
 
     private final Map<GConnectionSkin, Point2D[]> mConnectionPoints = new HashMap<>();
     private final SkinLookup mSkinLookup;
-    private final Set<GConnection> mDirty = new HashSet<>();
     private GModel mModel;
 
     /**
@@ -52,31 +49,24 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
     }
 
     @Override
-    public void markDirty(final GConnection pConnection)
+    public void redraw(final Collection<GConnection> pConnections)
     {
-        if (mModel == null || mModel.getConnections().isEmpty())
+        if (mConnectionPoints.isEmpty())
         {
-            return;
-        }
-
-        mDirty.add(pConnection);
-    }
-
-    @Override
-    public void redrawDirty()
-    {
-        if (mDirty.isEmpty())
-        {
-            return;
-        }
-        else if (mConnectionPoints.isEmpty())
-        {
+            // we need all points of all connection first:
             redrawAll();
         }
 
         try
         {
-            redrawDirtyConnections();
+            for (final GConnection connection : pConnections)
+            {
+                if (connection == null)
+                {
+                    break;
+                }
+                redrawSingleConnection(connection);
+            }
         }
         catch (Exception e)
         {
@@ -84,38 +74,56 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
         }
     }
 
-    private void redrawDirtyConnections()
+    @Override
+    public void redraw(final GConnection pConnection)
     {
-        final GConnection[] dirty = mDirty.toArray(new GConnection[mDirty.size()]);
-        mDirty.clear();
-
-        for (final GConnection connection : dirty)
+        if (mConnectionPoints.isEmpty())
         {
-            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
-            if (connectionSkin != null)
-            {
-                final Point2D[] points = connectionSkin.update();
-                if (points != null)
-                {
-                    mConnectionPoints.put(connectionSkin, points);
-                }
+            // we need all points of all connection first:
+            redrawAll();
+        }
 
-                connectionSkin.draw(mConnectionPoints);
+        try
+        {
+            redrawSingleConnection(pConnection);
+        }
+        catch (Exception e)
+        {
+            LOGGER.debug("Could not redraw dirty Connections: ", e); //$NON-NLS-1$
+        }
+    }
+
+    private void redrawSingleConnection(final GConnection pConnection)
+    {
+        final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(pConnection);
+        if (connectionSkin != null)
+        {
+            final Point2D[] points = connectionSkin.update();
+            if (points != null)
+            {
+                mConnectionPoints.put(connectionSkin, points);
             }
+
+            connectionSkin.draw(mConnectionPoints);
         }
     }
 
     @Override
     public void redrawAll()
     {
-        if (mModel == null || mModel.getConnections().isEmpty())
+        if (mModel == null)
         {
+            // not yet initialized:
             return;
         }
 
         try
         {
-            redrawAllConnections();
+            mConnectionPoints.clear();
+            if (!mModel.getConnections().isEmpty())
+            {
+                redrawAllConnections();
+            }
         }
         catch (Exception e)
         {
@@ -125,8 +133,6 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
 
     private void redrawAllConnections()
     {
-        mConnectionPoints.clear();
-
         for (final GConnection connection : mModel.getConnections())
         {
             final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
@@ -140,9 +146,9 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
             }
         }
 
-        for (final Entry<GConnectionSkin, Point2D[]> entry : mConnectionPoints.entrySet())
+        for (final GConnectionSkin skin : mConnectionPoints.keySet())
         {
-            entry.getKey().draw(mConnectionPoints);
+            skin.draw(mConnectionPoints);
         }
     }
 }

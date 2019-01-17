@@ -397,18 +397,16 @@ public class SkinManager implements SkinLookup, GraphEditorSkins {
         }
         if (pMovedSkin instanceof GNodeSkin)
         {
+            // redraw all connections attached to each connector of the GNode:
             for (final GConnector connector : ((GNodeSkin) pMovedSkin).getItem().getConnectors())
             {
-                for (final GConnection connection : connector.getConnections())
-                {
-                    layouter.markDirty(connection);
-                }
+                layouter.redraw(connector.getConnections());
             }
         }
         else if (pMovedSkin instanceof GJointSkin)
         {
-            layouter.markDirty(((GJointSkin) pMovedSkin).getItem().getConnection());
+            // redraw the GConnection of the GJoint:
+            layouter.redraw(((GJointSkin) pMovedSkin).getItem().getConnection());
         }
-        layouter.redrawDirty();
     }
 }

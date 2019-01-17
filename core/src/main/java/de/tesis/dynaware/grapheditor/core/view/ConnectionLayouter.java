@@ -3,6 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
+import java.util.Collection;
+
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 
@@ -27,15 +29,18 @@ public interface ConnectionLayouter
     void redrawAll();
 
     /**
-     * Redraws all dirty connections according to the latest layout values.
+     * Redraw the given connection according to the latest layout values.
+     *
+     * @param pConnection
+     *            connection to redraw
      */
-    void redrawDirty();
+    void redraw(final GConnection pConnection);
 
     /**
-     * Mark a connection as dirty
-     * 
-     * @param pConnection
-     *            {@link GConnection} to flag
+     * Redraw the given connections according to the latest layout values.
+     *
+     * @param pConnections
+     *            connections to redraw
      */
-    void markDirty(final GConnection pConnection);
+    void redraw(final Collection<GConnection> pConnections);
 }

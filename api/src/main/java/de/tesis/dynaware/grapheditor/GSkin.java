@@ -20,22 +20,27 @@ import javafx.scene.Node;
  * @param <T>
  *            A subtype of {@link EObject} that the Skin represents.
  */
-public abstract class GSkin<T extends EObject> {
+public abstract class GSkin<T extends EObject>
+{
 
-    private final BooleanProperty selectedProperty = new BooleanPropertyBase(false){
+    private final BooleanProperty selectedProperty = new BooleanPropertyBase(false)
+    {
 
         @Override
-        protected void invalidated() {
+        protected void invalidated()
+        {
             selectionChanged(get());
         }
 
         @Override
-        public Object getBean() {
+        public Object getBean()
+        {
             return GSkin.this;
         }
 
         @Override
-        public String getName() {
+        public String getName()
+        {
             return "selected"; //$NON-NLS-1$
         }
 
@@ -51,16 +56,19 @@ public abstract class GSkin<T extends EObject> {
      * @param pItem
      *            item represented by this skin
      */
-    protected GSkin(T pItem) {
+    protected GSkin(T pItem)
+    {
         this.item = pItem;
     }
 
     /**
      * Sets the graph editor instance that this skin is a part of.
      *
-     * @param pGraphEditor a {@link GraphEditor} instance
+     * @param pGraphEditor
+     *            a {@link GraphEditor} instance
      */
-    public void setGraphEditor(final GraphEditor pGraphEditor) {
+    public void setGraphEditor(final GraphEditor pGraphEditor)
+    {
         this.graphEditor = pGraphEditor;
         updateSelection();
     }
@@ -69,12 +77,14 @@ public abstract class GSkin<T extends EObject> {
      * Gets the graph editor instance that this skin is a part of.
      *
      * <p>
-     * This is provided for advanced skin customization purposes only. Use at your own risk.
+     * This is provided for advanced skin customization purposes only. Use at
+     * your own risk.
      * </p>
      *
      * @return the {@link GraphEditor} instance that this skin is a part of
      */
-    protected GraphEditor getGraphEditor() {
+    protected GraphEditor getGraphEditor()
+    {
         return graphEditor;
     }
 
@@ -83,64 +93,77 @@ public abstract class GSkin<T extends EObject> {
      *
      * @return {@code true} if the skin is selected, {@code false} if not
      */
-    public boolean isSelected() {
+    public boolean isSelected()
+    {
         return selectedProperty.get();
     }
 
     /**
      * Sets whether the skin is selected or not.
      * <p>
-     * <b>Should not</b> be called directly, the selection state is managed by the
-     * selection manager of the graph editor!
+     * <b>Should not</b> be called directly, the selection state is managed by
+     * the selection manager of the graph editor!
      * </p>
      *
      * @param isSelected
      *            {@code true} if the skin is selected, {@code false} if not
      */
-    protected void setSelected(final boolean isSelected) {
+    protected void setSelected(final boolean isSelected)
+    {
         selectedProperty.set(isSelected);
     }
 
     /**
      * Updates whether this skin is in a selected state or not.
-     * <p>This method will be automatically called by the SelectionTracker when needed.</p>
+     * <p>
+     * This method will be automatically called by the SelectionTracker when
+     * needed.
+     * </p>
      */
-    public void updateSelection() {
-        boolean isSelected = isSelected();
-        if(graphEditor == null) {
+    public void updateSelection()
+    {
+        final boolean isSelected;
+        if (graphEditor == null)
+        {
             isSelected = false;
         }
-        else {
+        else
+        {
             isSelected = graphEditor.getSelectionManager().isSelected(item);
         }
 
-        if(isSelected() != isSelected) {
+        if (isSelected() != isSelected)
+        {
             setSelected(isSelected);
         }
     }
 
-
     /**
      * The property that determines whether the skin is selected or not.
      *
-     * @return a {@link BooleanProperty} containing {@code true} if the skin is selected, {@code false} if not
+     * @return a {@link BooleanProperty} containing {@code true} if the skin is
+     *         selected, {@code false} if not
      */
-    public ReadOnlyBooleanProperty selectedProperty() {
+    public ReadOnlyBooleanProperty selectedProperty()
+    {
         return selectedProperty;
     }
 
     /**
      * Is called whenever the selection state has changed.
      *
-     * @param isSelected {@code true} if the skin is selected, {@code false} if not
+     * @param isSelected
+     *            {@code true} if the skin is selected, {@code false} if not
      */
     protected abstract void selectionChanged(final boolean isSelected);
 
     /**
      * Called after the skin is removed. Can be overridden for cleanup.
      */
-    public void dispose() {
-        // No default implementation.
+    public void dispose()
+    {
+        onPositionMoved = null;
+        graphEditor = null;
     }
 
     /**
@@ -153,7 +176,8 @@ public abstract class GSkin<T extends EObject> {
     /**
      * @return item represented by this skin
      */
-    public final T getItem() {
+    public final T getItem()
+    {
         return item;
     }
 
@@ -161,7 +185,7 @@ public abstract class GSkin<T extends EObject> {
      * <p>
      * INTERNAL API
      * </p>
-     * 
+     *
      * @param pOnPositionMoved
      *            internal update hook to be informed when the position has been
      *            changed
