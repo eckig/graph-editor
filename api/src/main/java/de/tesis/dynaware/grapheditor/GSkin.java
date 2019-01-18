@@ -122,20 +122,7 @@ public abstract class GSkin<T extends EObject>
      */
     public void updateSelection()
     {
-        final boolean isSelected;
-        if (graphEditor == null)
-        {
-            isSelected = false;
-        }
-        else
-        {
-            isSelected = graphEditor.getSelectionManager().isSelected(item);
-        }
-
-        if (isSelected() != isSelected)
-        {
-            setSelected(isSelected);
-        }
+        setSelected(graphEditor == null ? false : graphEditor.getSelectionManager().isSelected(item));
     }
 
     /**
