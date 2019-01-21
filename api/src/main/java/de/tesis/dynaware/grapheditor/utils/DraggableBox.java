@@ -358,15 +358,15 @@ public class DraggableBox extends StackPane
     /**
      * Rounds some value to the nearest multiple of the grid spacing.
      *
-     * @param value a double value
+     * @param value
+     *            a double value
      *
-     * @return the input value rounded to the nearest multiple of the grid spacing
+     * @return the input value rounded to the nearest multiple of the grid
+     *         spacing
      */
-    protected double roundToGridSpacing(final double value) {
-
-        final double spacing = editorProperties == null ? GraphEditorProperties.DEFAULT_GRID_SPACING
-                : editorProperties.getGridSpacing();
-        return spacing * Math.round(value / spacing);
+    protected double roundToGridSpacing(final double value)
+    {
+        return GeometryUtils.roundToGridSpacing(editorProperties, value);
     }
 
     /**
