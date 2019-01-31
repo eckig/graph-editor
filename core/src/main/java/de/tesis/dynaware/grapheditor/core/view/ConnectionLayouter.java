@@ -29,6 +29,14 @@ public interface ConnectionLayouter
     void redrawAll();
 
     /**
+     * Marks the complete connection layout as dirty. The next layout pass will
+     * re-layout all connections (during {@link #redrawAll()}).
+     *
+     * @since 31.01.2019
+     */
+    void requestLayout();
+
+    /**
      * Redraw the given connection according to the latest layout values.
      *
      * @param pConnection

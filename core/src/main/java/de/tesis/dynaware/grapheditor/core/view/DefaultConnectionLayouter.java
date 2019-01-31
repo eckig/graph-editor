@@ -28,6 +28,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
 
     private final Map<GConnectionSkin, Point2D[]> mConnectionPoints = new HashMap<>();
     private final SkinLookup mSkinLookup;
+    private boolean mDirty = true;
     private GModel mModel;
 
     /**
@@ -54,6 +55,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
         if (mConnectionPoints.isEmpty())
         {
             // we need all points of all connection first:
+            mDirty = true;
             redrawAll();
         }
 
@@ -80,6 +82,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
         if (mConnectionPoints.isEmpty())
         {
             // we need all points of all connection first:
+            mDirty = true;
             redrawAll();
         }
 
@@ -109,11 +112,16 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
     }
 
     @Override
+    public void requestLayout()
+    {
+        mDirty = true;
+    }
+
+    @Override
     public void redrawAll()
     {
-        if (mModel == null)
+        if (mModel == null || !mDirty)
         {
-            // not yet initialized:
             return;
         }
 
@@ -124,6 +132,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
             {
                 redrawAllConnections();
             }
+            mDirty = false;
         }
         catch (Exception e)
         {

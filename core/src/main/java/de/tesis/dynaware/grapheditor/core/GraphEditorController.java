@@ -80,6 +80,7 @@ public class GraphEditorController {
 		selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
 
         skinManager.setConnectionLayouter(connectionLayouter);
+        view.setConnectionLayouter(connectionLayouter);
 	}
 
     /**
@@ -160,7 +161,7 @@ public class GraphEditorController {
         connectorDragManager.initialize(model);
         selectionManager.initialize(model);
 
-        connectionLayouter.redrawAll();
+        connectionLayouter.requestLayout();
     }
 
     /**
