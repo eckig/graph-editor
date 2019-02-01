@@ -185,30 +185,38 @@ public class ResizableBox extends DraggableBox
             case NORTHEAST:
                 handleResizeNorth(y);
                 handleResizeEast(x);
+                positionMoved();
                 break;
             case NORTHWEST:
                 handleResizeNorth(y);
                 handleResizeWest(x);
+                positionMoved();
                 break;
             case SOUTHEAST:
                 handleResizeSouth(y);
                 handleResizeEast(x);
+                positionMoved();
                 break;
             case SOUTHWEST:
                 handleResizeSouth(y);
                 handleResizeWest(x);
+                positionMoved();
                 break;
             case NORTH:
                 handleResizeNorth(y);
+                positionMoved();
                 break;
             case SOUTH:
                 handleResizeSouth(y);
+                positionMoved();
                 break;
             case EAST:
                 handleResizeEast(x);
+                positionMoved();
                 break;
             case WEST:
                 handleResizeWest(x);
+                positionMoved();
                 break;
 
             case INSIDE:
