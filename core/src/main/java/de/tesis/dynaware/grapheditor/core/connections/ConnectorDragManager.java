@@ -6,7 +6,6 @@ package de.tesis.dynaware.grapheditor.core.connections;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,8 +57,6 @@ public class ConnectorDragManager {
      * not move on connection detach
      */
     private final EventHandler<MouseEvent> mousePressedHandler = Event::consume;
-
-    private final List<Node> managedConnectorSkins = new ArrayList<>();
 
     private final Map<Node, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
@@ -146,13 +143,14 @@ public class ConnectorDragManager {
         addMouseHandlers(connector);
     }
 
-    public void removeConnector(final GConnector connector) {
-
-        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        if (connectorSkin != null) {
+    public void removeConnector(final GConnector pConnectorToRemove)
+    {
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(pConnectorToRemove);
+        if (connectorSkin != null)
+        {
             final Node root = connectorSkin.getRoot();
-            if (root != null) {
-
+            if (root != null)
+            {
                 removeSingleEventHandler(root, mouseEnteredHandlers, MouseEvent.MOUSE_ENTERED);
                 removeSingleEventHandler(root, mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
                 removeSingleEventHandler(root, dragDetectedHandlers, MouseEvent.DRAG_DETECTED);
@@ -162,25 +160,28 @@ public class ConnectorDragManager {
                 removeSingleEventHandler(root, mouseDragReleasedHandlers, MouseDragEvent.MOUSE_DRAG_RELEASED);
 
                 removeGeneralEventHandlers(root);
-                managedConnectorSkins.remove(root);
             }
         }
 
         // the connector's tail we are dragging around has been removed..
-        if(sourceConnector == connector || targetConnector == connector) {
+        if (sourceConnector == pConnectorToRemove || targetConnector == pConnectorToRemove || removalConnector == pConnectorToRemove)
+        {
             clearTrackingParameters();
         }
     }
 
-    private void removeGeneralEventHandlers(final Node node) {
+    private void removeGeneralEventHandlers(final Node node)
+    {
         node.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
-        node.removeEventHandler(MouseEvent.MOUSE_EXITED, mousePressedHandler);
+        node.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedHandler);
     }
 
-    private <T extends Event> void removeSingleEventHandler(final Node node, final Map<Node, EventHandler<T>> eventHandlerMap,
-            final EventType<T> eventType) {
+    private static <T extends Event> void removeSingleEventHandler(final Node node, final Map<Node, EventHandler<T>> eventHandlerMap,
+            final EventType<T> eventType)
+    {
         final EventHandler<T> handler = eventHandlerMap.remove(node);
-        if (handler != null) {
+        if (handler != null)
+        {
             node.removeEventHandler(eventType, handler);
         }
     }
@@ -189,7 +190,13 @@ public class ConnectorDragManager {
      * Sets all mouse and mouse-drag handlers for all connectors in the current
      * model.
      */
-    private void setHandlers() {
+    private void setHandlers()
+    {
+        // here we assume that all event handler maps are of exactly the same size
+        for (final Node node : mouseEnteredHandlers.keySet())
+        {
+            removeGeneralEventHandlers(node);
+        }
 
         EventUtils.removeEventHandlers(mouseEnteredHandlers, MouseEvent.MOUSE_ENTERED);
         EventUtils.removeEventHandlers(mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
@@ -199,14 +206,10 @@ public class ConnectorDragManager {
         EventUtils.removeEventHandlers(mouseDragExitedHandlers, MouseDragEvent.MOUSE_DRAG_EXITED);
         EventUtils.removeEventHandlers(mouseDragReleasedHandlers, MouseDragEvent.MOUSE_DRAG_RELEASED);
 
-        for (final Iterator<Node> iter = managedConnectorSkins.iterator(); iter.hasNext();) {
-            final Node next = iter.next();
-            removeGeneralEventHandlers(next);
-            iter.remove();
-        }
-
-        for (final GNode node : model.getNodes()) {
-            for (final GConnector connector : node.getConnectors()) {
+        for (final GNode node : model.getNodes())
+        {
+            for (final GConnector connector : node.getConnectors())
+            {
                 addMouseHandlers(connector);
             }
         }
@@ -247,8 +250,6 @@ public class ConnectorDragManager {
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, newMouseDragEnteredHandler);
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, newMouseDragExitedHandler);
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, newMouseDragReleasedHandler);
-
-            managedConnectorSkins.add(root);
 
             mouseEnteredHandlers.put(root, newMouseEnteredHandler);
             mouseReleasedHandlers.put(root, newMouseReleasedHandler);
@@ -541,7 +542,11 @@ public class ConnectorDragManager {
      */
     private void detachConnection(final MouseEvent event, final GConnector connector)
     {
-        skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
+        GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        if (connectorSkin != null)
+        {
+            connectorSkin.applyStyle(GConnectorStyle.DEFAULT);
+        }
 
         if (connector.getConnections().isEmpty())
         {
@@ -567,6 +572,12 @@ public class ConnectorDragManager {
             }
 
             ConnectionCommands.removeConnection(model, connection, connectionEventManager);
+
+            if ((connectorSkin = skinLookup.lookupConnector(connector)) == null)
+            {
+                // by removing this connection the business logic decided to remove the entire connector..
+                continue;
+            }
 
             // check if the new source connector allows to create a new connection on the fly:
             if (!followUpCreated && checkCreatable(opposingConnector))

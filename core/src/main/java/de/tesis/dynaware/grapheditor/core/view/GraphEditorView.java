@@ -156,7 +156,8 @@ public class GraphEditorView extends Region
     {
         if (pTailSkin != null)
         {
-            mConnectionLayer.getChildren().add(pTailSkin.getRoot());
+            // add to back:
+            mConnectionLayer.getChildren().add(0, pTailSkin.getRoot());
         }
     }
 
