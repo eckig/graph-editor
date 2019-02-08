@@ -375,7 +375,7 @@ public class DraggableBox extends StackPane
      *
      * @since 16.01.2019
      */
-    protected void positionMoved()
+    public void positionMoved()
     {
         // empty, to be overridden by custom skin logic
     }

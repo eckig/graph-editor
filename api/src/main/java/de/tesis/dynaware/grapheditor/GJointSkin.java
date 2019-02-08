@@ -24,7 +24,7 @@ public abstract class GJointSkin extends GSkin<GJoint> {
     {
 
         @Override
-        protected final void positionMoved()
+        public final void positionMoved()
         {
             super.positionMoved();
             GJointSkin.this.impl_positionMoved();

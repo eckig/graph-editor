@@ -305,7 +305,7 @@ public class GraphEditorView extends Region
     {
         if (mConnectionLayouter != null)
         {
-            mConnectionLayouter.redrawAll();
+            mConnectionLayouter.draw();
         }
     }
 

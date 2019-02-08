@@ -117,7 +117,7 @@ public abstract class GNodeSkin extends GSkin<GNode> {
             }
 
             @Override
-            protected void positionMoved()
+            public void positionMoved()
             {
                 super.positionMoved();
                 GNodeSkin.this.impl_positionMoved();

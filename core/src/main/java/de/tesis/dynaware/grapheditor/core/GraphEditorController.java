@@ -161,7 +161,7 @@ public class GraphEditorController {
         connectorDragManager.initialize(model);
         selectionManager.initialize(model);
 
-        connectionLayouter.requestLayout();
+        connectionLayouter.redrawAll();
     }
 
     /**

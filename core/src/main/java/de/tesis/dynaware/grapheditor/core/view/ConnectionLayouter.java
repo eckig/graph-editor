@@ -24,17 +24,17 @@ public interface ConnectionLayouter
     void initialize(final GModel pModel);
 
     /**
-     * Redraws all connections according to the latest layout values.
+     * Draws all connections according to the latest layout values.
      */
-    void redrawAll();
+    void draw();
 
     /**
      * Marks the complete connection layout as dirty. The next layout pass will
-     * re-layout all connections (during {@link #redrawAll()}).
+     * re-layout all connections (during {@link #draw()}).
      *
      * @since 31.01.2019
      */
-    void requestLayout();
+    void redrawAll();
 
     /**
      * Redraw the given connection according to the latest layout values.
