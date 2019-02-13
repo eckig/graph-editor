@@ -252,26 +252,15 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * @param pGesture
-     *            {@link GraphInputGesture}
-     * @param pEvent
-     *            {@link Event}
-     * @return can active the given gesture
-     */
-    boolean canActivate(final GraphInputGesture pGesture, final Event pEvent)
-    {
-        return editorProperties != null && editorProperties.canActivate(pGesture, pEvent);
-    }
-
-    /**
      * activate the given {@link GraphInputGesture}
      */
-    void activateGesture(final GraphInputGesture pGesture)
+    boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent)
     {
         if (editorProperties != null)
         {
-            editorProperties.activateInputGesture(pGesture);
+            return editorProperties.activateGesture(pGesture, pEvent, this);
         }
+        return true;
     }
 
     /**
@@ -279,7 +268,7 @@ public class DraggableBox extends StackPane
      */
     boolean finishGesture(final GraphInputGesture pGesture)
     {
-        return editorProperties != null && editorProperties.finishInputGesture(pGesture);
+        return editorProperties == null || editorProperties.finishGesture(pGesture, this);
     }
 
     /**
@@ -295,12 +284,9 @@ public class DraggableBox extends StackPane
             return;
         }
 
-        if (canActivate(GraphInputGesture.MOVE, pEvent))
-        {
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
-            storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
-            pEvent.consume();
-        }
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
+        storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
+        pEvent.consume();
     }
 
     /**
@@ -310,18 +296,14 @@ public class DraggableBox extends StackPane
      */
     protected void handleMouseDragged(final MouseEvent pEvent)
     {
-        if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable())
+        if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable() || !activateGesture(GraphInputGesture.MOVE, pEvent))
         {
             return;
         }
 
-        if (canActivate(GraphInputGesture.MOVE, pEvent))
-        {
-            final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
-            handleDrag(cursorPosition.getX(), cursorPosition.getY());
-            activateGesture(GraphInputGesture.MOVE);
-            pEvent.consume();
-        }
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
+        handleDrag(cursorPosition.getX(), cursorPosition.getY());
+        pEvent.consume();
     }
 
     /**

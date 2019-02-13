@@ -39,7 +39,13 @@ public class AutoScrollingWindow extends PanningWindow
     public AutoScrollingWindow()
     {
         addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
-        addEventFilter(MouseEvent.MOUSE_RELEASED, ev -> handleMouseReleased());
+    }
+
+    @Override
+    protected void handlePanningMouseReleased(MouseEvent pEvent)
+    {
+        super.handlePanningMouseReleased(pEvent);
+        endScrolling();
     }
 
     /**
@@ -101,14 +107,6 @@ public class AutoScrollingWindow extends PanningWindow
             }
         }
         return false;
-    }
-
-    /**
-     * Handles mouse released events.
-     */
-    private void handleMouseReleased()
-    {
-        endScrolling();
     }
 
     /**

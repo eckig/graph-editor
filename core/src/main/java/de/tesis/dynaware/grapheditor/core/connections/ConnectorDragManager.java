@@ -24,6 +24,7 @@ import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import de.tesis.dynaware.grapheditor.utils.GraphEventManager;
 import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -316,35 +317,33 @@ public class ConnectorDragManager {
     /**
      * Handles drag-detected events on the given connector.
      *
-     * @param event
+     * @param pEvent
      *            a drag-detected event
      * @param connectorSkin
      *            the {@link GConnectorSkin} on which this event occurred
      */
-    private void handleDragDetected(final MouseEvent event, final GConnectorSkin connectorSkin)
+    private void handleDragDetected(final MouseEvent pEvent, final GConnectorSkin connectorSkin)
     {
-        if (!event.getButton().equals(MouseButton.PRIMARY) || !canActivateGesture(event))
+        if (pEvent.getButton() != MouseButton.PRIMARY)
         {
             return;
         }
 
         final GConnector connector = connectorSkin.getItem();
-        if (checkCreatable(connector))
+        if (checkCreatable(connector) && activateGesture(pEvent))
         {
             sourceConnector = connector;
             connectorSkin.getRoot().startFullDrag();
             tailManager.cleanUp();
-            tailManager.create(connector, event);
-            activateGesture();
+            tailManager.create(connector, pEvent);
         }
-        else if (checkRemovable(connector))
+        else if (checkRemovable(connector) && activateGesture(pEvent))
         {
             removalConnector = connector;
             connectorSkin.getRoot().startFullDrag();
-            activateGesture();
         }
 
-        event.consume();
+        pEvent.consume();
     }
 
     /**
@@ -357,15 +356,8 @@ public class ConnectorDragManager {
      */
     private void handleMouseDragged(final MouseEvent event, final GConnector connector)
     {
-        if (!canActivateGesture(event))
+        if (repositionAllowed && activateGesture(event))
         {
-            return;
-        }
-
-        if (repositionAllowed)
-        {
-            activateGesture();
-
             // Case for when the mouse first exits a connector during a drag gesture.
             if (removalConnector != null && !removalConnector.equals(hoveredConnector))
             {
@@ -388,7 +380,7 @@ public class ConnectorDragManager {
      */
     private void handleDragEntered(final MouseEvent event, final GConnectorSkin connectorSkin)
     {
-        if (!canActivateGesture(event))
+        if (!activateGesture(event))
         {
             return;
         }
@@ -613,25 +605,23 @@ public class ConnectorDragManager {
         }
     }
 
-    private boolean canActivateGesture(final Event pEvent)
+    private boolean activateGesture(final Event pEvent)
     {
-        final GraphEditorProperties props = getEditorProperties();
-        return props != null && props.canActivate(GraphInputGesture.CONNECT, pEvent);
+        final GraphEventManager eventManager = getEditorProperties();
+        if (eventManager != null)
+        {
+            eventManager.activateGesture(GraphInputGesture.CONNECT, pEvent, this);
+        }
+        return true;
     }
 
-    private void activateGesture()
+    private boolean finishGesture()
     {
-        if (getEditorProperties() != null)
+        final GraphEventManager eventManager = getEditorProperties();
+        if (eventManager != null)
         {
-            getEditorProperties().activateInputGesture(GraphInputGesture.CONNECT);
+            return eventManager.finishGesture(GraphInputGesture.CONNECT, this);
         }
-    }
-
-    private void finishGesture()
-    {
-        if (getEditorProperties() != null)
-        {
-            getEditorProperties().finishInputGesture(GraphInputGesture.CONNECT);
-        }
+        return true;
     }
 }

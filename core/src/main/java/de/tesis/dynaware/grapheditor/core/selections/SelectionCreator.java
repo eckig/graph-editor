@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -27,6 +26,7 @@ import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEventManager;
 import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.WeakEventHandler;
 import javafx.geometry.Point2D;
@@ -375,12 +375,10 @@ public class SelectionCreator
      */
     private void handleViewPressed(final MouseEvent pEvent)
     {
-        if (model == null || !canSelect(pEvent) || pEvent.isConsumed())
+        if (model == null || pEvent.isConsumed() || !activateGesture(pEvent))
         {
             return;
         }
-
-        getEventManager().ifPresent(m -> m.activateInputGesture(GraphInputGesture.SELECT));
 
         if (!pEvent.isShortcutDown())
         {
@@ -402,7 +400,7 @@ public class SelectionCreator
      */
     private void handleViewDragged(final MouseEvent pEvent)
     {
-        if (model == null || !canSelect(pEvent) || pEvent.isConsumed() || selectionBoxStart == null)
+        if (model == null || pEvent.isConsumed() || selectionBoxStart == null || !activateGesture(pEvent))
         {
             return;
         }
@@ -424,7 +422,10 @@ public class SelectionCreator
     private void handleViewReleased(final MouseEvent event)
     {
         selectionBoxStart = null;
-        getEventManager().ifPresent(m -> m.finishInputGesture(GraphInputGesture.SELECT));
+        if (finishGesture())
+        {
+            event.consume();
+        }
         view.hideSelectionBox();
     }
 
@@ -439,16 +440,6 @@ public class SelectionCreator
 
     private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown) {
         return isShortcutDown && selectedConnectionsBackup.contains(connection);
-    }
-
-    private Optional<GraphEventManager> getEventManager()
-    {
-        return Optional.ofNullable(view.getEditorProperties());
-    }
-
-    private boolean canSelect(final MouseEvent event)
-    {
-        return getEventManager().map(m -> m.canActivate(GraphInputGesture.SELECT, event)).orElse(false);
     }
 
     /**
@@ -532,5 +523,25 @@ public class SelectionCreator
         final double height = Math.abs(selectionBoxStart.getY() - selectionBoxEnd.getY());
 
         selection = new Rectangle2D(x, y, width, height);
+    }
+
+    private boolean activateGesture(final Event pEvent)
+    {
+        final GraphEventManager eventManager = view.getEditorProperties();
+        if (eventManager != null)
+        {
+            return eventManager.activateGesture(GraphInputGesture.SELECT, pEvent, this);
+        }
+        return true;
+    }
+
+    private boolean finishGesture()
+    {
+        final GraphEventManager eventManager = view.getEditorProperties();
+        if (eventManager != null)
+        {
+            return eventManager.finishGesture(GraphInputGesture.SELECT, this);
+        }
+        return true;
     }
 }

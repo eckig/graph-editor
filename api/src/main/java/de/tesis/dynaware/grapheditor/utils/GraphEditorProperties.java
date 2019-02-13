@@ -5,7 +5,6 @@ package de.tesis.dynaware.grapheditor.utils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -324,32 +323,14 @@ public class GraphEditorProperties implements GraphEventManager
     }
 
     @Override
-    public GraphInputGesture getInputGesture()
+    public boolean activateGesture(GraphInputGesture pGesture, Event pEvent, Object pOwner)
     {
-        return eventManager.getInputGesture();
+        return eventManager.activateGesture(pGesture, pEvent, pOwner);
     }
 
     @Override
-    public void activateInputGesture(GraphInputGesture pInputMode)
+    public boolean finishGesture(GraphInputGesture pExpected, Object pOwner)
     {
-        eventManager.activateInputGesture(pInputMode);
-    }
-
-    @Override
-    public boolean finishInputGesture(GraphInputGesture pExpected)
-    {
-        return eventManager.finishInputGesture(pExpected);
-    }
-
-    @Override
-    public ObjectProperty<GraphInputGesture> inputGestureProperty()
-    {
-        return eventManager.inputGestureProperty();
-    }
-
-    @Override
-    public boolean canActivate(GraphInputGesture pGesture, Event pEvent)
-    {
-        return eventManager.canActivate(pGesture, pEvent);
+        return eventManager.finishGesture(pExpected, pOwner);
     }
 }

@@ -65,20 +65,20 @@ public class PanningWindow extends Region {
 
     private final EventHandler<MouseEvent> mousePressedHandler = this::handlePanningMousePressed;
     private final EventHandler<MouseEvent> mouseDraggedHandler = this::handlePanningMouseDragged;
-    private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningFinished;
+    private final EventHandler<MouseEvent> mouseReleasedHandler = this::handlePanningMouseReleased;
 
     private final EventHandler<TouchEvent> touchPressedHandler = this::handlePanningTouchPressed;
     private final EventHandler<TouchEvent> touchDraggedHandler = this::handlePanningTouchDragged;
     private final EventHandler<TouchEvent> touchReleasedHandler = this::handlePanningFinished;
+
+    private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
+    private final EventHandler<ScrollEvent> scrollHandler = this::handleScroll;
 
     private Point2D clickPosition;
     private Point2D windowPosAtClick;
 
     private final DoubleProperty zoom = new SimpleDoubleProperty(1);
     private final Scale scale = new Scale();
-
-    private final EventHandler<ZoomEvent> zoomHandler = this::handleZoom;
-    private final EventHandler<ScrollEvent> scrollHandler = this::handleScroll;
 
     private GraphEditorProperties properties;
 
@@ -311,12 +311,24 @@ public class PanningWindow extends Region {
 
     private double getMaxX()
     {
-        return content != null ? content.getBoundsInParent().getWidth() - getWidth() : 0;
+        final Region theContent = content;
+        if (theContent != null)
+        {
+            final double zoomFactor = theContent.getLocalToSceneTransform().getMxx();
+            return zoomFactor * theContent.getWidth() - getWidth();
+        }
+        return 0;
     }
 
     private double getMaxY()
     {
-        return content != null ? content.getBoundsInParent().getHeight() - getHeight() : 0;
+        final Region theContent = content;
+        if (theContent != null)
+        {
+            final double zoomFactor = theContent.getLocalToSceneTransform().getMxx();
+            return zoomFactor * theContent.getHeight() - getHeight();
+        }
+        return 0;
     }
 
     private double checkContentX(final double xToCheck)
@@ -377,24 +389,30 @@ public class PanningWindow extends Region {
         }
     }
 
-    private boolean canPan(final Event event)
-    {
-        return properties != null && properties.canActivate(GraphInputGesture.PAN, event);
-    }
-
     private void handlePanningMousePressed(final MouseEvent event)
     {
-        if (canPan(event))
+        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
         {
             startPanning(event.getScreenX(), event.getScreenY());
         }
     }
 
+    /**
+     * Handle mouse released event
+     *
+     * @param pEvent
+     *            {@link MouseEvent}
+     */
+    protected void handlePanningMouseReleased(final MouseEvent pEvent)
+    {
+        handlePanningFinished(pEvent);
+    }
+
     private void handlePanningMouseDragged(final MouseEvent event)
     {
-        if (canPan(event))
+        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
         {
-            if (properties.getInputGesture() == null)
+            if (!Cursor.MOVE.equals(getCursor()))
             {
                 startPanning(event.getScreenX(), event.getScreenY());
             }
@@ -411,7 +429,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningFinished(final Event event)
     {
-        if (properties != null && properties.finishInputGesture(GraphInputGesture.PAN))
+        if (properties != null && properties.finishGesture(GraphInputGesture.PAN, this))
         {
             setCursor(null);
             event.consume();
@@ -420,7 +438,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningTouchPressed(final TouchEvent event)
     {
-        if (canPan(event))
+        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
         {
             startPanning(event.getTouchPoint().getScreenX(), event.getTouchPoint().getScreenY());
         }
@@ -428,9 +446,9 @@ public class PanningWindow extends Region {
 
     private void handlePanningTouchDragged(final TouchEvent event)
     {
-        if (canPan(event))
+        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
         {
-            if (properties.getInputGesture() == null)
+            if (!Cursor.MOVE.equals(getCursor()))
             {
                 startPanning(event.getTouchPoint().getScreenX(), event.getTouchPoint().getScreenY());
             }
@@ -454,41 +472,54 @@ public class PanningWindow extends Region {
             return;
         }
 
-        if (properties.canActivate(GraphInputGesture.ZOOM, pEvent))
+        if (properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
         {
-            final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
-            final double newZoomLevel = getZoom() + modifier;
-            setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
-            pEvent.consume();
+            try
+            {
+                final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
+                setZoomAt(getZoom() + modifier, pEvent.getX(), pEvent.getY());
+                pEvent.consume();
+            }
+            finally
+            {
+                properties.finishGesture(GraphInputGesture.ZOOM, this);
+            }
         }
-        else if (properties.canActivate(GraphInputGesture.PAN, pEvent))
+        else if (properties.activateGesture(GraphInputGesture.PAN, pEvent, this))
         {
-            panTo(getContentX() - pEvent.getDeltaX(), getContentY() - pEvent.getDeltaY());
-            pEvent.consume();
+            try
+            {
+                panTo(getContentX() - pEvent.getDeltaX(), getContentY() - pEvent.getDeltaY());
+                pEvent.consume();
+            }
+            finally
+            {
+                properties.finishGesture(GraphInputGesture.PAN, this);
+            }
         }
     }
 
     private void handleZoom(final ZoomEvent pEvent)
     {
-        if (properties == null || !properties.canActivate(GraphInputGesture.ZOOM, pEvent))
+        if (properties == null)
         {
             return;
         }
 
-        if (pEvent.getEventType() == ZoomEvent.ZOOM_STARTED)
+        if (pEvent.getEventType() == ZoomEvent.ZOOM_STARTED && properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
         {
-            properties.activateInputGesture(GraphInputGesture.ZOOM);
+            pEvent.consume();
         }
-        else if (pEvent.getEventType() == ZoomEvent.ZOOM_FINISHED)
+        else if (pEvent.getEventType() == ZoomEvent.ZOOM_FINISHED && properties.finishGesture(GraphInputGesture.ZOOM, this))
         {
-            properties.finishInputGesture(GraphInputGesture.ZOOM);
+            pEvent.consume();
         }
-        else
+        else if (pEvent.getEventType() == ZoomEvent.ZOOM && properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
         {
             final double newZoomLevel = getZoom() * pEvent.getZoomFactor();
             setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
+            pEvent.consume();
         }
-        pEvent.consume();
     }
 
     /**
@@ -543,7 +574,6 @@ public class PanningWindow extends Region {
      */
     private void startPanning(final double x, final double y)
     {
-        properties.activateInputGesture(GraphInputGesture.PAN);
         setCursor(Cursor.MOVE);
 
         clickPosition = new Point2D(x, y);

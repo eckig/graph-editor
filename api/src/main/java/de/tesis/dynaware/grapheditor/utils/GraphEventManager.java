@@ -1,6 +1,5 @@
 package de.tesis.dynaware.grapheditor.utils;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.event.Event;
 
 
@@ -20,20 +19,21 @@ public interface GraphEventManager
 {
 
     /**
-     * @return currently active {@link GraphInputGesture}
-     */
-    GraphInputGesture getInputGesture();
-
-    /**
      * <p>
      * This method is called by the framework. Custom skins should <b>not</b>
      * call it.
      * </p>
      *
-     * @param pInputMode
-     *            new {@link GraphInputGesture}
+     * @param pGesture
+     *            {@link GraphInputGesture} to check
+     * @param pEvent
+     *            {@link Event}
+     * @param pOwner
+     *            owner
+     * @return {@code true} if the given gesture was activated otherwise
+     *         {@code false}
      */
-    void activateInputGesture(final GraphInputGesture pInputMode);
+    boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent, final Object pOwner);
 
     /**
      * <p>
@@ -43,25 +43,10 @@ public interface GraphEventManager
      *
      * @param pExpected
      *            the expected gesture that should be finished
+     * @param pOwner
+     *            owner
      * @return {@code true} if the state changed as a result of this operation
      *         or {@code false}
      */
-    boolean finishInputGesture(final GraphInputGesture pExpected);
-
-    /**
-     * @return {@link ObjectProperty} controlling the current
-     *         {@link GraphInputGesture}
-     */
-    ObjectProperty<GraphInputGesture> inputGestureProperty();
-
-    /**
-     * @param pGesture
-     *            {@link GraphInputGesture} to check
-     * @param pEvent
-     *            {@link Event}
-     * @return {@code true} if the given gesture can be activated or
-     *         {@code false}
-     * @since 28.11.2018
-     */
-    boolean canActivate(final GraphInputGesture pGesture, final Event pEvent);
+    boolean finishGesture(final GraphInputGesture pExpected, final Object pOwner);
 }

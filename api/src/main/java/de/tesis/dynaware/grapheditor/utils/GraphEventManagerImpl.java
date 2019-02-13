@@ -1,8 +1,7 @@
 package de.tesis.dynaware.grapheditor.utils;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
 import javafx.event.Event;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TouchEvent;
@@ -15,63 +14,36 @@ import javafx.scene.input.ZoomEvent;
 class GraphEventManagerImpl implements GraphEventManager
 {
 
-    private final ObjectProperty<GraphInputGesture> gesture = new ObjectPropertyBase<GraphInputGesture>()
-    {
+    private GraphInputGesture gesture;
+    private Object owner;
 
-        @Override
-        public Object getBean()
+    @Override
+    public boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent, final Object pOwner)
+    {
+        if (!canOverwrite(owner, pOwner))
         {
-            return GraphEventManagerImpl.this;
+            return false;
         }
-
-        @Override
-        public String getName()
+        if (canActivate(pGesture, pEvent))
         {
-            return "inputGesture"; //$NON-NLS-1$
-        }
-    };
-
-    @Override
-    public GraphInputGesture getInputGesture()
-    {
-        return gesture.get();
-    }
-
-    @Override
-    public void activateInputGesture(final GraphInputGesture pInputMode)
-    {
-        gesture.set(pInputMode);
-    }
-
-    @Override
-    public boolean finishInputGesture(final GraphInputGesture pExpected)
-    {
-        if (getInputGesture() == pExpected)
-        {
-            gesture.set(null);
+            gesture = pGesture;
+            owner = pOwner;
             return true;
         }
+        // ELSE:
         return false;
     }
 
-    @Override
-    public ObjectProperty<GraphInputGesture> inputGestureProperty()
+    private boolean canActivate(final GraphInputGesture pGesture, final Event pEvent)
     {
-        return gesture;
-    }
-
-    @Override
-    public boolean canActivate(final GraphInputGesture pGesture, final Event pEvent)
-    {
-        final GraphInputGesture current = getInputGesture();
+        final GraphInputGesture current = gesture;
         if (current == pGesture)
         {
             return true;
         }
         else if (current == null)
         {
-            final boolean isTouch = pEvent instanceof TouchEvent
-                    || pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isSynthesized()
+            final boolean isTouch = pEvent instanceof TouchEvent || pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isSynthesized()
                     || pEvent instanceof ScrollEvent && ((ScrollEvent) pEvent).getTouchCount() > 0;
             if (!isTouch)
             {
@@ -109,6 +81,45 @@ class GraphEventManagerImpl implements GraphEventManager
                 }
             }
         }
+        return false;
+    }
+
+    @Override
+    public boolean finishGesture(final GraphInputGesture pExpected, final Object pOwner)
+    {
+        if (gesture == pExpected && (owner == pOwner || !isVisible(owner)))
+        {
+            gesture = null;
+            owner = null;
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean canOverwrite(final Object pExisting, final Object pCandidate)
+    {
+        if (pExisting == pCandidate)
+        {
+            return true;
+        }
+        if (pCandidate == null)
+        {
+            return false;
+        }
+        return pExisting == null || !isVisible(pExisting);
+    }
+
+    private static boolean isVisible(final Object pNode)
+    {
+        if (pNode != null)
+        {
+            if (pNode instanceof Node)
+            {
+                return ((Node) pNode).isVisible() && ((Node) pNode).getParent() != null && ((Node) pNode).getScene() != null;
+            }
+            return true;
+        }
+        // ELSE: null
         return false;
     }
 }

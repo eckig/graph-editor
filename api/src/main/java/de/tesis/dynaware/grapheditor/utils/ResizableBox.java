@@ -110,9 +110,8 @@ public class ResizableBox extends DraggableBox
         {
             super.handleMouseDragged(pEvent);
         }
-        else if (lastMouseRegion != RectangleMouseRegion.OUTSIDE && canActivate(GraphInputGesture.RESIZE, pEvent))
+        else if (lastMouseRegion != RectangleMouseRegion.OUTSIDE && activateGesture(GraphInputGesture.RESIZE, pEvent))
         {
-            activateGesture(GraphInputGesture.RESIZE);
             handleResize(cursorPosition.getX(), cursorPosition.getY());
             pEvent.consume();
         }
@@ -123,7 +122,10 @@ public class ResizableBox extends DraggableBox
     {
         super.handleMouseReleased(pEvent);
         processMousePosition(pEvent);
-        finishGesture(GraphInputGesture.RESIZE);
+        if (finishGesture(GraphInputGesture.RESIZE))
+        {
+            pEvent.consume();
+        }
     }
 
     private void handleMouseExited(final MouseEvent pEvent)
