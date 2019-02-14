@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
 
+import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -149,6 +150,11 @@ public abstract class GSkin<T extends EObject>
      */
     public void dispose()
     {
+        final Node root = getRoot();
+        if (root instanceof DraggableBox)
+        {
+            ((DraggableBox) root).dispose();
+        }
         onPositionMoved = null;
         graphEditor = null;
     }

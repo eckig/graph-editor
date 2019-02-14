@@ -40,6 +40,14 @@ public class ResizableBox extends DraggableBox
         addEventHandler(MouseEvent.MOUSE_EXITED, this::handleMouseExited);
     }
 
+    @Override
+    public void dispose()
+    {
+        finishGesture(GraphInputGesture.RESIZE);
+
+        super.dispose();
+    }
+
     /**
      * Gets the border tolerance for the purposes of resizing.
      *

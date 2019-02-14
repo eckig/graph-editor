@@ -73,6 +73,18 @@ public class DraggableBox extends StackPane
     }
 
     /**
+     * Called after the skin (using this box as root node) is removed. Can be
+     * overridden for cleanup.
+     */
+    public void dispose()
+    {
+        finishGesture(GraphInputGesture.MOVE);
+        dependencyX = null;
+        dependencyY = null;
+        editorProperties = null;
+    }
+
+    /**
      * Sets the editor properties object that the drag logic should respect.
      *
      * <p>

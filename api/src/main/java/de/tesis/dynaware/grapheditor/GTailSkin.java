@@ -82,6 +82,7 @@ public abstract class GTailSkin extends GSkin<GConnector> {
      *
      * @param start a {@link Point2D} containing the start x and y values
      * @param end a {@link Point2D} containing the end x and y values
+     * @param jointPositions 
      * @param target the target connector that the tail is snapping to
      * @param valid {@code true} if the connection is valid, {@code false} if invalid
      */
