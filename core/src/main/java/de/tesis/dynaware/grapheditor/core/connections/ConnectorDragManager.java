@@ -534,7 +534,8 @@ public class ConnectorDragManager {
      */
     private void detachConnection(final MouseEvent event, final GConnector connector)
     {
-        GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        final int connectorCount = getConnectorCount(connector);
         if (connectorSkin != null)
         {
             connectorSkin.applyStyle(GConnectorStyle.DEFAULT);
@@ -565,9 +566,11 @@ public class ConnectorDragManager {
 
             ConnectionCommands.removeConnection(model, connection, connectionEventManager);
 
-            if ((connectorSkin = skinLookup.lookupConnector(connector)) == null)
+            final GConnectorSkin updateConnectorSkin;
+            if ((updateConnectorSkin = skinLookup.lookupConnector(connector)) == null || updateConnectorSkin != connectorSkin
+                    || connectorCount != getConnectorCount(connector))
             {
-                // by removing this connection the business logic decided to remove the entire connector..
+                // business logic decided to remove this connection or structurally change the parent node
                 continue;
             }
 
@@ -587,10 +590,15 @@ public class ConnectorDragManager {
             clearTrackingParameters();
             sourceConnector = null;
             targetConnector = null;
-            followUpCreated = true;
+            finishGesture();
         }
 
         removalConnector = null;
+    }
+
+    private static int getConnectorCount(final GConnector pConnector)
+    {
+        return pConnector == null || pConnector.getParent() == null ? 1 : pConnector.getParent().getConnectors().size();
     }
 
     private GConnector getOpposingConnector(final GConnection pConnection, final GConnector pConnector)
