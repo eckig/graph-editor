@@ -4,6 +4,7 @@
 package de.tesis.dynaware.grapheditor;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
@@ -177,9 +178,9 @@ public interface GraphEditor extends GraphEditorSkins {
      * </p>
      *
      * @param pOnConnectionRemoved
-     *            a {@link Function} creating the additional command
+     *            a {@link BiFunction} creating the additional command
      */
-    void setOnConnectionRemoved(final Function<GConnection, Command> pOnConnectionRemoved);
+    void setOnConnectionRemoved(BiFunction<RemoveContext, GConnection, Command> pOnConnectionRemoved);
 
     /**
      * Sets a method to be called when a node is removed in the editor.
@@ -190,9 +191,9 @@ public interface GraphEditor extends GraphEditorSkins {
      * </p>
      *
      * @param pOnNodeRemoved
-     *            a {@link Function} creating the additional command
+     *            a {@link BiFunction} creating the additional command
      */
-    void setOnNodeRemoved(Function<GNode, Command> pOnNodeRemoved);
+    void setOnNodeRemoved(BiFunction<RemoveContext, GNode, Command> pOnNodeRemoved);
 
     /**
      * Deletes all elements that are currently selected.

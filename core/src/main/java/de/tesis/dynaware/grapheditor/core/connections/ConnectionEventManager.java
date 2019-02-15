@@ -1,9 +1,11 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 
+import de.tesis.dynaware.grapheditor.RemoveContext;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
@@ -12,7 +14,7 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 public class ConnectionEventManager {
 
     private Function<GConnection, Command> connectionCreatedHandler;
-    private Function<GConnection, Command> connectionRemovedHandler;
+    private BiFunction<RemoveContext, GConnection, Command> connectionRemovedHandler;
 
     /**
      * Sets the handler to be called when connections are created.
@@ -29,7 +31,7 @@ public class ConnectionEventManager {
      *
      * @param connectionRemovedHandler the handler to be called when connections are removed
      */
-    public void setOnConnectionRemoved(final Function<GConnection, Command> connectionRemovedHandler)
+    public void setOnConnectionRemoved(final BiFunction<RemoveContext, GConnection, Command> connectionRemovedHandler)
     {
         this.connectionRemovedHandler = connectionRemovedHandler;
     }
@@ -53,6 +55,12 @@ public class ConnectionEventManager {
      */
     public Command notifyConnectionRemoved(final GConnection connection)
     {
-        return connectionRemovedHandler == null ? null : connectionRemovedHandler.apply(connection);
+        if (connectionRemovedHandler == null)
+        {
+            return null;
+        }
+        final RemoveContext context = new RemoveContext();
+        context.canRemove(connection);
+        return connectionRemovedHandler.apply(context, connection);
     }
 }
