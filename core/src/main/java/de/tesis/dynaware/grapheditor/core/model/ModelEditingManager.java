@@ -3,12 +3,8 @@
  */
 package de.tesis.dynaware.grapheditor.core.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.emf.common.command.BasicCommandStack;
@@ -28,6 +24,7 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory.Descriptor.Registry;
 
 import de.tesis.dynaware.grapheditor.Commands;
+import de.tesis.dynaware.grapheditor.RemoveContext;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -54,8 +51,8 @@ public class ModelEditingManager
     private EditingDomain editingDomain;
     private GModel model;
 
-    private Function<GConnection, Command> mOnConnectionRemoved;
-    private Function<GNode, Command> mOnNodeRemoved;
+    private BiFunction<RemoveContext, GConnection, Command> mOnConnectionRemoved;
+    private BiFunction<RemoveContext, GNode, Command> mOnNodeRemoved;
 
     /**
      * Creates a new model editing manager. Only one instance should exist per
@@ -97,9 +94,9 @@ public class ModelEditingManager
      * </p>
      *
      * @param pOnConnectionRemoved
-     *            a {@link Function} creating the additional command
+     *            a {@link BiFunction} creating the additional command
      */
-    public void setOnConnectionRemoved(final Function<GConnection, Command> pOnConnectionRemoved)
+    public void setOnConnectionRemoved(final BiFunction<RemoveContext, GConnection, Command> pOnConnectionRemoved)
     {
         mOnConnectionRemoved = pOnConnectionRemoved;
     }
@@ -115,7 +112,7 @@ public class ModelEditingManager
      * @param pOnNodeRemoved
      *            a {@link Function} creating the additional command
      */
-    public void setOnNodeRemoved(Function<GNode, Command> pOnNodeRemoved)
+    public void setOnNodeRemoved(final BiFunction<RemoveContext, GNode, Command> pOnNodeRemoved)
     {
         mOnNodeRemoved = pOnNodeRemoved;
     }
@@ -143,27 +140,28 @@ public class ModelEditingManager
         editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
     }
 
-    public Optional<CompoundCommand> remove(final Collection<EObject> pToRemove)
+    public void remove(final Collection<EObject> pToRemove)
     {
         if (pToRemove == null || pToRemove.isEmpty())
         {
-            return Optional.empty();
+            return;
         }
 
-        final List<Command> additionalCommands = new ArrayList<>();
-        final Set<GNode> nodesToDelete = new HashSet<>();
-        final Set<GConnection> connectionsToDelete = new HashSet<>();
+        final CompoundCommand command = new CompoundCommand();
+        final RemoveContext editContext = new RemoveContext();
 
         for (final EObject obj : pToRemove)
         {
             if (obj instanceof GNode)
             {
-                if (nodesToDelete.add((GNode) obj))
+                if (editContext.canRemove(obj))
                 {
-                    final Command onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply((GNode) obj);
+                    command.append(RemoveCommand.create(editingDomain, model, NODES, obj));
+
+                    final Command onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply(editContext, (GNode) obj);
                     if (onRemoved != null)
                     {
-                        additionalCommands.add(onRemoved);
+                        command.append(onRemoved);
                     }
                 }
 
@@ -171,87 +169,51 @@ public class ModelEditingManager
                 {
                     for (final GConnection connection : connector.getConnections())
                     {
-                        if (connection != null && connectionsToDelete.add(connection))
+                        if (connection != null && editContext.canRemove(connection))
                         {
-                            final Command ononnRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply(connection);
-                            if (ononnRemoved != null)
-                            {
-                                additionalCommands.add(ononnRemoved);
-                            }
+                            remove(pToRemove, editContext, command, connection);
                         }
                     }
                 }
             }
             else if (obj instanceof GConnection)
             {
-                if (connectionsToDelete.add((GConnection) obj))
+                if (editContext.canRemove(obj))
                 {
-                    final Command onRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply((GConnection) obj);
-                    if (onRemoved != null)
-                    {
-                        additionalCommands.add(onRemoved);
-                    }
+                    remove(pToRemove, editContext, command, (GConnection) obj);
                 }
             }
         }
 
-        if (!nodesToDelete.isEmpty() || !connectionsToDelete.isEmpty())
+        if (!command.isEmpty() && command.canExecute())
         {
-            final CompoundCommand command = remove(nodesToDelete, connectionsToDelete);
-
-            if (!additionalCommands.isEmpty())
-            {
-                additionalCommands.forEach(command::append);
-            }
-
-            if (command.canExecute())
-            {
-                editingDomain.getCommandStack().execute(command);
-            }
+            editingDomain.getCommandStack().execute(command);
         }
-        return Optional.empty();
     }
 
-    /**
-     * Removes all specified nodes and connections from the model in a single
-     * compound command.
-     *
-     * <p>
-     * All references to the removed elements are also removed.
-     * </p>
-     *
-     * @param nodesToRemove
-     *            the nodes to be removed
-     * @param connectionsToRemove
-     *            the connections to be removed
-     */
-    private CompoundCommand remove(final Collection<GNode> nodesToRemove, final Collection<GConnection> connectionsToRemove)
+    private void remove(final Collection<EObject> pToRemove, final RemoveContext pRemoveContext, final CompoundCommand pCommand,
+            final GConnection pToDelete)
     {
-        final CompoundCommand command = new CompoundCommand();
+        final GConnector source = pToDelete.getSource();
+        final GConnector target = pToDelete.getTarget();
 
-        for (final GNode node : nodesToRemove)
+        pCommand.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, pToDelete));
+
+        if (!pToRemove.contains(source.getParent()) && !pRemoveContext.contains(source.getParent()))
         {
-            command.append(RemoveCommand.create(editingDomain, model, NODES, node));
+            pCommand.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, pToDelete));
         }
 
-        for (final GConnection connection : connectionsToRemove)
+        if (!pToRemove.contains(target.getParent()) && !pRemoveContext.contains(target.getParent()))
         {
-            command.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, connection));
-
-            final GConnector source = connection.getSource();
-            final GConnector target = connection.getTarget();
-
-            if (!nodesToRemove.contains(source.getParent()))
-            {
-                command.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, connection));
-            }
-
-            if (!nodesToRemove.contains(target.getParent()))
-            {
-                command.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
-            }
+            pCommand.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, pToDelete));
         }
-        return command;
+
+        final Command onRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply(pRemoveContext, pToDelete);
+        if (onRemoved != null)
+        {
+            pCommand.append(onRemoved);
+        }
     }
 
     /**

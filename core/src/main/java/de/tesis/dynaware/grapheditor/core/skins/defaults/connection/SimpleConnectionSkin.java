@@ -112,7 +112,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
         // If we are showing detours, get all intersections with connections *behind* this one. Otherwise in front.
         final double[][] intersections = IntersectionFinder.find(this, allPoints, checkShowDetours());
 
-        final Point2D[] points = getPoints();
+        final Point2D[] points = allPoints == null ? null : allPoints.get(this);
         if (points != null)
         {
             drawAllSegments(points, intersections);

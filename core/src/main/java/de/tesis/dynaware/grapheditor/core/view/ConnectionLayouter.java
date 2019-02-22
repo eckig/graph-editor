@@ -3,12 +3,17 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
+import java.util.Collection;
+
+import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
+
 
 /**
  * Responsible for telling connection skins to draw themselves.
  */
-public interface ConnectionLayouter {
+public interface ConnectionLayouter
+{
 
     /**
      * Initializes the connection layout manager for the given model.
@@ -16,26 +21,34 @@ public interface ConnectionLayouter {
      * @param model
      *            the {@link GModel} currently being edited
      */
-    void initialize(final GModel model);
+    void initialize(final GModel pModel);
 
     /**
-     * Redraws all connections according to the latest layout values.
+     * Draws all connections according to the latest layout values.
      */
-    void redraw();
+    void draw();
 
     /**
-     * Redraws only the visible connections (e.g. visible in the viewport).
+     * Marks the complete connection layout as dirty. The next layout pass will
+     * re-layout all connections (during {@link #draw()}).
      *
-     * @since 19.09.2018
+     * @since 31.01.2019
      */
-    void redrawViewport();
+    void redrawAll();
 
     /**
-     * Will be called when the graph editor view is part of a scroll pane and
-     * the visible part of the view has changed (in other words: view has been
-     * moved).
+     * Redraw the given connection according to the latest layout values.
      *
-     * @since 19.09.2018
+     * @param pConnection
+     *            connection to redraw
      */
-    void viewportMoved();
+    void redraw(final GConnection pConnection);
+
+    /**
+     * Redraw the given connections according to the latest layout values.
+     *
+     * @param pConnections
+     *            connections to redraw
+     */
+    void redraw(final Collection<GConnection> pConnections);
 }

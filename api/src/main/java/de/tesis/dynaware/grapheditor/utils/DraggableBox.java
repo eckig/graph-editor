@@ -3,8 +3,13 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import javafx.event.Event;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -21,15 +26,25 @@ public class DraggableBox extends StackPane
     private static final double DEFAULT_ALIGNMENT_THRESHOLD = 5;
 
     /**
-     * Safety mechanism for exceptional case when 'drag' events occur without a
-     * 'pressed' event occurring first.
+     * stored value of {@link #getLayoutX()}, see
+     * {@link #storeClickValuesForDrag(double, double)}
      */
-    boolean dragActive;
-
     double lastLayoutX;
+    /**
+     * stored value of {@link #getLayoutY()}, see
+     * {@link #storeClickValuesForDrag(double, double)}
+     */
     double lastLayoutY;
 
+    /**
+     * stored mouse position, see
+     * {@link #storeClickValuesForDrag(double, double)}
+     */
     double lastMouseX;
+    /**
+     * stored mouse position, see
+     * {@link #storeClickValuesForDrag(double, double)}
+     */
     double lastMouseY;
 
     private GraphEditorProperties editorProperties;
@@ -55,6 +70,18 @@ public class DraggableBox extends StackPane
         addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
         addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
+    }
+
+    /**
+     * Called after the skin (using this box as root node) is removed. Can be
+     * overridden for cleanup.
+     */
+    public void dispose()
+    {
+        finishGesture(GraphInputGesture.MOVE);
+        dependencyX = null;
+        dependencyY = null;
+        editorProperties = null;
     }
 
     /**
@@ -236,27 +263,24 @@ public class DraggableBox extends StackPane
         return editorProperties != null && !editorProperties.isReadOnly();
     }
 
-    protected boolean isDragGestureActive()
+    /**
+     * activate the given {@link GraphInputGesture}
+     */
+    boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent)
     {
-        return editorProperties != null && editorProperties.getGraphEventManager().isInputGestureActiveOrEmpty(GraphInputGesture.DRAG);
-    }
-
-    void notifyDragActive()
-    {
-        dragActive = true;
         if (editorProperties != null)
         {
-            editorProperties.getGraphEventManager().activateInputGesture(GraphInputGesture.DRAG);
+            return editorProperties.activateGesture(pGesture, pEvent, this);
         }
+        return true;
     }
 
-    private void notifyDragInactive()
+    /**
+     * deactivate the given {@link GraphInputGesture}
+     */
+    boolean finishGesture(final GraphInputGesture pGesture)
     {
-        dragActive = false;
-        if (editorProperties != null)
-        {
-            editorProperties.getGraphEventManager().finishInputGesture(GraphInputGesture.DRAG);
-        }
+        return editorProperties == null || editorProperties.finishGesture(pGesture, this);
     }
 
     /**
@@ -267,13 +291,13 @@ public class DraggableBox extends StackPane
      */
     protected void handleMousePressed(final MouseEvent pEvent)
     {
-        if (!pEvent.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive())
+        if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable())
         {
             return;
         }
 
-        storeClickValuesForDrag(pEvent.getSceneX(), pEvent.getSceneY());
-        notifyDragActive();
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
+        storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         pEvent.consume();
     }
 
@@ -284,30 +308,27 @@ public class DraggableBox extends StackPane
      */
     protected void handleMouseDragged(final MouseEvent pEvent)
     {
-        if (!pEvent.isPrimaryButtonDown() || !isEditable() || !isDragGestureActive())
+        if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable() || !activateGesture(GraphInputGesture.MOVE, pEvent))
         {
             return;
         }
 
-        if (!dragActive)
-        {
-            return;
-        }
-
-        handleDrag(pEvent.getSceneX(), pEvent.getSceneY());
-        notifyDragActive();
+        final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
+        handleDrag(cursorPosition.getX(), cursorPosition.getY());
         pEvent.consume();
     }
 
     /**
      * Handles mouse-released events.
      *
-     * @param event {@link MouseEvent}
+     * @param pEvent {@link MouseEvent}
      */
-    protected void handleMouseReleased(final MouseEvent event) {
-
-        notifyDragInactive();
-        event.consume();
+    protected void handleMouseReleased(final MouseEvent pEvent)
+    {
+        if (finishGesture(GraphInputGesture.MOVE))
+        {
+            pEvent.consume();
+        }
     }
 
     /**
@@ -331,15 +352,26 @@ public class DraggableBox extends StackPane
     /**
      * Rounds some value to the nearest multiple of the grid spacing.
      *
-     * @param value a double value
+     * @param value
+     *            a double value
      *
-     * @return the input value rounded to the nearest multiple of the grid spacing
+     * @return the input value rounded to the nearest multiple of the grid
+     *         spacing
      */
-    protected double roundToGridSpacing(final double value) {
+    protected double roundToGridSpacing(final double value)
+    {
+        return GeometryUtils.roundToGridSpacing(editorProperties, value);
+    }
 
-        final double spacing = editorProperties == null ? GraphEditorProperties.DEFAULT_GRID_SPACING
-                : editorProperties.getGridSpacing();
-        return spacing * Math.round(value / spacing);
+    /**
+     * will be called when the position of this draggable box has been moved by
+     * the user
+     *
+     * @since 16.01.2019
+     */
+    public void positionMoved()
+    {
+        // empty, to be overridden by custom skin logic
     }
 
     /**
@@ -354,6 +386,8 @@ public class DraggableBox extends StackPane
     {
         handleDragX(pX);
         handleDragY(pY);
+        // notify
+        positionMoved();
     }
 
     /**
@@ -489,6 +523,32 @@ public class DraggableBox extends StackPane
         if (dependencyY != null)
         {
             dependencyY.setLayoutY(newLayoutY);
+        }
+    }
+
+    /**
+     * Gets the closest ancestor (e.g. parent, grandparent) to a node that is a
+     * subclass of {@link Region}.
+     *
+     * @param node
+     *            a JavaFX {@link Node}
+     * @return the node's closest ancestor that is a subclass of {@link Region},
+     *         or {@code null} if none exists
+     */
+    Region getContainer(final Node node)
+    {
+        final Parent parent = node.getParent();
+        if (parent == null)
+        {
+            return null;
+        }
+        else if (parent instanceof Region)
+        {
+            return (Region) parent;
+        }
+        else
+        {
+            return getContainer(parent);
         }
     }
 

@@ -9,7 +9,6 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-import javafx.scene.CacheHint;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
@@ -51,16 +50,8 @@ public class GraphEditorView extends Region
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
 
-    private final Pane mNodeLayer = new Pane()
-    {
+    private final Pane mNodeLayer = new Pane();
 
-        @Override
-        protected void layoutChildren()
-        {
-            super.layoutChildren();
-            redrawViewport();
-        }
-    };
     private final Pane mConnectionLayer = new Pane()
     {
 
@@ -68,7 +59,7 @@ public class GraphEditorView extends Region
         protected void layoutChildren()
         {
             super.layoutChildren();
-            redrawViewport();
+            layoutConnections();
         }
     };
 
@@ -137,7 +128,7 @@ public class GraphEditorView extends Region
     {
         if (pConnectionSkin != null)
         {
-            mConnectionLayer.getChildren().add(pConnectionSkin.getRoot());
+            mConnectionLayer.getChildren().add(0, pConnectionSkin.getRoot());
         }
     }
 
@@ -165,7 +156,8 @@ public class GraphEditorView extends Region
     {
         if (pTailSkin != null)
         {
-            mConnectionLayer.getChildren().add(pTailSkin.getRoot());
+            // add to back:
+            mConnectionLayer.getChildren().add(0, pTailSkin.getRoot());
         }
     }
 
@@ -301,29 +293,20 @@ public class GraphEditorView extends Region
         mNodeLayer.resizeRelocate(0, 0, width, height);
         mConnectionLayer.resizeRelocate(0, 0, width, height);
         mGrid.resizeRelocate(0, 0, width, height);
+        layoutConnections();
     }
 
-    void redrawViewport()
+    /**
+     * calls {@link ConnectionLayouter#redrawAll()}
+     *
+     * @since 31.01.2019
+     */
+    void layoutConnections()
     {
         if (mConnectionLayouter != null)
         {
-            mConnectionLayouter.redrawViewport();
+            mConnectionLayouter.draw();
         }
-    }
-
-    void viewportMoved()
-    {
-        if (mConnectionLayouter != null)
-        {
-            mConnectionLayouter.viewportMoved();
-        }
-    }
-
-    @Override
-    public void relocate(double pX, double pY)
-    {
-        super.relocate(pX, pY);
-        viewportMoved();
     }
 
     /**
@@ -334,9 +317,6 @@ public class GraphEditorView extends Region
     {
         mNodeLayer.setPickOnBounds(false);
         mConnectionLayer.setPickOnBounds(false);
-
-        mNodeLayer.setCacheHint(CacheHint.SPEED);
-        mConnectionLayer.setCacheHint(CacheHint.SPEED);
 
         mNodeLayer.getStyleClass().add(STYLE_CLASS_NODE_LAYER);
         mConnectionLayer.getStyleClass().add(STYLE_CLASS_CONNECTION_LAYER);

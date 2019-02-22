@@ -9,6 +9,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.event.Event;
+
 
 /**
  * General properties for the graph editor.
@@ -26,10 +28,16 @@ import javafx.collections.ObservableMap;
  * Also stores properties for whether the grid is visible and/or snap-to-grid is on.
  * </p>
  */
-public class GraphEditorProperties {
+public class GraphEditorProperties implements GraphEventManager
+{
 
-    // The default max size of the editor region, set on startup.
+    /**
+     * The default max width of the editor region, set on startup.
+     */
     public static final double DEFAULT_MAX_WIDTH = Double.MAX_VALUE;
+    /**
+     * The default max height of the editor region, set on startup.
+     */
     public static final double DEFAULT_MAX_HEIGHT = Double.MAX_VALUE;
 
     public static final double DEFAULT_BOUND_VALUE = 15;
@@ -42,32 +50,36 @@ public class GraphEditorProperties {
     private double westBoundValue = DEFAULT_BOUND_VALUE;
 
     // Off by default.
-    private final BooleanProperty gridVisible = new SimpleBooleanProperty(this, "gridVisible");
-    private final BooleanProperty snapToGrid = new SimpleBooleanProperty(this, "snapToGrid");
-    private final DoubleProperty gridSpacing = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING);
-    private final BooleanProperty readOnly = new SimpleBooleanProperty(this, "readOnly");
-    
+    private final BooleanProperty gridVisible = new SimpleBooleanProperty(this, "gridVisible"); //$NON-NLS-1$
+    private final BooleanProperty snapToGrid = new SimpleBooleanProperty(this, "snapToGrid"); //$NON-NLS-1$
+    private final DoubleProperty gridSpacing = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING); //$NON-NLS-1$
+    private final BooleanProperty readOnly = new SimpleBooleanProperty(this, "readOnly"); //$NON-NLS-1$
+
     private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
-    
-    private final GraphEventManager eventManager = new GraphEventManager();
+
+    private final GraphEventManager eventManager = new GraphEventManagerImpl();
 
     /**
-     * Creates a new editor properties instance containing a set of default properties.
+     * Creates a new editor properties instance containing a set of default
+     * properties.
      */
-    public GraphEditorProperties() {
+    public GraphEditorProperties()
+    {
     }
 
     /**
      * Copy constructor.
      *
      * <p>
-     * Creates a new editor properties instance with all values copied over from an existing instance.
+     * Creates a new editor properties instance with all values copied over from
+     * an existing instance.
      * </p>
      *
-     * @param editorProperties an existing {@link GraphEditorProperties} instance
+     * @param editorProperties
+     *            an existing {@link GraphEditorProperties} instance
      */
-    public GraphEditorProperties(final GraphEditorProperties editorProperties) {
-
+    public GraphEditorProperties(final GraphEditorProperties editorProperties)
+    {
         northBoundValue = editorProperties.getNorthBoundValue();
         southBoundValue = editorProperties.getSouthBoundValue();
         eastBoundValue = editorProperties.getEastBoundValue();
@@ -76,9 +88,9 @@ public class GraphEditorProperties {
         gridVisible.set(editorProperties.isGridVisible());
         snapToGrid.set(editorProperties.isSnapToGridOn());
         gridSpacing.set(editorProperties.getGridSpacing());
-        
+
         readOnly.set(editorProperties.isReadOnly());
-        
+
         customProperties.putAll(editorProperties.getCustomProperties());
     }
 
@@ -87,17 +99,20 @@ public class GraphEditorProperties {
      *
      * @return the value of the north bound
      */
-    public double getNorthBoundValue() {
+    public double getNorthBoundValue()
+    {
         return northBoundValue;
     }
 
     /**
      * Sets the value of the north bound.
      *
-     * @param northBoundValue the value of the north bound
+     * @param pNorthBoundValue
+     *            the value of the north bound
      */
-    public void setNorthBoundValue(final double northBoundValue) {
-        this.northBoundValue = northBoundValue;
+    public void setNorthBoundValue(final double pNorthBoundValue)
+    {
+        northBoundValue = pNorthBoundValue;
     }
 
     /**
@@ -105,17 +120,20 @@ public class GraphEditorProperties {
      *
      * @return the value of the south bound
      */
-    public double getSouthBoundValue() {
+    public double getSouthBoundValue()
+    {
         return southBoundValue;
     }
 
     /**
      * Sets the value of the south bound.
      *
-     * @param southBoundValue the value of the south bound
+     * @param pSouthBoundValue
+     *            the value of the south bound
      */
-    public void setSouthBoundValue(final double southBoundValue) {
-        this.southBoundValue = southBoundValue;
+    public void setSouthBoundValue(final double pSouthBoundValue)
+    {
+        southBoundValue = pSouthBoundValue;
     }
 
     /**
@@ -123,17 +141,20 @@ public class GraphEditorProperties {
      *
      * @return the value of the east bound
      */
-    public double getEastBoundValue() {
+    public double getEastBoundValue()
+    {
         return eastBoundValue;
     }
 
     /**
      * Sets the value of the east bound.
      *
-     * @param eastBoundValue the value of the east bound
+     * @param pEastBoundValue
+     *            the value of the east bound
      */
-    public void setEastBoundValue(final double eastBoundValue) {
-        this.eastBoundValue = eastBoundValue;
+    public void setEastBoundValue(final double pEastBoundValue)
+    {
+        eastBoundValue = pEastBoundValue;
     }
 
     /**
@@ -141,43 +162,53 @@ public class GraphEditorProperties {
      *
      * @return the value of the west bound
      */
-    public double getWestBoundValue() {
+    public double getWestBoundValue()
+    {
         return westBoundValue;
     }
 
     /**
      * Sets the value of the west bound.
      *
-     * @param westBoundValue the value of the west bound
+     * @param pWestBoundValue
+     *            the value of the west bound
      */
-    public void setWestBoundValue(final double westBoundValue) {
-        this.westBoundValue = westBoundValue;
+    public void setWestBoundValue(final double pWestBoundValue)
+    {
+        westBoundValue = pWestBoundValue;
     }
 
     /**
      * Checks if the background grid is visible.
      *
-     * @return {@code true} if the background grid is visible, {@code false} if not
+     * @return {@code true} if the background grid is visible, {@code false} if
+     *         not
      */
-    public boolean isGridVisible() {
+    public boolean isGridVisible()
+    {
         return gridVisible.get();
     }
 
     /**
      * Sets whether the background grid should be visible or not.
      *
-     * @param gridVisible {@code true} if the background grid should be visible, {@code false} if not
+     * @param pGridVisible
+     *            {@code true} if the background grid should be visible,
+     *            {@code false} if not
      */
-    public void setGridVisible(final boolean gridVisible) {
-        this.gridVisible.set(gridVisible);
+    public void setGridVisible(final boolean pGridVisible)
+    {
+        gridVisible.set(pGridVisible);
     }
 
     /**
      * Gets the grid-visible property.
      *
-     * @return a {@link BooleanProperty} tracking whether the grid is visible or not
+     * @return a {@link BooleanProperty} tracking whether the grid is visible or
+     *         not
      */
-    public BooleanProperty gridVisibleProperty() {
+    public BooleanProperty gridVisibleProperty()
+    {
         return gridVisible;
     }
 
@@ -186,25 +217,31 @@ public class GraphEditorProperties {
      *
      * @return {@code true} if snap-to-grid is on, {@code false} if not
      */
-    public boolean isSnapToGridOn() {
+    public boolean isSnapToGridOn()
+    {
         return snapToGrid.get();
     }
 
     /**
      * Sets whether snap-to-grid should be on.
      *
-     * @param snapToGrid {@code true} if snap-to-grid should be on, {@code false} if not
+     * @param pSnapToGrid
+     *            {@code true} if snap-to-grid should be on, {@code false} if
+     *            not
      */
-    public void setSnapToGrid(final boolean snapToGrid) {
-        this.snapToGrid.set(snapToGrid);
+    public void setSnapToGrid(final boolean pSnapToGrid)
+    {
+        snapToGrid.set(pSnapToGrid);
     }
 
     /**
      * Gets the snap-to-grid property.
      *
-     * @return a {@link BooleanProperty} tracking whether snap-to-grid is on or off
+     * @return a {@link BooleanProperty} tracking whether snap-to-grid is on or
+     *         off
      */
-    public BooleanProperty snapToGridProperty() {
+    public BooleanProperty snapToGridProperty()
+    {
         return snapToGrid;
     }
 
@@ -213,21 +250,25 @@ public class GraphEditorProperties {
      *
      * @return the current grid spacing
      */
-    public double getGridSpacing() {
+    public double getGridSpacing()
+    {
         return gridSpacing.get();
     }
 
     /**
-     * Sets the grid spacing to be used if the grid is visible and/or snap-to-grid is enabled.
+     * Sets the grid spacing to be used if the grid is visible and/or
+     * snap-to-grid is enabled.
      *
      * <p>
      * Integer values are recommended to avoid sub-pixel positioning effects.
      * </p>
      *
-     * @param gridSpacing the grid spacing to be used
+     * @param pGridSpacing
+     *            the grid spacing to be used
      */
-    public void setGridSpacing(final double gridSpacing) {
-    	this.gridSpacing.set(gridSpacing);
+    public void setGridSpacing(final double pGridSpacing)
+    {
+        gridSpacing.set(pGridSpacing);
     }
 
     /**
@@ -235,50 +276,61 @@ public class GraphEditorProperties {
      *
      * @return the grid spacing {@link DoubleProperty}.
      */
-    public DoubleProperty gridSpacingProperty() {
+    public DoubleProperty gridSpacingProperty()
+    {
         return gridSpacing;
     }
 
     /**
      * Gets the read only property
-     * 
+     *
      * @return read only {@link BooleanProperty}
      */
-    public BooleanProperty readOnlyProperty() {
+    public BooleanProperty readOnlyProperty()
+    {
         return readOnly;
     }
 
     /**
      * Returns whether or not the graph is in read only state.
-     * 
+     *
      * @return whether or not the graph is in read only state.
      */
-    public boolean isReadOnly() {
+    public boolean isReadOnly()
+    {
         return readOnly.get();
     }
 
     /**
-     * @param readOnly
+     * @param pReadOnly
      *            {@code true} to set the graph editor in read only state or
      *            {@code false} (default) for edit state.
      */
-    public void setReadOnly(final boolean readOnly) {
-        this.readOnly.set(readOnly);
+    public void setReadOnly(final boolean pReadOnly)
+    {
+        readOnly.set(pReadOnly);
     }
 
     /**
-     * Additional properties that may be added and referred to in custom skin implementations.
+     * Additional properties that may be added and referred to in custom skin
+     * implementations.
      *
      * @return a map of custom properties
      */
-    public ObservableMap<String, String> getCustomProperties() {
+    public ObservableMap<String, String> getCustomProperties()
+    {
         return customProperties;
     }
 
-    /**
-     * @return the {@link GraphEventManager}
-     */
-    public GraphEventManager getGraphEventManager() {
-        return eventManager;
+    @Override
+    public boolean activateGesture(GraphInputGesture pGesture, Event pEvent, Object pOwner)
+    {
+        return eventManager.activateGesture(pGesture, pEvent, pOwner);
+    }
+
+    @Override
+    public boolean finishGesture(GraphInputGesture pExpected, Object pOwner)
+    {
+        return eventManager.finishGesture(pExpected, pOwner);
     }
 }

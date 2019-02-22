@@ -1,123 +1,52 @@
 package de.tesis.dynaware.grapheditor.utils;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
+import javafx.event.Event;
 
-public class GraphEventManager {
 
-    private final ObjectProperty<GraphInputMode> inputMode = new ObjectPropertyBase<GraphInputMode>(GraphInputMode.SELECTION) {
-
-        @Override
-        public Object getBean() {
-            return GraphEventManager.this;
-        }
-
-        @Override
-        public String getName() {
-            return "inputMode"; //$NON-NLS-1$
-        }
-
-        @Override
-        public void set(GraphInputMode newValue) {
-            super.set(newValue == null ? GraphInputMode.SELECTION : newValue);
-        }
-
-        @Override
-        public void setValue(GraphInputMode newValue) {
-            set(newValue);
-        }
-    };
-
-    private final ObjectProperty<GraphInputGesture> gesture = new ObjectPropertyBase<GraphInputGesture>() {
-
-        @Override
-        public Object getBean() {
-            return GraphEventManager.this;
-        }
-
-        @Override
-        public String getName() {
-            return "inputGesture"; //$NON-NLS-1$
-        }
-    };
-
-    /**
-     * @return currently active {@link GraphInputMode}
-     */
-    public GraphInputMode getInputMode() {
-        return inputMode.get();
-    }
-
-    /**
-     * @param pInputMode
-     *            new {@link GraphInputMode}
-     */
-    public void setInputMode(final GraphInputMode pInputMode)
-    {
-        inputMode.set(pInputMode);
-    }
-
-    /**
-     * @return {@link ObjectProperty} controlling the current {@link GraphInputMode}
-     */
-    public ObjectProperty<GraphInputMode> inputModeProperty() {
-        return inputMode;
-    }
-
-    /**
-     * @return currently active {@link GraphInputGesture}
-     */
-    public GraphInputGesture getInputGesture() {
-        return gesture.get();
-    }
+/**
+ * <p>
+ * Helper class managing the various different gestures in the graph editor to
+ * prevent overlapping of different gestures (e.g. a user should not be able to
+ * resize and zoom at the same time).
+ * </p>
+ *
+ * <p>
+ * For non touch devices this is straightforward by checking if any other
+ * gesture is currently active before activating a new one.
+ * </p>
+ */
+public interface GraphEventManager
+{
 
     /**
      * <p>
      * This method is called by the framework. Custom skins should <b>not</b>
      * call it.
      * </p>
-     * 
-     * @param pInputMode
-     *            new {@link GraphInputGesture}
+     *
+     * @param pGesture
+     *            {@link GraphInputGesture} to check
+     * @param pEvent
+     *            {@link Event}
+     * @param pOwner
+     *            owner
+     * @return {@code true} if the given gesture was activated otherwise
+     *         {@code false}
      */
-    public void activateInputGesture(final GraphInputGesture pInputMode)
-    {
-        gesture.set(pInputMode);
-    }
+    boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent, final Object pOwner);
 
     /**
      * <p>
      * This method is called by the framework. Custom skins should <b>not</b>
      * call it.
      * </p>
-     * 
+     *
      * @param pExpected
      *            the expected gesture that should be finished
+     * @param pOwner
+     *            owner
+     * @return {@code true} if the state changed as a result of this operation
+     *         or {@code false}
      */
-    public void finishInputGesture(final GraphInputGesture pExpected)
-    {
-        if (getInputGesture() == pExpected)
-        {
-            gesture.set(null);
-        }
-    }
-
-    /**
-     * @return {@link ObjectProperty} controlling the current {@link GraphInputGesture}
-     */
-    public ObjectProperty<GraphInputGesture> inputGestureProperty() {
-        return gesture;
-    }
-
-    /**
-     * @param pGesture
-     *            {@link GraphInputGesture}
-     * @return {@code true} if {@link #getInputGesture() the currently active
-     *         gesture} matches the given one or no gesture is active at all
-     */
-    public boolean isInputGestureActiveOrEmpty(final GraphInputGesture pGesture)
-    {
-        final GraphInputGesture current = getInputGesture();
-        return current == null || current == pGesture;
-    }
+    boolean finishGesture(final GraphInputGesture pExpected, final Object pOwner);
 }

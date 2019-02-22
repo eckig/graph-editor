@@ -68,38 +68,42 @@ public class GraphEditorContainer extends AutoScrollingWindow {
     /**
      * Sets the graph editor to be displayed in this container.
      *
-     * @param graphEditor a {@link GraphEditor} instance
+     * @param pGraphEditor a {@link GraphEditor} instance
      */
-    public void setGraphEditor(final GraphEditor graphEditor) {
-
-        if (this.graphEditor != null) {
-            this.graphEditor.modelProperty().removeListener(modelChangeListener);
+    public void setGraphEditor(final GraphEditor pGraphEditor)
+    {
+        final GraphEditor previous = graphEditor;
+        if (previous != null)
+        {
+            previous.modelProperty().removeListener(modelChangeListener);
             setEditorProperties(null);
         }
 
-        this.graphEditor = graphEditor;
+        graphEditor = pGraphEditor;
 
-        if (graphEditor != null) {
+        if (pGraphEditor != null)
+        {
+            pGraphEditor.modelProperty().addListener(modelChangeListener);
 
-            graphEditor.modelProperty().addListener(modelChangeListener);
+            final Region view = pGraphEditor.getView();
+            final GModel model = pGraphEditor.getModel();
 
-            final Region view = graphEditor.getView();
-            final GModel model = graphEditor.getModel();
-
-            if (model != null) {
+            if (model != null)
+            {
                 view.resize(model.getContentWidth(), model.getContentHeight());
             }
 
             setContent(view);
             minimap.setContent(view);
             minimap.setModel(model);
-            minimap.setSelectionManager(graphEditor.getSelectionManager());
+            minimap.setSelectionManager(pGraphEditor.getSelectionManager());
 
             view.toBack();
-            
-            setEditorProperties(graphEditor.getProperties());
 
-        } else {
+            setEditorProperties(pGraphEditor.getProperties());
+        }
+        else
+        {
             setEditorProperties(null);
             minimap.setContent(null);
             minimap.setModel(null);
@@ -108,8 +112,8 @@ public class GraphEditorContainer extends AutoScrollingWindow {
 
     /**
      * Returns the {@link GraphEditorMinimap}
-     * 
-     * @param the graph editor minimap
+     *
+     * @return the graph editor minimap
      */
     public GraphEditorMinimap getMinimap() {
         return minimap;

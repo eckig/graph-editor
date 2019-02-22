@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.EObject;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.collections.ObservableSet;
 
 /**
@@ -96,11 +95,4 @@ public interface SelectionManager {
      * Clears the selection, i.e. de-selects all elements.
      */
     void clearSelection();
-
-    /**
-     * Sets the editor properties instance for the graph editor.
-     *
-     * @param editorProperties a {@link GraphEditorProperties} instance to be used
-     */
-    void setEditorProperties(final GraphEditorProperties editorProperties);
 }

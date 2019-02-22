@@ -3,8 +3,16 @@
  */
 package de.tesis.dynaware.grapheditor.core.view;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
@@ -13,11 +21,18 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import javafx.geometry.Point2D;
 
-/**
- * Responsible for telling connection skins to draw themselves.
- */
-public class DefaultConnectionLayouter implements ConnectionLayouter {
 
+/**
+ * Default implementation of {@link ConnectionLayouter}
+ */
+public class DefaultConnectionLayouter implements ConnectionLayouter
+{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionLayouter.class);
+
+    private final Set<GConnection> mDirty = new HashSet<>();
+    private boolean mRedrawAll = false;
+    private final Map<GConnectionSkin, Point2D[]> mConnectionPoints = new HashMap<>();
     private final SkinLookup mSkinLookup;
     private GModel mModel;
 
@@ -40,42 +55,92 @@ public class DefaultConnectionLayouter implements ConnectionLayouter {
     }
 
     @Override
-    public void redraw()
+    public void redraw(final Collection<GConnection> pConnections)
+    {
+        mDirty.addAll(pConnections);
+    }
+
+    @Override
+    public void redraw(final GConnection pConnection)
+    {
+        mDirty.add(pConnection);
+    }
+
+    @Override
+    public void redrawAll()
+    {
+        mRedrawAll = true;
+    }
+
+    @Override
+    public void draw()
     {
         if (mModel == null || mModel.getConnections().isEmpty())
         {
             return;
         }
 
-        final Map<GConnectionSkin, Point2D[]> allPoints = new HashMap<>();
-
-        for (int i = 0; i < mModel.getConnections().size(); i++)
+        try
         {
-            final GConnection connection = mModel.getConnections().get(i);
-            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
-            final Point2D[] points = connectionSkin.update();
-            if (points != null)
+            if (mRedrawAll)
             {
-                allPoints.put(connectionSkin, points);
+                mConnectionPoints.clear();
+                if (!mModel.getConnections().isEmpty())
+                {
+                    redrawAllConnections();
+                }
+                mRedrawAll = false;
+            }
+            else if (!mDirty.isEmpty())
+            {
+                final List<GConnectionSkin> repaint = new ArrayList<>(mDirty.size());
+                for (final GConnection conn : mDirty)
+                {
+                    final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(conn);
+                    if (connectionSkin != null)
+                    {
+                        final Point2D[] points = connectionSkin.update();
+                        if (points != null)
+                        {
+                            mConnectionPoints.put(connectionSkin, points);
+                        }
+
+                        repaint.add(connectionSkin);
+                    }
+                }
+
+                for (final GConnectionSkin skin : repaint)
+                {
+                    skin.draw(mConnectionPoints);
+                }
+                mDirty.clear();
+            }
+
+        }
+        catch (Exception e)
+        {
+            LOGGER.debug("Could not redraw Connections: ", e); //$NON-NLS-1$
+        }
+    }
+
+    private void redrawAllConnections()
+    {
+        for (final GConnection connection : mModel.getConnections())
+        {
+            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
+            if (connectionSkin != null)
+            {
+                final Point2D[] points = connectionSkin.update();
+                if (points != null)
+                {
+                    mConnectionPoints.put(connectionSkin, points);
+                }
             }
         }
 
-        for (final GConnectionSkin skin : allPoints.keySet())
+        for (final GConnectionSkin skin : mConnectionPoints.keySet())
         {
-        	skin.draw(allPoints);
+            skin.draw(mConnectionPoints);
         }
-    }
-
-    @Override
-    public void redrawViewport()
-    {
-        // TODO implement as soon as the EMF model watcher is done..
-        redraw();
-    }
-
-    @Override
-    public void viewportMoved()
-    {
-        // TODO implement as soon as the EMF model watcher is done..
     }
 }

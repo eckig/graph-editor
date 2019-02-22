@@ -6,6 +6,18 @@ package de.tesis.dynaware.grapheditor;
 /**
  * A set of styles that can be applied to a particular connector.
  */
-public enum GConnectorStyle {
-    DEFAULT, DRAG_OVER_ALLOWED, DRAG_OVER_FORBIDDEN;
+public enum GConnectorStyle
+{
+    /**
+     * Default style
+     */
+    DEFAULT,
+    /**
+     * Drag over allowed
+     */
+    DRAG_OVER_ALLOWED,
+    /**
+     * Drag over forbidden
+     */
+    DRAG_OVER_FORBIDDEN;
 }

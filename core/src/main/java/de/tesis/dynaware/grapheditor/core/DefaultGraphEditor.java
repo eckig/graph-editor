@@ -4,6 +4,7 @@
 package de.tesis.dynaware.grapheditor.core;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
@@ -16,6 +17,7 @@ import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
+import de.tesis.dynaware.grapheditor.RemoveContext;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
@@ -177,14 +179,14 @@ public class DefaultGraphEditor implements GraphEditor
     }
 
     @Override
-    public void setOnConnectionRemoved(final Function<GConnection, Command> pOnConnectionRemoved)
+    public void setOnConnectionRemoved(final BiFunction<RemoveContext, GConnection, Command> pOnConnectionRemoved)
     {
         mConnectionEventManager.setOnConnectionRemoved(pOnConnectionRemoved);
         getModelEditingManager().setOnConnectionRemoved(pOnConnectionRemoved);
     }
 
     @Override
-    public void setOnNodeRemoved(Function<GNode, Command> pOnNodeRemoved)
+    public void setOnNodeRemoved(final BiFunction<RemoveContext, GNode, Command> pOnNodeRemoved)
     {
         getModelEditingManager().setOnNodeRemoved(pOnNodeRemoved);
     }

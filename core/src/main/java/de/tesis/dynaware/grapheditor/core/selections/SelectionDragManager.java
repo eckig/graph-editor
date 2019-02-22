@@ -55,25 +55,33 @@ public class SelectionDragManager {
         this.selectionManager = selectionManager;
     }
 
-    private void masterMovedX(final double x) {
-
-        if (master != null) {
-            for (int i = 0; i < currentSelectedElements.size(); i++) {
+    private void masterMovedX(final double x)
+    {
+        if (master != null)
+        {
+            for (int i = 0; i < currentSelectedElements.size(); i++)
+            {
                 final DraggableBox node = currentSelectedElements.get(i);
-                if (node != master) {
+                if (node != master)
+                {
                     node.setLayoutX(x + elementLayoutXOffsets[i]);
+                    node.positionMoved();
                 }
             }
         }
     }
 
-    private void masterMovedY(final double y) {
-
-        if (master != null) {
-            for (int i = 0; i < currentSelectedElements.size(); i++) {
+    private void masterMovedY(final double y)
+    {
+        if (master != null)
+        {
+            for (int i = 0; i < currentSelectedElements.size(); i++)
+            {
                 final DraggableBox node = currentSelectedElements.get(i);
-                if (node != master) {
+                if (node != master)
+                {
                     node.setLayoutY(y + elementLayoutYOffsets[i]);
+                    node.positionMoved();
                 }
             }
         }

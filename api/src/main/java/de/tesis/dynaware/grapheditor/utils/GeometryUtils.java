@@ -69,15 +69,13 @@ public class GeometryUtils {
      *
      * @return the position of the cursor relative to the node origin
      */
-    public static Point2D getCursorPosition(final MouseEvent event, final Node node) {
-
+    public static Point2D getCursorPosition(final MouseEvent event, final Node node)
+    {
         final double sceneX = event.getSceneX();
         final double sceneY = event.getSceneY();
 
-        final double containerSceneX = node.localToScene(0, 0).getX();
-        final double containerSceneY = node.localToScene(0, 0).getY();
-
-        return new Point2D(sceneX - containerSceneX, sceneY - containerSceneY);
+        final Point2D containerScene = node.localToScene(0, 0);
+        return new Point2D(sceneX - containerScene.getX(), sceneY - containerScene.getY());
     }
 
     /**
@@ -273,5 +271,21 @@ public class GeometryUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Rounds some value to the nearest multiple of the grid spacing.
+     * 
+     * @param pProperties
+     *            {@link GraphEditorProperties} or {@code null}
+     * @param value
+     *            a double value
+     * @return the input value rounded to the nearest multiple of the grid
+     *         spacing
+     */
+    public static double roundToGridSpacing(final GraphEditorProperties pProperties, final double value)
+    {
+        final double spacing = pProperties == null ? GraphEditorProperties.DEFAULT_GRID_SPACING : pProperties.getGridSpacing();
+        return spacing * Math.round(value / spacing);
     }
 }

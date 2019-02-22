@@ -6,7 +6,6 @@ package de.tesis.dynaware.grapheditor.core.connections;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,9 @@ import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import de.tesis.dynaware.grapheditor.utils.GraphEventManager;
+import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -57,8 +59,6 @@ public class ConnectorDragManager {
      */
     private final EventHandler<MouseEvent> mousePressedHandler = Event::consume;
 
-    private final List<Node> managedConnectorSkins = new ArrayList<>();
-
     private final Map<Node, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> dragDetectedHandlers = new HashMap<>();
@@ -75,8 +75,6 @@ public class ConnectorDragManager {
     private GConnector removalConnector;
 
     private boolean repositionAllowed;
-    private boolean dragInProgress;
-
 
     /**
      * Creates a new {@link ConnectorDragManager}. Only one instance should
@@ -146,13 +144,14 @@ public class ConnectorDragManager {
         addMouseHandlers(connector);
     }
 
-    public void removeConnector(final GConnector connector) {
-
-        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        if (connectorSkin != null) {
+    public void removeConnector(final GConnector pConnectorToRemove)
+    {
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(pConnectorToRemove);
+        if (connectorSkin != null)
+        {
             final Node root = connectorSkin.getRoot();
-            if (root != null) {
-
+            if (root != null)
+            {
                 removeSingleEventHandler(root, mouseEnteredHandlers, MouseEvent.MOUSE_ENTERED);
                 removeSingleEventHandler(root, mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
                 removeSingleEventHandler(root, dragDetectedHandlers, MouseEvent.DRAG_DETECTED);
@@ -162,25 +161,28 @@ public class ConnectorDragManager {
                 removeSingleEventHandler(root, mouseDragReleasedHandlers, MouseDragEvent.MOUSE_DRAG_RELEASED);
 
                 removeGeneralEventHandlers(root);
-                managedConnectorSkins.remove(root);
             }
         }
 
         // the connector's tail we are dragging around has been removed..
-        if(sourceConnector == connector || targetConnector == connector) {
+        if (sourceConnector == pConnectorToRemove || targetConnector == pConnectorToRemove || removalConnector == pConnectorToRemove)
+        {
             clearTrackingParameters();
         }
     }
 
-    private void removeGeneralEventHandlers(final Node node) {
+    private void removeGeneralEventHandlers(final Node node)
+    {
         node.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
-        node.removeEventHandler(MouseEvent.MOUSE_EXITED, mousePressedHandler);
+        node.removeEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedHandler);
     }
 
-    private <T extends Event> void removeSingleEventHandler(final Node node, final Map<Node, EventHandler<T>> eventHandlerMap,
-            final EventType<T> eventType) {
+    private static <T extends Event> void removeSingleEventHandler(final Node node, final Map<Node, EventHandler<T>> eventHandlerMap,
+            final EventType<T> eventType)
+    {
         final EventHandler<T> handler = eventHandlerMap.remove(node);
-        if (handler != null) {
+        if (handler != null)
+        {
             node.removeEventHandler(eventType, handler);
         }
     }
@@ -189,7 +191,13 @@ public class ConnectorDragManager {
      * Sets all mouse and mouse-drag handlers for all connectors in the current
      * model.
      */
-    private void setHandlers() {
+    private void setHandlers()
+    {
+        // here we assume that all event handler maps are of exactly the same size
+        for (final Node node : mouseEnteredHandlers.keySet())
+        {
+            removeGeneralEventHandlers(node);
+        }
 
         EventUtils.removeEventHandlers(mouseEnteredHandlers, MouseEvent.MOUSE_ENTERED);
         EventUtils.removeEventHandlers(mouseReleasedHandlers, MouseEvent.MOUSE_RELEASED);
@@ -199,14 +207,10 @@ public class ConnectorDragManager {
         EventUtils.removeEventHandlers(mouseDragExitedHandlers, MouseDragEvent.MOUSE_DRAG_EXITED);
         EventUtils.removeEventHandlers(mouseDragReleasedHandlers, MouseDragEvent.MOUSE_DRAG_RELEASED);
 
-        for (final Iterator<Node> iter = managedConnectorSkins.iterator(); iter.hasNext();) {
-            final Node next = iter.next();
-            removeGeneralEventHandlers(next);
-            iter.remove();
-        }
-
-        for (final GNode node : model.getNodes()) {
-            for (final GConnector connector : node.getConnectors()) {
+        for (final GNode node : model.getNodes())
+        {
+            for (final GConnector connector : node.getConnectors())
+            {
                 addMouseHandlers(connector);
             }
         }
@@ -248,8 +252,6 @@ public class ConnectorDragManager {
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, newMouseDragExitedHandler);
             root.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, newMouseDragReleasedHandler);
 
-            managedConnectorSkins.add(root);
-
             mouseEnteredHandlers.put(root, newMouseEnteredHandler);
             mouseReleasedHandlers.put(root, newMouseReleasedHandler);
 
@@ -264,11 +266,13 @@ public class ConnectorDragManager {
     /**
      * Handles mouse-entered events on the given connector.
      *
-     * @param event a mouse-entered event
-     * @param connector the {@link GConnector} on which this event occurred
+     * @param event
+     *            a mouse-entered event
+     * @param connector
+     *            the {@link GConnector} on which this event occurred
      */
-    private void handleMouseEntered(final MouseEvent event, final GConnector connector) {
-
+    private void handleMouseEntered(final MouseEvent event, final GConnector connector)
+    {
         hoveredConnector = connector;
         event.consume();
     }
@@ -276,10 +280,11 @@ public class ConnectorDragManager {
     /**
      * Handles mouse-exited events on the given connector.
      *
-     * @param event a mouse-exited event
+     * @param event
+     *            a mouse-exited event
      */
-    private void handleMouseExited(final MouseEvent event) {
-
+    private void handleMouseExited(final MouseEvent event)
+    {
         hoveredConnector = null;
         event.consume();
     }
@@ -291,10 +296,11 @@ public class ConnectorDragManager {
      * @param event
      *            a mouse-released event
      */
-    private void handleMouseReleased(final MouseEvent event) {
-
+    private void handleMouseReleased(final MouseEvent event)
+    {
         final GConnectorSkin targetConnectorSkin;
-        if (targetConnector != null && (targetConnectorSkin = skinLookup.lookupConnector(targetConnector)) != null) {
+        if (targetConnector != null && (targetConnectorSkin = skinLookup.lookupConnector(targetConnector)) != null)
+        {
             targetConnectorSkin.applyStyle(GConnectorStyle.DEFAULT);
         }
 
@@ -303,6 +309,7 @@ public class ConnectorDragManager {
         repositionAllowed = true;
 
         tailManager.cleanUp();
+        finishGesture();
 
         event.consume();
     }
@@ -310,34 +317,33 @@ public class ConnectorDragManager {
     /**
      * Handles drag-detected events on the given connector.
      *
-     * @param event
+     * @param pEvent
      *            a drag-detected event
      * @param connectorSkin
      *            the {@link GConnectorSkin} on which this event occurred
      */
-    private void handleDragDetected(final MouseEvent event, final GConnectorSkin connectorSkin) {
-
-        if (!event.getButton().equals(MouseButton.PRIMARY)) {
+    private void handleDragDetected(final MouseEvent pEvent, final GConnectorSkin connectorSkin)
+    {
+        if (pEvent.getButton() != MouseButton.PRIMARY)
+        {
             return;
         }
 
         final GConnector connector = connectorSkin.getItem();
-        if (checkCreatable(connector)) {
-
+        if (checkCreatable(connector) && activateGesture(pEvent))
+        {
             sourceConnector = connector;
             connectorSkin.getRoot().startFullDrag();
             tailManager.cleanUp();
-            tailManager.create(connector, event);
-            dragInProgress = true;
-
-        } else if (checkRemovable(connector)) {
-
+            tailManager.create(connector, pEvent);
+        }
+        else if (checkRemovable(connector) && activateGesture(pEvent))
+        {
             removalConnector = connector;
             connectorSkin.getRoot().startFullDrag();
-            dragInProgress = true;
         }
 
-        event.consume();
+        pEvent.consume();
     }
 
     /**
@@ -348,17 +354,17 @@ public class ConnectorDragManager {
      * @param connector
      *            the {@link GConnector} on which this event occurred
      */
-    private void handleMouseDragged(final MouseEvent event, final GConnector connector) {
-
-        if (!dragInProgress) {
-            return;
-        }
-
-        if (repositionAllowed) {
+    private void handleMouseDragged(final MouseEvent event, final GConnector connector)
+    {
+        if (repositionAllowed && activateGesture(event))
+        {
             // Case for when the mouse first exits a connector during a drag gesture.
-            if (removalConnector != null && !removalConnector.equals(hoveredConnector)) {
+            if (removalConnector != null && !removalConnector.equals(hoveredConnector))
+            {
                 detachConnection(event, connector);
-            } else {
+            }
+            else
+            {
                 tailManager.updatePosition(event);
             }
         }
@@ -372,23 +378,27 @@ public class ConnectorDragManager {
      * @param connectorSkin
      *            the {@link GConnectorSkin} on which this event occurred
      */
-    private void handleDragEntered(final MouseEvent event, final GConnectorSkin connectorSkin) {
-
-        if (!dragInProgress) {
+    private void handleDragEntered(final MouseEvent event, final GConnectorSkin connectorSkin)
+    {
+        if (!activateGesture(event))
+        {
             return;
         }
 
         final GConnector connector = connectorSkin.getItem();
-        if (validator.prevalidate(sourceConnector, connector)) {
-
+        if (validator.prevalidate(sourceConnector, connector))
+        {
             final boolean valid = validator.validate(sourceConnector, connector);
             tailManager.snapPosition(sourceConnector, connector, valid);
 
             repositionAllowed = false;
 
-            if (valid) {
+            if (valid)
+            {
                 connectorSkin.applyStyle(GConnectorStyle.DRAG_OVER_ALLOWED);
-            } else {
+            }
+            else
+            {
                 connectorSkin.applyStyle(GConnectorStyle.DRAG_OVER_FORBIDDEN);
             }
         }
@@ -404,8 +414,8 @@ public class ConnectorDragManager {
      * @param connectorSKin
      *            the {@link GConnectorSkin} on which this event occurred
      */
-    private void handleDragExited(final MouseEvent event, final GConnectorSkin connectorSkin) {
-
+    private void handleDragExited(final MouseEvent event, final GConnectorSkin connectorSkin)
+    {
         connectorSkin.applyStyle(GConnectorStyle.DEFAULT);
         repositionAllowed = true;
 
@@ -422,9 +432,10 @@ public class ConnectorDragManager {
      * @param connectorSkin
      *            the {@link GConnectorSkin} on which this event occurred
      */
-    private void handleDragReleased(final MouseEvent event, final GConnectorSkin connectorSkin) {
-
-        if (event.isConsumed()) {
+    private void handleDragReleased(final MouseEvent event, final GConnectorSkin connectorSkin)
+    {
+        if (event.isConsumed())
+        {
             return;
         }
 
@@ -432,13 +443,14 @@ public class ConnectorDragManager {
         event.consume();
 
         final GConnector connector = connectorSkin.getItem();
-        if (validator.prevalidate(sourceConnector, connector) && validator.validate(sourceConnector, connector)) {
+        if (validator.prevalidate(sourceConnector, connector) && validator.validate(sourceConnector, connector))
+        {
             addConnection(sourceConnector, connector);
         }
 
         connectorSkin.applyStyle(GConnectorStyle.DEFAULT);
         tailManager.cleanUp();
-        dragInProgress = false;
+        finishGesture();
     }
 
     /**
@@ -466,8 +478,14 @@ public class ConnectorDragManager {
         return checkEditable() && !connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag();
     }
 
-    private boolean checkEditable() {
-        return view != null && view.getEditorProperties() != null && !view.getEditorProperties().isReadOnly();
+    private boolean checkEditable()
+    {
+        return getEditorProperties() != null && !getEditorProperties().isReadOnly();
+    }
+
+    private GraphEditorProperties getEditorProperties()
+    {
+        return view == null ? null : view.getEditorProperties();
     }
 
     /**
@@ -516,7 +534,12 @@ public class ConnectorDragManager {
      */
     private void detachConnection(final MouseEvent event, final GConnector connector)
     {
-        skinLookup.lookupConnector(connector).applyStyle(GConnectorStyle.DEFAULT);
+        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
+        final int connectorCount = getConnectorCount(connector);
+        if (connectorSkin != null)
+        {
+            connectorSkin.applyStyle(GConnectorStyle.DEFAULT);
+        }
 
         if (connector.getConnections().isEmpty())
         {
@@ -543,6 +566,14 @@ public class ConnectorDragManager {
 
             ConnectionCommands.removeConnection(model, connection, connectionEventManager);
 
+            final GConnectorSkin updateConnectorSkin;
+            if ((updateConnectorSkin = skinLookup.lookupConnector(connector)) == null || updateConnectorSkin != connectorSkin
+                    || connectorCount != getConnectorCount(connector))
+            {
+                // business logic decided to remove this connection or structurally change the parent node
+                continue;
+            }
+
             // check if the new source connector allows to create a new connection on the fly:
             if (!followUpCreated && checkCreatable(opposingConnector))
             {
@@ -559,10 +590,15 @@ public class ConnectorDragManager {
             clearTrackingParameters();
             sourceConnector = null;
             targetConnector = null;
-            followUpCreated = true;
+            finishGesture();
         }
 
         removalConnector = null;
+    }
+
+    private static int getConnectorCount(final GConnector pConnector)
+    {
+        return pConnector == null || pConnector.getParent() == null ? 1 : pConnector.getParent().getConnectors().size();
     }
 
     private GConnector getOpposingConnector(final GConnection pConnection, final GConnector pConnector)
@@ -575,5 +611,25 @@ public class ConnectorDragManager {
         {
             return pConnection.getTarget();
         }
+    }
+
+    private boolean activateGesture(final Event pEvent)
+    {
+        final GraphEventManager eventManager = getEditorProperties();
+        if (eventManager != null)
+        {
+            eventManager.activateGesture(GraphInputGesture.CONNECT, pEvent, this);
+        }
+        return true;
+    }
+
+    private boolean finishGesture()
+    {
+        final GraphEventManager eventManager = getEditorProperties();
+        if (eventManager != null)
+        {
+            return eventManager.finishGesture(GraphInputGesture.CONNECT, this);
+        }
+        return true;
     }
 }

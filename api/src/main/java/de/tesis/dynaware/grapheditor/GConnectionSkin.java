@@ -33,7 +33,6 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * up a considerable amount of time.
      */
     private int mConnectionIndex;
-    private Point2D[] mPoints;
 
     /**
      * Creates a new {@link GConnectionSkin}.
@@ -85,14 +84,6 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
     }
 
     /**
-     * @return current points of this connection
-     */
-    protected Point2D[] getPoints()
-    {
-        return mPoints;
-    }
-
-    /**
      * Update and return the points of this connection. This is called every
      * time the connection's position could change, for example if one of its
      * connectors is moved before {@link #draw(Map)}.
@@ -129,7 +120,7 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
         final SkinLookup skinLookup = getGraphEditor() == null ? null : getGraphEditor().getSkinLookup();
         if (item == null || skinLookup == null)
         {
-            mPoints = null;
+            return null;
         }
         else if (item.getJoints().isEmpty())
         {
@@ -141,7 +132,7 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
             // End: Target position
             points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
 
-            mPoints = points;
+            return points;
         }
         else
         {
@@ -157,16 +148,16 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
             // End: Target position
             points[len - 1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
 
-            mPoints = points;
+            return points;
         }
-        return mPoints;
     }
 
     /**
-     * @return cached position (index) of this connection skin inside the child-list
-     *         of the parent connection layer.
+     * @return cached position (index) of this connection skin inside the
+     *         child-list of the parent connection layer.
      */
-    public int getParentIndex() {
+    public int getParentIndex()
+    {
         return mConnectionIndex;
     }
 }
