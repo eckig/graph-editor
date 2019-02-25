@@ -1,16 +1,17 @@
-module graph.editor.demo
+/**
+ * Sample graph editor implementation
+ */
+module fx.graph.editor.demo
 {
-    requires javafx.controls;
     requires javafx.fxml;
-
-    requires graph.editor.model;
-    requires graph.editor.api;
-    requires graph.editor.core;
-
-    requires org.eclipse.emf.common;
+    requires fx.graph.editor.api;
+    requires fx.graph.editor.core;
     requires org.eclipse.emf.ecore;
+    requires org.eclipse.emf.common;
     requires org.eclipse.emf.ecore.xmi;
-    requires edit;
-
+    requires org.eclipse.emf.edit;
     requires slf4j.api;
+
+    exports de.tesis.dynaware.grapheditor.demo to javafx.graphics, javafx.fxml;
+    opens de.tesis.dynaware.grapheditor.demo to javafx.fxml;
 }

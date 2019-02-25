@@ -32,6 +32,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+
 /**
  * The minimap representation of all nodes in the graph editor.
  *
@@ -41,14 +42,14 @@ import javafx.scene.shape.Rectangle;
  * {@link GraphEditorMinimap}.
  * </p>
  */
-public class MinimapNodeGroup extends Parent {
+public class MinimapNodeGroup extends Parent
+{
 
-    private static final String STYLE_CLASS_NODE = "minimap-node";
-    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final String STYLE_CLASS_NODE = "minimap-node"; //$NON-NLS-1$
+    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected"); //$NON-NLS-1$
 
     private final InvalidationListener checkSelectionListener = obs -> checkSelection();
-    private final InvalidationListener checkSelectionWeakListener = new WeakInvalidationListener(
-            checkSelectionListener);
+    private final InvalidationListener checkSelectionWeakListener = new WeakInvalidationListener(checkSelectionListener);
 
     private SelectionManager selectionManager;
     private GModel model;
@@ -56,34 +57,39 @@ public class MinimapNodeGroup extends Parent {
     private final Map<GNode, Rectangle> nodes = new HashMap<>();
 
     private Predicate<GConnection> connectionFilter = c -> true;
-    
+
     private double width = -1;
     private double height = -1;
     private double scaleFactor = -1;
     private final Canvas canvas = new Canvas();
 
-    private final StyleableObjectProperty<Color> connectionColor = new StyleableObjectProperty<Color>(Color.GRAY) {
+    private final StyleableObjectProperty<Color> connectionColor = new StyleableObjectProperty<>(Color.GRAY)
+    {
 
         @Override
-        public String getName() {
-            return "connectionColor";
+        public String getName()
+        {
+            return "connectionColor"; //$NON-NLS-1$
         }
 
         @Override
-        public Object getBean() {
-            return "GraphEditorMinimap";
+        public Object getBean()
+        {
+            return "GraphEditorMinimap"; //$NON-NLS-1$
         }
 
         @Override
-        public CssMetaData<? extends Styleable, Color> getCssMetaData() {
+        public CssMetaData<? extends Styleable, Color> getCssMetaData()
+        {
             return StyleableProperties.CONNECTION_COLOR;
         }
     };
-    
+
     /**
      * Default constructor
      */
-    public MinimapNodeGroup() {
+    public MinimapNodeGroup()
+    {
         getChildren().add(canvas);
     }
 
@@ -95,19 +101,21 @@ public class MinimapNodeGroup extends Parent {
      * This will be used to show what nodes are currently selected.
      * <p>
      *
-     * @param selectionManager
+     * @param pSelectionManager
      *            a {@link SelectionManager} instance
      */
-    public void setSelectionManager(final SelectionManager selectionManager) {
-
-        if (this.selectionManager != null) {
-            this.selectionManager.getSelectedItems().removeListener(checkSelectionWeakListener);
+    public void setSelectionManager(final SelectionManager pSelectionManager)
+    {
+        if (selectionManager != null)
+        {
+            selectionManager.getSelectedItems().removeListener(checkSelectionWeakListener);
         }
 
-        this.selectionManager = selectionManager;
+        selectionManager = pSelectionManager;
 
-        if (this.selectionManager != null) {
-            this.selectionManager.getSelectedItems().addListener(checkSelectionWeakListener);
+        if (selectionManager != null)
+        {
+            selectionManager.getSelectedItems().addListener(checkSelectionWeakListener);
         }
         checkSelection();
     }
@@ -115,54 +123,62 @@ public class MinimapNodeGroup extends Parent {
     /**
      * Sets the model whose nodes will be drawn in the minimap.
      *
-     * @param model
-     *            athe {@link GModel} whose nodes are to be drawn
+     * @param pModel
+     *            the {@link GModel} whose nodes are to be drawn
      */
-    public void setModel(final GModel model) {
-        this.model = model;
+    public void setModel(final GModel pModel)
+    {
+        model = pModel;
     }
 
-    private void checkSelection() {
-        for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet()) {
+    private void checkSelection()
+    {
+        for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet())
+        {
             entry.getValue().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, isSelected(entry.getKey()));
         }
     }
 
-    private boolean isSelected(final GNode node) {
+    private boolean isSelected(final GNode node)
+    {
         return selectionManager == null ? false : selectionManager.isSelected(node);
     }
 
-    private static double scaleSharp(final double value, final double scale) {
+    private static double scaleSharp(final double value, final double scale)
+    {
         return Math.round(value * scale) + 0.5;
     }
 
     /**
      * Set a filter {@link Predicate} to only draw the desired connections onto
      * the minimap
-     * 
+     *
      * @see #setConnectionColor(Color)
-     * @param connectionFilter
+     * @param pConnectionFilter
      *            connection filter {@link Predicate}
      */
-    public void setConnectionFilter(final Predicate<GConnection> connectionFilter) {
-        this.connectionFilter = connectionFilter;
+    public void setConnectionFilter(final Predicate<GConnection> pConnectionFilter)
+    {
+        connectionFilter = pConnectionFilter;
     }
 
     /**
      * Set a {@link Color} to paint the connections onto the minimap
-     * 
+     *
      * @see #setConnectionFilter(Predicate)
-     * @param connectionColor
+     * @param pConnectionColor
      *            connection {@link Color}
      */
-    public void setConnectionColor(final Color connectionColor) {
-        this.connectionColor.set(connectionColor);
+    public void setConnectionColor(final Color pConnectionColor)
+    {
+        connectionColor.set(pConnectionColor);
     }
-    
+
     /**
      * @return current {@link Color} to paint the connections onto the minimap
      */
-    public Color getConnectionColor() {
+    public Color getConnectionColor()
+    {
         return connectionColor.get();
     }
 
@@ -170,41 +186,50 @@ public class MinimapNodeGroup extends Parent {
      * @return {@link ObjectProperty} controlling the {@link Color} to paint the
      *         connections onto the minimap
      */
-    public ObjectProperty<Color> connectionColorProperty() {
+    public ObjectProperty<Color> connectionColorProperty()
+    {
         return connectionColor;
     }
-    
+
     @Override
-    public boolean isResizable() {
+    public boolean isResizable()
+    {
         return true;
     }
-    
+
     @Override
-    public void resize(double width, double height) {
-        if(this.width != width || this.height != height) {
-            this.width = width;
-            this.height = height;
+    public void resize(double pWidth, double pHeight)
+    {
+        if (width != pWidth || height != pHeight)
+        {
+            width = pWidth;
+            height = pHeight;
             redraw();
         }
     }
-    
+
     /**
-     * @param scaleFactor
+     * @param pScaleFactor
      *            the ratio between the size of the content and the size of the
      *            minimap (between 0 and 1)
      */
-    public void setScaleFactor(final double scaleFactor) {
-        if(this.scaleFactor != scaleFactor) {
-            this.scaleFactor = scaleFactor;
+    public void setScaleFactor(final double pScaleFactor)
+    {
+        if (scaleFactor != pScaleFactor)
+        {
+            scaleFactor = pScaleFactor;
             redraw();
         }
     }
-    
-    private void redraw() {
-        if(nodes.isEmpty()) {
+
+    private void redraw()
+    {
+        if (nodes.isEmpty())
+        {
             draw();
         }
-        else {
+        else
+        {
             requestLayout();
         }
     }
@@ -213,19 +238,23 @@ public class MinimapNodeGroup extends Parent {
      * Draws the model's nodes at a scaled-down size to be displayed in the
      * minimap.
      */
-    public void draw() {
-
+    public void draw()
+    {
         nodes.clear();
-        if(getChildren().size() > 1) {
+        if (getChildren().size() > 1)
+        {
             getChildren().remove(1, getChildren().size());
         }
-        
-        if(width == -1 || height == -1 || scaleFactor == -1) {
+
+        if (width == -1 || height == -1 || scaleFactor == -1)
+        {
             return;
         }
-        
-        if (model != null) {
-            for (int i = 0; i < model.getNodes().size(); i++) {
+
+        if (model != null)
+        {
+            for (int i = 0; i < model.getNodes().size(); i++)
+            {
                 final GNode node = model.getNodes().get(i);
                 final Rectangle minimapNode = new Rectangle();
                 minimapNode.getStyleClass().addAll(STYLE_CLASS_NODE, node.getType());
@@ -234,67 +263,73 @@ public class MinimapNodeGroup extends Parent {
             }
             checkSelection();
         }
-        
+
         requestLayout();
     }
-    
-    @Override
-    protected void layoutChildren() {
 
-        if(width < 1 || height < 1) {
+    @Override
+    protected void layoutChildren()
+    {
+        if (width < 1 || height < 1)
+        {
             return;
         }
-        
+
         final GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        
+
         canvas.setWidth(width);
         canvas.setHeight(height);
-        
-        
+
         gc.beginPath();
         gc.setStroke(connectionColor.get());
         gc.setLineWidth(1);
 
-        if (model != null) {
-
-            for (int i = 0; i < model.getConnections().size(); i++) {
-
+        if (model != null)
+        {
+            for (int i = 0; i < model.getConnections().size(); i++)
+            {
                 final GConnection conn = model.getConnections().get(i);
-                if (connectionFilter != null && !connectionFilter.test(conn)) {
+                if (connectionFilter != null && !connectionFilter.test(conn))
+                {
                     continue;
                 }
 
                 final GConnector source = conn.getSource();
                 final GNode parentSource = source.getParent();
-                
+
                 double x = scaleSharp(source.getX() + parentSource.getX() - 10, scaleFactor),
                         y = scaleSharp(source.getY() + parentSource.getY(), scaleFactor);
                 gc.moveTo(x, y);
 
-                for (int j = 0; j <= conn.getJoints().size(); j++) {
-                    
+                for (int j = 0; j <= conn.getJoints().size(); j++)
+                {
                     final double newX;
                     final double newY;
-                    if (j < conn.getJoints().size()) {
+                    if (j < conn.getJoints().size())
+                    {
                         final GJoint joint = conn.getJoints().get(j);
                         newX = scaleSharp(joint.getX(), scaleFactor);
                         newY = scaleSharp(joint.getY(), scaleFactor);
-                    } else {
+                    }
+                    else
+                    {
                         final GConnector target = conn.getTarget();
                         final GNode parentTarget = target.getParent();
                         newX = scaleSharp(target.getX() + parentTarget.getX(), scaleFactor);
                         newY = scaleSharp(target.getY() + parentTarget.getY(), scaleFactor);
                     }
-                    
+
                     // only draw direct rectangular and sharp lines:
-                    if(Math.abs(newX - x) < Math.abs(newY - y)) {
+                    if (Math.abs(newX - x) < Math.abs(newY - y))
+                    {
                         gc.lineTo(x, newY);
                     }
-                    else {
+                    else
+                    {
                         gc.lineTo(newX, y);
                     }
-                    
+
                     x = newX;
                     y = newY;
                 }
@@ -302,8 +337,8 @@ public class MinimapNodeGroup extends Parent {
                 gc.stroke();
             }
 
-            for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet()) {
-
+            for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet())
+            {
                 final GNode node = entry.getKey();
                 final Rectangle minimapNode = entry.getValue();
                 minimapNode.setX(Math.round(node.getX() * scaleFactor));
@@ -315,7 +350,8 @@ public class MinimapNodeGroup extends Parent {
     }
 
     @Override
-    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
+    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData()
+    {
         return getClassCssMetaData();
     }
 
@@ -323,28 +359,34 @@ public class MinimapNodeGroup extends Parent {
      * @return The CssMetaData associated with this class, which may include the
      *         CssMetaData of its super classes.
      */
-    public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
+    public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData()
+    {
         return StyleableProperties.STYLEABLES;
     }
 
-    private static class StyleableProperties {
+    private static class StyleableProperties
+    {
 
-        static final CssMetaData<MinimapNodeGroup, Color> CONNECTION_COLOR = new CssMetaData<MinimapNodeGroup, Color>(
-                "-connection-color", StyleConverter.getColorConverter(), Color.GRAY) {
+        static final CssMetaData<MinimapNodeGroup, Color> CONNECTION_COLOR = new CssMetaData<>("-connection-color", //$NON-NLS-1$
+                StyleConverter.getColorConverter(), Color.GRAY)
+        {
 
             @Override
-            public boolean isSettable(final MinimapNodeGroup node) {
+            public boolean isSettable(final MinimapNodeGroup node)
+            {
                 return !node.connectionColor.isBound();
             }
 
             @Override
-            public StyleableProperty<Color> getStyleableProperty(MinimapNodeGroup node) {
+            public StyleableProperty<Color> getStyleableProperty(MinimapNodeGroup node)
+            {
                 return node.connectionColor;
             }
         };
 
         static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
-        static {
+        static
+        {
 
             final List<CssMetaData<? extends Styleable, ?>> styleables = new ArrayList<>(Node.getClassCssMetaData());
             styleables.add(CONNECTION_COLOR);

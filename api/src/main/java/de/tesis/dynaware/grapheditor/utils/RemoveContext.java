@@ -4,7 +4,7 @@
 //      MODULE:         Client
 //
 //////////////////////////////////////////////////////////////////////////////
-package de.tesis.dynaware.grapheditor;
+package de.tesis.dynaware.grapheditor.utils;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -3,6 +3,7 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import de.tesis.dynaware.grapheditor.impl.GraphEventManagerImpl;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;

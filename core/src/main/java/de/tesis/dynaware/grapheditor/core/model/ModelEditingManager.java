@@ -24,7 +24,6 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory.Descriptor.Registry;
 
 import de.tesis.dynaware.grapheditor.Commands;
-import de.tesis.dynaware.grapheditor.RemoveContext;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -32,6 +31,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
+import de.tesis.dynaware.grapheditor.utils.RemoveContext;
 
 
 /**

@@ -16,7 +16,7 @@ import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
  */
 public class MinimapLocator extends DraggableBox {
 
-    private static final String STYLE_CLASS_LOCATOR = "minimap-locator";
+    private static final String STYLE_CLASS_LOCATOR = "minimap-locator"; //$NON-NLS-1$
 
     /**
      * Creates a new {@link MinimapLocator}.
@@ -36,7 +36,7 @@ public class MinimapLocator extends DraggableBox {
 
         setEditorProperties(locatorProperties);
     }
-    
+
     @Override
     protected boolean isEditable() {
         // we want the minimap to be movable at all times because it is not really editing

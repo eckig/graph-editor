@@ -1,5 +1,7 @@
-package de.tesis.dynaware.grapheditor.utils;
+package de.tesis.dynaware.grapheditor.impl;
 
+import de.tesis.dynaware.grapheditor.utils.GraphEventManager;
+import de.tesis.dynaware.grapheditor.utils.GraphInputGesture;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -11,7 +13,7 @@ import javafx.scene.input.ZoomEvent;
 /**
  * Default implementation of {@link GraphEventManager}
  */
-class GraphEventManagerImpl implements GraphEventManager
+public class GraphEventManagerImpl implements GraphEventManager
 {
 
     private GraphInputGesture gesture;

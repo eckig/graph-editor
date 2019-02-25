@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
-			<artifactId>edit</artifactId>
+			<artifactId>org.eclipse.emf.edit</artifactId>
 			<version>${org.eclipse.emf.edit.version}</version>
 			<!-- EMF Edit brings a bunch of transitive junk that we don't need right now. -->
 			<exclusions>
@@ -36,12 +36,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j.version}</version>
@@ -49,11 +43,6 @@
 		<dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>${org.openjfx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
             <version>${org.openjfx.version}</version>
         </dependency>
         <dependency>

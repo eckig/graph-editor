@@ -274,8 +274,8 @@ public class PanningWindow extends Region {
         final double w = scrollY.getWidth();
         final double h = scrollX.getHeight();
 
-        scrollX.resizeRelocate(0, snapPosition(height - h), snapSize(width - w), h);
-        scrollY.resizeRelocate(snapPosition(width - w), 0, w, snapSize(height - h));
+        scrollX.resizeRelocate(0, snapPositionY(height - h), snapSizeX(width - w), h);
+        scrollY.resizeRelocate(snapPositionX(width - w), 0, w, snapSizeY(height - h));
 
         scrollX.setMin(0);
         scrollX.setMax(getMaxX());
@@ -333,12 +333,12 @@ public class PanningWindow extends Region {
 
     private double checkContentX(final double xToCheck)
     {
-        return snapPosition(Math.min(getMaxX(), Math.max(xToCheck, 0)));
+        return snapPositionX(Math.min(getMaxX(), Math.max(xToCheck, 0)));
     }
 
     private double checkContentY(final double yToCheck)
     {
-        return snapPosition(Math.min(getMaxY(), Math.max(yToCheck, 0)));
+        return snapPositionY(Math.min(getMaxY(), Math.max(yToCheck, 0)));
     }
 
     @Override

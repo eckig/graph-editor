@@ -9,6 +9,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.transform.Rotate;
 
+
 /**
  * An arrow-head shape.
  *
@@ -16,7 +17,8 @@ import javafx.scene.transform.Rotate;
  * This is used by the {@link Arrow} class.
  * </p>
  */
-public class ArrowHead extends Path {
+public class ArrowHead extends Path
+{
 
     private static final double DEFAULT_LENGTH = 10;
     private static final double DEFAULT_WIDTH = 10;
@@ -32,7 +34,8 @@ public class ArrowHead extends Path {
     /**
      * Creates a new {@link ArrowHead}.
      */
-    public ArrowHead() {
+    public ArrowHead()
+    {
         setFill(Color.BLACK);
         setStrokeType(StrokeType.INSIDE);
         getTransforms().add(rotate);
@@ -41,25 +44,29 @@ public class ArrowHead extends Path {
     /**
      * Sets the center position of the arrow-head.
      *
-     * @param x the x-coordinate of the center of the arrow-head
-     * @param y the y-coordinate of the center of the arrow-head
+     * @param pX
+     *            the x-coordinate of the center of the arrow-head
+     * @param pY
+     *            the y-coordinate of the center of the arrow-head
      */
-    public void setCenter(final double x, final double y) {
+    public void setCenter(final double pX, final double pY)
+    {
+        x = pX;
+        y = pY;
 
-        this.x = x;
-        this.y = y;
-
-        rotate.setPivotX(x);
-        rotate.setPivotY(y);
+        rotate.setPivotX(pX);
+        rotate.setPivotY(pY);
     }
 
     /**
      * Sets the length of the arrow-head.
      *
-     * @param length the length of the arrow-head
+     * @param pLength
+     *            the length of the arrow-head
      */
-    public void setLength(final double length) {
-        this.length = length;
+    public void setLength(final double pLength)
+    {
+        length = pLength;
     }
 
     /**
@@ -67,52 +74,63 @@ public class ArrowHead extends Path {
      *
      * @return the length of the arrow-head
      */
-    public double getLength() {
+    public double getLength()
+    {
         return length;
     }
 
     /**
      * Sets the width of the arrow-head.
      *
-     * @param width the width of the arrow-head
+     * @param pWidth
+     *            the width of the arrow-head
      */
-    public void setWidth(final double width) {
-        this.width = width;
+    public void setWidth(final double pWidth)
+    {
+        width = pWidth;
     }
 
     /**
-     * Sets the radius of curvature of the {@link ArcTo} at the base of the arrow-head.
+     * Sets the radius of curvature of the {@link ArcTo} at the base of the
+     * arrow-head.
      *
      * <p>
-     * If this value is less than or equal to zero, a straight line will be drawn instead. The default is -1.
+     * If this value is less than or equal to zero, a straight line will be
+     * drawn instead. The default is -1.
      * </p>
      *
-     * @param radius the radius of curvature of the arc at the base of the arrow-head
+     * @param pRadius
+     *            the radius of curvature of the arc at the base of the
+     *            arrow-head
      */
-    public void setRadiusOfCurvature(final double radius) {
-        this.radius = radius;
+    public void setRadiusOfCurvature(final double pRadius)
+    {
+        radius = pRadius;
     }
 
     /**
      * Sets the rotation angle of the arrow-head.
      *
-     * @param angle the rotation angle of the arrow-head, in degrees
+     * @param angle
+     *            the rotation angle of the arrow-head, in degrees
      */
-    public void setAngle(final double angle) {
+    public void setAngle(final double angle)
+    {
         rotate.setAngle(angle);
     }
 
     /**
      * Draws the arrow-head for its current size and position values.
      */
-    public void draw() {
-
+    public void draw()
+    {
         getElements().clear();
 
         getElements().add(new MoveTo(x, y + length / 2));
         getElements().add(new LineTo(x + width / 2, y - length / 2));
 
-        if (radius > 0) {
+        if (radius > 0)
+        {
             final ArcTo arcTo = new ArcTo();
             arcTo.setX(x - width / 2);
             arcTo.setY(y - length / 2);
@@ -120,7 +138,9 @@ public class ArrowHead extends Path {
             arcTo.setRadiusY(radius);
             arcTo.setSweepFlag(true);
             getElements().add(arcTo);
-        } else {
+        }
+        else
+        {
             getElements().add(new LineTo(x - width / 2, y - length / 2));
         }
 

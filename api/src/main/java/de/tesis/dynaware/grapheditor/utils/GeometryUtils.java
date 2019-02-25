@@ -275,17 +275,21 @@ public class GeometryUtils {
 
     /**
      * Rounds some value to the nearest multiple of the grid spacing.
-     * 
+     *
      * @param pProperties
      *            {@link GraphEditorProperties} or {@code null}
-     * @param value
+     * @param pValue
      *            a double value
      * @return the input value rounded to the nearest multiple of the grid
      *         spacing
      */
-    public static double roundToGridSpacing(final GraphEditorProperties pProperties, final double value)
+    public static double roundToGridSpacing(final GraphEditorProperties pProperties, final double pValue)
     {
-        final double spacing = pProperties == null ? GraphEditorProperties.DEFAULT_GRID_SPACING : pProperties.getGridSpacing();
-        return spacing * Math.round(value / spacing);
+        if (pProperties == null || !pProperties.isSnapToGridOn())
+        {
+            return pValue;
+        }
+        final double spacing = pProperties.getGridSpacing();
+        return spacing * Math.round(pValue / spacing);
     }
 }

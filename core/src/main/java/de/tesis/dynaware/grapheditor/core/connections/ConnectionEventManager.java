@@ -5,8 +5,8 @@ import java.util.function.Function;
 
 import org.eclipse.emf.common.command.Command;
 
-import de.tesis.dynaware.grapheditor.RemoveContext;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import de.tesis.dynaware.grapheditor.utils.RemoveContext;
 
 /**
  * Stores any connection created / removed handlers that are set.

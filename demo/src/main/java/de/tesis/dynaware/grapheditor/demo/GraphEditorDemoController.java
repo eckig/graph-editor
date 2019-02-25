@@ -48,7 +48,7 @@ import javafx.scene.layout.AnchorPane;
  */
 public class GraphEditorDemoController {
 
-    private static final String STYLE_CLASS_TITLED_SKINS = "titled-skins";
+    private static final String STYLE_CLASS_TITLED_SKINS = "titled-skins"; //$NON-NLS-1$
 
     @FXML
     private AnchorPane root;
@@ -128,8 +128,7 @@ public class GraphEditorDemoController {
         graphEditor.setModel(model);
         graphEditorContainer.setGraphEditor(graphEditor);
 
-        graphEditorContainer.getStylesheets().addAll(GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_VIEW).toExternalForm(),
-                GraphEditorView.class.getResource(GraphEditorView.STYLESHEET_DEFAULTS).toExternalForm());
+        graphEditorContainer.getStylesheets().addAll(GraphEditorView.STYLESHEET_VIEW, GraphEditorView.STYLESHEET_DEFAULTS);
 
         setDetouredStyle();
 

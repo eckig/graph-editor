@@ -1,5 +1,8 @@
 package de.tesis.dynaware.grapheditor.utils;
 
+/**
+ * Defines the various input gestures used by the graph editor
+ */
 public enum GraphInputGesture
 {
 

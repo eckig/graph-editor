@@ -14,6 +14,7 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import de.tesis.dynaware.grapheditor.utils.RemoveContext;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.Region;
 

@@ -12,11 +12,6 @@
 	<description>A library for creating and editing graph-like diagrams in JavaFX</description>
 	<url>https://github.com/tesis-dynaware/graph-editor</url>
 
-	<organization>
-		<name>TESIS DYNAware</name>
-		<url>http://www.tesis-dynaware.com</url>
-	</organization>
-
 	<licenses>
 		<license>
 			<name>Eclipse Public License - v 1.0</name>
@@ -30,6 +25,12 @@
 			<email>rfisher@tesis.de</email>
 			<organization>TESIS Dynaware GmbH</organization>
 			<organizationUrl>http://www.tesis-dynaware.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Steffen Rachner</name>
+			<email>steffen.rachner@t-systems.com</email>
+			<organization>Deutsche Telekom Healthcare and Security Solutions GmbH</organization>
+			<organizationUrl>https://www.telekom-sfp.com/</organizationUrl>
 		</developer>
 	 </developers>
 	 
@@ -46,17 +47,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
 		<maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
-		<org.eclipse.emf.ecore.version>2.9.2-v20131212-0545</org.eclipse.emf.ecore.version>
-		<org.eclipse.emf.common.version>2.9.2-v20131212-0545</org.eclipse.emf.common.version>
-		<org.eclipse.emf.ecore.xmi.version>2.9.1-v20131212-0545</org.eclipse.emf.ecore.xmi.version>
-		<org.eclipse.emf.edit.version>2.3.0-v200706262000</org.eclipse.emf.edit.version>
-		<revision>1.4.6</revision>
+		<org.eclipse.emf.ecore.version>2.15.0</org.eclipse.emf.ecore.version>
+		<org.eclipse.emf.common.version>2.15.0</org.eclipse.emf.common.version>
+		<org.eclipse.emf.ecore.xmi.version>2.15.0</org.eclipse.emf.ecore.xmi.version>
+		<org.eclipse.emf.edit.version>2.14.0</org.eclipse.emf.edit.version>
+		<revision>11.0.0</revision>
 		<junit.version>4.11</junit.version>
-		<mockito.version>1.9.5</mockito.version>
-		<org.slf4j.version>1.7.5</org.slf4j.version>
-		<org.openjfx.version>11</org.openjfx.version>
+		<org.slf4j.version>1.7.26</org.slf4j.version>
+		<org.openjfx.version>11.0.2</org.openjfx.version>
 		<openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
-		<ch.qos.logback.version>1.0.13</ch.qos.logback.version>
 	</properties>
 
 	<modules>

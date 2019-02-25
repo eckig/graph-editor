@@ -5,13 +5,12 @@ package de.tesis.dynaware.grapheditor.utils;
 
 import java.util.concurrent.CountDownLatch;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import javafx.application.Platform;
 
 /**
  * A JUnit {@link Rule} for running tests on the JavaFX thread and performing JavaFX initialization. To include in your
@@ -78,18 +77,7 @@ public class JavaFXThreadingRule implements TestRule {
 
         protected void setupJavaFX() throws InterruptedException {
             final CountDownLatch latch = new CountDownLatch(1);
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // initializes JavaFX environment
-                        new JFXPanel();
-                    } finally {
-                        // always invoke countDown(), because otherwise the main thread will hang.
-                        latch.countDown();
-                    }
-                }
-            });
+            Platform.startup(latch::countDown);
             latch.await();
         }
     }
