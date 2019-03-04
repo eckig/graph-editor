@@ -2,19 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>de.tesis.dynaware.grapheditor.demo</artifactId>
+	<artifactId>graph-editor-demo</artifactId>
 	<packaging>jar</packaging>
 	<parent>
-		<groupId>de.tesis.dynaware</groupId>
-		<artifactId>de.tesis.dynaware.grapheditor</artifactId>
+		<groupId>fx.graph.editor</groupId>
+        <artifactId>graph-editor</artifactId>
 		<version>${revision}</version>
 	</parent>
 	<name>${component.name}::Demo</name>
 
 	<dependencies>
 		<dependency>
-			<groupId>de.tesis.dynaware</groupId>
-			<artifactId>de.tesis.dynaware.grapheditor.core</artifactId>
+			<groupId>fx.graph.editor</groupId>
+			<artifactId>graph-editor-core</artifactId>
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
