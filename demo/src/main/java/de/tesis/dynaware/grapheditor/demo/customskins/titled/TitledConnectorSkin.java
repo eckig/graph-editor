@@ -3,28 +3,28 @@
  */
 package de.tesis.dynaware.grapheditor.demo.customskins.titled;
 
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GConnectorStyle;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import javafx.css.PseudoClass;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
-import de.tesis.dynaware.grapheditor.GConnectorSkin;
-import de.tesis.dynaware.grapheditor.GConnectorStyle;
-import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
  * A square-shaped connector skin for the 'grey-skins' theme.
  */
 public class TitledConnectorSkin extends GConnectorSkin {
 
-    private static final String STYLE_CLASS = "titled-connector";
-    private static final String STYLE_CLASS_FORBIDDEN_GRAPHIC = "titled-connector-forbidden-graphic";
+    private static final String STYLE_CLASS = "titled-connector"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_FORBIDDEN_GRAPHIC = "titled-connector-forbidden-graphic"; //$NON-NLS-1$
 
     private static final double SIZE = 15;
 
-    private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed");
-    private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden");
-    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed"); //$NON-NLS-1$
+    private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden"); //$NON-NLS-1$
+    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected"); //$NON-NLS-1$
 
     private final Pane root = new Pane();
 
@@ -88,7 +88,7 @@ public class TitledConnectorSkin extends GConnectorSkin {
             break;
         }
     }
-    
+
     @Override
     protected void selectionChanged(boolean isSelected) {
         if (isSelected) {
@@ -100,7 +100,7 @@ public class TitledConnectorSkin extends GConnectorSkin {
 
     /**
      * Creates a graphic to display a 'forbidden' effect in the connector.
-     * 
+     *
      * @return the new graphic
      */
     private Group createForbiddenGraphic() {

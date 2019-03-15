@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.ecore.EObject;
@@ -21,8 +22,8 @@ import org.junit.Test;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.data.DummyDataFactory;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.utils.FXTestUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -30,6 +31,7 @@ import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
+import javafx.application.Platform;
 
 /**
  * This test treats the graph editor as a single unit.
@@ -49,8 +51,8 @@ public class GraphEditorTest {
     private CommandStack commandStack;
 
     @Before
-    public void setUp() {
-
+    public void setUp() throws InterruptedException
+    {
         graphEditor = new DefaultGraphEditor();
         model = DummyDataFactory.createModel();
         skinLookup = graphEditor.getSkinLookup();
@@ -62,8 +64,32 @@ public class GraphEditorTest {
             commandStack = editingDomain.getCommandStack();
         }
 
+        final CountDownLatch waitInit = new CountDownLatch(1);
+        try
+        {
+            Platform.startup(waitInit::countDown);
+        }
+        catch (Exception e)
+        {
+            waitInit.countDown();
+        }
+        waitInit.await();
+
+        reloadEditor();
+
         graphEditor.getView().autosize();
         graphEditor.getView().layout();
+    }
+
+    private void reloadEditor() throws InterruptedException
+    {
+        final CountDownLatch wait = new CountDownLatch(1);
+        Platform.runLater(() ->
+        {
+            graphEditor.reload();
+            wait.countDown();
+        });
+        wait.await();
     }
 
     @Test
@@ -75,27 +101,32 @@ public class GraphEditorTest {
     }
 
     @Test
-    public void undoRedoNode() {
+    public void undoRedoNode() throws InterruptedException
+    {
 
         final GNode node = addNodeToModel();
+        reloadEditor();
 
         assertNotNull("Node skin instance should exist.", skinLookup.lookupNode(node));
         assertTrue("Undo should be possible.", commandStack.canUndo());
 
         editingDomain.getCommandStack().undo();
+        reloadEditor();
 
         assertFalse("Node should have been removed.", model.getNodes().contains(node));
         assertNull("Node skin instance should no longer exist.", skinLookup.lookupNode(node));
         assertTrue("Redo should be possible.", commandStack.canRedo());
 
         editingDomain.getCommandStack().redo();
+        reloadEditor();
 
         assertTrue("Node should be back in again.", model.getNodes().contains(node));
         assertNotNull("Node skin instance should exist again.", skinLookup.lookupNode(node));
     }
 
     @Test
-    public void undoRedoConnection() {
+    public void undoRedoConnection() throws InterruptedException
+    {
 
         Commands.clear(model);
 
@@ -110,6 +141,7 @@ public class GraphEditorTest {
         joints.add(GraphFactory.eINSTANCE.createGJoint());
 
         ConnectionCommands.addConnection(model, firstNodeOutput, secondNodeInput, null, joints, null);
+        reloadEditor();
 
         assertFalse("A connection should be present.", model.getConnections().isEmpty());
 
@@ -119,12 +151,14 @@ public class GraphEditorTest {
         assertTrue("Undo should be possible.", commandStack.canUndo());
 
         editingDomain.getCommandStack().undo();
+        reloadEditor();
 
         assertFalse("Connection should have been removed.", model.getConnections().contains(connection));
         assertNull("Connection skin instance should no longer exist.", skinLookup.lookupConnection(connection));
         assertTrue("Redo should be possible.", commandStack.canRedo());
 
         editingDomain.getCommandStack().redo();
+        reloadEditor();
 
         assertTrue("Connection should be back in again.", model.getConnections().contains(connection));
         assertNotNull("Connection skin instance should exist again.", skinLookup.lookupConnection(connection));

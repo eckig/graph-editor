@@ -4,10 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
-import javafx.scene.Scene;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
@@ -16,6 +12,9 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.model.GModel;
+import javafx.scene.Scene;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 /**
  * Helper class for crudely loading {@link GModel} states to and from XML.
@@ -26,13 +25,13 @@ import de.tesis.dynaware.grapheditor.model.GModel;
  */
 public class GraphEditorPersistence {
 
-    private static final String FILE_EXTENSION = ".graph";
-    private static final String CHOOSER_TEXT = "Graph Model Files (*" + FILE_EXTENSION + ")";
+    private static final String FILE_EXTENSION = ".graph"; //$NON-NLS-1$
+    private static final String CHOOSER_TEXT = "Graph Model Files (*" + FILE_EXTENSION + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-    private static final String SAMPLE_FILE = "sample" + FILE_EXTENSION;
-    private static final String SAMPLE_FILE_LARGE = "sample-large" + FILE_EXTENSION;
-    private static final String TREE_FILE = "tree" + FILE_EXTENSION;
-    private static final String TITLED_FILE = "titled" + FILE_EXTENSION;
+    private static final String SAMPLE_FILE = "sample" + FILE_EXTENSION; //$NON-NLS-1$
+    private static final String SAMPLE_FILE_LARGE = "sample-large" + FILE_EXTENSION; //$NON-NLS-1$
+    private static final String TREE_FILE = "tree" + FILE_EXTENSION; //$NON-NLS-1$
+    private static final String TITLED_FILE = "titled" + FILE_EXTENSION; //$NON-NLS-1$
 
     private File initialDirectory = null;
 
@@ -139,15 +138,17 @@ public class GraphEditorPersistence {
     /**
      * Opens the file chooser and returns the selected {@link File}.
      *
-     * @param graphEditor a graph editor instance with a not-null scene
-     * @param save {@code true} to open a save dialog, {@code false} to open a load dialog
+     * @param window
+     * @param save
+     *            {@code true} to open a save dialog, {@code false} to open a
+     *            load dialog
      * @return the chosen file
      */
     private File showFileChooser(final Window window, final boolean save) {
 
         final FileChooser fileChooser = new FileChooser();
 
-        final FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(CHOOSER_TEXT, "*" + FILE_EXTENSION);
+        final FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(CHOOSER_TEXT, "*" + FILE_EXTENSION); //$NON-NLS-1$
         fileChooser.getExtensionFilters().add(filter);
 
         if (initialDirectory != null && initialDirectory.exists()) {
@@ -156,9 +157,9 @@ public class GraphEditorPersistence {
 
         if (save) {
             return fileChooser.showSaveDialog(window);
-        } else {
-            return fileChooser.showOpenDialog(window);
         }
+        // ELSE:
+        return fileChooser.showOpenDialog(window);
     }
 
     /**

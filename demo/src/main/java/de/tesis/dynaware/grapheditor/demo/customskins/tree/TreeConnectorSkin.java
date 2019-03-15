@@ -3,24 +3,24 @@
  */
 package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GConnectorStyle;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
-import de.tesis.dynaware.grapheditor.GConnectorSkin;
-import de.tesis.dynaware.grapheditor.GConnectorStyle;
-import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
  * Connector skin for the 'tree-like' graph.
  */
 public class TreeConnectorSkin extends GConnectorSkin {
 
-    private static final String STYLE_CLASS_INPUT = "tree-input-connector";
-    private static final String STYLE_CLASS_OUTPUT = "tree-output-connector";
+    private static final String STYLE_CLASS_INPUT = "tree-input-connector"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_OUTPUT = "tree-output-connector"; //$NON-NLS-1$
 
-    private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed");
-    private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden");
+    private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed"); //$NON-NLS-1$
+    private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden"); //$NON-NLS-1$
 
     private static final double RADIUS = 8;
 

@@ -20,8 +20,8 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
-import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
-import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
+import de.tesis.dynaware.grapheditor.core.skins.GraphEditorSkinManager;
+import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -41,18 +41,14 @@ import javafx.util.Callback;
 public class DefaultGraphEditor implements GraphEditor
 {
 
-    private final SkinManager mSkinManager;
+    private final GraphEditorProperties mProperties;
+    private final GraphEditorView mView;
     private final ConnectionEventManager mConnectionEventManager = new ConnectionEventManager();
-    private final GraphEditorController mController;
+    private final GraphEditorSkinManager mSkinManager;
+    private final GraphEditorController<DefaultGraphEditor> mController;
 
     private final ObjectProperty<GModel> mModelProperty = new ObjectPropertyBase<GModel>()
     {
-
-        @Override
-        protected void invalidated()
-        {
-            mController.setModel(get());
-        }
 
         @Override
         public Object getBean()
@@ -73,13 +69,19 @@ public class DefaultGraphEditor implements GraphEditor
      */
     public DefaultGraphEditor()
     {
-        // Skin manager needs 'this' reference so users can access GraphEditor inside their custom skins.
-        mSkinManager = new SkinManager(this);
+        this(null);
+    }
 
-        mController = new GraphEditorController(mSkinManager, mConnectionEventManager);
-
-        // Create some default layout properties in case the user never sets any.
-        setProperties(new GraphEditorProperties());
+    /**
+     * Creates a new default implementation of the {@link GraphEditor}.
+     */
+    public DefaultGraphEditor(final GraphEditorProperties pProperties)
+    {
+        mProperties = pProperties == null ? new GraphEditorProperties() : pProperties;
+        mView = new GraphEditorView(mProperties);
+        mSkinManager = new GraphEditorSkinManager(this, mView);
+        mController = new GraphEditorController<>(this, mSkinManager, mView, mConnectionEventManager, mProperties);
+        mView.setConnectionLayouter(mController.getConnectionLayouter());
     }
 
     @Override
@@ -133,7 +135,7 @@ public class DefaultGraphEditor implements GraphEditor
     @Override
     public void reload()
     {
-        mController.initializeAll();
+        mController.process();
     }
 
     @Override
@@ -145,19 +147,13 @@ public class DefaultGraphEditor implements GraphEditor
     @Override
     public Region getView()
     {
-        return mController.getView();
+        return mView;
     }
 
     @Override
     public GraphEditorProperties getProperties()
     {
-        return mController.getEditorProperties();
-    }
-
-    @Override
-    public void setProperties(final GraphEditorProperties pEditorProperties)
-    {
-        mController.setEditorProperties(pEditorProperties);
+        return mProperties;
     }
 
     @Override

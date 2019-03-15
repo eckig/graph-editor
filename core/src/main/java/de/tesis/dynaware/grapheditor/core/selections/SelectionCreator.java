@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -17,7 +18,6 @@ import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
-import de.tesis.dynaware.grapheditor.core.utils.GModelUtils;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -36,12 +36,15 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
+
 /**
- * Responsible for creating selections of nodes, connections, and joints in the graph editor.
+ * Responsible for creating selections of nodes, connections, and joints in the
+ * graph editor.
  *
  * <p>
- * Nodes can currently be selected by clicking on them. Additionally, one or more nodes, connections, and joints can be
- * selected by dragging a box around them.
+ * Nodes can currently be selected by clicking on them. Additionally, one or
+ * more nodes, connections, and joints can be selected by dragging a box around
+ * them.
  * </p>
  */
 public class SelectionCreator
@@ -73,34 +76,40 @@ public class SelectionCreator
     private Point2D selectionBoxEnd;
 
     /**
-     * Creates a new selection creator instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
+     * Creates a new selection creator instance. Only one instance should exist
+     * per {@link DefaultGraphEditor} instance.
      *
-     * @param pSkinLookup the {@link SkinLookup} used to look up skins
-     * @param pView the {@link GraphEditorView} instance
-     * @param pSelectionDragManager the {@link SelectionDragManager} instance for this graph editor
+     * @param pSkinLookup
+     *            the {@link SkinLookup} used to look up skins
+     * @param pView
+     *            the {@link GraphEditorView} instance
+     * @param pSelectionDragManager
+     *            the {@link SelectionDragManager} instance for this graph
+     *            editor
      */
-	public SelectionCreator(final SkinLookup pSkinLookup, final GraphEditorView pView,
-            final SelectionManager pSelectionManager, final SelectionDragManager pSelectionDragManager)
+    public SelectionCreator(final SkinLookup pSkinLookup, final GraphEditorView pView, final SelectionManager pSelectionManager,
+            final SelectionDragManager pSelectionDragManager)
     {
         selectionManager = pSelectionManager;
         skinLookup = pSkinLookup;
         view = pView;
         selectionDragManager = pSelectionDragManager;
 
-		pView.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
-		pView.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
-		pView.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
-	}
+        pView.addEventHandler(MouseEvent.MOUSE_PRESSED, new WeakEventHandler<>(viewPressedHandler));
+        pView.addEventHandler(MouseEvent.MOUSE_DRAGGED, new WeakEventHandler<>(viewDraggedHandler));
+        pView.addEventHandler(MouseEvent.MOUSE_RELEASED, new WeakEventHandler<>(viewReleasedHandler));
+    }
 
     /**
      * Initializes the selection creator for the current model.
      *
-     * @param model the {@link GModel} currently being edited
+     * @param model
+     *            the {@link GModel} currently being edited
      */
-    public void initialize(final GModel model) {
-
+    public void initialize(final GModel model)
+    {
         this.model = model;
-        allJoints = GModelUtils.getAllJoints(model);
+        allJoints = getAllJoints(model);
 
         addClickSelectionMechanism();
     }
@@ -109,11 +118,12 @@ public class SelectionCreator
      * Adds a mechanism to select nodes by clicking on them.
      *
      * <p>
-     * Holding the <b>shortcut</b> key while clicking will add to the existing selection.
+     * Holding the <b>shortcut</b> key while clicking will add to the existing
+     * selection.
      * </p>
      */
-    private void addClickSelectionMechanism() {
-
+    private void addClickSelectionMechanism()
+    {
         // remove all listeners:
         EventUtils.removeEventHandlers(mousePressedHandlers, MouseEvent.MOUSE_PRESSED);
         EventUtils.removeEventHandlers(mouseClickedHandlers, MouseEvent.MOUSE_CLICKED);
@@ -122,22 +132,30 @@ public class SelectionCreator
         addClickSelectionForJoints();
     }
 
-    private void handleSelectionClick(final MouseEvent event, final GSkin<?> skin) {
-
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+    private void handleSelectionClick(final MouseEvent event, final GSkin<?> skin)
+    {
+        if (!MouseButton.PRIMARY.equals(event.getButton()))
+        {
             return;
         }
 
-        if (!skin.isSelected()) {
-            if (!event.isShortcutDown()) {
-            	selectionManager.clearSelection();
-            } else {
+        if (!skin.isSelected())
+        {
+            if (!event.isShortcutDown())
+            {
+                selectionManager.clearSelection();
+            }
+            else
+            {
                 backupSelections();
             }
             selectionManager.select(skin.getItem());
-        } else {
-            if (event.isShortcutDown()) {
-            	selectionManager.clearSelection(skin.getItem());
+        }
+        else
+        {
+            if (event.isShortcutDown())
+            {
+                selectionManager.clearSelection(skin.getItem());
             }
         }
 
@@ -145,49 +163,57 @@ public class SelectionCreator
         event.consume();
     }
 
-    public void addNode(final GNode node) {
-
+    public void addNode(final GNode node)
+    {
         final GNodeSkin skin = skinLookup.lookupNode(node);
-        if (skin != null) {
+        if (skin != null)
+        {
             final Region nodeRegion = skin.getRoot();
 
-            if(!mousePressedHandlers.containsKey(nodeRegion)) {
+            if (!mousePressedHandlers.containsKey(nodeRegion))
+            {
                 final EventHandler<MouseEvent> newNodePressedHandler = event -> handleNodePressed(event, skin);
                 nodeRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
                 mousePressedHandlers.put(nodeRegion, newNodePressedHandler);
             }
 
-            for (final GConnector connector : node.getConnectors()) {
+            for (final GConnector connector : node.getConnectors())
+            {
                 addConnector(connector);
             }
         }
     }
 
-    public void removeNode(final GNode node) {
-
+    public void removeNode(final GNode node)
+    {
         final GNodeSkin skin = skinLookup.lookupNode(node);
-        if (skin != null) {
+        if (skin != null)
+        {
             final Region nodeRegion = skin.getRoot();
 
             final EventHandler<MouseEvent> newNodePressedHandler = mousePressedHandlers.remove(nodeRegion);
 
-            if (newNodePressedHandler != null) {
+            if (newNodePressedHandler != null)
+            {
                 nodeRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, newNodePressedHandler);
             }
 
-            for (final GConnector connector : node.getConnectors()) {
+            for (final GConnector connector : node.getConnectors())
+            {
                 removeConnector(connector);
             }
         }
     }
 
-    public void addConnector(final GConnector connector) {
-
+    public void addConnector(final GConnector connector)
+    {
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        if (connectorSkin != null) {
+        if (connectorSkin != null)
+        {
             final Node connectorRoot = connectorSkin.getRoot();
 
-            if (!mouseClickedHandlers.containsKey(connectorRoot)) {
+            if (!mouseClickedHandlers.containsKey(connectorRoot))
+            {
                 final EventHandler<MouseEvent> connectorClickedHandler = event -> handleSelectionClick(event, connectorSkin);
                 connectorRoot.addEventHandler(MouseEvent.MOUSE_CLICKED, connectorClickedHandler);
                 mouseClickedHandlers.put(connectorRoot, connectorClickedHandler);
@@ -195,60 +221,70 @@ public class SelectionCreator
         }
     }
 
-    public void removeConnector(final GConnector connector) {
-
+    public void removeConnector(final GConnector connector)
+    {
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        if (connectorSkin != null) {
+        if (connectorSkin != null)
+        {
             final Node connectorRoot = connectorSkin.getRoot();
             final EventHandler<MouseEvent> connectorClickedHandler = mouseClickedHandlers.remove(connectorRoot);
-            if (connectorClickedHandler != null) {
+            if (connectorClickedHandler != null)
+            {
                 connectorRoot.removeEventHandler(MouseEvent.MOUSE_CLICKED, connectorClickedHandler);
             }
         }
     }
 
-    public void addConnection(final GConnection connection) {
-
+    public void addConnection(final GConnection connection)
+    {
         final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
-        if (connSkin != null) {
+        if (connSkin != null)
+        {
 
             final Node skinRoot = connSkin.getRoot();
-            if (!mousePressedHandlers.containsKey(skinRoot)) {
+            if (!mousePressedHandlers.containsKey(skinRoot))
+            {
                 final EventHandler<MouseEvent> connectionPressedHandler = event -> handleConnectionPressed(event, connection);
                 skinRoot.addEventHandler(MouseEvent.MOUSE_PRESSED, connectionPressedHandler);
                 mousePressedHandlers.put(skinRoot, connectionPressedHandler);
             }
         }
 
-        for (final GJoint joint : connection.getJoints()) {
+        for (final GJoint joint : connection.getJoints())
+        {
             addJoint(joint);
         }
     }
 
-    public void removeConnection(final GConnection connection) {
-
+    public void removeConnection(final GConnection connection)
+    {
         final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
-        if (connSkin != null) {
+        if (connSkin != null)
+        {
 
             final EventHandler<MouseEvent> connectionPressedHandler = mousePressedHandlers.remove(connSkin.getRoot());
-            if (connectionPressedHandler != null) {
+            if (connectionPressedHandler != null)
+            {
                 connSkin.getRoot().removeEventHandler(MouseEvent.MOUSE_PRESSED, connectionPressedHandler);
             }
         }
 
-        for (final GJoint joint : connection.getJoints()) {
+        for (final GJoint joint : connection.getJoints())
+        {
             removeJoint(joint);
         }
     }
 
-    public void addJoint(final GJoint joint) {
-
+    public void addJoint(final GJoint joint)
+    {
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-        if (jointSkin != null) {
+        if (jointSkin != null)
+        {
 
             final Region jointRegion = jointSkin.getRoot();
 
-            if(!mousePressedHandlers.containsKey(jointRegion)) {
+            if (!mousePressedHandlers.containsKey(jointRegion))
+            {
 
                 final EventHandler<MouseEvent> jointPressedHandler = event -> handleJointPressed(event, jointSkin);
                 jointRegion.addEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
@@ -256,32 +292,38 @@ public class SelectionCreator
             }
         }
 
-        if(allJoints == null) {
-            allJoints = GModelUtils.getAllJoints(model);
+        if (allJoints == null)
+        {
+            allJoints = getAllJoints(model);
         }
-        else {
+        else
+        {
             allJoints.add(joint);
         }
     }
 
-    public void removeJoint(final GJoint joint) {
-
+    public void removeJoint(final GJoint joint)
+    {
         final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
-        if (jointSkin != null) {
+        if (jointSkin != null)
+        {
 
             final Region jointRegion = jointSkin.getRoot();
 
             final EventHandler<MouseEvent> jointPressedHandler = mousePressedHandlers.remove(jointRegion);
 
-            if (jointPressedHandler != null) {
+            if (jointPressedHandler != null)
+            {
                 jointRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
             }
         }
 
-        if(allJoints == null) {
-            allJoints = GModelUtils.getAllJoints(model);
+        if (allJoints == null)
+        {
+            allJoints = getAllJoints(model);
         }
-        else {
+        else
+        {
             allJoints.remove(joint);
         }
     }
@@ -289,8 +331,10 @@ public class SelectionCreator
     /**
      * Adds a click selection mechanism for nodes.
      */
-    private void addClickSelectionForNodes() {
-        for (final GNode node : model.getNodes()) {
+    private void addClickSelectionForNodes()
+    {
+        for (final GNode node : model.getNodes())
+        {
             addNode(node);
         }
     }
@@ -298,8 +342,10 @@ public class SelectionCreator
     /**
      * Adds a click selection mechanism for joints.
      */
-    private void addClickSelectionForJoints() {
-        for (final GConnection connection : model.getConnections()) {
+    private void addClickSelectionForJoints()
+    {
+        for (final GConnection connection : model.getConnections())
+        {
             addConnection(connection);
         }
     }
@@ -307,12 +353,15 @@ public class SelectionCreator
     /**
      * Handles mouse-pressed events on the given node.
      *
-     * @param event a mouse-pressed event
-     * @param nodeSkin the {@link GNodeSkin} on which this event occurred
+     * @param event
+     *            a mouse-pressed event
+     * @param nodeSkin
+     *            the {@link GNodeSkin} on which this event occurred
      */
-    private void handleNodePressed(final MouseEvent event, final GNodeSkin nodeSkin) {
-
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+    private void handleNodePressed(final MouseEvent event, final GNodeSkin nodeSkin)
+    {
+        if (!MouseButton.PRIMARY.equals(event.getButton()))
+        {
             return;
         }
 
@@ -320,7 +369,8 @@ public class SelectionCreator
         handleSelectionClick(event, nodeSkin);
 
         // Do not bind the positions of other selected nodes if this node is about to be resized.
-        if (!nodeSkin.getRoot().isMouseInPositionForResize()) {
+        if (!nodeSkin.getRoot().isMouseInPositionForResize())
+        {
             selectionDragManager.bindPositions(nodeSkin.getRoot());
         }
 
@@ -331,12 +381,15 @@ public class SelectionCreator
     /**
      * Handles mouse-pressed events on the given connection.
      *
-     * @param event a mouse-pressed event
-     * @param connection the {@link GConnection} on which this event occurred
+     * @param event
+     *            a mouse-pressed event
+     * @param connection
+     *            the {@link GConnection} on which this event occurred
      */
-    private void handleConnectionPressed(final MouseEvent event, final GConnection connection) {
-
-        if (!MouseButton.PRIMARY.equals(event.getButton())) {
+    private void handleConnectionPressed(final MouseEvent event, final GConnection connection)
+    {
+        if (!MouseButton.PRIMARY.equals(event.getButton()))
+        {
             return;
         }
 
@@ -349,12 +402,15 @@ public class SelectionCreator
     /**
      * Handles mouse-pressed events on the given joint.
      *
-     * @param event a mouse-pressed event
-     * @param jointSkin the {@link GJointSkin} on which this event occurred
+     * @param event
+     *            a mouse-pressed event
+     * @param jointSkin
+     *            the {@link GJointSkin} on which this event occurred
      */
-    private void handleJointPressed(final MouseEvent event, final GJointSkin jointSkin) {
-
-        if (!MouseButton.PRIMARY.equals(event.getButton()) || event.isConsumed()) {
+    private void handleJointPressed(final MouseEvent event, final GJointSkin jointSkin)
+    {
+        if (!MouseButton.PRIMARY.equals(event.getButton()) || event.isConsumed())
+        {
             return;
         }
 
@@ -429,51 +485,67 @@ public class SelectionCreator
         view.hideSelectionBox();
     }
 
-    private boolean isNodeSelected(final GNode node, final boolean isShortcutDown) {
+    private boolean isNodeSelected(final GNode node, final boolean isShortcutDown)
+    {
         return selection.contains(node.getX(), node.getY(), node.getWidth(), node.getHeight())
                 || isShortcutDown && selectedNodesBackup.contains(node);
     }
 
-    private boolean isJointSelected(final GJoint joint, final boolean isShortcutDown) {
+    private boolean isJointSelected(final GJoint joint, final boolean isShortcutDown)
+    {
         return selection.contains(joint.getX(), joint.getY()) || isShortcutDown && selectedJointsBackup.contains(joint);
     }
 
-    private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown) {
+    private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown)
+    {
         return isShortcutDown && selectedConnectionsBackup.contains(connection);
     }
 
     /**
-     * Updates the selection according to what nodes & joints are inside / outside the selection box.
+     * Updates the selection according to what nodes & joints are inside /
+     * outside the selection box.
      */
-    private void updateSelection(final boolean isShortcutDown) {
-
-        for (int i = 0; i < model.getNodes().size(); i++) {
+    private void updateSelection(final boolean isShortcutDown)
+    {
+        for (int i = 0; i < model.getNodes().size(); i++)
+        {
             final GNode node = model.getNodes().get(i);
 
-            if(isNodeSelected(node, isShortcutDown)) {
-            	selectionManager.select(node);
-            } else {
-            	selectionManager.clearSelection(node);
+            if (isNodeSelected(node, isShortcutDown))
+            {
+                selectionManager.select(node);
+            }
+            else
+            {
+                selectionManager.clearSelection(node);
             }
         }
 
-        for (int i = 0; i < allJoints.size(); i++) {
+        for (int i = 0; i < allJoints.size(); i++)
+        {
             final GJoint joint = allJoints.get(i);
 
-            if(isJointSelected(joint, isShortcutDown)) {
-            	selectionManager.select(joint);
-            } else {
-            	selectionManager.clearSelection(joint);
+            if (isJointSelected(joint, isShortcutDown))
+            {
+                selectionManager.select(joint);
+            }
+            else
+            {
+                selectionManager.clearSelection(joint);
             }
         }
 
-        for (int i = 0; i < model.getConnections().size(); i++) {
+        for (int i = 0; i < model.getConnections().size(); i++)
+        {
             final GConnection connection = model.getConnections().get(i);
 
-            if(isConnectionSelected(connection, isShortcutDown)) {
-            	selectionManager.select(connection);
-            } else {
-            	selectionManager.clearSelection(connection);
+            if (isConnectionSelected(connection, isShortcutDown))
+            {
+                selectionManager.select(connection);
+            }
+            else
+            {
+                selectionManager.clearSelection(connection);
             }
         }
     }
@@ -482,29 +554,36 @@ public class SelectionCreator
      * Stores the currently selected objects in this class' backup lists.
      *
      * <p>
-     * This is used to add to an existing selection when holding the shortcut key (e.g. Ctrl in Windows).
+     * This is used to add to an existing selection when holding the shortcut
+     * key (e.g. Ctrl in Windows).
      * <p>
      */
-    private void backupSelections() {
-
+    private void backupSelections()
+    {
         selectedNodesBackup.clear();
         selectedJointsBackup.clear();
         selectedConnectionsBackup.clear();
 
-        for (final GNode node : model.getNodes()) {
-            if (skinLookup.lookupNode(node).isSelected()) {
+        for (final GNode node : model.getNodes())
+        {
+            if (skinLookup.lookupNode(node).isSelected())
+            {
                 selectedNodesBackup.add(node);
             }
         }
 
-        for (final GConnection connection : model.getConnections()) {
+        for (final GConnection connection : model.getConnections())
+        {
 
-            if (skinLookup.lookupConnection(connection).isSelected()) {
+            if (skinLookup.lookupConnection(connection).isSelected())
+            {
                 selectedConnectionsBackup.add(connection);
             }
 
-            for (final GJoint joint : connection.getJoints()) {
-                if (skinLookup.lookupJoint(joint).isSelected()) {
+            for (final GJoint joint : connection.getJoints())
+            {
+                if (skinLookup.lookupJoint(joint).isSelected())
+                {
                     selectedJointsBackup.add(joint);
                 }
             }
@@ -512,10 +591,11 @@ public class SelectionCreator
     }
 
     /**
-     * Updates the current selection box values based on the cursor start- and endpoints.
+     * Updates the current selection box values based on the cursor start- and
+     * endpoints.
      */
-    private void evaluateSelectionBoxParameters() {
-
+    private void evaluateSelectionBoxParameters()
+    {
         final double x = Math.min(selectionBoxStart.getX(), selectionBoxEnd.getX());
         final double y = Math.min(selectionBoxStart.getY(), selectionBoxEnd.getY());
 
@@ -543,5 +623,18 @@ public class SelectionCreator
             return eventManager.finishGesture(GraphInputGesture.SELECT, this);
         }
         return true;
+    }
+
+    /**
+     * Puts all joints in the given model into a new list.
+     *
+     * @param model
+     *            a {@link GModel} instance
+     * @return a new list containing all joints in this model
+     */
+    private static List<GJoint> getAllJoints(final GModel model)
+    {
+        return model == null ? List.of()
+                : model.getConnections().stream().flatMap(c -> c.getJoints().stream()).collect(Collectors.toList());
     }
 }

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
+import de.tesis.dynaware.grapheditor.core.connections.RectangularConnections;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
@@ -43,7 +43,7 @@ public class IntersectionFinder
 
         for (int i = 0; i < points.length - 1; i++)
         {
-            final boolean isHorizontal = RectangularConnectionUtils.isSegmentHorizontal(pSkin.getItem(), i);
+            final boolean isHorizontal = RectangularConnections.isSegmentHorizontal(pSkin.getItem(), i);
             final double[] segmentIntersections = findSegmentIntersections(pSkin, allPoints, behind, i, isHorizontal);
 
             final boolean isDecreasing;

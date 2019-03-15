@@ -104,7 +104,8 @@ public interface GraphEditor extends GraphEditorSkins {
      * Gets the view where the graph is displayed and edited.
      *
      * <p>
-     * The view is a JavaFX {@link Region}. It should be added to the scene graph in the usual way.
+     * The view is a JavaFX {@link Region}. It should be added to the scene
+     * graph in the usual way.
      * </p>
      *
      * @return the {@link Region} where the graph is displayed and edited
@@ -128,13 +129,6 @@ public interface GraphEditor extends GraphEditorSkins {
      * @return an {@link GraphEditorProperties} instance containing the properties of the editor
      */
     GraphEditorProperties getProperties();
-
-    /**
-     * Sets the properties of the editor.
-     *
-     * @param properties an {@link GraphEditorProperties} instance specifying a set of properties for the editor
-     */
-    void setProperties(GraphEditorProperties properties);
 
     /**
      * Gets the skin lookup.

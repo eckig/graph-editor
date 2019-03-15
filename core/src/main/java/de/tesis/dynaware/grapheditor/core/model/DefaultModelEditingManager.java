@@ -5,7 +5,6 @@ package de.tesis.dynaware.grapheditor.core.model;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
@@ -14,7 +13,6 @@ import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.edit.command.RemoveCommand;
@@ -26,6 +24,7 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory.Descriptor.Registry;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.ModelEditingManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
@@ -35,14 +34,10 @@ import de.tesis.dynaware.grapheditor.utils.RemoveContext;
 
 
 /**
- * Provides utility methods to edit the graph model via EMF commands.
+ * Default {@link ModelEditingManager} implementation
  */
-public class ModelEditingManager
+public class DefaultModelEditingManager implements ModelEditingManager
 {
-
-    private static final EReference NODES = GraphPackage.Literals.GMODEL__NODES;
-    private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
-    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
     private static final URI DEFAULT_URI = URI.createFileURI("");
 
@@ -58,72 +53,39 @@ public class ModelEditingManager
      * Creates a new model editing manager. Only one instance should exist per
      * {@link DefaultGraphEditor} instance.
      *
-     * @param commandStackListener
+     * @param pCommandStackListener
      *            the {@link CommandStackListener} that listens for changes in
      *            the model
      */
-    public ModelEditingManager(final CommandStackListener commandStackListener)
+    public DefaultModelEditingManager(final CommandStackListener pCommandStackListener)
     {
-        this.commandStackListener = commandStackListener;
+        commandStackListener = pCommandStackListener;
     }
 
-    /**
-     * Initializes the model editing manager for the given model instance.
-     *
-     * @param model
-     *            the new {@link GModel} to be edited
-     */
-    public void initialize(final GModel model)
+    @Override
+    public void initialize(final GModel pModel)
     {
-
-        // Only initialize the editing domain if the model object has actually
-        // changed.
-        if (!model.equals(this.model))
+        // Only initialize the editing domain if the model object has actually changed.
+        if (!pModel.equals(model))
         {
-            initializeEditingDomain(this.model, model);
+            initializeEditingDomain(model, pModel);
         }
-        this.model = model;
+        model = pModel;
     }
 
-    /**
-     * Sets a method to be called when a connection is removed in the editor.
-     *
-     * <p>
-     * This can be used to create additional commands to the one that removed
-     * the connection.
-     * </p>
-     *
-     * @param pOnConnectionRemoved
-     *            a {@link BiFunction} creating the additional command
-     */
+    @Override
     public void setOnConnectionRemoved(final BiFunction<RemoveContext, GConnection, Command> pOnConnectionRemoved)
     {
         mOnConnectionRemoved = pOnConnectionRemoved;
     }
 
-    /**
-     * Sets a method to be called when a node is removed in the editor.
-     *
-     * <p>
-     * This can be used to create additional commands to the one that removed
-     * the node.
-     * </p>
-     *
-     * @param pOnNodeRemoved
-     *            a {@link Function} creating the additional command
-     */
+    @Override
     public void setOnNodeRemoved(final BiFunction<RemoveContext, GNode, Command> pOnNodeRemoved)
     {
         mOnNodeRemoved = pOnNodeRemoved;
     }
 
-    /**
-     * Silently updates the model's layout values to match those in the skin
-     * instances.
-     *
-     * @param skinLookup
-     *            the {@link SkinLookup} used to lookup skin instances
-     */
+    @Override
     public void updateLayoutValues(final SkinLookup skinLookup)
     {
         final CompoundCommand command = new CompoundCommand();
@@ -140,6 +102,7 @@ public class ModelEditingManager
         editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
     }
 
+    @Override
     public void remove(final Collection<EObject> pToRemove)
     {
         if (pToRemove == null || pToRemove.isEmpty())
@@ -156,7 +119,7 @@ public class ModelEditingManager
             {
                 if (editContext.canRemove(obj))
                 {
-                    command.append(RemoveCommand.create(editingDomain, model, NODES, obj));
+                    command.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__NODES, obj));
 
                     final Command onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply(editContext, (GNode) obj);
                     if (onRemoved != null)
@@ -197,16 +160,16 @@ public class ModelEditingManager
         final GConnector source = pToDelete.getSource();
         final GConnector target = pToDelete.getTarget();
 
-        pCommand.append(RemoveCommand.create(editingDomain, model, CONNECTIONS, pToDelete));
+        pCommand.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__CONNECTIONS, pToDelete));
 
         if (!pToRemove.contains(source.getParent()) && !pRemoveContext.contains(source.getParent()))
         {
-            pCommand.append(RemoveCommand.create(editingDomain, source, CONNECTOR_CONNECTIONS, pToDelete));
+            pCommand.append(RemoveCommand.create(editingDomain, source, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
         }
 
         if (!pToRemove.contains(target.getParent()) && !pRemoveContext.contains(target.getParent()))
         {
-            pCommand.append(RemoveCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, pToDelete));
+            pCommand.append(RemoveCommand.create(editingDomain, target, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
         }
 
         final Command onRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply(pRemoveContext, pToDelete);

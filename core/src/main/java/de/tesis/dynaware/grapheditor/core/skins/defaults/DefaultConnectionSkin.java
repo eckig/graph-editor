@@ -10,13 +10,12 @@ import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
+import de.tesis.dynaware.grapheditor.core.connections.RectangularConnections;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.CursorOffsetCalculator;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.JointAlignmentManager;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.JointCleaner;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.JointCreator;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 
 /**
@@ -74,12 +73,14 @@ public class DefaultConnectionSkin extends SimpleConnectionSkin {
     }
 
     /**
-     * Checks that the connection has the correct values to be displayed using this skin.
+     * Checks that the connection has the correct values to be displayed using
+     * this skin.
      */
-    private void performChecks() {
-
-        if (!RectangularConnectionUtils.checkJointCount(getItem())) {
-            LOGGER.error(LogMessages.UNSUPPORTED_JOINT_COUNT);
+    private void performChecks()
+    {
+        if (!RectangularConnections.checkJointCount(getItem()))
+        {
+            LOGGER.error("Joint count not compatible with source and target connector types.");
         }
     }
 }

@@ -3,15 +3,15 @@
  */
 package de.tesis.dynaware.grapheditor.demo.customskins.titled;
 
-import javafx.geometry.Point2D;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.geometry.Point2D;
 
 public class TitledTailSkin extends DefaultTailSkin {
 
-    private static final String STYLE_CLASS = "titled-tail";
-    private static final String STYLE_CLASS_ENDPOINT = "titled-tail-endpoint";
+    private static final String STYLE_CLASS = "titled-tail"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_ENDPOINT = "titled-tail-endpoint"; //$NON-NLS-1$
 
     private static final double SIZE = 15;
 

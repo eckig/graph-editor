@@ -6,6 +6,13 @@ package de.tesis.dynaware.grapheditor.demo.customskins.titled;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tesis.dynaware.grapheditor.Commands;
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GraphEditor;
+import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
+import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -19,29 +26,22 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import de.tesis.dynaware.grapheditor.Commands;
-import de.tesis.dynaware.grapheditor.GConnectorSkin;
-import de.tesis.dynaware.grapheditor.GNodeSkin;
-import de.tesis.dynaware.grapheditor.GraphEditor;
-import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
-import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 /**
  * A grey node with a navy title-bar for the 'titled-skins' theme.
  */
 public class TitledNodeSkin extends GNodeSkin {
 
-    private static final String TITLE_TEXT = "Node ";
+    private static final String TITLE_TEXT = "Node "; //$NON-NLS-1$
 
-    private static final String STYLE_CLASS_BORDER = "titled-node-border";
-    private static final String STYLE_CLASS_BACKGROUND = "titled-node-background";
-    private static final String STYLE_CLASS_SELECTION_HALO = "titled-node-selection-halo";
-    private static final String STYLE_CLASS_HEADER = "titled-node-header";
-    private static final String STYLE_CLASS_TITLE = "titled-node-title";
-    private static final String STYLE_CLASS_BUTTON = "titled-node-close-button";
+    private static final String STYLE_CLASS_BORDER = "titled-node-border"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_BACKGROUND = "titled-node-background"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_SELECTION_HALO = "titled-node-selection-halo"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_HEADER = "titled-node-header"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_TITLE = "titled-node-title"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_BUTTON = "titled-node-close-button"; //$NON-NLS-1$
 
-    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected"); //$NON-NLS-1$
 
     private static final double HALO_OFFSET = 5;
     private static final double HALO_CORNER_SIZE = 10;
@@ -103,8 +103,8 @@ public class TitledNodeSkin extends GNodeSkin {
         if (connectorSkins != null) {
             for (final GConnectorSkin connectorSkin : connectorSkins) {
 
-                final boolean isInput = connectorSkin.getItem().getType().contains("input");
-                final boolean isOutput = connectorSkin.getItem().getType().contains("output");
+                final boolean isInput = connectorSkin.getItem().getType().contains("input"); //$NON-NLS-1$
+                final boolean isOutput = connectorSkin.getItem().getType().contains("output"); //$NON-NLS-1$
 
                 if (isInput) {
                     inputConnectorSkins.add(connectorSkin);
@@ -118,7 +118,7 @@ public class TitledNodeSkin extends GNodeSkin {
             }
         }
 
-        setConnectorsSelected(isSelected());
+        setConnectorsSelected();
     }
 
     @Override
@@ -137,10 +137,10 @@ public class TitledNodeSkin extends GNodeSkin {
 
         if (inputConnectorSkins.contains(connectorSkin)) {
             return new Point2D(x, y);
-        } else {
-            // Subtract 1 to align start-of-connection correctly. Compensation for rounding errors?
-            return new Point2D(x - 1, y);
         }
+        // ELSE:
+        // Subtract 1 to align start-of-connection correctly. Compensation for rounding errors?
+        return new Point2D(x - 1, y);
     }
 
     /**
@@ -264,7 +264,7 @@ public class TitledNodeSkin extends GNodeSkin {
             selectionHalo.setVisible(false);
             contentRoot.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
         }
-        setConnectorsSelected(isSelected);
+        setConnectorsSelected();
     }
 
     /**
@@ -283,16 +283,15 @@ public class TitledNodeSkin extends GNodeSkin {
 
     /**
      * Adds or removes the 'selected' pseudo-class from all connectors belonging to this node.
-     * 
-     * @param isSelected {@code true} to add the 'selected' pseudo-class, {@code false} to remove it
      */
-    private void setConnectorsSelected(final boolean isSelected) {
+    private void setConnectorsSelected()
+    {
 
     	final GraphEditor editor = getGraphEditor();
     	if(editor == null) {
     		return;
     	}
-    	
+
         for (final GConnectorSkin skin : inputConnectorSkins) {
             if (skin instanceof TitledConnectorSkin) {
             	editor.getSelectionManager().select(skin.getItem());
@@ -308,7 +307,7 @@ public class TitledNodeSkin extends GNodeSkin {
 
     /**
      * Stops the node being dragged if it isn't selected.
-     * 
+     *
      * @param event a mouse-dragged event on the node
      */
     private void filterMouseDragged(final MouseEvent event) {

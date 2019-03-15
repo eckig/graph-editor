@@ -106,7 +106,8 @@ public class GraphEditorDemoController {
     private TreeSkinController treeSkinController;
     private TitledSkinController titledSkinController;
 
-    private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<SkinController>(){
+    private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>()
+    {
 
         @Override
         protected void invalidated() {

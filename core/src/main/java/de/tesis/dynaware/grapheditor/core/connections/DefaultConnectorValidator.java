@@ -4,7 +4,7 @@
 package de.tesis.dynaware.grapheditor.core.connections;
 
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.core.connectors.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**

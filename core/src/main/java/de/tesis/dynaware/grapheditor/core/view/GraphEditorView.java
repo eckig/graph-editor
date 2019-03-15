@@ -8,6 +8,7 @@ import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.utils.SelectionBox;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -68,13 +69,13 @@ public class GraphEditorView extends Region
 
     private final SelectionBox mSelectionBox = new SelectionBox();
 
-    private GraphEditorProperties mEditorProperties;
+    private final GraphEditorProperties mEditorProperties;
 
     /**
      * Creates a new {@link GraphEditorView} to which skin instances can be
      * added and removed.
      */
-    public GraphEditorView()
+    public GraphEditorView(final GraphEditorProperties pEditorProperties)
     {
         getStyleClass().addAll(STYLE_CLASS);
 
@@ -82,6 +83,14 @@ public class GraphEditorView extends Region
         setMaxHeight(GraphEditorProperties.DEFAULT_MAX_HEIGHT);
 
         initializeLayers();
+
+        mEditorProperties = pEditorProperties;
+
+        if (mEditorProperties != null)
+        {
+            mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
+            mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
+        }
     }
 
     /**
@@ -218,34 +227,6 @@ public class GraphEditorView extends Region
         if (pTailSkin != null)
         {
             mConnectionLayer.getChildren().remove(pTailSkin.getRoot());
-        }
-    }
-
-    /**
-     * Sets the layout properties of the view.
-     *
-     * <p>
-     * This is used specify information like whether the grid should be shown
-     * and/or snapped to.
-     * </p>
-     *
-     * @param pEditorProperties
-     *            the {@link GraphEditorProperties} instance to be used by the
-     *            view
-     */
-    public void setEditorProperties(final GraphEditorProperties pEditorProperties)
-    {
-        mEditorProperties = pEditorProperties;
-
-        if (mEditorProperties != null)
-        {
-            mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
-            mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
-        }
-        else
-        {
-            mGrid.visibleProperty().unbind();
-            mGrid.gridSpacingProperty().unbind();
         }
     }
 
