@@ -11,7 +11,7 @@ import java.util.Map;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
+import de.tesis.dynaware.grapheditor.core.connections.RectangularConnections;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -200,7 +200,7 @@ public class JointAlignmentManager {
      */
     private boolean isPreviousVerticalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
-        final boolean firstSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, 0);
+        final boolean firstSegmentHorizontal = RectangularConnections.isSegmentHorizontal(connection, 0);
 
         if (!firstSegmentHorizontal && (index == 1 || index == 2)) {
             return isNodeStationary(jointSkins.get(index), true);
@@ -220,7 +220,7 @@ public class JointAlignmentManager {
     private boolean isNextVerticalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
         final int count = jointSkins.size();
-        final boolean lastSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, count);
+        final boolean lastSegmentHorizontal = RectangularConnections.isSegmentHorizontal(connection, count);
 
         if (!lastSegmentHorizontal && index >= 0 && (index == count - 2 || index == count - 3)) {
             return isNodeStationary(jointSkins.get(index), false);
@@ -239,7 +239,7 @@ public class JointAlignmentManager {
      */
     private boolean isPreviousHorizontalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
-        final boolean firstSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, 0);
+        final boolean firstSegmentHorizontal = RectangularConnections.isSegmentHorizontal(connection, 0);
 
         if (firstSegmentHorizontal && (index == 1 || index == 2)) {
             return isNodeStationary(jointSkins.get(index), true);
@@ -259,7 +259,7 @@ public class JointAlignmentManager {
     private boolean isNextHorizontalSegmentStationary(final int index, final List<GJointSkin> jointSkins) {
 
         final int count = jointSkins.size();
-        final boolean lastSegmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, count);
+        final boolean lastSegmentHorizontal = RectangularConnections.isSegmentHorizontal(connection, count);
 
         if (lastSegmentHorizontal && index >= 0 && (index == count - 2 || index == count - 3)) {
             return isNodeStationary(jointSkins.get(index), false);
@@ -300,7 +300,7 @@ public class JointAlignmentManager {
     private boolean isJointPairStationary(final int index, final boolean horizontal, final boolean next,
             final List<GJointSkin> jointSkins) {
 
-        final boolean segmentHorizontal = RectangularConnectionUtils.isSegmentHorizontal(connection, index + 1);
+        final boolean segmentHorizontal = RectangularConnections.isSegmentHorizontal(connection, index + 1);
 
         final int jump;
         if (segmentHorizontal == (horizontal == next)) {

@@ -16,15 +16,15 @@ import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
-import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultNodeSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultTailSkin;
+import de.tesis.dynaware.grapheditor.core.view.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledConnectorSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledNodeSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledTailSkin;
 import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
-import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
@@ -37,12 +37,11 @@ public class TitledSkinController extends DefaultSkinController {
 
     /**
      * Creates a new {@link TitledSkinController} instance.
-     * 
+     *
      * @param graphEditor the graph editor on display in this demo
      * @param graphEditorContainer the graph editor container on display in this demo
      */
     public TitledSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
-
         super(graphEditor, graphEditorContainer);
     }
 
@@ -53,16 +52,16 @@ public class TitledSkinController extends DefaultSkinController {
         graphEditor.setConnectorSkinFactory(this::createSkin);
         graphEditor.setTailSkinFactory(this::createTailSkin);
     }
-    
+
     private GNodeSkin createSkin(final GNode node) {
         return TitledSkinConstants.TITLED_NODE.equals(node.getType()) ? new TitledNodeSkin(node) : new DefaultNodeSkin(node);
     }
-    
+
     private GConnectorSkin createSkin(final GConnector connector) {
         return TitledSkinConstants.TITLED_INPUT_CONNECTOR.equals(connector.getType()) || TitledSkinConstants.TITLED_OUTPUT_CONNECTOR.equals(connector.getType()) ?
                 new TitledConnectorSkin(connector) : new DefaultConnectorSkin(connector);
     }
-    
+
     private GTailSkin createTailSkin(final GConnector connector) {
         return TitledSkinConstants.TITLED_INPUT_CONNECTOR.equals(connector.getType()) || TitledSkinConstants.TITLED_INPUT_CONNECTOR.equals(connector.getType()) ?
                 new TitledTailSkin(connector) : new DefaultTailSkin(connector);
@@ -99,7 +98,7 @@ public class TitledSkinController extends DefaultSkinController {
 
     /**
      * Allocates ID's to recently pasted nodes.
-     * 
+     *
      * @param nodes the recently pasted nodes
      * @param command the command responsible for adding the nodes
      */
@@ -126,7 +125,7 @@ public class TitledSkinController extends DefaultSkinController {
 
     /**
      * Check the given node needs a new ID, i.e. that it's not already in use.
-     * 
+     *
      * @param node the nodes to check
      * @param pastedNodes the recently-pasted nodes
      */
@@ -140,7 +139,7 @@ public class TitledSkinController extends DefaultSkinController {
 
     /**
      * Allocates a new ID corresponding to the largest existing ID + 1.
-     * 
+     *
      * @return the new ID
      */
     private String allocateNewId() {
@@ -150,8 +149,8 @@ public class TitledSkinController extends DefaultSkinController {
 
         if (max.isPresent()) {
             return Integer.toString(max.getAsInt() + 1);
-        } else {
-            return "1";
         }
+        // ELSE:
+        return "1"; //$NON-NLS-1$
     }
 }

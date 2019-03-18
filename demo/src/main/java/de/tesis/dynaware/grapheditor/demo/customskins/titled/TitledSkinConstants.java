@@ -8,7 +8,7 @@ package de.tesis.dynaware.grapheditor.demo.customskins.titled;
  */
 public class TitledSkinConstants {
 
-    public static final String TITLED_NODE = "titled-node";
-    public static final String TITLED_INPUT_CONNECTOR = "titled-left-input";
-    public static final String TITLED_OUTPUT_CONNECTOR = "titled-right-output";
+    public static final String TITLED_NODE = "titled-node"; //$NON-NLS-1$
+    public static final String TITLED_INPUT_CONNECTOR = "titled-left-input"; //$NON-NLS-1$
+    public static final String TITLED_OUTPUT_CONNECTOR = "titled-right-output"; //$NON-NLS-1$
 }

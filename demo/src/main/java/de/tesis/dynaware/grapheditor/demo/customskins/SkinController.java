@@ -10,16 +10,19 @@ public interface SkinController {
 
     /**
      * Adds a node to the graph.
-     * 
+     *
      * @param currentZoomFactor the current zoom factor (1 for 100%)
      */
     void addNode(final double currentZoomFactor);
-    
+
+    /**
+     * activates this skin
+     */
     void activate();
 
     /**
      * Adds a connector of the given type to all selected nodes.
-     * 
+     *
      * @param position the currently selected connector position
      * @param input {@code true} for input, {@code false} for output
      */

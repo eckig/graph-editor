@@ -6,18 +6,18 @@ package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 
 /**
  * Tail skin for the 'tree-like' graph. Pretty much just an arrow.
  */
 public class TreeTailSkin extends GTailSkin {
 
-    private static final String STYLE_CLASS = "tree-tail";
+    private static final String STYLE_CLASS = "tree-tail"; //$NON-NLS-1$
     private static final double OFFSET_DISTANCE = 15;
 
     private final Arrow arrow = new Arrow();
@@ -67,7 +67,7 @@ public class TreeTailSkin extends GTailSkin {
 
     /**
      * Draws an arrow from the start to end point.
-     * 
+     *
      * @param start the start point of the arrow
      * @param end the end point (tip) of the arrow
      */

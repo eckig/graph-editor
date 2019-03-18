@@ -11,14 +11,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
+
 /**
- * A minimap that displays the current position of a {@link PanningWindow} relative to its content.
+ * A minimap that displays the current position of a {@link PanningWindow}
+ * relative to its content.
  *
  * <p>
- * Also provides mechanisms for navigating the window to other parts of the content by clicking or dragging.
+ * Also provides mechanisms for navigating the window to other parts of the
+ * content by clicking or dragging.
  * </p>
  */
-public class PanningWindowMinimap extends Pane {
+class PanningWindowMinimap extends Pane
+{
 
     /**
      * minimap padding
@@ -46,8 +50,8 @@ public class PanningWindowMinimap extends Pane {
     /**
      * Creates a new {@link PanningWindowMinimap} instance.
      */
-    public PanningWindowMinimap() {
-
+    public PanningWindowMinimap()
+    {
         getStyleClass().add(STYLE_CLASS);
 
         setPickOnBounds(false);
@@ -188,12 +192,14 @@ public class PanningWindowMinimap extends Pane {
      * @return content a {@link Region} containing some content to be visualised
      *         in the minimap
      */
-    public Region getContent() {
+    public Region getContent()
+    {
         return content;
     }
 
     /**
-     * Calculates the scale factor that indicates how much smaller the minimap is than the content it is representing.
+     * Calculates the scale factor that indicates how much smaller the minimap
+     * is than the content it is representing.
      *
      * <p>
      * This number should be greater than 0 and probably much less than 1.
@@ -201,7 +207,8 @@ public class PanningWindowMinimap extends Pane {
      *
      * @return the ratio of the minimap size to the content size
      */
-    private double calculateScaleFactor() {
+    private double calculateScaleFactor()
+    {
 
         final double scaleFactorX = (getWidth() - 2 * MINIMAP_PADDING) / content.getWidth();
         final double scaleFactorY = (getHeight() - 2 * MINIMAP_PADDING) / content.getHeight();
@@ -211,7 +218,8 @@ public class PanningWindowMinimap extends Pane {
     }
 
     @Override
-    protected void layoutChildren() {
+    protected void layoutChildren()
+    {
         super.layoutChildren();
 
         final double scaleFactor = calculateScaleFactor();
@@ -219,7 +227,8 @@ public class PanningWindowMinimap extends Pane {
         final double width = getWidth();
         final double height = getHeight();
 
-        if (checkContentExists() && checkWindowExists() && contentRepresentation != null) {
+        if (checkContentExists() && checkWindowExists() && contentRepresentation != null)
+        {
             contentRepresentation.relocate(MINIMAP_PADDING, MINIMAP_PADDING);
             contentRepresentation.setScaleFactor(scaleFactor);
             contentRepresentation.resize(width - MINIMAP_PADDING * 2, height - MINIMAP_PADDING * 2);
@@ -228,7 +237,8 @@ public class PanningWindowMinimap extends Pane {
         final double maxLocWidth = width - MINIMAP_PADDING * 2;
         final double maxLocHeight = height - MINIMAP_PADDING * 2;
 
-        if(!drawLocatorListenerMuted) {
+        if (!drawLocatorListenerMuted)
+        {
             locatorPositionListenersMuted = true;
 
             final double zoomFactor = calculateZoomFactor();
@@ -247,16 +257,18 @@ public class PanningWindowMinimap extends Pane {
     }
 
     /**
-     * Creates a change listener to react to changes in the position of the locator.
+     * Creates a change listener to react to changes in the position of the
+     * locator.
      *
      * <p>
-     * The job of this listener is to update the panning X & Y values of the panning window when the user drags the
-     * locator around in the minimap.
+     * The job of this listener is to update the panning X & Y values of the
+     * panning window when the user drags the locator around in the minimap.
      * </p>
      *
      * <p>
-     * Before we pan the window, we mute the listener that redraws the locator, because otherwise we could have an
-     * infinite cycle of listeners firing each other.
+     * Before we pan the window, we mute the listener that redraws the locator,
+     * because otherwise we could have an infinite cycle of listeners firing
+     * each other.
      * </p>
      */
     private void createLocatorPositionListeners()
@@ -287,17 +299,20 @@ public class PanningWindowMinimap extends Pane {
     }
 
     /**
-     * Creates and sets a mouse-pressed handler to pan appropriately when the user clicks on the minimap.
+     * Creates and sets a mouse-pressed handler to pan appropriately when the
+     * user clicks on the minimap.
      *
      * <p>
-     * The mouse-dragged event is also passed on to the locator so it can be dragged as part of the same gesture.
+     * The mouse-dragged event is also passed on to the locator so it can be
+     * dragged as part of the same gesture.
      * </p>
      */
-    private void createMinimapClickHandlers() {
-
-        setOnMousePressed(event -> {
-
-            if (!checkReadyForClickEvent(event)) {
+    private void createMinimapClickHandlers()
+    {
+        setOnMousePressed(event ->
+        {
+            if (!checkReadyForClickEvent(event))
+            {
                 return;
             }
 
@@ -315,35 +330,45 @@ public class PanningWindowMinimap extends Pane {
      *
      * @return the zoom factor of the content (1 for no zoom)
      */
-    private double calculateZoomFactor() {
+    private double calculateZoomFactor()
+    {
         return content == null ? 1 : content.getLocalToSceneTransform().getMxx();
     }
 
     /**
-     * Checks that everything is initialized and ready for the given mouse event.
+     * Checks that everything is initialized and ready for the given mouse
+     * event.
      *
-     * @param event a mouse event
+     * @param event
+     *            a mouse event
      * @return {@code true} if conditions are right for the drag event
      */
-    private boolean checkReadyForClickEvent(final MouseEvent event) {
+    private boolean checkReadyForClickEvent(final MouseEvent event)
+    {
         return event.getButton().equals(MouseButton.PRIMARY) && checkContentExists() && checkWindowExists();
     }
 
     /**
-     * Checks that the content is not null and has been drawn, i.e. has a nonzero width and height.
+     * Checks that the content is not null and has been drawn, i.e. has a
+     * nonzero width and height.
      *
-     * @return {@code true} if the content is not null and has a nonzero width & height
+     * @return {@code true} if the content is not null and has a nonzero width &
+     *         height
      */
-    private boolean checkContentExists() {
+    private boolean checkContentExists()
+    {
         return content != null && content.getWidth() > 0 && content.getHeight() > 0;
     }
 
     /**
-     * Checks that the window is not null and has been drawn, i.e. has a nonzero width and height.
+     * Checks that the window is not null and has been drawn, i.e. has a nonzero
+     * width and height.
      *
-     * @return {@code true} if the window is not null and has a nonzero width & height
+     * @return {@code true} if the window is not null and has a nonzero width &
+     *         height
      */
-    private boolean checkWindowExists() {
+    private boolean checkWindowExists()
+    {
         return window != null && window.getWidth() > 0 && window.getHeight() > 0;
     }
 }

@@ -5,16 +5,6 @@ package de.tesis.dynaware.grapheditor.demo.customskins.tree;
 
 import java.util.List;
 
-import javafx.css.PseudoClass;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -30,18 +20,27 @@ import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
+import javafx.css.PseudoClass;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 
 /**
  * Node skin for a 'tree-like' graph.
  */
 public class TreeNodeSkin extends GNodeSkin {
 
-    private static final String STYLE_CLASS_BORDER = "tree-node-border";
-    private static final String STYLE_CLASS_BACKGROUND = "tree-node-background";
-    private static final String STYLE_CLASS_SELECTION_HALO = "tree-node-selection-halo";
-    private static final String STYLE_CLASS_BUTTON = "tree-node-button";
+    private static final String STYLE_CLASS_BORDER = "tree-node-border"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_BACKGROUND = "tree-node-background"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_SELECTION_HALO = "tree-node-selection-halo"; //$NON-NLS-1$
+    private static final String STYLE_CLASS_BUTTON = "tree-node-button"; //$NON-NLS-1$
 
-    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected"); //$NON-NLS-1$
 
     private static final double HALO_OFFSET = 5;
     private static final double HALO_CORNER_SIZE = 10;
@@ -309,7 +308,7 @@ public class TreeNodeSkin extends GNodeSkin {
 
     /**
      * Stops the node being dragged if it isn't selected.
-     * 
+     *
      * @param event a mouse-dragged event on the node
      */
     private void filterMouseDragged(final MouseEvent event) {

@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import de.tesis.dynaware.grapheditor.core.utils.GModelUtils;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionCopier;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
@@ -32,7 +32,7 @@ public class GModelUtilsTest {
             map.put(nodes.get(i), copies.get(i));
         }
 
-        final List<GConnection> connections = GModelUtils.copyConnections(map);
+        final List<GConnection> connections = ConnectionCopier.copyConnections(map);
 
         assertTrue(connections.size() == 1);
         assertTrue(copies.get(0).getConnectors().get(1).getConnections().size() == 1);

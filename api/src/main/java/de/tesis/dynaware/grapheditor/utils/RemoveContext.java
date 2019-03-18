@@ -1,9 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////
-//
-//      PROJECT:        Interface Manager
-//      MODULE:         Client
-//
-//////////////////////////////////////////////////////////////////////////////
 package de.tesis.dynaware.grapheditor.utils;
 
 import java.util.Collection;
@@ -17,7 +11,6 @@ import org.eclipse.emf.ecore.EObject;
  * This is necessary to prevent creation of remove commands removing the same
  * objects multiple times which will lead to errors.
  *
- * @author srachner
  * @since 15.02.2019
  */
 public final class RemoveContext

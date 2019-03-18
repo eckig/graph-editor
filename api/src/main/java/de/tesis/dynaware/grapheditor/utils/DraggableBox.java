@@ -81,7 +81,6 @@ public class DraggableBox extends StackPane
         finishGesture(GraphInputGesture.MOVE);
         dependencyX = null;
         dependencyY = null;
-        editorProperties = null;
     }
 
     /**

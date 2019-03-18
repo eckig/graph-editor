@@ -13,10 +13,9 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
-import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
-import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
+import de.tesis.dynaware.grapheditor.core.view.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.TitledSkinController;
@@ -106,7 +105,8 @@ public class GraphEditorDemoController {
     private TreeSkinController treeSkinController;
     private TitledSkinController titledSkinController;
 
-    private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<SkinController>(){
+    private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>()
+    {
 
         @Override
         protected void invalidated() {
@@ -127,8 +127,6 @@ public class GraphEditorDemoController {
 
         graphEditor.setModel(model);
         graphEditorContainer.setGraphEditor(graphEditor);
-
-        graphEditorContainer.getStylesheets().addAll(GraphEditorView.STYLESHEET_VIEW, GraphEditorView.STYLESHEET_DEFAULTS);
 
         setDetouredStyle();
 

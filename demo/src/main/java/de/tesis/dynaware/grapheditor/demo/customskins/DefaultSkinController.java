@@ -1,7 +1,5 @@
 package de.tesis.dynaware.grapheditor.demo.customskins;
 
-import javafx.geometry.Side;
-
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -10,15 +8,16 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
-import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.core.connectors.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.core.view.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.demo.selections.SelectionCopier;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
+import javafx.geometry.Side;
 
 /**
  * Responsible for default-skin specific logic in the graph editor demo.
@@ -35,7 +34,7 @@ public class DefaultSkinController implements SkinController {
 
     /**
      * Creates a new {@link DefaultSkinController} instance.
-     * 
+     *
      * @param graphEditor the graph editor on display in this demo
      * @param graphEditorContainer the graph editor container on display in this demo
      */
@@ -46,8 +45,9 @@ public class DefaultSkinController implements SkinController {
     }
 
     @Override
-    public void activate() {
-        // Nothing to do
+    public void activate()
+    {
+        graphEditorContainer.getMinimap().setConnectionFilter(c -> true);
     }
 
     @Override
@@ -145,40 +145,40 @@ public class DefaultSkinController implements SkinController {
 
     /**
      * Gets the connector type string corresponding to the given position and input values.
-     * 
+     *
      * @param position a {@link Side} value
      * @param input {@code true} for input, {@code false} for output
      * @return the connector type corresponding to these values
      */
-    private String getType(final Side position, final boolean input) {
-
-        switch (position) {
-        case TOP:
-            if (input) {
-                return DefaultConnectorTypes.TOP_INPUT;
-            } else {
+    private String getType(final Side position, final boolean input)
+    {
+        switch (position)
+        {
+            case TOP:
+                if (input)
+                {
+                    return DefaultConnectorTypes.TOP_INPUT;
+                }
                 return DefaultConnectorTypes.TOP_OUTPUT;
-            }
-        case RIGHT:
-            if (input) {
-                return DefaultConnectorTypes.RIGHT_INPUT;
-            } else {
+            case RIGHT:
+                if (input)
+                {
+                    return DefaultConnectorTypes.RIGHT_INPUT;
+                }
                 return DefaultConnectorTypes.RIGHT_OUTPUT;
-            }
-        case BOTTOM:
-            if (input) {
-                return DefaultConnectorTypes.BOTTOM_INPUT;
-            } else {
+            case BOTTOM:
+                if (input)
+                {
+                    return DefaultConnectorTypes.BOTTOM_INPUT;
+                }
                 return DefaultConnectorTypes.BOTTOM_OUTPUT;
-            }
-        case LEFT:
-            if (input) {
-                return DefaultConnectorTypes.LEFT_INPUT;
-            } else {
+            case LEFT:
+                if (input)
+                {
+                    return DefaultConnectorTypes.LEFT_INPUT;
+                }
                 return DefaultConnectorTypes.LEFT_OUTPUT;
-            }
         }
-
         return null;
     }
 }

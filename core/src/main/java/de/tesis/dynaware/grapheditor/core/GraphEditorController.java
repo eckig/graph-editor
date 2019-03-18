@@ -1,264 +1,732 @@
-/*
- * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
- */
 package de.tesis.dynaware.grapheditor.core;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 
 import org.eclipse.emf.common.command.CommandStackListener;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.tesis.dynaware.grapheditor.GConnectionSkin;
+import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SelectionManager;
+import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectorDragManager;
-import de.tesis.dynaware.grapheditor.core.model.ModelEditingManager;
+import de.tesis.dynaware.grapheditor.core.model.DefaultModelEditingManager;
 import de.tesis.dynaware.grapheditor.core.model.ModelLayoutUpdater;
-import de.tesis.dynaware.grapheditor.core.model.ModelMemory;
 import de.tesis.dynaware.grapheditor.core.model.ModelSanityChecker;
+import de.tesis.dynaware.grapheditor.core.selections.DefaultSelectionManager;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
-import de.tesis.dynaware.grapheditor.core.view.DefaultConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
+import de.tesis.dynaware.grapheditor.core.view.impl.DefaultConnectionLayouter;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.model.GraphPackage;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
-import javafx.scene.layout.Region;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
+
 
 /**
  * The central controller class for the default graph editor implementation.
  *
  * <p>
- * Responsible for using the {@link SkinManager} to create all skin instances for the current {@link GModel}, and adding
- * them to the {@link GraphEditorView}.
+ * Responsible for using the {@link SkinManager} to create all skin instances
+ * for the current {@link GModel}, and adding them to the {@link GraphEditorView
+ * view}.
  * </p>
  *
  * <p>
- * Also responsible for creating all secondary managers like the {@link ConnectorDragManager} and reinitializing them
- * when the model changes.
+ * Also responsible for creating all secondary managers like the
+ * {@link ConnectorDragManager} and reinitializing them when the model changes.
+ * </p>
+ *
+ * <p>
+ * The process of synchronizing is rather complicated in case more than one
+ * model is part of the resource set:
+ * <ol>
+ * <li>register listener on every model in the resource set (with an
+ * {@link EContentAdapter}</li>
+ * <li>receive notifications</li>
+ * <li>put notification into queue</li>
+ * <li>{@link #process() process queue} on every reload and/or command stack
+ * change</li>
+ * </ol>
+ * This procedure (processing a chunk of notifications on command stack change
+ * or {@link GraphEditor#reload()} is a very safe way to determine a valid
+ * package of changes.
+ * </p>
+ *
+ * <p>
+ * This implementation is thread safe: It is able to process notifications in
+ * parallel and processes them in chunks on the FX Thread.
  * </p>
  */
-public class GraphEditorController {
+public class GraphEditorController<E extends GraphEditor>
+{
 
-    private final SkinManager skinManager;
-    private final GraphEditorView view;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphEditorController.class);
 
-    private final CommandStackListener commandStackListener = event -> initializeAll();
-    private final ModelEditingManager modelEditingManager;
-    private final ModelLayoutUpdater modelLayoutUpdater;
-    private final ModelMemory modelMemory;
+    //@formatter:off
+    private static final Consumer<Notification> EMPTY_CONSUMER = e -> {}; //@formatter:on
 
-    private final ConnectionLayouter connectionLayouter;
-    private final ConnectorDragManager connectorDragManager;
+    private final GraphEditorEContentAdapter mContentAdapter = new GraphEditorEContentAdapter();
 
-    private final DefaultSelectionManager selectionManager;
+    private final Map<EStructuralFeature, Consumer<Notification>> mHandlersByFeature = new HashMap<>();
+    private final Map<Integer, Consumer<Notification>> mHandlersByType = new HashMap<>();
 
-    private GModel model;
+    private final Collection<GNode> mNodeConnectorsDirty = new HashSet<>();
+    private final Collection<GConnection> mConnectionsDirty = new HashSet<>();
 
-    /**
-     * Creates a new controller instance. Only one instance should exist per {@link DefaultGraphEditor} instance.
-     *
-     * @param skinManager the {@link SkinManager} instance
-     * @param connectionEventManager the {@link ConnectionEventManager} instance
-     */
-	public GraphEditorController(final SkinManager skinManager, final ConnectionEventManager connectionEventManager) {
+    private final Collection<GConnection> mConnectionsToAdd = new HashSet<>();
+    private final Collection<GNode> mNodesToAdd = new HashSet<>();
+    private final Collection<GJoint> mJointsToAdd = new HashSet<>();
+    private final Collection<GConnector> mConnectorsToAdd = new HashSet<>();
 
-		this.skinManager = skinManager;
+    private final CommandStackListener mCommandStackListener = event -> process();
 
-		view = new GraphEditorView();
+    private final ModelEditingManager mModelEditingManager = new DefaultModelEditingManager(mCommandStackListener);
+    private final ModelLayoutUpdater mModelLayoutUpdater;
+    private final ConnectionLayouter mConnectionLayouter;
+    private final ConnectorDragManager mConnectorDragManager;
+    private final DefaultSelectionManager mSelectionManager;
+    private final SkinManager mSkinManager;
 
-		modelEditingManager = new ModelEditingManager(commandStackListener);
-		modelLayoutUpdater = new ModelLayoutUpdater(skinManager, modelEditingManager, view::getEditorProperties);
-		modelMemory = new ModelMemory();
-		connectionLayouter = new DefaultConnectionLayouter(skinManager);
-		connectorDragManager = new ConnectorDragManager(skinManager, connectionEventManager, view);
-		selectionManager = new DefaultSelectionManager(skinManager, view, modelEditingManager);
-
-        skinManager.setConnectionLayouter(connectionLayouter);
-        view.setConnectionLayouter(connectionLayouter);
-	}
+    private final E mEditor;
+    private final ChangeListener<GModel> mModelChangeListener = (w, o, n) -> modelChanged(o, n);
 
     /**
-     * Gets the {@link GraphEditorView} instance. Returned as a {@link Region} so that it's read-only.
-     *
-     * @return a {@link Region} containing the entire graph editor
+     * While processing a {@link Notification} from EMF it might trigger other
+     * changes which will eventually lead to an infinite update cycle.<br>
+     * When this flag is {@code true} we are currently processing a batch of
+     * updates. All new notifications will be put in the queue but are processed
+     * later on.
      */
-    public Region getView() {
-        return view;
+    private boolean mProcessing = false;
+
+    /**
+     * Creates a new controller instance. Only one instance should exist per
+     * {@link BusinessProcessEditor} instance.
+     *
+     * @param pEditor
+     *            {@link GraphEditor} instance
+     * @param pSkinManager
+     *            the {@link SkinManager} instance
+     * @param pView
+     *            {@link GraphEditorView}
+     * @param pConnectionEventManager
+     *            the {@link ConnectionEventManager} instance
+     */
+    public GraphEditorController(final E pEditor, final SkinManager pSkinManager,
+            final GraphEditorView pView, final ConnectionEventManager pConnectionEventManager, final GraphEditorProperties pProperties)
+    {
+        mEditor = Objects.requireNonNull(pEditor, "GraphEditor instance may not be null!");
+        mConnectionLayouter = new DefaultConnectionLayouter(pSkinManager);
+
+        mSkinManager = Objects.requireNonNull(pSkinManager, "SkinManager may not be null!");
+
+        mModelLayoutUpdater = new ModelLayoutUpdater(pSkinManager, mModelEditingManager, pProperties);
+        mConnectorDragManager = new ConnectorDragManager(pSkinManager, pConnectionEventManager, pView);
+        mSelectionManager = new DefaultSelectionManager(pSkinManager, pView);
+
+        initDefaultListeners();
+
+        pEditor.modelProperty().addListener(new WeakChangeListener<>(mModelChangeListener));
+        modelChanged(null, pEditor.getModel());
+    }
+
+    private void initDefaultListeners()
+    {
+        registerChangeListener(GraphPackage.Literals.GMODEL__NODES, e -> processNotification(e, this::addNode, this::removeNode));
+
+        registerChangeListener(GraphPackage.Literals.GNODE__CONNECTORS,
+                e -> processNotification(e, this::addConnector, this::removeConnector));
+
+        registerChangeListener(GraphPackage.Literals.GNODE__CONNECTORS, e ->
+        {
+            if (e.getNotifier() instanceof GNode)
+            {
+                // if the connector is removed, the parent element is null..
+                // luckily getNotifier() still returns the GNode where the connector was removed from:
+                markConnectorsDirty((GNode) e.getNotifier());
+            }
+        });
+        registerChangeListener(GraphPackage.Literals.GMODEL__CONNECTIONS,
+                e -> processNotification(e, this::addConnection, this::removeConnection));
+
+        registerChangeListener(GraphPackage.Literals.GCONNECTION__JOINTS, e -> processNotification(e, this::addJoint, this::removeJoint));
+
+        registerChangeListener(GraphPackage.Literals.GJOINT__X, this::jointPositionChanged);
+        registerChangeListener(GraphPackage.Literals.GJOINT__Y, this::jointPositionChanged);
+
+        registerChangeListener(GraphPackage.Literals.GNODE__Y, this::nodePositionChanged);
+        registerChangeListener(GraphPackage.Literals.GNODE__X, this::nodePositionChanged);
+
+        registerChangeListener(GraphPackage.Literals.GNODE__HEIGHT, this::nodeSizeChanged);
+        registerChangeListener(GraphPackage.Literals.GNODE__WIDTH, this::nodeSizeChanged);
+
+        registerChangeListener(GraphPackage.Literals.GNODE__TYPE, e ->
+        {
+            final GNode node = (GNode) e.getNotifier();
+            removeNode(node);
+            addNode(node);
+        });
     }
 
     /**
-     * Sets the graph model to be edited.
+     * Registers a change listener
      *
-     * @param model the {@link GModel} to be edited
+     * @param pFeature
+     *            {@link EStructuralFeature feature to watch}
+     * @param pHandler
+     *            {@link Consumer} handling the {@link Notification}
+     * @since 15.03.2019
      */
-    public void setModel(final GModel model) {
+    public final void registerChangeListener(final EStructuralFeature pFeature, final Consumer<Notification> pHandler)
+    {
+        Objects.requireNonNull(pFeature, "EStructuralFeature may not be null!");
+        Objects.requireNonNull(pHandler, "Notification Consumer may not be null!");
+        mHandlersByFeature.merge(pFeature, pHandler, Consumer::andThen);
+    }
 
-        this.model = model;
+    /**
+     * Registers a change listener
+     *
+     * @param pNotificationType
+     *            {@link Notification notification type}
+     * @param pHandler
+     *            {@link Consumer} handling the {@link Notification}
+     * @since 15.03.2019
+     */
+    public final void registerChangeListener(final int pNotificationType, final Consumer<Notification> pHandler)
+    {
+        Objects.requireNonNull(pHandler, "Notification Consumer may not be null!");
+        mHandlersByType.merge(pNotificationType, pHandler, Consumer::andThen);
+    }
 
-        modelMemory.wipe();
-        view.clear();
+    private void modelChanged(final GModel pOldModel, final GModel pNewModel)
+    {
+        if (pOldModel != null)
+        {
+            final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(pOldModel);
+            editingDomain.getResourceSet().eAdapters().remove(mContentAdapter);
 
-        // Perform single null check here. All secondary managers can assume that the model is not null.
-        if (model != null) {
-            initializeAll();
+            for (int i = 0; i < pOldModel.getNodes().size(); i++)
+            {
+                removeNode(pOldModel.getNodes().get(i));
+            }
+            for (int i = 0; i < pOldModel.getConnections().size(); i++)
+            {
+                removeConnection(pOldModel.getConnections().get(i));
+            }
+        }
+
+        // remove any remaining skins that might have been left over:
+        mSkinManager.clear();
+
+        if (pNewModel != null)
+        {
+            ModelSanityChecker.validate(pNewModel);
+
+            mModelEditingManager.initialize(pNewModel);
+
+            final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(pNewModel);
+            editingDomain.getResourceSet().eAdapters().add(mContentAdapter);
+
+            for (int i = 0; i < pNewModel.getNodes().size(); i++)
+            {
+                addNode(pNewModel.getNodes().get(i));
+            }
+            for (int i = 0; i < pNewModel.getConnections().size(); i++)
+            {
+                addConnection(pNewModel.getConnections().get(i));
+            }
+
+            process();
+
+            mSelectionManager.initialize(pNewModel);
+            mConnectionLayouter.initialize(pNewModel);
+            mConnectorDragManager.initialize(pNewModel);
+
+            // 1) wait until the graph editor is registered in a visible view (scene != null)
+            // 2) wait a little bit with Platform.runLater() so the UI has a chance to "settle down"
+            // 3) update layout values
+            executeOnceWhenPropertyIsNonNull(mEditor.getView().sceneProperty(),
+                    scene -> Platform.runLater(() -> updateLayoutValues(pNewModel)));
+        }
+    }
+
+    private void updateLayoutValues(final GModel pModel)
+    {
+        // because we defer execution with Platform.runLater()
+        //   we have to check if the given model is still valid:
+        if (mEditor.getModel() != pModel)
+        {
+            return;
+        }
+
+        // When the model is loaded from the database and painted to the UI sometimes
+        //   the rendering process calculates different sizes than the ones stored in the model
+        //   which triggers a change..
+        // for this case we wait until the rendering is done and update the layout values by hand
+        final CompoundCommand cmd = new CompoundCommand();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(pModel);
+        if (editingDomain != null)
+        {
+            Commands.updateLayoutValues(cmd, pModel, getSkinLookup());
+            if (!cmd.getCommandList().isEmpty() && cmd.canExecute())
+            {
+                cmd.execute();
+                process();
+            }
         }
     }
 
     /**
-     * Gets the graph model currently being edited.
+     * flush the currently queued commands and process them immediately.<br>
+     * Only has an effect if the current Thread is the
+     * {@link Platform#isFxApplicationThread() FX Application Thread}
      *
-     * @return the {@link GModel} being edited, or {@code null} if no model was ever set
+     * @since 09.02.2016
      */
-    public GModel getModel() {
-        return model;
-    }
-
-    /**
-     * Gets the editor properties instance used by the graph editor.
-     *
-     * @return the {@link GraphEditorProperties} instance in use
-     */
-    public GraphEditorProperties getEditorProperties() {
-        return view.getEditorProperties();
-    }
-
-    /**
-     * Sets the editor properties instance for the graph editor.
-     *
-     * @param editorProperties a {@link GraphEditorProperties} instance to be used
-     */
-    public void setEditorProperties(final GraphEditorProperties editorProperties) {
-        view.setEditorProperties(editorProperties);
-    }
-
-    /**
-     * @return the selection manager currently being used.
-     */
-    public SelectionManager getSelectionManager()
+    public final void process()
     {
-        return selectionManager;
+        if (mProcessing || !Platform.isFxApplicationThread()) // prevent GUI updates outside the FX Application Thread
+        {
+            return;
+        }
+
+        mProcessing = true;
+        try
+        {
+            Notification n;
+            while ((n = mContentAdapter.getQueue().poll()) != null)
+            {
+                try
+                {
+                    mHandlersByFeature.getOrDefault(n.getFeature(), EMPTY_CONSUMER).accept(n);
+                    mHandlersByType.getOrDefault(n.getFeature(), EMPTY_CONSUMER).accept(n);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.error("Could not process update notification '{}': ", n, e); //$NON-NLS-1$
+                }
+            }
+
+            if (!mNodesToAdd.isEmpty())
+            {
+                for (final Iterator<GNode> iter = mNodesToAdd.iterator(); iter.hasNext();)
+                {
+                    final GNode next = iter.next();
+                    mSkinManager.lookupOrCreateNode(next); // implicit create
+                    mModelLayoutUpdater.addNode(next);
+                    mSelectionManager.addNode(next);
+                    markConnectorsDirty(next);
+                    iter.remove();
+                }
+            }
+
+            if (!mConnectorsToAdd.isEmpty())
+            {
+                for (final Iterator<GConnector> iter = mConnectorsToAdd.iterator(); iter.hasNext();)
+                {
+                    final GConnector next = iter.next();
+                    mSkinManager.lookupOrCreateConnector(next); // implicit create
+                    mConnectorDragManager.addConnector(next);
+                    mSelectionManager.addConnector(next);
+                    markConnectorsDirty(next.getParent());
+                    iter.remove();
+                }
+            }
+
+            if (!mConnectionsToAdd.isEmpty())
+            {
+                for (final Iterator<GConnection> iter = mConnectionsToAdd.iterator(); iter.hasNext();)
+                {
+                    final GConnection next = iter.next();
+                    mSkinManager.lookupOrCreateConnection(next); // implicit create
+                    mSelectionManager.addConnection(next);
+                    mConnectionsDirty.add(next);
+                    iter.remove();
+                }
+            }
+
+            if (!mJointsToAdd.isEmpty())
+            {
+                for (final Iterator<GJoint> iter = mJointsToAdd.iterator(); iter.hasNext();)
+                {
+                    final GJoint next = iter.next();
+                    mSkinManager.lookupOrCreateJoint(next); // implicit create
+                    mModelLayoutUpdater.addJoint(next);
+                    mSelectionManager.addJoint(next);
+                    mConnectionsDirty.add(next.getConnection());
+                    iter.remove();
+                }
+            }
+
+            if (!mNodeConnectorsDirty.isEmpty())
+            {
+                for (final Iterator<GNode> iter = mNodeConnectorsDirty.iterator(); iter.hasNext();)
+                {
+                    mSkinManager.updateConnectors(iter.next());
+                    iter.remove();
+                }
+            }
+
+            if (!mConnectionsDirty.isEmpty())
+            {
+                for (final Iterator<GConnection> iter = mConnectionsDirty.iterator(); iter.hasNext();)
+                {
+                    final GConnection conn = iter.next();
+                    mSkinManager.updateJoints(conn);
+                    iter.remove();
+                }
+            }
+
+            processingDone();
+        }
+        finally
+        {
+            mProcessing = false;
+        }
     }
 
     /**
-     * Initializes everything for the current model.
+     * Called when all queued commands have been processed
+     *
+     * @since 15.03.2019
      */
-    public void initializeAll()
+    protected void processingDone()
     {
-        ModelSanityChecker.validate(model);
+        mConnectionLayouter.redrawAll();
+    }
 
-        modelMemory.setNewModelState(model);
-        reloadView();
+    private void nodePositionChanged(final Notification pChange)
+    {
+        final GNode node = (GNode) pChange.getNotifier();
+        if (node != null)
+        {
+            final GNodeSkin skin = mSkinManager.lookupNode(node);
+            if (skin != null)
+            {
+                skin.getRoot().relocate(node.getX(), node.getY());
+            }
+        }
+    }
 
-        modelEditingManager.initialize(model);
-        modelLayoutUpdater.initialize(model);
-        connectionLayouter.initialize(model);
-        connectorDragManager.initialize(model);
-        selectionManager.initialize(model);
+    private void nodeSizeChanged(final Notification pChange)
+    {
+        final GNode node = (GNode) pChange.getNotifier();
+        if (node != null)
+        {
+            final GNodeSkin skin = mSkinManager.lookupNode(node);
+            if (skin != null)
+            {
+                skin.getRoot().resize(node.getWidth(), node.getHeight());
+            }
+        }
+    }
 
-        connectionLayouter.redrawAll();
+    private void jointPositionChanged(final Notification pChange)
+    {
+        final GJoint joint = (GJoint) pChange.getNotifier();
+        if (joint != null)
+        {
+            final GJointSkin skin = mSkinManager.lookupJoint(joint);
+            if (skin != null)
+            {
+                skin.initialize();
+            }
+        }
+    }
+
+    private void addJoint(final GJoint pJoint)
+    {
+        mJointsToAdd.add(pJoint);
+    }
+
+    private void removeJoint(final GJoint pJoint)
+    {
+        mJointsToAdd.remove(pJoint);
+
+        mSelectionManager.removeJoint(pJoint);
+        mSelectionManager.getSelectedJoints().remove(pJoint);
+        mModelLayoutUpdater.removeJoint(pJoint);
+        mSkinManager.removeJoint(pJoint);
+    }
+
+    /**
+     * @param pNode
+     *            {@link GNode} of which the {@link GConnector connectors} have
+     *            been changed
+     * @since 15.03.2019
+     */
+    protected final void markConnectorsDirty(final GNode pNode)
+    {
+        mNodeConnectorsDirty.add(pNode);
+    }
+
+    private void addConnection(final GConnection pConnection)
+    {
+        mConnectionsToAdd.add(pConnection);
+        for (final GJoint joint : pConnection.getJoints())
+        {
+            addJoint(joint);
+        }
+    }
+
+    private void removeConnection(final GConnection pConnection)
+    {
+        mConnectionsToAdd.remove(pConnection);
+
+        mSelectionManager.removeConnection(pConnection);
+        mSelectionManager.getSelectedConnections().remove(pConnection);
+        mSkinManager.removeConnection(pConnection);
+
+        for (final GJoint joint : pConnection.getJoints())
+        {
+            removeJoint(joint);
+        }
+    }
+
+    private void addNode(final GNode pNode)
+    {
+        mNodesToAdd.add(pNode);
+
+        for (int i = 0; i < pNode.getConnectors().size(); i++)
+        {
+            addConnector(pNode.getConnectors().get(i));
+        }
+    }
+
+    private void removeNode(final GNode pNode)
+    {
+        mNodesToAdd.remove(pNode);
+
+        for (int i = 0; i < pNode.getConnectors().size(); i++)
+        {
+            removeConnector(pNode.getConnectors().get(i));
+        }
+
+        mSelectionManager.removeNode(pNode);
+        mSelectionManager.clearSelection(pNode);
+        mModelLayoutUpdater.removeNode(pNode);
+        mSkinManager.removeNode(pNode);
+    }
+
+    private void addConnector(final GConnector pConnector)
+    {
+        mConnectorsToAdd.add(pConnector);
+    }
+
+    private void removeConnector(final GConnector pConnector)
+    {
+        mConnectorsToAdd.remove(pConnector);
+
+        mSelectionManager.removeConnector(pConnector);
+        mConnectorDragManager.removeConnector(pConnector);
+        mSkinManager.removeConnector(pConnector);
+    }
+
+    /**
+     * @return {@link ConnectionLayouter}
+     */
+    public final ConnectionLayouter getConnectionLayouter()
+    {
+        return mConnectionLayouter;
+    }
+
+    /**
+     * @return {@link GraphEditor} instance
+     */
+    public final E getEditor()
+    {
+        return mEditor;
+    }
+
+    /**
+     * @return {@link SkinLookup} instance
+     */
+    public final SkinLookup getSkinLookup()
+    {
+        return mSkinManager;
+    }
+
+    /**
+     * Gets the selection manager currently being used.
+     *
+     * @return selection manager currently being used.
+     */
+    public final SelectionManager getSelectionManager()
+    {
+        return mSelectionManager;
     }
 
     /**
      * Sets the validator that determines what connections can be created.
      *
      * @param validator
-     *            a {@link GConnectorValidator} implementation, or null to use
-     *            the default
+     *            a {@link GConnectorValidator} implementation, or null to use the
+     *            default
      */
-    public void setConnectorValidator(final GConnectorValidator validator)
+    public final void setConnectorValidator(final GConnectorValidator validator)
     {
-        connectorDragManager.setValidator(validator);
+        mConnectorDragManager.setValidator(validator);
     }
 
     /**
      * @return {@link ModelEditingManager}
      */
-    public ModelEditingManager getModelEditingManager()
+    public final ModelEditingManager getModelEditingManager()
     {
-        return modelEditingManager;
+        return mModelEditingManager;
     }
 
     /**
-     * Reloads the view according to the new model values.
+     * Delegates the contents of the given {@link Notification} to the given
+     * {@link Consumer consumers}:
+     * <ul>
+     * <li>In case of {@link Notification#ADD} or {@link Notification#ADD_MANY},
+     * the add consumer will be called with each added element</li>
+     * <li>In case of {@link Notification#REMOVE} or
+     * {@link Notification#REMOVE_MANY}, the remove consumer will be called with
+     * each added element</li>
+     * </ul>
+     * IMPORTANT: The added/removed values are casted without any checks, any
+     * one calling this method should take extra care to not mix wrong types!
      *
+     * @param pNotification
+     * @param pAdd
+     * @param pRemove
+     * @since 15.03.2019
+     */
+    protected static <T> void processNotification(final Notification pNotification, final Consumer<T> pAdd, final Consumer<T> pRemove)
+    {
+        switch (pNotification.getEventType())
+        {
+            case Notification.ADD:
+                @SuppressWarnings("unchecked")
+                final T newValue = (T) pNotification.getNewValue();
+                pAdd.accept(newValue);
+                break;
+
+            case Notification.ADD_MANY:
+                @SuppressWarnings("unchecked")
+                final List<T> newValues = (List<T>) pNotification.getNewValue();
+                newValues.forEach(pAdd::accept);
+                break;
+
+            case Notification.REMOVE:
+                @SuppressWarnings("unchecked")
+                final T oldValue = (T) pNotification.getOldValue();
+                pRemove.accept(oldValue);
+                break;
+
+            case Notification.REMOVE_MANY:
+                @SuppressWarnings("unchecked")
+                final List<T> oldValues = (List<T>) pNotification.getOldValue();
+                oldValues.forEach(pRemove::accept);
+                break;
+        }
+    }
+
+    /**
      * <p>
-     * Uses the skin manager to create skins for the current model, and adds the skin instances to the view.
+     * Attaches a value listener to the given {@link ObservableValue} and when
+     * the value changes to a non-{@code null} value the given {@link Consumer}
+     * will be invoked with the new value and the listener will be removed.
      * </p>
+     * <p>
+     * NOTE: If the {@link ObservableValue} already has a non-{@code null} value
+     * the {@link Consumer} will be invoked directly.
+     * </p>
+     * <p>
+     * This proves useful for linking things together before a property is
+     * necessarily set.
+     * </p>
+     *
+     * @param pProperty
+     *            {@link ObservableValue} to observe
+     * @param pConsumer
+     *            {@link Consumer} to call with the first non-{@code null} value
+     * @since 12.05.2017
      */
-    private void reloadView() {
-
-        cleanUpView();
-        updateSkinManager();
-
-        for (final GNode node : modelMemory.getNodesToAdd()) {
-            view.add(skinManager.lookupNode(node));
+    private static <T> void executeOnceWhenPropertyIsNonNull(final ObservableValue<T> pProperty, final Consumer<T> pConsumer)
+    {
+        if (pProperty == null)
+        {
+            return;
         }
 
-        for (final GConnection connection : modelMemory.getConnectionsToAdd()) {
-            view.add(skinManager.lookupConnection(connection));
+        final T value = pProperty.getValue();
+        if (value != null)
+        {
+            pConsumer.accept(value);
         }
+        else
+        {
+            final InvalidationListener listener = new InvalidationListener()
+            {
 
-        for (final List<GJoint> joints : modelMemory.getJointsToAdd().values()) {
-            for (final GJoint joint : joints) {
-                view.add(skinManager.lookupJoint(joint));
-            }
+                @Override
+                public void invalidated(final Observable observable)
+                {
+                    final T newValue = pProperty.getValue();
+                    if (newValue != null)
+                    {
+                        pProperty.removeListener(this);
+                        pConsumer.accept(newValue);
+                    }
+                }
+            };
+            pProperty.addListener(listener);
         }
     }
 
-    /**
-     * Cleans up the view, removing all elements that the {@link ModelMemory} tells us to remove.
-     */
-    private void cleanUpView() {
+    private static class GraphEditorEContentAdapter extends EContentAdapter
+    {
 
-        for (final GNode node : modelMemory.getNodesToRemove()) {
+        private final Queue<Notification> imQueue = new ConcurrentLinkedQueue<>();
 
-            final GNodeSkin nodeSkin = skinManager.lookupNode(node);
-            view.remove(nodeSkin);
-            nodeSkin.dispose();
-
-            for (final GConnector connector : node.getConnectors()) {
-                skinManager.lookupConnector(connector).dispose();
+        @Override
+        public final void notifyChanged(final Notification pNotification)
+        {
+            super.notifyChanged(pNotification);
+            if (pNotification.getEventType() != Notification.REMOVING_ADAPTER)
+            {
+                imQueue.add(pNotification);
             }
         }
 
-        for (final GConnection connection : modelMemory.getConnectionsToRemove()) {
-            final GConnectionSkin connectionSkin = skinManager.lookupConnection(connection);
-            view.remove(connectionSkin);
-            connectionSkin.dispose();
+        public Queue<Notification> getQueue()
+        {
+            return imQueue;
         }
-
-        for (final List<GJoint> joints : modelMemory.getJointsToRemove().values()) {
-            for (final GJoint joint : joints) {
-                final GJointSkin jointSkin = skinManager.lookupJoint(joint);
-                view.remove(jointSkin);
-                jointSkin.dispose();
-            }
-        }
-    }
-
-    /**
-     * Updates the skin manager, adding and removing skin instances according to what the {@link ModelMemory} specifies.
-     */
-    private void updateSkinManager() {
-
-        skinManager.addNodes(modelMemory.getNodesToAdd());
-        skinManager.removeNodes(modelMemory.getNodesToRemove());
-        skinManager.updateNodes(modelMemory.getNodesToUpdate());
-        skinManager.removeConnectors(modelMemory.getConnectorsToRemove());
-
-        skinManager.addConnections(modelMemory.getConnectionsToAdd());
-        skinManager.removeConnections(modelMemory.getConnectionsToRemove());
-
-        modelMemory.getJointsToRemove().values().forEach(skinManager::removeJoints);
-
-        modelMemory.getJointsToAdd().forEach(skinManager::addJoints);
-
-        skinManager.initializeAll();
     }
 }

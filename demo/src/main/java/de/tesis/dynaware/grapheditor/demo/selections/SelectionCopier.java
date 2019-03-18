@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.layout.Region;
-
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -21,12 +16,16 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
-import de.tesis.dynaware.grapheditor.core.utils.GModelUtils;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionCopier;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GJoint;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.layout.Region;
 
 /**
  * Manages cut, copy, & paste actions on the current selection.
@@ -61,9 +60,10 @@ public class SelectionCopier {
     /**
      * Creates a new {@link SelectionCopier} instance.
      *
-     * @param skinLookup the {@link SkinLookup} instance for the graph editor
-     * @param selectionTracker the {@link SelectionTracker} instance for the graph editor
-     * @param selectionManager the {@link SelectionManager} instance for the graph editor
+     * @param skinLookup
+     *            the {@link SkinLookup} instance for the graph editor
+     * @param selectionManager
+     *            the {@link SelectionManager} instance for the graph editor
      */
 	public SelectionCopier(final SkinLookup skinLookup, final SelectionManager selectionManager) {
 
@@ -104,7 +104,7 @@ public class SelectionCopier {
             }
         }
 
-        copiedConnections.addAll(GModelUtils.copyConnections(copyStorage));
+        copiedConnections.addAll(ConnectionCopier.copyConnections(copyStorage));
         saveParentPositionInScene();
     }
 
@@ -169,7 +169,7 @@ public class SelectionCopier {
             pasteStorage.put(copiedNode, pastedNode);
         }
 
-        pastedConnections.addAll(GModelUtils.copyConnections(pasteStorage));
+        pastedConnections.addAll(ConnectionCopier.copyConnections(pasteStorage));
     }
 
     /**

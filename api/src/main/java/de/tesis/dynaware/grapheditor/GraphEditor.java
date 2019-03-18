@@ -18,8 +18,10 @@ import de.tesis.dynaware.grapheditor.utils.RemoveContext;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.Region;
 
+
 /**
- * Provides functionality for displaying and editing graph-like diagrams in JavaFX.
+ * Provides functionality for displaying and editing graph-like diagrams in
+ * JavaFX.
  *
  * <p>
  * Example:
@@ -33,13 +35,15 @@ import javafx.scene.layout.Region;
  * Region view = graphEditor.getView();</code>
  * </pre>
  *
- * The view is a {@link Region} and can be added to the JavaFX scene graph in the usual way. For large graphs, the
- * editor can be put inside a {@link GraphEditorContainer} instead.
+ * The view is a {@link Region} and can be added to the JavaFX scene graph in
+ * the usual way. For large graphs, the editor can be put inside a pannable
+ * container (see module core) instead.
  * </p>
  *
  * <p>
- * The editor updates its underlying model via EMF commands. This means any user action should be undoable. Helper
- * methods for common operations are provided in the {@link Commands} class, such as:
+ * The editor updates its underlying model via EMF commands. This means any user
+ * action should be undoable. Helper methods for common operations are provided
+ * in the {@link Commands} class, such as:
  *
  * <ul>
  * <li>Add Node</li>
@@ -51,8 +55,9 @@ import javafx.scene.layout.Region;
  * </p>
  *
  * <p>
- * Look & feel can be customised by setting custom skin classes. The default skins can also be customised to some extent
- * via CSS. See <b>defaults.css</b> in the core module for more information.
+ * Look & feel can be customised by setting custom skin classes. The default
+ * skins can also be customised to some extent via CSS. See <b>defaults.css</b>
+ * in the core module for more information.
  * </p>
  */
 public interface GraphEditor extends GraphEditorSkins {
@@ -104,7 +109,8 @@ public interface GraphEditor extends GraphEditorSkins {
      * Gets the view where the graph is displayed and edited.
      *
      * <p>
-     * The view is a JavaFX {@link Region}. It should be added to the scene graph in the usual way.
+     * The view is a JavaFX {@link Region}. It should be added to the scene
+     * graph in the usual way.
      * </p>
      *
      * @return the {@link Region} where the graph is displayed and edited
@@ -128,13 +134,6 @@ public interface GraphEditor extends GraphEditorSkins {
      * @return an {@link GraphEditorProperties} instance containing the properties of the editor
      */
     GraphEditorProperties getProperties();
-
-    /**
-     * Sets the properties of the editor.
-     *
-     * @param properties an {@link GraphEditorProperties} instance specifying a set of properties for the editor
-     */
-    void setProperties(GraphEditorProperties properties);
 
     /**
      * Gets the skin lookup.

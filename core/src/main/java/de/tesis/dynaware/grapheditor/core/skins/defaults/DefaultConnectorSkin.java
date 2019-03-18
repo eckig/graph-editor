@@ -3,23 +3,21 @@
  */
 package de.tesis.dynaware.grapheditor.core.skins.defaults;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GConnectorStyle;
+import de.tesis.dynaware.grapheditor.core.connectors.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.AnimatedColor;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.ColorAnimationUtils;
+import de.tesis.dynaware.grapheditor.model.GConnector;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.tesis.dynaware.grapheditor.GConnectorSkin;
-import de.tesis.dynaware.grapheditor.GConnectorStyle;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.AnimatedColor;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.ColorAnimationUtils;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
-import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
  * The default connector skin.
@@ -117,7 +115,7 @@ public class DefaultConnectorSkin extends GConnectorSkin {
 
     /**
      * Draws the given polygon to have a triangular shape.
-     * 
+     *
      * @param type the connector type
      * @param polygon the polygon to be drawn
      */
@@ -161,7 +159,7 @@ public class DefaultConnectorSkin extends GConnectorSkin {
 
     /**
      * Draws the polygon for a horizontal orientation, pointing right or left.
-     * 
+     *
      * @param pointingRight {@code true} to point right, {@code false} to point left
      * @param polygon the polygon to be drawn
      */
@@ -176,7 +174,7 @@ public class DefaultConnectorSkin extends GConnectorSkin {
 
     /**
      * Draws the polygon for a vertical orientation, pointing up or down.
-     * 
+     *
      * @param pointingUp {@code true} to point up, {@code false} to point down
      * @param polygon the polygon to be drawn
      */
@@ -192,13 +190,15 @@ public class DefaultConnectorSkin extends GConnectorSkin {
     /**
      * Checks that the connector has the correct values to be displayed using this skin.
      */
-    private void performChecks() {
-        if (!DefaultConnectorTypes.isValid(getItem().getType())) {
-            LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, getItem().getType());
+    private void performChecks()
+    {
+        if (!DefaultConnectorTypes.isValid(getItem().getType()))
+        {
+            LOGGER.error("Connector type '{}' not recognized, setting to 'left-input'.", getItem().getType());
             getItem().setType(DefaultConnectorTypes.LEFT_INPUT);
         }
     }
-    
+
     @Override
     protected void selectionChanged(boolean isSelected) {
         // Not implemented

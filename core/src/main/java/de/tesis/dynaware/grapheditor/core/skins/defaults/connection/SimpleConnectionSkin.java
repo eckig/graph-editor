@@ -9,10 +9,10 @@ import java.util.Map;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
+import de.tesis.dynaware.grapheditor.core.connections.RectangularConnections;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.DetouredConnectionSegment;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.GappedConnectionSegment;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
@@ -134,7 +134,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
             final DraggableBox thisJoint = jointSkins.get(i).getRoot();
             final DraggableBox nextJoint = jointSkins.get(i + 1).getRoot();
 
-            if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), i))
+            if (RectangularConnections.isSegmentHorizontal(getItem(), i))
             {
                 thisJoint.bindLayoutX(null);
                 nextJoint.bindLayoutX(null);
@@ -158,7 +158,7 @@ public class SimpleConnectionSkin extends GConnectionSkin {
             final DraggableBox thisJoint = jointSkins.get(i).getRoot();
             final DraggableBox nextJoint = jointSkins.get(i + 1).getRoot();
 
-            if (RectangularConnectionUtils.isSegmentHorizontal(getItem(), i))
+            if (RectangularConnections.isSegmentHorizontal(getItem(), i))
             {
                 thisJoint.bindLayoutX(nextJoint);
                 nextJoint.bindLayoutX(thisJoint);
@@ -178,8 +178,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
      */
     private void checkFirstAndLastJoints(final Point2D[] points)
     {
-        alignJoint(points, RectangularConnectionUtils.isSegmentHorizontal(getItem(), 0), true);
-        alignJoint(points, RectangularConnectionUtils.isSegmentHorizontal(getItem(), points.length - 2), false);
+        alignJoint(points, RectangularConnections.isSegmentHorizontal(getItem(), 0), true);
+        alignJoint(points, RectangularConnections.isSegmentHorizontal(getItem(), points.length - 2), false);
     }
 
     /**

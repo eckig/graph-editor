@@ -9,6 +9,7 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 
+
 /**
  * The default joint skin.
  *
@@ -16,7 +17,8 @@ import javafx.geometry.Point2D;
  * Pretty much just a {@link DraggableBox} with some hover and pressed effects.
  * </p>
  */
-public class DefaultJointSkin extends GJointSkin {
+public class DefaultJointSkin extends GJointSkin
+{
 
     private static final String STYLE_CLASS = "default-joint";
 
@@ -28,9 +30,11 @@ public class DefaultJointSkin extends GJointSkin {
     /**
      * Creates a new default join instance.
      *
-     * @param joint the {@link GJoint} the skin is being created for
+     * @param joint
+     *            the {@link GJoint} the skin is being created for
      */
-    public DefaultJointSkin(final GJoint joint) {
+    public DefaultJointSkin(final GJoint joint)
+    {
         super(joint);
 
         getRoot().resize(SIZE, SIZE);
@@ -41,20 +45,24 @@ public class DefaultJointSkin extends GJointSkin {
     }
 
     @Override
-    protected void selectionChanged(boolean isSelected) {
+    protected void selectionChanged(boolean isSelected)
+    {
         getRoot().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, isSelected);
-        if (isSelected) {
+        if (isSelected)
+        {
             getRoot().toFront();
         }
     }
 
     @Override
-    public double getWidth() {
+    public double getWidth()
+    {
         return SIZE;
     }
 
     @Override
-    public double getHeight() {
+    public double getHeight()
+    {
         return SIZE;
     }
 }

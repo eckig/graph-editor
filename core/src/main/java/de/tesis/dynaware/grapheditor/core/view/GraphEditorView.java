@@ -7,7 +7,10 @@ import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
+import de.tesis.dynaware.grapheditor.VirtualSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.utils.SelectionBox;
+import de.tesis.dynaware.grapheditor.core.view.impl.GraphEditorGrid;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -37,15 +40,6 @@ import javafx.scene.layout.Region;
 public class GraphEditorView extends Region
 {
 
-    /**
-     * default view stylesheet
-     */
-    public static final String STYLESHEET_VIEW = GraphEditorView.class.getResource("view.css").toExternalForm();
-    /**
-     * default view stylesheet
-     */
-    public static final String STYLESHEET_DEFAULTS = GraphEditorView.class.getResource("defaults.css").toExternalForm();
-
     private static final String STYLE_CLASS = "graph-editor";
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
@@ -59,7 +53,7 @@ public class GraphEditorView extends Region
         protected void layoutChildren()
         {
             super.layoutChildren();
-            layoutConnections();
+            drawConnections();
         }
     };
 
@@ -68,13 +62,13 @@ public class GraphEditorView extends Region
 
     private final SelectionBox mSelectionBox = new SelectionBox();
 
-    private GraphEditorProperties mEditorProperties;
+    private final GraphEditorProperties mEditorProperties;
 
     /**
      * Creates a new {@link GraphEditorView} to which skin instances can be
      * added and removed.
      */
-    public GraphEditorView()
+    public GraphEditorView(final GraphEditorProperties pEditorProperties)
     {
         getStyleClass().addAll(STYLE_CLASS);
 
@@ -82,6 +76,14 @@ public class GraphEditorView extends Region
         setMaxHeight(GraphEditorProperties.DEFAULT_MAX_HEIGHT);
 
         initializeLayers();
+
+        mEditorProperties = pEditorProperties;
+
+        if (mEditorProperties != null)
+        {
+            mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
+            mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
+        }
     }
 
     /**
@@ -112,7 +114,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GNodeSkin pNodeSkin)
     {
-        if (pNodeSkin != null)
+        if (pNodeSkin != null && !(pNodeSkin instanceof VirtualSkin))
         {
             mNodeLayer.getChildren().add(pNodeSkin.getRoot());
         }
@@ -126,7 +128,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GConnectionSkin pConnectionSkin)
     {
-        if (pConnectionSkin != null)
+        if (pConnectionSkin != null && !(pConnectionSkin instanceof VirtualSkin))
         {
             mConnectionLayer.getChildren().add(0, pConnectionSkin.getRoot());
         }
@@ -140,7 +142,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GJointSkin pJointSkin)
     {
-        if (pJointSkin != null)
+        if (pJointSkin != null && !(pJointSkin instanceof VirtualSkin))
         {
             mConnectionLayer.getChildren().add(pJointSkin.getRoot());
         }
@@ -154,7 +156,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GTailSkin pTailSkin)
     {
-        if (pTailSkin != null)
+        if (pTailSkin != null && !(pTailSkin instanceof VirtualSkin))
         {
             // add to back:
             mConnectionLayer.getChildren().add(0, pTailSkin.getRoot());
@@ -170,7 +172,7 @@ public class GraphEditorView extends Region
      */
     public void remove(final GNodeSkin pNodeSkin)
     {
-        if (pNodeSkin != null)
+        if (pNodeSkin != null && !(pNodeSkin instanceof VirtualSkin))
         {
             mNodeLayer.getChildren().remove(pNodeSkin.getRoot());
         }
@@ -185,7 +187,7 @@ public class GraphEditorView extends Region
      */
     public void remove(final GConnectionSkin pConnectionSkin)
     {
-        if (pConnectionSkin != null)
+        if (pConnectionSkin != null && !(pConnectionSkin instanceof VirtualSkin))
         {
             mConnectionLayer.getChildren().remove(pConnectionSkin.getRoot());
         }
@@ -200,7 +202,7 @@ public class GraphEditorView extends Region
      */
     public void remove(final GJointSkin pJointSkin)
     {
-        if (pJointSkin != null)
+        if (pJointSkin != null && !(pJointSkin instanceof VirtualSkin))
         {
             mConnectionLayer.getChildren().remove(pJointSkin.getRoot());
         }
@@ -215,37 +217,9 @@ public class GraphEditorView extends Region
      */
     public void remove(final GTailSkin pTailSkin)
     {
-        if (pTailSkin != null)
+        if (pTailSkin != null && !(pTailSkin instanceof VirtualSkin))
         {
             mConnectionLayer.getChildren().remove(pTailSkin.getRoot());
-        }
-    }
-
-    /**
-     * Sets the layout properties of the view.
-     *
-     * <p>
-     * This is used specify information like whether the grid should be shown
-     * and/or snapped to.
-     * </p>
-     *
-     * @param pEditorProperties
-     *            the {@link GraphEditorProperties} instance to be used by the
-     *            view
-     */
-    public void setEditorProperties(final GraphEditorProperties pEditorProperties)
-    {
-        mEditorProperties = pEditorProperties;
-
-        if (mEditorProperties != null)
-        {
-            mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
-            mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
-        }
-        else
-        {
-            mGrid.visibleProperty().unbind();
-            mGrid.gridSpacingProperty().unbind();
         }
     }
 
@@ -293,15 +267,15 @@ public class GraphEditorView extends Region
         mNodeLayer.resizeRelocate(0, 0, width, height);
         mConnectionLayer.resizeRelocate(0, 0, width, height);
         mGrid.resizeRelocate(0, 0, width, height);
-        layoutConnections();
+        drawConnections();
     }
 
     /**
-     * calls {@link ConnectionLayouter#redrawAll()}
+     * calls {@link ConnectionLayouter#draw()}
      *
      * @since 31.01.2019
      */
-    void layoutConnections()
+    void drawConnections()
     {
         if (mConnectionLayouter != null)
         {

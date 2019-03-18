@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import de.tesis.dynaware.grapheditor.GraphEditorContainer?>
+<?import de.tesis.dynaware.grapheditor.core.view.GraphEditorContainer?>
 
 <AnchorPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="de.tesis.dynaware.grapheditor.demo.GraphEditorDemoController">
 	<VBox fillWidth="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">

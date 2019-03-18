@@ -12,8 +12,8 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.VLineTo;
+import de.tesis.dynaware.grapheditor.core.connections.RectangularConnections;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.RectangularConnectionUtils;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
@@ -103,7 +103,7 @@ public class CursorOffsetCalculator {
             final Point2D start = path.localToScene(connectionSegments.get(i).getStart());
             final Point2D end = path.localToScene(connectionSegments.get(i).getEnd());
 
-            if (RectangularConnectionUtils.isSegmentHorizontal(connection, i)) {
+            if (RectangularConnections.isSegmentHorizontal(connection, i)) {
 
                 final boolean inRangeX = GeometryUtils.checkInRange(start.getX(), end.getX(), cursorX);
                 final double distanceY = Math.abs(start.getY() - cursorY);

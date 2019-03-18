@@ -6,24 +6,22 @@ package de.tesis.dynaware.grapheditor.core.skins.defaults;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.tesis.dynaware.grapheditor.GConnectorSkin;
+import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.core.connectors.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.model.GConnector;
+import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.tesis.dynaware.grapheditor.GConnectorSkin;
-import de.tesis.dynaware.grapheditor.GNodeSkin;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
-import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
-import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 
 /**
  * The default node skin. Uses a {@link ResizableBox}.
@@ -32,7 +30,7 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
  * If a node uses this skin its connectors must have one of the 8 types defined in {@link DefaultConnectorTypes}. If a
  * connector does not have one of these types, it will be set to <b>left-input</b>.
  * </p>
- * 
+ *
  * <p>
  * Connectors are evenly spaced along the sides of the node according to their type.
  * </p>
@@ -162,11 +160,13 @@ public class DefaultNodeSkin extends GNodeSkin {
     /**
      * Checks that the node and its connectors have the correct values to be displayed using this skin.
      */
-    private void performChecks() {
-
-        for (final GConnector connector : getItem().getConnectors()) {
-            if (!DefaultConnectorTypes.isValid(connector.getType())) {
-                LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, connector.getType());
+    private void performChecks()
+    {
+        for (final GConnector connector : getItem().getConnectors())
+        {
+            if (!DefaultConnectorTypes.isValid(connector.getType()))
+            {
+                LOGGER.error("Connector type '{}' not recognized, setting to 'left-input'.", connector.getType());
                 connector.setType(DefaultConnectorTypes.LEFT_INPUT);
             }
         }
@@ -281,7 +281,7 @@ public class DefaultNodeSkin extends GNodeSkin {
     /**
      * Gets a minor x-offset of a few pixels in order that the connector's area is distributed more evenly on either
      * side of the node border.
-     * 
+     *
      * @param connector the connector to be positioned
      * @return an x-offset of a few pixels
      */
@@ -299,7 +299,7 @@ public class DefaultNodeSkin extends GNodeSkin {
     /**
      * Gets a minor y-offset of a few pixels in order that the connector's area is distributed more evenly on either
      * side of the node border.
-     * 
+     *
      * @param connector the connector to be positioned
      * @return a y-offset of a few pixels
      */
@@ -316,7 +316,7 @@ public class DefaultNodeSkin extends GNodeSkin {
 
     /**
      * Stops the node being dragged if it isn't selected.
-     * 
+     *
      * @param event a mouse-dragged event on the node
      */
     private void filterMouseDragged(final MouseEvent event) {

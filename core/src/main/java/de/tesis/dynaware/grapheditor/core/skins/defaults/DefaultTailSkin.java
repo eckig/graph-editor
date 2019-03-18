@@ -6,22 +6,20 @@ package de.tesis.dynaware.grapheditor.core.skins.defaults;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.tesis.dynaware.grapheditor.GTailSkin;
+import de.tesis.dynaware.grapheditor.core.connectors.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.core.skins.defaults.tail.RectangularPathCreator;
+import de.tesis.dynaware.grapheditor.model.GConnector;
+import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.tesis.dynaware.grapheditor.GTailSkin;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.tail.RectangularPathCreator;
-import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.core.utils.LogMessages;
-import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 
 /**
  * The default tail skin.
@@ -115,7 +113,7 @@ public class DefaultTailSkin extends GTailSkin {
 
     /**
      * Sets layout values of the endpoint based on the new cursor position.
-     * 
+     *
      * @param position the new cursor position
      */
     protected void layoutEndpoint(final Point2D position) {
@@ -126,16 +124,18 @@ public class DefaultTailSkin extends GTailSkin {
     /**
      * Checks that the connector has the correct values to use this skin.
      */
-    private void performChecks() {
-        if (!DefaultConnectorTypes.isValid(getItem().getType())) {
-            LOGGER.error(LogMessages.UNSUPPORTED_CONNECTOR, getItem().getType());
+    private void performChecks()
+    {
+        if (!DefaultConnectorTypes.isValid(getItem().getType()))
+        {
+            LOGGER.error("Connector type '{}' not recognized, setting to 'left-input'.", getItem().getType());
             getItem().setType(DefaultConnectorTypes.LEFT_INPUT);
         }
     }
 
     /**
      * Draws the tail simply from the start position to the end.
-     * 
+     *
      * @param start the start position of the tail
      * @param end the end position of the tail
      */
@@ -157,7 +157,7 @@ public class DefaultTailSkin extends GTailSkin {
 
     /**
      * Draws the tail based additionally on the sides of the nodes it starts and ends at.
-     * 
+     *
      * @param start the start position of the tail
      * @param end the end position of the tail
      * @param target the connector the tail is attaching to
@@ -185,7 +185,7 @@ public class DefaultTailSkin extends GTailSkin {
 
     /**
      * Adds the given point to the tail path.
-     * 
+     *
      * @param point the x & y coordinates of the point
      */
     private void addPoint(final Point2D point) {
@@ -194,7 +194,7 @@ public class DefaultTailSkin extends GTailSkin {
 
     /**
      * Adds the given point to the tail path.
-     * 
+     *
      * @param x the x coordinate of the point
      * @param y the y coordinate of the point
      */
@@ -206,5 +206,5 @@ public class DefaultTailSkin extends GTailSkin {
     protected void selectionChanged(boolean isSelected) {
         // Not implemented
     }
-    
+
 }

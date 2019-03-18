@@ -42,7 +42,7 @@ import javafx.scene.shape.Rectangle;
  * {@link GraphEditorMinimap}.
  * </p>
  */
-public class MinimapNodeGroup extends Parent
+class MinimapNodeGroup extends Parent
 {
 
     private static final String STYLE_CLASS_NODE = "minimap-node"; //$NON-NLS-1$
