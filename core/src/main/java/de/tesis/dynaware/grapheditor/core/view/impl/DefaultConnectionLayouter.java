@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.VirtualSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -95,7 +96,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
                 for (final GConnection conn : mDirty)
                 {
                     final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(conn);
-                    if (connectionSkin != null)
+                    if (connectionSkin != null && !(connectionSkin instanceof VirtualSkin))
                     {
                         final Point2D[] points = connectionSkin.update();
                         if (points != null)

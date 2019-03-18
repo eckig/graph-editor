@@ -13,6 +13,7 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
+import de.tesis.dynaware.grapheditor.VirtualSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectionSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.DefaultConnectorSkin;
@@ -332,14 +333,10 @@ public class GraphEditorSkinManager implements SkinManager
             skin = new DefaultConnectionSkin(pConnection);
         }
         skin.setGraphEditor(mGraphEditor);
-        //TODO
+        if (!(skin instanceof VirtualSkin))
         {
-
-        }
-//        if (!(skin instanceof ConnectionSkinArchive))
-//        {
             mView.add(skin);
-//        }
+        }
         return skin;
     }
 
@@ -354,7 +351,10 @@ public class GraphEditorSkinManager implements SkinManager
         skin.getRoot().setEditorProperties(mGraphEditor.getProperties());
         skin.impl_setOnPositionMoved(mOnPositionMoved);
         skin.initialize();
-        mView.add(skin);
+        if (!(skin instanceof VirtualSkin))
+        {
+            mView.add(skin);
+        }
         return skin;
     }
 
@@ -369,7 +369,10 @@ public class GraphEditorSkinManager implements SkinManager
         skin.getRoot().setEditorProperties(mGraphEditor.getProperties());
         skin.impl_setOnPositionMoved(mOnPositionMoved);
         skin.initialize();
-        mView.add(skin);
+        if (!(skin instanceof VirtualSkin))
+        {
+            mView.add(skin);
+        }
         return skin;
     }
 
