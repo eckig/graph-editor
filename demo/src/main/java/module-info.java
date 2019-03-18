@@ -10,7 +10,7 @@ module fx.graph.editor.demo
     requires org.eclipse.emf.common;
     requires org.eclipse.emf.ecore.xmi;
     requires org.eclipse.emf.edit;
-    requires org.slf4j;
+    requires slf4j.api;
 
     exports de.tesis.dynaware.grapheditor.demo to javafx.graphics, javafx.fxml;
     opens de.tesis.dynaware.grapheditor.demo to javafx.fxml;

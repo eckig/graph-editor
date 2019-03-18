@@ -53,7 +53,7 @@
 		<org.eclipse.emf.edit.version>2.14.0</org.eclipse.emf.edit.version>
 		<revision>11.0.1</revision>
 		<junit.version>4.11</junit.version>
-		<org.slf4j.version>1.8.0-beta4</org.slf4j.version>
+		<org.slf4j.version>1.7.26</org.slf4j.version>
 		<org.openjfx.version>11.0.2</org.openjfx.version>
 		<openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
 	</properties>

@@ -36,8 +36,8 @@ import de.tesis.dynaware.grapheditor.core.model.ModelSanityChecker;
 import de.tesis.dynaware.grapheditor.core.selections.DefaultSelectionManager;
 import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
-import de.tesis.dynaware.grapheditor.core.view.DefaultConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
+import de.tesis.dynaware.grapheditor.core.view.impl.DefaultConnectionLayouter;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GJoint;
@@ -150,7 +150,6 @@ public class GraphEditorController<E extends GraphEditor>
         mConnectionLayouter = new DefaultConnectionLayouter(pSkinManager);
 
         mSkinManager = Objects.requireNonNull(pSkinManager, "SkinManager may not be null!");
-        mSkinManager.setConnectionLayouter(mConnectionLayouter);
 
         mModelLayoutUpdater = new ModelLayoutUpdater(pSkinManager, mModelEditingManager, pProperties);
         mConnectorDragManager = new ConnectorDragManager(pSkinManager, pConnectionEventManager, pView);
@@ -287,7 +286,7 @@ public class GraphEditorController<E extends GraphEditor>
     {
         // because we defer execution with Platform.runLater()
         //   we have to check if the given model is still valid:
-        if (getModel() != pModel)
+        if (mEditor.getModel() != pModel)
         {
             return;
         }
@@ -556,18 +555,9 @@ public class GraphEditorController<E extends GraphEditor>
     }
 
     /**
-     * @return the {@link GModel} being edited, or {@code null} if no model was ever
-     *         set
-     */
-    protected final GModel getModel()
-    {
-        return mEditor.getModel();
-    }
-
-    /**
      * @return {@link ConnectionLayouter}
      */
-    protected final ConnectionLayouter getConnectionLayouter()
+    public final ConnectionLayouter getConnectionLayouter()
     {
         return mConnectionLayouter;
     }
@@ -575,7 +565,7 @@ public class GraphEditorController<E extends GraphEditor>
     /**
      * @return {@link GraphEditor} instance
      */
-    protected final E getEditor()
+    public final E getEditor()
     {
         return mEditor;
     }

@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
- */
-package de.tesis.dynaware.grapheditor.core.view;
+package de.tesis.dynaware.grapheditor.core.view.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;

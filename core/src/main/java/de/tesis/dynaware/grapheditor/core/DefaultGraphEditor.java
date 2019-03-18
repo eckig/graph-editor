@@ -21,6 +21,7 @@ import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionEventManager;
 import de.tesis.dynaware.grapheditor.core.skins.GraphEditorSkinManager;
+import de.tesis.dynaware.grapheditor.core.view.ConnectionLayouter;
 import de.tesis.dynaware.grapheditor.core.view.GraphEditorView;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -81,7 +82,10 @@ public class DefaultGraphEditor implements GraphEditor
         mView = new GraphEditorView(mProperties);
         mSkinManager = new GraphEditorSkinManager(this, mView);
         mController = new GraphEditorController<>(this, mSkinManager, mView, mConnectionEventManager, mProperties);
-        mView.setConnectionLayouter(mController.getConnectionLayouter());
+
+        final ConnectionLayouter connectionLayouter = mController.getConnectionLayouter();
+        mView.setConnectionLayouter(connectionLayouter);
+        mSkinManager.setConnectionLayouter(connectionLayouter);
     }
 
     @Override

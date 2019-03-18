@@ -9,6 +9,7 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.utils.SelectionBox;
+import de.tesis.dynaware.grapheditor.core.view.impl.GraphEditorGrid;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -60,7 +61,7 @@ public class GraphEditorView extends Region
         protected void layoutChildren()
         {
             super.layoutChildren();
-            layoutConnections();
+            drawConnections();
         }
     };
 
@@ -274,15 +275,15 @@ public class GraphEditorView extends Region
         mNodeLayer.resizeRelocate(0, 0, width, height);
         mConnectionLayer.resizeRelocate(0, 0, width, height);
         mGrid.resizeRelocate(0, 0, width, height);
-        layoutConnections();
+        drawConnections();
     }
 
     /**
-     * calls {@link ConnectionLayouter#redrawAll()}
+     * calls {@link ConnectionLayouter#draw()}
      *
      * @since 31.01.2019
      */
-    void layoutConnections()
+    void drawConnections()
     {
         if (mConnectionLayouter != null)
         {
