@@ -13,6 +13,7 @@ import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.VirtualSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.utils.EventUtils;
@@ -368,6 +369,7 @@ public class ConnectorDragManager {
             {
                 tailManager.updatePosition(event);
             }
+            event.consume();
         }
     }
 
@@ -552,6 +554,11 @@ public class ConnectorDragManager {
         final GConnection[] connections = connector.getConnections().toArray(new GConnection[connector.getConnections().size()]);
         for (final GConnection connection : connections)
         {
+            if (skinLookup.lookupConnection(connection) instanceof VirtualSkin)
+            {
+                // do not touch virtual connections
+                continue;
+            }
             final GConnector opposingConnector = getOpposingConnector(connection, connector);
             final List<Point2D> jointPositions = GeometryUtils.getJointPositions(connection, skinLookup);
             final GConnector newSource;
