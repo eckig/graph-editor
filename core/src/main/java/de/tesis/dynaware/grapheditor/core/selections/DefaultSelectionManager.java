@@ -68,7 +68,6 @@ public class DefaultSelectionManager implements SelectionManager
      */
     public void initialize(final GModel model)
     {
-
         this.model = model;
 
         selectionCreator.initialize(model);
@@ -164,7 +163,7 @@ public class DefaultSelectionManager implements SelectionManager
         {
             // copy to prevent ConcurrentModificationException
             // (removal triggers update notification which in turn could modify the selection)
-            final EObject[] selectedItems = getSelectedItems().toArray(new EObject[getSelectedItems().size()]);
+            final EObject[] selectedItems = getSelectedItems().toArray(new EObject[0]);
             for (final EObject remove : selectedItems)
             {
                 getSelectedItems().remove(remove);
