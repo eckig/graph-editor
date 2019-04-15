@@ -15,6 +15,8 @@ import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -92,9 +94,6 @@ public class GraphEditorController<E extends GraphEditor>
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphEditorController.class);
-
-    //@formatter:off
-    private static final Consumer<Notification> EMPTY_CONSUMER = e -> {}; //@formatter:on
 
     private final GraphEditorEContentAdapter mContentAdapter = new GraphEditorEContentAdapter();
 
@@ -259,14 +258,13 @@ public class GraphEditorController<E extends GraphEditor>
             final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(pNewModel);
             editingDomain.getResourceSet().eAdapters().add(mContentAdapter);
 
-            for (int i = 0; i < pNewModel.getNodes().size(); i++)
-            {
-                addNode(pNewModel.getNodes().get(i));
-            }
-            for (int i = 0; i < pNewModel.getConnections().size(); i++)
-            {
-                addConnection(pNewModel.getConnections().get(i));
-            }
+            // add existing nodes through the registered change handlers:
+            processFeatureChanged(new ENotificationImpl((InternalEObject) pNewModel, Notification.ADD_MANY,
+                    GraphPackage.Literals.GMODEL__NODES, List.of(), List.copyOf(pNewModel.getNodes())));
+
+            // add existing connections through the registered change handlers:
+            processFeatureChanged(new ENotificationImpl((InternalEObject) pNewModel, Notification.ADD_MANY,
+                    GraphPackage.Literals.GMODEL__CONNECTIONS, List.of(), List.copyOf(pNewModel.getConnections())));
 
             process();
 
@@ -330,8 +328,7 @@ public class GraphEditorController<E extends GraphEditor>
             {
                 try
                 {
-                    mHandlersByFeature.getOrDefault(n.getFeature(), EMPTY_CONSUMER).accept(n);
-                    mHandlersByType.getOrDefault(n.getFeature(), EMPTY_CONSUMER).accept(n);
+                    processFeatureChanged(n);
                 }
                 catch (Exception e)
                 {
@@ -414,6 +411,19 @@ public class GraphEditorController<E extends GraphEditor>
         finally
         {
             mProcessing = false;
+        }
+    }
+
+    private void processFeatureChanged(final Notification pNotification)
+    {
+        Consumer<Notification> consumer;
+        if ((consumer = mHandlersByFeature.get(pNotification.getFeature())) != null)
+        {
+            consumer.accept(pNotification);
+        }
+        if ((consumer = mHandlersByType.get(pNotification.getFeature())) != null)
+        {
+            consumer.accept(pNotification);
         }
     }
 
