@@ -235,7 +235,7 @@ public class ConnectorDragManager {
             }
 
             final EventHandler<MouseEvent> newMouseEnteredHandler = event -> handleMouseEntered(event, connector);
-            final EventHandler<MouseEvent> newMouseReleasedHandler = event -> handleMouseReleased(event);
+            final EventHandler<MouseEvent> newMouseReleasedHandler = this::handleMouseReleased;
 
             final EventHandler<MouseEvent> newDragDetectedHandler = event -> handleDragDetected(event, connectorSkin);
             final EventHandler<MouseEvent> newMouseDraggedHandler = event -> handleMouseDragged(event, connector);
@@ -414,7 +414,7 @@ public class ConnectorDragManager {
      *
      * @param event
      *            a drag-exited event
-     * @param connectorSKin
+     * @param connectorSkin
      *            the {@link GConnectorSkin} on which this event occurred
      */
     private void handleDragExited(final MouseEvent event, final GConnectorSkin connectorSkin)
@@ -551,7 +551,7 @@ public class ConnectorDragManager {
 
         boolean followUpCreated = false;
 
-        final GConnection[] connections = connector.getConnections().toArray(new GConnection[connector.getConnections().size()]);
+        final GConnection[] connections = connector.getConnections().toArray(new GConnection[0]);
         for (final GConnection connection : connections)
         {
             if (skinLookup.lookupConnection(connection) instanceof VirtualSkin)
@@ -631,13 +631,12 @@ public class ConnectorDragManager {
         return true;
     }
 
-    private boolean finishGesture()
+    private void finishGesture()
     {
         final GraphEventManager eventManager = getEditorProperties();
         if (eventManager != null)
         {
-            return eventManager.finishGesture(GraphInputGesture.CONNECT, this);
+            eventManager.finishGesture(GraphInputGesture.CONNECT, this);
         }
-        return true;
     }
 }
