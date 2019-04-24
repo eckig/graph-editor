@@ -15,19 +15,14 @@ A library for creating and editing graph-like diagrams in JavaFX.
 
 + Full undo / redo functionality via EMF commands
 + Selection API with cut, copy, paste
-+ Alignment & snap-to-grid
++ Alignment (optionally with snap-to-grid)
 + Editing of large graphs via a panning mechanism & minimap
 + Additional skin examples provided:
 
 ![Examples of skins provided with the graph editor demo.](skinExamples.png)
 
-+ Example of a fully customized implementation:
-
+Example of a fully customized implementation:
 ![Demo of a fully customized application.](demo.gif)
-
-## Demo
-
-Download the demo app [here](https://github.com/eckig/graph-editor/releases).
 
 ## Use it
 
@@ -35,12 +30,18 @@ Download the latest [Release](https://github.com/eckig/graph-editor/releases).
 
 Try the tutorials [here](https://github.com/eckig/graph-editor/wiki).
 
-## Build it yourself
+## Demo
 
-Requires [Java 11](https://adoptopenjdk.net/), [Git](http://git-scm.com/), & [Maven](http://maven.apache.org/).
+Requires [Java 11](https://adoptopenjdk.net/), [Git](http://git-scm.com/) and [Maven](http://maven.apache.org/).
+
+First clone the project:
 
     git clone https://github.com/eckig/graph-editor.git
     cd graph-editor
-    mvn clean install
     
-The demo jar can be found in ```demo/target/deploy```.
+ 1. Import into your favorite IDE
+ 2. Navigate to the `demo` modules main class `GraphEditorDemo` and launch it.
+
+## Thanks to
+
+ - Jetbrains for the [IntelliJ IDEA](https://www.jetbrains.com/idea/) licenses

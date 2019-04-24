@@ -15,6 +15,8 @@ import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -93,9 +95,6 @@ public class GraphEditorController<E extends GraphEditor>
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphEditorController.class);
 
-    //@formatter:off
-    private static final Consumer<Notification> EMPTY_CONSUMER = e -> {}; //@formatter:on
-
     private final GraphEditorEContentAdapter mContentAdapter = new GraphEditorEContentAdapter();
 
     private final Map<EStructuralFeature, Consumer<Notification>> mHandlersByFeature = new HashMap<>();
@@ -132,7 +131,7 @@ public class GraphEditorController<E extends GraphEditor>
 
     /**
      * Creates a new controller instance. Only one instance should exist per
-     * {@link BusinessProcessEditor} instance.
+     * {@link GraphEditor} instance.
      *
      * @param pEditor
      *            {@link GraphEditor} instance
@@ -259,13 +258,27 @@ public class GraphEditorController<E extends GraphEditor>
             final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(pNewModel);
             editingDomain.getResourceSet().eAdapters().add(mContentAdapter);
 
-            for (int i = 0; i < pNewModel.getNodes().size(); i++)
+            if(pNewModel instanceof InternalEObject)
             {
-                addNode(pNewModel.getNodes().get(i));
+                // add existing nodes through the registered change handlers:
+                processFeatureChanged(new ENotificationImpl((InternalEObject) pNewModel, Notification.ADD_MANY,
+                        GraphPackage.Literals.GMODEL__NODES, List.of(), List.copyOf(pNewModel.getNodes())));
+
+                // add existing connections through the registered change handlers:
+                processFeatureChanged(new ENotificationImpl((InternalEObject) pNewModel, Notification.ADD_MANY,
+                        GraphPackage.Literals.GMODEL__CONNECTIONS, List.of(), List.copyOf(pNewModel.getConnections())));
             }
-            for (int i = 0; i < pNewModel.getConnections().size(); i++)
+            else
             {
-                addConnection(pNewModel.getConnections().get(i));
+                for(final GNode node : pNewModel.getNodes())
+                {
+                    addNode(node);
+                }
+
+                for(final GConnection connection : pNewModel.getConnections())
+                {
+                    addConnection(connection);
+                }
             }
 
             process();
@@ -330,8 +343,7 @@ public class GraphEditorController<E extends GraphEditor>
             {
                 try
                 {
-                    mHandlersByFeature.getOrDefault(n.getFeature(), EMPTY_CONSUMER).accept(n);
-                    mHandlersByType.getOrDefault(n.getFeature(), EMPTY_CONSUMER).accept(n);
+                    processFeatureChanged(n);
                 }
                 catch (Exception e)
                 {
@@ -414,6 +426,23 @@ public class GraphEditorController<E extends GraphEditor>
         finally
         {
             mProcessing = false;
+        }
+    }
+
+    private void processFeatureChanged(final Notification pNotification)
+    {
+        // call every registered consumer, registered for the feature
+        final Consumer<Notification> consumerForFeature;
+        if ((consumerForFeature = mHandlersByFeature.get(pNotification.getFeature())) != null)
+        {
+            consumerForFeature.accept(pNotification);
+        }
+
+        // call every registered consumer, registered for the feature
+        final Consumer<Notification> consumerForType;
+        if ((consumerForType = mHandlersByType.get(pNotification.getEventType())) != null)
+        {
+            consumerForType.accept(pNotification);
         }
     }
 
@@ -621,13 +650,16 @@ public class GraphEditorController<E extends GraphEditor>
      * IMPORTANT: The added/removed values are casted without any checks, any
      * one calling this method should take extra care to not mix wrong types!
      *
-     * @param pNotification
-     * @param pAdd
-     * @param pRemove
+     * @param pNotification the Notification to examine
+     * @param pAdd Consumer to invoke with the new element(s) (if any)
+     * @param pRemove Consumer to invoke with the deleted element(s) (if any)
      * @since 15.03.2019
      */
     protected static <T> void processNotification(final Notification pNotification, final Consumer<T> pAdd, final Consumer<T> pRemove)
     {
+        Objects.requireNonNull(pNotification);
+        Objects.requireNonNull(pAdd);
+        Objects.requireNonNull(pRemove);
         switch (pNotification.getEventType())
         {
             case Notification.ADD:
@@ -639,7 +671,7 @@ public class GraphEditorController<E extends GraphEditor>
             case Notification.ADD_MANY:
                 @SuppressWarnings("unchecked")
                 final List<T> newValues = (List<T>) pNotification.getNewValue();
-                newValues.forEach(pAdd::accept);
+                newValues.forEach(pAdd);
                 break;
 
             case Notification.REMOVE:
@@ -651,7 +683,7 @@ public class GraphEditorController<E extends GraphEditor>
             case Notification.REMOVE_MANY:
                 @SuppressWarnings("unchecked")
                 final List<T> oldValues = (List<T>) pNotification.getOldValue();
-                oldValues.forEach(pRemove::accept);
+                oldValues.forEach(pRemove);
                 break;
         }
     }
@@ -724,7 +756,7 @@ public class GraphEditorController<E extends GraphEditor>
             }
         }
 
-        public Queue<Notification> getQueue()
+        Queue<Notification> getQueue()
         {
             return imQueue;
         }

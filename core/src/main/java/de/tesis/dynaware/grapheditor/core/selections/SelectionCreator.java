@@ -3,11 +3,12 @@
  */
 package de.tesis.dynaware.grapheditor.core.selections;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+
+import org.eclipse.emf.ecore.EObject;
 
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -64,11 +65,7 @@ public class SelectionCreator
     private final EventHandler<MouseEvent> viewDraggedHandler = this::handleViewDragged;
     private final EventHandler<MouseEvent> viewReleasedHandler = this::handleViewReleased;
 
-    private List<GJoint> allJoints;
-
-    private final List<GNode> selectedNodesBackup = new ArrayList<>();
-    private final List<GJoint> selectedJointsBackup = new ArrayList<>();
-    private final List<GConnection> selectedConnectionsBackup = new ArrayList<>();
+    private final Set<EObject> selectedElementsBackup = new HashSet<>();
 
     private Rectangle2D selection;
 
@@ -109,8 +106,6 @@ public class SelectionCreator
     public void initialize(final GModel model)
     {
         this.model = model;
-        allJoints = getAllJoints(model);
-
         addClickSelectionMechanism();
     }
 
@@ -128,8 +123,11 @@ public class SelectionCreator
         EventUtils.removeEventHandlers(mousePressedHandlers, MouseEvent.MOUSE_PRESSED);
         EventUtils.removeEventHandlers(mouseClickedHandlers, MouseEvent.MOUSE_CLICKED);
 
-        addClickSelectionForNodes();
-        addClickSelectionForJoints();
+        if (model != null)
+        {
+            addClickSelectionForNodes();
+            addClickSelectionForJoints();
+        }
     }
 
     private void handleSelectionClick(final MouseEvent event, final GSkin<?> skin)
@@ -291,15 +289,6 @@ public class SelectionCreator
                 mousePressedHandlers.put(jointRegion, jointPressedHandler);
             }
         }
-
-        if (allJoints == null)
-        {
-            allJoints = getAllJoints(model);
-        }
-        else
-        {
-            allJoints.add(joint);
-        }
     }
 
     public void removeJoint(final GJoint joint)
@@ -316,15 +305,6 @@ public class SelectionCreator
             {
                 jointRegion.removeEventHandler(MouseEvent.MOUSE_PRESSED, jointPressedHandler);
             }
-        }
-
-        if (allJoints == null)
-        {
-            allJoints = getAllJoints(model);
-        }
-        else
-        {
-            allJoints.remove(joint);
         }
     }
 
@@ -394,7 +374,10 @@ public class SelectionCreator
         }
 
         final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
-        handleSelectionClick(event, connSkin);
+        if (connSkin != null)
+        {
+            handleSelectionClick(event, connSkin);
+        }
 
         event.consume();
     }
@@ -488,17 +471,17 @@ public class SelectionCreator
     private boolean isNodeSelected(final GNode node, final boolean isShortcutDown)
     {
         return selection.contains(node.getX(), node.getY(), node.getWidth(), node.getHeight())
-                || isShortcutDown && selectedNodesBackup.contains(node);
+                || isShortcutDown && selectedElementsBackup.contains(node);
     }
 
     private boolean isJointSelected(final GJoint joint, final boolean isShortcutDown)
     {
-        return selection.contains(joint.getX(), joint.getY()) || isShortcutDown && selectedJointsBackup.contains(joint);
+        return selection.contains(joint.getX(), joint.getY()) || isShortcutDown && selectedElementsBackup.contains(joint);
     }
 
     private boolean isConnectionSelected(final GConnection connection, final boolean isShortcutDown)
     {
-        return isShortcutDown && selectedConnectionsBackup.contains(connection);
+        return isShortcutDown && selectedElementsBackup.contains(connection);
     }
 
     /**
@@ -521,20 +504,6 @@ public class SelectionCreator
             }
         }
 
-        for (int i = 0; i < allJoints.size(); i++)
-        {
-            final GJoint joint = allJoints.get(i);
-
-            if (isJointSelected(joint, isShortcutDown))
-            {
-                selectionManager.select(joint);
-            }
-            else
-            {
-                selectionManager.clearSelection(joint);
-            }
-        }
-
         for (int i = 0; i < model.getConnections().size(); i++)
         {
             final GConnection connection = model.getConnections().get(i);
@@ -546,6 +515,20 @@ public class SelectionCreator
             else
             {
                 selectionManager.clearSelection(connection);
+            }
+
+            for (int j = 0; j < connection.getJoints().size(); j++)
+            {
+                final GJoint joint = connection.getJoints().get(j);
+
+                if (isJointSelected(joint, isShortcutDown))
+                {
+                    selectionManager.select(joint);
+                }
+                else
+                {
+                    selectionManager.clearSelection(joint);
+                }
             }
         }
     }
@@ -560,34 +543,8 @@ public class SelectionCreator
      */
     private void backupSelections()
     {
-        selectedNodesBackup.clear();
-        selectedJointsBackup.clear();
-        selectedConnectionsBackup.clear();
-
-        for (final GNode node : model.getNodes())
-        {
-            if (skinLookup.lookupNode(node).isSelected())
-            {
-                selectedNodesBackup.add(node);
-            }
-        }
-
-        for (final GConnection connection : model.getConnections())
-        {
-
-            if (skinLookup.lookupConnection(connection).isSelected())
-            {
-                selectedConnectionsBackup.add(connection);
-            }
-
-            for (final GJoint joint : connection.getJoints())
-            {
-                if (skinLookup.lookupJoint(joint).isSelected())
-                {
-                    selectedJointsBackup.add(joint);
-                }
-            }
-        }
+        selectedElementsBackup.clear();
+        selectedElementsBackup.addAll(selectionManager.getSelectedItems());
     }
 
     /**
@@ -623,18 +580,5 @@ public class SelectionCreator
             return eventManager.finishGesture(GraphInputGesture.SELECT, this);
         }
         return true;
-    }
-
-    /**
-     * Puts all joints in the given model into a new list.
-     *
-     * @param model
-     *            a {@link GModel} instance
-     * @return a new list containing all joints in this model
-     */
-    private static List<GJoint> getAllJoints(final GModel model)
-    {
-        return model == null ? List.of()
-                : model.getConnections().stream().flatMap(c -> c.getJoints().stream()).collect(Collectors.toList());
     }
 }

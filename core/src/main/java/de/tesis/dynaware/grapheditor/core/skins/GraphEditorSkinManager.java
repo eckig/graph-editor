@@ -111,7 +111,7 @@ public class GraphEditorSkinManager implements SkinManager
     {
         if (!mNodeSkins.isEmpty())
         {
-            final GNode[] nodes = mNodeSkins.keySet().toArray(new GNode[mNodeSkins.size()]);
+            final GNode[] nodes = mNodeSkins.keySet().toArray(new GNode[0]);
             for (final GNode n : nodes)
             {
                 removeNode(n);
@@ -120,7 +120,7 @@ public class GraphEditorSkinManager implements SkinManager
 
         if (!mConnectorSkins.isEmpty())
         {
-            final GConnector[] connectors = mConnectorSkins.keySet().toArray(new GConnector[mConnectorSkins.size()]);
+            final GConnector[] connectors = mConnectorSkins.keySet().toArray(new GConnector[0]);
             for (final GConnector c : connectors)
             {
                 removeConnector(c);
@@ -129,7 +129,7 @@ public class GraphEditorSkinManager implements SkinManager
 
         if (!mConnectionSkins.isEmpty())
         {
-            final GConnection[] connections = mConnectionSkins.keySet().toArray(new GConnection[mConnectionSkins.size()]);
+            final GConnection[] connections = mConnectionSkins.keySet().toArray(new GConnection[0]);
             for (final GConnection c : connections)
             {
                 removeConnection(c);
@@ -138,7 +138,7 @@ public class GraphEditorSkinManager implements SkinManager
 
         if (!mJointSkins.isEmpty())
         {
-            final GJoint[] joints = mJointSkins.keySet().toArray(new GJoint[mJointSkins.size()]);
+            final GJoint[] joints = mJointSkins.keySet().toArray(new GJoint[0]);
             for (final GJoint c : joints)
             {
                 removeJoint(c);
@@ -147,7 +147,7 @@ public class GraphEditorSkinManager implements SkinManager
 
         if (!mTailSkins.isEmpty())
         {
-            final GTailSkin[] tails = mTailSkins.values().toArray(new GTailSkin[mTailSkins.size()]);
+            final GTailSkin[] tails = mTailSkins.values().toArray(new GTailSkin[0]);
             for (final GTailSkin tail : tails)
             {
                 mView.remove(tail);
