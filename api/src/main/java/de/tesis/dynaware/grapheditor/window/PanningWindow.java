@@ -266,9 +266,13 @@ public class PanningWindow extends Region {
         super.layoutChildren();
         final double height = getHeight();
         final double width = getWidth();
+        final Node theContent = content;
 
         // content
-        content.relocate(-contentX.get(), -contentY.get());
+        if (theContent != null)
+        {
+            theContent.relocate(-contentX.get(), -contentY.get());
+        }
 
         // scrollbars
         final double w = scrollY.getWidth();
@@ -277,12 +281,13 @@ public class PanningWindow extends Region {
         scrollX.resizeRelocate(0, snapPositionY(height - h), snapSizeX(width - w), h);
         scrollY.resizeRelocate(snapPositionX(width - w), 0, w, snapSizeY(height - h));
 
+        final double zoomFactor = theContent == null ? 1 : theContent.getLocalToSceneTransform().getMxx();
         scrollX.setMin(0);
         scrollX.setMax(getMaxX());
-        scrollX.setVisibleAmount(width);
+        scrollX.setVisibleAmount(zoomFactor * width);
         scrollY.setMin(0);
         scrollY.setMax(getMaxY());
-        scrollY.setVisibleAmount(height);
+        scrollY.setVisibleAmount(zoomFactor * height);
     }
 
     private static double constrainZoom(final double pZoom)
