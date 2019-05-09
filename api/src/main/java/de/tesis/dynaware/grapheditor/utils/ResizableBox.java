@@ -20,8 +20,6 @@ public class ResizableBox extends DraggableBox
 
     private static final int DEFAULT_RESIZE_BORDER_TOLERANCE = 8;
 
-    private int resizeBorderTolerance = DEFAULT_RESIZE_BORDER_TOLERANCE;
-
     private double lastWidth;
     private double lastHeight;
 
@@ -48,36 +46,6 @@ public class ResizableBox extends DraggableBox
         super.dispose();
     }
 
-    /**
-     * Gets the border tolerance for the purposes of resizing.
-     *
-     * <p>
-     * Drag events that take place within this distance of the rectangle border
-     * will be intepreted as resize events. Further inside the rectangle, they
-     * will be treated as regular drag events.
-     * </p>
-     *
-     * @return an integer specifying the resize border tolerance
-     */
-    public int getResizeBorderTolerance() {
-        return resizeBorderTolerance;
-    }
-
-    /**
-     * Sets the border tolerance for the purposes of resizing.
-     *
-     * <p>
-     * Drag events that take place within this distance of the rectangle border
-     * will be intepreted as resize events. Further inside the rectangle, they
-     * will be treated as regular drag events.
-     * </p>
-     *
-     * @param pResizeBorderTolerance an integer specifying the resize border
-     * tolerance
-     */
-    public void setResizeBorderTolerance(final int pResizeBorderTolerance) {
-        resizeBorderTolerance = pResizeBorderTolerance;
-    }
 
     @Override
     public boolean isMouseInPositionForResize()
@@ -113,16 +81,28 @@ public class ResizableBox extends DraggableBox
         }
 
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
-
         if (lastMouseRegion == RectangleMouseRegion.INSIDE)
         {
             super.handleMouseDragged(pEvent);
         }
-        else if (lastMouseRegion != RectangleMouseRegion.OUTSIDE && activateGesture(GraphInputGesture.RESIZE, pEvent))
+        else if (lastMouseRegion != RectangleMouseRegion.OUTSIDE && isResizeCursor(getCursor()) &&
+                activateGesture(GraphInputGesture.RESIZE, pEvent))
         {
             handleResize(cursorPosition.getX(), cursorPosition.getY());
             pEvent.consume();
         }
+    }
+
+    private static boolean isResizeCursor(final Cursor pCursor)
+    {
+        return pCursor == Cursor.NE_RESIZE ||
+                pCursor == Cursor.NW_RESIZE ||
+                pCursor == Cursor.SE_RESIZE ||
+                pCursor == Cursor.SW_RESIZE ||
+                pCursor == Cursor.N_RESIZE ||
+                pCursor == Cursor.S_RESIZE ||
+                pCursor == Cursor.E_RESIZE ||
+                pCursor == Cursor.W_RESIZE;
     }
 
     @Override
@@ -427,10 +407,10 @@ public class ResizableBox extends DraggableBox
             return RectangleMouseRegion.OUTSIDE;
         }
 
-        final boolean isNorth = y < resizeBorderTolerance;
-        final boolean isSouth = y > height - resizeBorderTolerance;
-        final boolean isEast = x > width - resizeBorderTolerance;
-        final boolean isWest = x < resizeBorderTolerance;
+        final boolean isNorth = y < DEFAULT_RESIZE_BORDER_TOLERANCE;
+        final boolean isSouth = y > height - DEFAULT_RESIZE_BORDER_TOLERANCE;
+        final boolean isEast = x > width - DEFAULT_RESIZE_BORDER_TOLERANCE;
+        final boolean isWest = x < DEFAULT_RESIZE_BORDER_TOLERANCE;
 
         if (isNorth && isEast) {
             return RectangleMouseRegion.NORTHEAST;
