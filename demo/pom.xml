@@ -32,6 +32,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${org.openjfx.version}</version>
         </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>27.1-jre</version>
+		</dependency>
 	</dependencies>
 
 	<build>
