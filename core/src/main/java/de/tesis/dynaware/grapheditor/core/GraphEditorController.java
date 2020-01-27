@@ -179,7 +179,9 @@ public class GraphEditorController<E extends GraphEditor>
         registerChangeListener(GraphPackage.Literals.GMODEL__CONNECTIONS,
                 e -> processNotification(e, this::addConnection, this::removeConnection));
 
-        registerChangeListener(GraphPackage.Literals.GCONNECTION__JOINTS, e -> processNotification(e, this::addJoint, this::removeJoint));
+        registerChangeListener(GraphPackage.Literals.GCONNECTION__JOINTS,
+                e -> processNotification(e, (GJoint j) -> addJoint(j, e.getNotifier()),
+                        (GJoint j) -> removeJoint(j, e.getNotifier())));
 
         registerChangeListener(GraphPackage.Literals.GJOINT__X, this::jointPositionChanged);
         registerChangeListener(GraphPackage.Literals.GJOINT__Y, this::jointPositionChanged);
@@ -500,6 +502,12 @@ public class GraphEditorController<E extends GraphEditor>
         mJointsToAdd.add(pJoint);
     }
 
+    private void addJoint(final GJoint pJoint, final Object pNotifier)
+    {
+        addJoint(pJoint);
+        updateConnectionAfterJointChange(pJoint, pNotifier);
+    }
+
     private void removeJoint(final GJoint pJoint)
     {
         mJointsToAdd.remove(pJoint);
@@ -508,6 +516,24 @@ public class GraphEditorController<E extends GraphEditor>
         mSelectionManager.getSelectedJoints().remove(pJoint);
         mModelLayoutUpdater.removeJoint(pJoint);
         mSkinManager.removeJoint(pJoint);
+    }
+
+    private void removeJoint(final GJoint pJoint, final Object pNotifier)
+    {
+        removeJoint(pJoint);
+        updateConnectionAfterJointChange(pJoint, pNotifier);
+    }
+
+    private void updateConnectionAfterJointChange(final GJoint pJoint, final Object pNotifier)
+    {
+        if (pJoint.getConnection() != null)
+        {
+            mConnectionsDirty.add(pJoint.getConnection());
+        }
+        else if(pNotifier instanceof GConnection)
+        {
+            mConnectionsDirty.add((GConnection) pNotifier);
+        }
     }
 
     /**
