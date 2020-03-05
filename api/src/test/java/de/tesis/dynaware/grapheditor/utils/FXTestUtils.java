@@ -78,28 +78,40 @@ public class FXTestUtils {
         final double dragX = startX + (endX - node.getLayoutX());
         final double dragY = startY + (endY - node.getLayoutY());
 
+        final MouseEvent moved = createMouseEvent(MouseEvent.MOUSE_MOVED, startX, startY,false);
         final MouseEvent pressed = createMouseEvent(MouseEvent.MOUSE_PRESSED, startX, startY);
         final MouseEvent dragged = createMouseEvent(MouseEvent.MOUSE_DRAGGED, dragX, dragY);
         final MouseEvent released = createMouseEvent(MouseEvent.MOUSE_RELEASED, dragX, dragY);
 
+        Event.fireEvent(node, moved);
         Event.fireEvent(node, pressed);
         Event.fireEvent(node, dragged);
         Event.fireEvent(node, released);
     }
 
+    private static MouseEvent createMouseEvent(final EventType<MouseEvent> type, final double x, final double y)
+    {
+        return createMouseEvent(type, x, y, true);
+    }
+
     /**
      * Creates a new {@link MouseEvent}.
      *
-     * @param type the {@link EventType} of the event
-     * @param x the x coordinate of the event
-     * @param y the y coordinate of the event
+     * @param type
+     *         the {@link EventType} of the event
+     * @param x
+     *         the x coordinate of the event
+     * @param y
+     *         the y coordinate of the event
      * @return the newly-created {@link MouseEvent}
      */
-    private static MouseEvent createMouseEvent(final EventType<MouseEvent> type, final double x, final double y) {
+    private static MouseEvent createMouseEvent(final EventType<MouseEvent> type, final double x, final double y,
+            final boolean pPrimaryButtonDown)
+    {
 
         return new MouseEvent(type, // event type
                 x, y, // x and y
                 0, 0, MouseButton.PRIMARY, 0, // screen x, screen y, mouse button, click count
-                false, false, false, false, true, false, false, false, false, false, null);
+                false, false, false, false, pPrimaryButtonDown, false, false, false, false, false, null);
     }
 }

@@ -45,35 +45,37 @@
 }
 
 
-.scroll-bar:vertical .thumb {
-    -fx-background-insets: 0 2 0 0;
+.graph-editor-scroll-bar:vertical .thumb {
+	-fx-background-insets: 0 2 0 0;
 }
-.scroll-bar:horizontal .thumb {
-    -fx-background-insets: 0 0 2 0;
+.graph-editor-scroll-bar:horizontal .thumb {
+	-fx-background-insets: 0 0 2 0;
 }
 .graph-editor-scroll-bar .decrement-arrow,
 .graph-editor-scroll-bar .decrement-button,
 .graph-editor-scroll-bar .increment-button,
 .graph-editor-scroll-bar .increment-arrow {
-    -fx-pref-width: 0;
-    -fx-pref-height: 0;
-    -fx-background-color: transparent;
+	-fx-pref-width: 0;
+	-fx-pref-height: 0;
+	-fx-background-color: transparent;
 }
-.graph-editor-scroll-bar {
-    -fx-background-color: transparent;
-    -fx-pref-width: 12;
-    -fx-pref-height: 12;
-    -fx-padding: 2;
+.graph-editor-scroll-bar:horizontal,
+.graph-editor-scroll-bar:vertical {
+	-fx-background-color: transparent;
+	-fx-pref-width: 12;
+	-fx-pref-height: 12;
+	-fx-padding: 2;
 }
-.graph-editor-scroll-bar .thumb {
-    -fx-background-color: black;
-    -fx-background-radius: 1000;
-    -fx-opacity: 0.2;
-    -fx-pref-width: 12;
-    -fx-pref-height: 12;
+.graph-editor-scroll-bar:horizontal .thumb,
+.graph-editor-scroll-bar:vertical .thumb {
+	-fx-background-color: black;
+	-fx-background-radius: 1000;
+	-fx-opacity: 0.2;
+	-fx-pref-width: 12;
+	-fx-pref-height: 12;
 }
 .graph-editor-scroll-bar .thumb:hover {
-    -fx-opacity: 0.5;
+	-fx-opacity: 0.5;
 }
 
 .default-node-border {
