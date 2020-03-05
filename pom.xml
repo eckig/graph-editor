@@ -18,7 +18,15 @@
 			<url>https://www.eclipse.org/legal/epl-v10.html</url>
 		</license>
 	</licenses>
-	
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/eckig</url>
+		</repository>
+	</distributionManagement>
+
 	<developers>
 		<developer>
 			<name>Robert Fisher</name>
@@ -29,8 +37,8 @@
 		<developer>
 			<name>Steffen Rachner</name>
 			<email>steffen.rachner@t-systems.com</email>
-			<organization>Deutsche Telekom Healthcare and Security Solutions GmbH</organization>
-			<organizationUrl>https://www.telekom-sfp.com/</organizationUrl>
+			<organization>T-Systems Information Services GmbH</organization>
+			<organizationUrl>http://www.t-systems-ifs.com/</organizationUrl>
 		</developer>
 	 </developers>
 	 
