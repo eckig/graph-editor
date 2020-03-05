@@ -23,7 +23,7 @@
 		<repository>
 			<id>github</id>
 			<name>GitHub Packages</name>
-			<url>https://maven.pkg.github.com/eckig</url>
+			<url>https://maven.pkg.github.com/eckig/graph-editor</url>
 		</repository>
 	</distributionManagement>
 
