@@ -1,103 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<name>${component.name}</name>
-	<groupId>fx.graph.editor</groupId>
-	<artifactId>graph-editor</artifactId>
-	<version>${revision}</version>
-	<packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+    <name>${component.name}</name>
+    <groupId>fx.graph.editor</groupId>
+    <artifactId>graph-editor</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
 
-	<description>A library for creating and editing graph-like diagrams in JavaFX</description>
-	<url>https://github.com/eckig/graph-editor</url>
+    <description>A library for creating and editing graph-like diagrams in JavaFX</description>
+    <url>https://github.com/eckig/graph-editor</url>
 
-	<licenses>
-		<license>
-			<name>Eclipse Public License - v 1.0</name>
-			<url>https://www.eclipse.org/legal/epl-v10.html</url>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>Eclipse Public License - v 1.0</name>
+            <url>https://www.eclipse.org/legal/epl-v10.html</url>
+        </license>
+    </licenses>
 
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>GitHub Packages</name>
-			<url>https://maven.pkg.github.com/eckig/graph-editor</url>
-		</repository>
-	</distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/eckig/graph-editor</url>
+        </repository>
+    </distributionManagement>
 
-	<developers>
-		<developer>
-			<name>Robert Fisher</name>
-			<email>rfisher@tesis.de</email>
-			<organization>TESIS Dynaware GmbH</organization>
-			<organizationUrl>http://www.tesis-dynaware.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Steffen Rachner</name>
-			<email>steffen.rachner@t-systems.com</email>
-			<organization>T-Systems Information Services GmbH</organization>
-			<organizationUrl>http://www.t-systems-ifs.com/</organizationUrl>
-		</developer>
-	 </developers>
-	 
-	<scm>
-		<connection>scm:git:git@github.com:eckig/graph-editor.git</connection>
-		<developerConnection>scm:git:git@github.com:eckig/graph-editor.git</developerConnection>
-		<url>git@github.com:eckig/graph-editor.git</url>
-	</scm>
+    <developers>
+        <developer>
+            <name>Robert Fisher</name>
+            <email>rfisher@tesis.de</email>
+            <organization>TESIS Dynaware GmbH</organization>
+            <organizationUrl>http://www.tesis-dynaware.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Steffen Rachner</name>
+            <email>steffen.rachner@t-systems.com</email>
+            <organization>T-Systems Information Services GmbH</organization>
+            <organizationUrl>http://www.t-systems-ifs.com/</organizationUrl>
+        </developer>
+    </developers>
 
-	<properties>
-		<component.name>Graph Editor</component.name>
-		<manifest.bundle.version>${revision}-${maven.build.timestamp}</manifest.bundle.version>
-		<maven.build.timestamp.format>yyyymmddhhmm</maven.build.timestamp.format>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <scm>
+        <connection>scm:git:git@github.com:eckig/graph-editor.git</connection>
+        <developerConnection>scm:git:git@github.com:eckig/graph-editor.git</developerConnection>
+        <url>git@github.com:eckig/graph-editor.git</url>
+    </scm>
+
+    <properties>
+        <component.name>Graph Editor</component.name>
+        <manifest.bundle.version>${revision}-${maven.build.timestamp}</manifest.bundle.version>
+        <maven.build.timestamp.format>yyyymmddhhmm</maven.build.timestamp.format>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
-		<maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
-		<org.eclipse.emf.ecore.version>2.21.0</org.eclipse.emf.ecore.version>
-		<org.eclipse.emf.common.version>2.18.0</org.eclipse.emf.common.version>
-		<org.eclipse.emf.ecore.xmi.version>2.16.0</org.eclipse.emf.ecore.xmi.version>
-		<org.eclipse.emf.edit.version>2.16.0</org.eclipse.emf.edit.version>
-		<revision>11.0.3</revision>
-		<junit.version>4.13</junit.version>
-		<org.slf4j.version>1.7.26</org.slf4j.version>
-		<org.openjfx.version>13.0.2</org.openjfx.version>
-		<openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
-	</properties>
+        <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
+        <org.eclipse.emf.ecore.version>2.21.0</org.eclipse.emf.ecore.version>
+        <org.eclipse.emf.common.version>2.18.0</org.eclipse.emf.common.version>
+        <org.eclipse.emf.ecore.xmi.version>2.16.0</org.eclipse.emf.ecore.xmi.version>
+        <org.eclipse.emf.edit.version>2.16.0</org.eclipse.emf.edit.version>
+        <revision>11.0.3</revision>
+        <junit.version>4.13</junit.version>
+        <org.slf4j.version>1.7.30</org.slf4j.version>
+        <org.openjfx.version>13.0.2</org.openjfx.version>
+        <openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
+    </properties>
 
-	<modules>
-		<module>api</module>
-		<module>core</module>
-		<module>demo</module>
-		<module>model</module>
-	</modules>
+    <modules>
+        <module>api</module>
+        <module>core</module>
+        <module>demo</module>
+        <module>model</module>
+    </modules>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-				    <groupId>org.apache.maven.plugins</groupId>
-				    <artifactId>maven-compiler-plugin</artifactId>
-				    <version>3.8.1</version>
-				    <configuration>
-				        <release>11</release>
-				    </configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
-					<configuration>
-					   <argLine>--add-opens javafx.graphics/com.sun.glass.ui=ALL-UNNAMED -Dprism.order=sw -Dglass.platform=Monocle -Dmonocle.platform=Headless</argLine>
-					</configuration>
-					<dependencies>
-				        <dependency>
-				            <groupId>org.ow2.asm</groupId>
-				            <artifactId>asm</artifactId>
-				            <version>7.3.1</version>
-				        </dependency>
-				    </dependencies>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <release>11</release>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.2</version>
+                    <configuration>
+                        <argLine>--add-opens javafx.graphics/com.sun.glass.ui=ALL-UNNAMED -Dprism.order=sw -Dglass.platform=Monocle -Dmonocle.platform=Headless</argLine>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.ow2.asm</groupId>
+                            <artifactId>asm</artifactId>
+                            <version>7.3.1</version>
+                        </dependency>
+                    </dependencies>
                     <executions>
                         <execution>
                             <goals>
@@ -105,24 +105,24 @@
                             </goals>
                         </execution>
                     </executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

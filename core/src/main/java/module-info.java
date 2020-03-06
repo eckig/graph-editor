@@ -7,7 +7,7 @@ module fx.graph.editor.core
     requires org.eclipse.emf.edit;
     requires org.eclipse.emf.ecore;
     requires transitive org.eclipse.emf.common;
-    requires slf4j.api;
+    requires org.slf4j;
 
     exports de.tesis.dynaware.grapheditor.core;
     exports de.tesis.dynaware.grapheditor.core.connections;
