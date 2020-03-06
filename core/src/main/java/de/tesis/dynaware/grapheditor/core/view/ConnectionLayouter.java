@@ -18,7 +18,7 @@ public interface ConnectionLayouter
     /**
      * Initializes the connection layout manager for the given model.
      *
-     * @param model
+     * @param pModel
      *            the {@link GModel} currently being edited
      */
     void initialize(final GModel pModel);

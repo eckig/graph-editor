@@ -55,7 +55,7 @@ import javafx.scene.layout.Region;
  * </p>
  *
  * <p>
- * Look & feel can be customised by setting custom skin classes. The default
+ * Look and feel can be customised by setting custom skin classes. The default
  * skins can also be customised to some extent via CSS. See <b>defaults.css</b>
  * in the core module for more information.
  * </p>
@@ -66,7 +66,7 @@ public interface GraphEditor extends GraphEditorSkins {
      * Sets a custom connector validator.
      *
      * <p>
-     * This will be used to decide which connections are allowed / forbidden during drag & drop events in the editor.
+     * This will be used to decide which connections are allowed / forbidden during drag and drop events in the editor.
      * </p>
      *
      * @param validator a custom validator implements {@link GConnectorValidator}, or null to use the default validator

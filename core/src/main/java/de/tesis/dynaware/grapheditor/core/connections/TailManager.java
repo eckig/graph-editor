@@ -38,7 +38,7 @@ public class TailManager {
      * Creates a new tail and adds it to the view.
      *
      * @param connector the connector where the tail starts from
-     * @param the mouse event responsible for creating the tail
+     * @param event the mouse event responsible for creating the tail
      */
     public void create(final GConnector connector, final MouseEvent event) {
 
@@ -61,8 +61,8 @@ public class TailManager {
      *
      * @param pJointPositions
      * @param pNewSource
-     * @param the
-     *            mouse event responsible for creating the tail
+     * @param pEvent
+     *            the mouse event responsible for creating the tail
      */
     public void updateToNewSource(final List<Point2D> pJointPositions, final GConnector pNewSource, final MouseEvent pEvent)
     {
@@ -81,7 +81,7 @@ public class TailManager {
     /**
      * Updates the tail position based on new cursor position.
      *
-     * @param the mouse event responsible for updating the position
+     * @param event the mouse event responsible for updating the position
      */
     public void updatePosition(final MouseEvent event) {
 

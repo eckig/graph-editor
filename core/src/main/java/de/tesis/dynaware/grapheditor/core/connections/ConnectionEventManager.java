@@ -40,7 +40,7 @@ public class ConnectionEventManager {
      * Calls the connection-created handler (if it exists) after a connection was created.
      *
      * @param connection the connection that was created
-     * @param command the compound command that created it
+     * @return the compound command that created it
      */
     public Command notifyConnectionAdded(final GConnection connection)
     {
@@ -51,7 +51,7 @@ public class ConnectionEventManager {
      * Calls the connection-removed handler (if it exists) after a connection was removed.
      *
      * @param connection the connection that was removed
-     * @param command the compound command that removed it
+     * @return the compound command that removed it
      */
     public Command notifyConnectionRemoved(final GConnection connection)
     {
