@@ -62,7 +62,7 @@
         <revision>11.0.4</revision>
         <junit.version>4.13</junit.version>
         <org.slf4j.version>1.7.30</org.slf4j.version>
-        <org.openjfx.version>13.0.2</org.openjfx.version>
+        <org.openjfx.version>14</org.openjfx.version>
         <openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
     </properties>
 
