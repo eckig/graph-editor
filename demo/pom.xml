@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fx.graph.editor</groupId>
         <artifactId>graph-editor</artifactId>
-		<version>${revision}</version>
+		<version>11.0.5</version>
 	</parent>
 	<name>${component.name}::Demo</name>
 
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>fx.graph.editor</groupId>
 			<artifactId>graph-editor-core</artifactId>
-			<version>${revision}</version>
+			<version>11.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
