@@ -80,6 +80,10 @@ public class GraphEditorDemoController {
     @FXML
     private RadioMenuItem readOnlyButton;
     @FXML
+    private RadioMenuItem readOnlyConnectionsButton;
+    @FXML
+    private RadioMenuItem readOnlyJointsButton;
+    @FXML
     private RadioMenuItem defaultSkinButton;
     @FXML
     private RadioMenuItem treeSkinButton;
@@ -294,6 +298,8 @@ public class GraphEditorDemoController {
         graphEditor.getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
         graphEditor.getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
         graphEditor.getProperties().readOnlyProperty().bind(readOnlyButton.selectedProperty());
+        graphEditor.getProperties().readOnlyConnectionsProperty().bind(readOnlyConnectionsButton.selectedProperty());
+        graphEditor.getProperties().readOnlyJointsProperty().bind(readOnlyJointsButton.selectedProperty());
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 

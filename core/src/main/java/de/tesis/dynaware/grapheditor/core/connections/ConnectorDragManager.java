@@ -483,7 +483,7 @@ public class ConnectorDragManager {
 
     private boolean checkEditable()
     {
-        return getEditorProperties() != null && !getEditorProperties().isReadOnly();
+        return getEditorProperties() != null && !getEditorProperties().isReadOnly() && !getEditorProperties().isReadOnlyConnections();
     }
 
     private GraphEditorProperties getEditorProperties()

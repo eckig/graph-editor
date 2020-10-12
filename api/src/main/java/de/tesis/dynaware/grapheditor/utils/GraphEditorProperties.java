@@ -55,7 +55,9 @@ public class GraphEditorProperties implements GraphEventManager
     private final BooleanProperty snapToGrid = new SimpleBooleanProperty(this, "snapToGrid"); //$NON-NLS-1$
     private final DoubleProperty gridSpacing = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING); //$NON-NLS-1$
     private final BooleanProperty readOnly = new SimpleBooleanProperty(this, "readOnly"); //$NON-NLS-1$
-
+    private final BooleanProperty readOnlyConnections = new SimpleBooleanProperty(this, "readOnlyConnections"); //$NON-NLS-1$
+    private final BooleanProperty readOnlyJoints = new SimpleBooleanProperty(this, "readOnlyJoints"); //$NON-NLS-1$
+    
     private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
 
     private final GraphEventManager eventManager = new GraphEventManagerImpl();
@@ -91,6 +93,8 @@ public class GraphEditorProperties implements GraphEventManager
         gridSpacing.set(editorProperties.getGridSpacing());
 
         readOnly.set(editorProperties.isReadOnly());
+        readOnlyConnections.set(editorProperties.isReadOnlyConnections());
+        readOnlyJoints.set(editorProperties.isReadOnlyJoints());
 
         customProperties.putAll(editorProperties.getCustomProperties());
     }
@@ -291,6 +295,26 @@ public class GraphEditorProperties implements GraphEventManager
     {
         return readOnly;
     }
+    
+    /**
+     * Gets the read only connections property
+     *
+     * @return read only {@link BooleanProperty}
+     */
+    public BooleanProperty readOnlyConnectionsProperty()
+    {
+        return readOnlyConnections;
+    }
+    
+    /**
+     * Gets the read only joints property
+     *
+     * @return read only {@link BooleanProperty}
+     */
+    public BooleanProperty readOnlyJointsProperty()
+    {
+        return readOnlyJoints;
+    }
 
     /**
      * Returns whether or not the graph is in read only state.
@@ -301,6 +325,27 @@ public class GraphEditorProperties implements GraphEventManager
     {
         return readOnly.get();
     }
+    
+    /**
+     * Returns whether or not the graph is in read only connections state.
+     *
+     * @return whether or not the graph is in read only connections state.
+     */
+    public boolean isReadOnlyConnections()
+    {
+        return readOnlyConnections.get();
+    }
+    
+    /**
+     * Returns whether or not the graph is in read only joints state.
+     *
+     * @return whether or not the graph is in read only joints state.
+     */
+    public boolean isReadOnlyJoints()
+    {
+        return readOnlyJoints.get();
+    }
+
 
     /**
      * @param pReadOnly
@@ -310,6 +355,26 @@ public class GraphEditorProperties implements GraphEventManager
     public void setReadOnly(final boolean pReadOnly)
     {
         readOnly.set(pReadOnly);
+    }
+    
+    /**
+     * @param pReadOnly
+     *            {@code true} to set the graph editor in read only connections state or
+     *            {@code false} (default) for edit state.
+     */
+    public void setReadOnlyConnections(final boolean pReadOnly)
+    {
+    	readOnlyConnections.set(pReadOnly);
+    }
+    
+    /**
+     * @param pReadOnly
+     *            {@code true} to set the graph editor in read only joints state or
+     *            {@code false} (default) for edit state.
+     */
+    public void setReadOnlyJoints(final boolean pReadOnly)
+    {
+    	readOnlyJoints.set(pReadOnly);
     }
 
     /**

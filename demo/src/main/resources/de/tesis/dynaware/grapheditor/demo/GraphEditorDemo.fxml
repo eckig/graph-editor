@@ -65,6 +65,8 @@
 						<RadioMenuItem fx:id="showGridButton" text="Show Grid" />
 						<RadioMenuItem fx:id="snapToGridButton" text="Snap to Grid" />
 						<RadioMenuItem fx:id="readOnlyButton" text="Read Only" />
+						<RadioMenuItem fx:id="readOnlyConnectionsButton" text="Read Only Connections" />
+						<RadioMenuItem fx:id="readOnlyJointsButton" text="Read Only Joints" />
 						<Menu text="Skin Type">
 							<items>
 								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>

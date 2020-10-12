@@ -79,7 +79,7 @@ public class JointCreator {
     }
 
     private boolean checkEditable() {
-        return graphEditor != null && !graphEditor.getProperties().isReadOnly();
+        return graphEditor != null && !graphEditor.getProperties().isReadOnly() && !graphEditor.getProperties().isReadOnlyJoints();
     }
 
     /**
