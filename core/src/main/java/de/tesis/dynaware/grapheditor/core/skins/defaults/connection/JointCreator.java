@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
@@ -79,7 +80,7 @@ public class JointCreator {
     }
 
     private boolean checkEditable() {
-        return graphEditor != null && !graphEditor.getProperties().isReadOnly();
+        return graphEditor != null && !graphEditor.getProperties().isReadOnly(EditorElement.JOINT);
     }
 
     /**

@@ -3,6 +3,7 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -24,6 +25,8 @@ public class DraggableBox extends StackPane
 {
 
     private static final double DEFAULT_ALIGNMENT_THRESHOLD = 5;
+
+    private final EditorElement mType;
 
     /**
      * stored value of {@link #getLayoutX()}, see
@@ -62,9 +65,13 @@ public class DraggableBox extends StackPane
 
     /**
      * Creates an empty draggable box.
+     *
+     * @param pType
+     *         {@link EditorElement}
      */
-    public DraggableBox()
+    public DraggableBox(final EditorElement pType)
     {
+        mType = pType;
         setPickOnBounds(false);
 
         addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
@@ -255,11 +262,11 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * @return negated value of {@link GraphEditorProperties#isReadOnly()}
+     * @return negated value of {@link GraphEditorProperties#isReadOnly(EditorElement)}
      */
     protected boolean isEditable()
     {
-        return editorProperties != null && !editorProperties.isReadOnly();
+        return editorProperties != null && !editorProperties.isReadOnly(mType);
     }
 
     /**

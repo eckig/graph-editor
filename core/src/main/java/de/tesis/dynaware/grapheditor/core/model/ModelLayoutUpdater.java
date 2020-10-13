@@ -3,6 +3,7 @@
  */
 package de.tesis.dynaware.grapheditor.core.model;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.SkinLookup;
@@ -26,7 +27,8 @@ public class ModelLayoutUpdater
     private final SkinLookup skinLookup;
     private final ModelEditingManager modelEditingManager;
     private final GraphEditorProperties properties;
-    private final EventHandler<MouseEvent> mouseReleasedHandler = event -> elementMouseReleased();
+    private final EventHandler<MouseEvent> mouseReleasedHandlerNode = event -> elementMouseReleased(EditorElement.NODE);
+    private final EventHandler<MouseEvent> mouseReleasedHandlerJoint = event -> elementMouseReleased(EditorElement.JOINT);
 
     /**
      * Creates a new model layout updater. Only one instance should exist per
@@ -61,7 +63,7 @@ public class ModelLayoutUpdater
             final Node root = nodeSkin.getRoot();
             if (root != null)
             {
-                root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerNode);
             }
         }
     }
@@ -74,7 +76,7 @@ public class ModelLayoutUpdater
             final Node root = nodeSkin.getRoot();
             if (root != null)
             {
-                root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerNode);
             }
         }
     }
@@ -94,7 +96,7 @@ public class ModelLayoutUpdater
             final Node root = jointSkin.getRoot();
             if (root != null)
             {
-                root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerJoint);
             }
         }
     }
@@ -107,22 +109,22 @@ public class ModelLayoutUpdater
             final Node root = jointSkin.getRoot();
             if (root != null)
             {
-                root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
+                root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerJoint);
             }
         }
     }
 
-    private void elementMouseReleased()
+    private void elementMouseReleased(final EditorElement pType)
     {
-        if (canEdit())
+        if (canEdit(pType))
         {
             modelEditingManager.updateLayoutValues(skinLookup);
         }
     }
 
-    private boolean canEdit()
+    private boolean canEdit(final EditorElement pType)
     {
-        final GraphEditorProperties props = properties == null ? null : properties;
-        return props != null && !props.isReadOnly();
+        final GraphEditorProperties props = properties;
+        return props != null && !props.isReadOnly(pType);
     }
 }

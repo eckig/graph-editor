@@ -3,6 +3,7 @@
  */
 package de.tesis.dynaware.grapheditor.window;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.utils.DraggableBox;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
 
@@ -29,6 +30,7 @@ class MinimapLocator extends DraggableBox
      */
     public MinimapLocator(final double minimapPadding)
     {
+        super(null);
         getStyleClass().add(STYLE_CLASS_LOCATOR);
 
         final GraphEditorProperties locatorProperties = new GraphEditorProperties();

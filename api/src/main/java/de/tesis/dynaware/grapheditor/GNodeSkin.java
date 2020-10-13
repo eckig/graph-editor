@@ -106,7 +106,7 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      */
     protected DraggableBox createContainer()
     {
-        return new ResizableBox()
+        return new ResizableBox(EditorElement.NODE)
         {
 
             @Override

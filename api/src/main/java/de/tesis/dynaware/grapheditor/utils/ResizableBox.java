@@ -3,6 +3,7 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
@@ -29,10 +30,13 @@ public class ResizableBox extends DraggableBox
 
     /**
      * Creates an empty resizable box.
+     *
+     * @param pType
+     *         {@link EditorElement}
      */
-    public ResizableBox()
+    public ResizableBox(final EditorElement pType)
     {
-
+        super(pType);
         addEventHandler(MouseEvent.MOUSE_ENTERED, this::processMousePosition);
         addEventHandler(MouseEvent.MOUSE_MOVED, this::processMousePosition);
         addEventHandler(MouseEvent.MOUSE_EXITED, this::handleMouseExited);

@@ -12,6 +12,7 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 import de.tesis.dynaware.grapheditor.Commands;
+import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
@@ -34,6 +35,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -78,7 +80,7 @@ public class GraphEditorDemoController {
     @FXML
     private RadioMenuItem snapToGridButton;
     @FXML
-    private RadioMenuItem readOnlyButton;
+    private Menu readOnlyMenu;
     @FXML
     private RadioMenuItem defaultSkinButton;
     @FXML
@@ -293,7 +295,13 @@ public class GraphEditorDemoController {
 
         graphEditor.getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
         graphEditor.getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
-        graphEditor.getProperties().readOnlyProperty().bind(readOnlyButton.selectedProperty());
+
+        for (final EditorElement type : EditorElement.values())
+        {
+            final CheckMenuItem readOnly = new CheckMenuItem(type.name());
+            graphEditor.getProperties().readOnlyProperty(type).bind(readOnly.selectedProperty());
+            readOnlyMenu.getItems().add(readOnly);
+        }
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 

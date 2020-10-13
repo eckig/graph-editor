@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
@@ -483,7 +484,7 @@ public class ConnectorDragManager {
 
     private boolean checkEditable()
     {
-        return getEditorProperties() != null && !getEditorProperties().isReadOnly();
+        return getEditorProperties() != null && !getEditorProperties().isReadOnly(EditorElement.CONNECTOR);
     }
 
     private GraphEditorProperties getEditorProperties()

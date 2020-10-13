@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import javafx.scene.layout.Pane;
 
 public class ResizableBoxTest {
@@ -21,7 +22,7 @@ public class ResizableBoxTest {
     private final static double BOX_INITIAL_Y = 60;
     private final static double BOX_RESIZE_BORDER_TOLERANCE = 1;
 
-    private final ResizableBox box = new ResizableBox();
+    private final ResizableBox box = new ResizableBox(EditorElement.NODE);
     private final Pane container = new Pane();
 
     private final GraphEditorProperties properties = new GraphEditorProperties();

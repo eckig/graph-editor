@@ -3,6 +3,11 @@
  */
 package de.tesis.dynaware.grapheditor.utils;
 
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+
+import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.impl.GraphEventManagerImpl;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -54,7 +59,8 @@ public class GraphEditorProperties implements GraphEventManager
     private final BooleanProperty gridVisible = new SimpleBooleanProperty(this, "gridVisible"); //$NON-NLS-1$
     private final BooleanProperty snapToGrid = new SimpleBooleanProperty(this, "snapToGrid"); //$NON-NLS-1$
     private final DoubleProperty gridSpacing = new SimpleDoubleProperty(this, "gridSpacing", DEFAULT_GRID_SPACING); //$NON-NLS-1$
-    private final BooleanProperty readOnly = new SimpleBooleanProperty(this, "readOnly"); //$NON-NLS-1$
+
+    private final Map<EditorElement, BooleanProperty> readOnly = new EnumMap<>(EditorElement.class);
 
     private final ObservableMap<String, String> customProperties = FXCollections.observableHashMap();
 
@@ -77,7 +83,7 @@ public class GraphEditorProperties implements GraphEventManager
      * </p>
      *
      * @param editorProperties
-     *            an existing {@link GraphEditorProperties} instance
+     *         an existing {@link GraphEditorProperties} instance
      */
     public GraphEditorProperties(final GraphEditorProperties editorProperties)
     {
@@ -90,7 +96,10 @@ public class GraphEditorProperties implements GraphEventManager
         snapToGrid.set(editorProperties.isSnapToGridOn());
         gridSpacing.set(editorProperties.getGridSpacing());
 
-        readOnly.set(editorProperties.isReadOnly());
+        for (final Map.Entry<EditorElement, BooleanProperty> entry : editorProperties.readOnly.entrySet())
+        {
+            readOnly.computeIfAbsent(entry.getKey(), k -> new SimpleBooleanProperty()).set(entry.getValue().get());
+        }
 
         customProperties.putAll(editorProperties.getCustomProperties());
     }
@@ -109,7 +118,7 @@ public class GraphEditorProperties implements GraphEventManager
      * Sets the value of the north bound.
      *
      * @param pNorthBoundValue
-     *            the value of the north bound
+     *         the value of the north bound
      */
     public void setNorthBoundValue(final double pNorthBoundValue)
     {
@@ -130,7 +139,7 @@ public class GraphEditorProperties implements GraphEventManager
      * Sets the value of the south bound.
      *
      * @param pSouthBoundValue
-     *            the value of the south bound
+     *         the value of the south bound
      */
     public void setSouthBoundValue(final double pSouthBoundValue)
     {
@@ -151,7 +160,7 @@ public class GraphEditorProperties implements GraphEventManager
      * Sets the value of the east bound.
      *
      * @param pEastBoundValue
-     *            the value of the east bound
+     *         the value of the east bound
      */
     public void setEastBoundValue(final double pEastBoundValue)
     {
@@ -172,7 +181,7 @@ public class GraphEditorProperties implements GraphEventManager
      * Sets the value of the west bound.
      *
      * @param pWestBoundValue
-     *            the value of the west bound
+     *         the value of the west bound
      */
     public void setWestBoundValue(final double pWestBoundValue)
     {
@@ -265,7 +274,7 @@ public class GraphEditorProperties implements GraphEventManager
      * </p>
      *
      * @param pGridSpacing
-     *            the grid spacing to be used
+     *         the grid spacing to be used
      */
     public void setGridSpacing(final double pGridSpacing)
     {
@@ -285,31 +294,40 @@ public class GraphEditorProperties implements GraphEventManager
     /**
      * Gets the read only property
      *
+     * @param pType
+     *         {@link EditorElement}
      * @return read only {@link BooleanProperty}
      */
-    public BooleanProperty readOnlyProperty()
+    public BooleanProperty readOnlyProperty(final EditorElement pType)
     {
-        return readOnly;
+        Objects.requireNonNull(pType, "ElementType may not be null!");
+        return readOnly.computeIfAbsent(pType, k -> new SimpleBooleanProperty());
     }
 
     /**
      * Returns whether or not the graph is in read only state.
      *
+     * @param pType
+     *         {@link EditorElement}
      * @return whether or not the graph is in read only state.
      */
-    public boolean isReadOnly()
+    public boolean isReadOnly(final EditorElement pType)
     {
-        return readOnly.get();
+        return pType != null && readOnly.computeIfAbsent(pType, k -> new SimpleBooleanProperty()).get();
     }
 
     /**
+     * @param pType
+     *         {@link EditorElement}
      * @param pReadOnly
-     *            {@code true} to set the graph editor in read only state or
-     *            {@code false} (default) for edit state.
+     *         {@code true} to set the graph editor in read only state or {@code false} (default) for edit state.
      */
-    public void setReadOnly(final boolean pReadOnly)
+    public void setReadOnly(final EditorElement pType, final boolean pReadOnly)
     {
-        readOnly.set(pReadOnly);
+        if (pType != null)
+        {
+            readOnly.computeIfAbsent(pType, k -> new SimpleBooleanProperty()).set(pReadOnly);
+        }
     }
 
     /**

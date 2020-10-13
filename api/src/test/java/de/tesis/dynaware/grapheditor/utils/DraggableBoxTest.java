@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import de.tesis.dynaware.grapheditor.EditorElement;
 import javafx.scene.layout.Pane;
 
 public class DraggableBoxTest {
@@ -28,7 +29,7 @@ public class DraggableBoxTest {
     private static final double GRID_SPACING = 11;
     private static final double ALIGNMENT_THRESHOLD = 16;
 
-    private final DraggableBox box = new DraggableBox();
+    private final DraggableBox box = new DraggableBox(EditorElement.NODE);
     private final Pane container = new Pane();
 
     private final GraphEditorProperties properties = new GraphEditorProperties();

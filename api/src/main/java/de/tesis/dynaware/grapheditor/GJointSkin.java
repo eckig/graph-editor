@@ -20,7 +20,7 @@ import de.tesis.dynaware.grapheditor.utils.DraggableBox;
  */
 public abstract class GJointSkin extends GSkin<GJoint> {
 
-    private final DraggableBox root = new DraggableBox()
+    private final DraggableBox root = new DraggableBox(EditorElement.JOINT)
     {
 
         @Override
