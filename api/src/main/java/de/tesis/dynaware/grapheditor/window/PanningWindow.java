@@ -34,6 +34,10 @@ import javafx.scene.transform.Scale;
  * </p>
  */
 public class PanningWindow extends Region {
+	
+	public enum WindowPosition {
+	    TOP_CENTER, CENTER;
+	}
 
     private static final float SCALE_MIN = 0.5f;
     private static final float SCALE_MAX = 1.5f;
@@ -190,6 +194,38 @@ public class PanningWindow extends Region {
             contentY.set(newY);
         }
     }
+    
+    
+    /**
+     * Pans the window to the given position.
+     *
+     * <p>
+     * <b>Note: </b><br>
+     * The current width & height values of the window and its content are used in this method. It should therefore be
+     * called <em>after</em> the scene has been drawn.
+     * </p>
+     *
+     * @param position the {@link WindowPosition} to pan to
+     */
+	public void panTo(final WindowPosition position) {
+
+		switch (position) {
+
+		case TOP_CENTER:
+			contentX.set((content.getWidth() - getWidth()) / 2);
+			contentY.set(0);
+
+			break;
+
+		case CENTER:
+			contentX.set((content.getWidth() - getWidth()) / 2);
+			contentY.set((content.getHeight() - getHeight()) / 2);
+
+			break;
+		}
+
+		checkWindowBounds();
+	}
 
     /**
      * @return the x coordinate of the window relative to the top-left corner of

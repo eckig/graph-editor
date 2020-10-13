@@ -42,6 +42,9 @@ public class GraphEditorDemo extends Application {
         stage.setTitle(APPLICATION_TITLE);
 
         stage.show();
+        
+        final GraphEditorDemoController controller = loader.getController();
+        controller.panToCenter();
     }
 
     public static void main(final String[] args) {
