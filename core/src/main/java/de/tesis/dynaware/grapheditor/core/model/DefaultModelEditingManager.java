@@ -3,7 +3,9 @@
  */
 package de.tesis.dynaware.grapheditor.core.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import org.eclipse.emf.common.command.BasicCommandStack;
@@ -112,39 +114,47 @@ public class DefaultModelEditingManager implements ModelEditingManager
 
         final CompoundCommand command = new CompoundCommand();
         final RemoveContext editContext = new RemoveContext();
+        final List<EObject> delete = new ArrayList<>(pToRemove.size());
 
+        // pre-fill the RemoveContext with all elements to be removed:
         for (final EObject obj : pToRemove)
         {
-            if (obj instanceof GNode)
+            if (obj instanceof GNode && editContext.canRemove(obj))
             {
-                if (editContext.canRemove(obj))
-                {
-                    command.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__NODES, obj));
-
-                    final Command onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply(editContext, (GNode) obj);
-                    if (onRemoved != null)
-                    {
-                        command.append(onRemoved);
-                    }
-                }
-
+                delete.add(obj);
                 for (final GConnector connector : ((GNode) obj).getConnectors())
                 {
                     for (final GConnection connection : connector.getConnections())
                     {
                         if (connection != null && editContext.canRemove(connection))
                         {
-                            remove(pToRemove, editContext, command, connection);
+                            delete.add(connection);
                         }
                     }
                 }
             }
+            else if (obj instanceof GConnection && editContext.canRemove(obj))
+            {
+                delete.add(obj);
+            }
+        }
+
+        // delete the elements and call business logic add-ins:
+        for (final EObject obj : delete)
+        {
+            if (obj instanceof GNode)
+            {
+                command.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__NODES, obj));
+
+                final Command onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply(editContext, (GNode) obj);
+                if (onRemoved != null)
+                {
+                    command.append(onRemoved);
+                }
+            }
             else if (obj instanceof GConnection)
             {
-                if (editContext.canRemove(obj))
-                {
-                    remove(pToRemove, editContext, command, (GConnection) obj);
-                }
+                remove(editContext, command, (GConnection) obj);
             }
         }
 
@@ -154,23 +164,14 @@ public class DefaultModelEditingManager implements ModelEditingManager
         }
     }
 
-    private void remove(final Collection<EObject> pToRemove, final RemoveContext pRemoveContext, final CompoundCommand pCommand,
-            final GConnection pToDelete)
+    private void remove(final RemoveContext pRemoveContext, final CompoundCommand pCommand, final GConnection pToDelete)
     {
         final GConnector source = pToDelete.getSource();
         final GConnector target = pToDelete.getTarget();
 
         pCommand.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__CONNECTIONS, pToDelete));
-
-        if (!pToRemove.contains(source.getParent()) && !pRemoveContext.contains(source.getParent()))
-        {
-            pCommand.append(RemoveCommand.create(editingDomain, source, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
-        }
-
-        if (!pToRemove.contains(target.getParent()) && !pRemoveContext.contains(target.getParent()))
-        {
-            pCommand.append(RemoveCommand.create(editingDomain, target, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
-        }
+        pCommand.append(RemoveCommand.create(editingDomain, source, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
+        pCommand.append(RemoveCommand.create(editingDomain, target, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
 
         final Command onRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply(pRemoveContext, pToDelete);
         if (onRemoved != null)
