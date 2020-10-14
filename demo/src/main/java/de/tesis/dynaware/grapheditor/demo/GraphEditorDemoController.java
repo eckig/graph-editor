@@ -160,7 +160,7 @@ public class GraphEditorDemoController {
         graphEditorContainer.panTo(Pos.CENTER);
     }
 
-	@FXML
+    @FXML
     public void load() {
         graphEditorPersistence.loadFromFile(graphEditor);
         checkSkinType();

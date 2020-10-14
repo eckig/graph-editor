@@ -36,7 +36,7 @@ import javafx.scene.transform.Scale;
  * </p>
  */
 public class PanningWindow extends Region {
-	
+
     private static final float SCALE_MIN = 0.5f;
     private static final float SCALE_MAX = 1.5f;
 
