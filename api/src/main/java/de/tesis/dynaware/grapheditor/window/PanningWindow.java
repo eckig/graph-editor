@@ -12,6 +12,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
@@ -189,6 +190,61 @@ public class PanningWindow extends Region {
         {
             contentY.set(newY);
         }
+    }
+    
+    /**
+     * Pans the window to the given position.
+     *
+     * <p>
+     * <b>Note: </b><br>
+     * The current width & height values of the window and its content are used in
+     * this method. It should therefore be called <em>after</em> the scene has been
+     * drawn.
+     * </p>
+     *
+     * @param position the {@link Pos} to pan to
+     */
+    public void panTo(final Pos position)
+    {
+        double x = 0;
+        double y = 0;
+
+        switch (position.getHpos())
+        {
+        case LEFT:
+            x = 0;
+            break;
+        case CENTER:
+            x = (content.getWidth() - getWidth()) / 2;
+            break;
+        case RIGHT:
+            x = content.getWidth() - getWidth();
+            break;
+
+        default:
+            break;
+        }
+
+        switch (position.getVpos())
+        {
+        case TOP:
+            y = 0;
+            break;
+        case CENTER:
+            y = (content.getHeight() - getHeight()) / 2;
+            break;
+        case BOTTOM:
+            y = content.getHeight() - getHeight();
+            break;
+
+        default:
+            break;
+        }
+
+        contentX.set(x);
+        contentY.set(y);
+
+        checkWindowBounds();
     }
 
     /**

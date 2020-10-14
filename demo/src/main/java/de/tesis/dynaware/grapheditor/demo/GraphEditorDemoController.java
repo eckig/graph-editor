@@ -34,6 +34,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
@@ -143,6 +144,20 @@ public class GraphEditorDemoController {
 
         initializeMenuBar();
         addActiveSkinControllerListener();
+    }
+    
+    /**
+     * Pans the graph editor container to place the window over the center of the
+     * content.
+     *
+     * <p>
+     * Only works after the scene has been drawn, when getWidth() & getHeight()
+     * return non-zero values.
+     * </p>
+     */
+    public void panToCenter()
+    {
+        graphEditorContainer.panTo(Pos.CENTER);
     }
 
     @FXML
