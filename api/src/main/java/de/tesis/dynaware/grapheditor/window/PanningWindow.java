@@ -193,7 +193,6 @@ public class PanningWindow extends Region {
         }
     }
     
-    
     /**
      * Pans the window to the given position.
      *
