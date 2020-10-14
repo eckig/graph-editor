@@ -10,8 +10,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
@@ -35,10 +37,6 @@ import javafx.scene.transform.Scale;
  */
 public class PanningWindow extends Region {
 	
-	public enum WindowPosition {
-	    TOP_CENTER, CENTER;
-	}
-
     private static final float SCALE_MIN = 0.5f;
     private static final float SCALE_MAX = 1.5f;
 
@@ -201,31 +199,55 @@ public class PanningWindow extends Region {
      *
      * <p>
      * <b>Note: </b><br>
-     * The current width & height values of the window and its content are used in this method. It should therefore be
-     * called <em>after</em> the scene has been drawn.
+     * The current width & height values of the window and its content are used in
+     * this method. It should therefore be called <em>after</em> the scene has been
+     * drawn.
      * </p>
      *
-     * @param position the {@link WindowPosition} to pan to
+     * @param position the {@link Pos} to pan to
      */
-	public void panTo(final WindowPosition position) {
+    public void panTo(final Pos position)
+    {
+        double x = 0;
+        double y = 0;
 
-		switch (position) {
+        switch (position.getHpos())
+        {
+        case LEFT:
+            x = 0;
+            break;
+        case CENTER:
+            x = (content.getWidth() - getWidth()) / 2;
+            break;
+        case RIGHT:
+            x = content.getWidth() - getWidth();
+            break;
 
-		case TOP_CENTER:
-			contentX.set((content.getWidth() - getWidth()) / 2);
-			contentY.set(0);
+        default:
+            break;
+        }
 
-			break;
+        switch (position.getVpos())
+        {
+        case TOP:
+            y = 0;
+            break;
+        case CENTER:
+            y = (content.getHeight() - getHeight()) / 2;
+            break;
+        case BOTTOM:
+            y = content.getHeight() - getHeight();
+            break;
 
-		case CENTER:
-			contentX.set((content.getWidth() - getWidth()) / 2);
-			contentY.set((content.getHeight() - getHeight()) / 2);
+        default:
+            break;
+        }
 
-			break;
-		}
+        contentX.set(x);
+        contentY.set(y);
 
-		checkWindowBounds();
-	}
+        checkWindowBounds();
+    }
 
     /**
      * @return the x coordinate of the window relative to the top-left corner of
