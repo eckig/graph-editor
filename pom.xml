@@ -64,6 +64,9 @@
         <org.slf4j.version>1.7.30</org.slf4j.version>
         <org.openjfx.version>15</org.openjfx.version>
         <openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
+        
+        <client.version>1.0.0</client.version>
+        <exec.maven.plugin.version>1.6.0</exec.maven.plugin.version>
     </properties>
 
     <modules>
@@ -135,11 +138,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                	<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable> 
                     <doclint>none</doclint>
                     <quiet>true</quiet>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
