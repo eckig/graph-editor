@@ -141,6 +141,8 @@
                 	<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable> 
                     <doclint>none</doclint>
                     <quiet>true</quiet>
+                    <!-- Added because on windows gives some problems with install phase -->
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
         </plugins>
