@@ -56,7 +56,7 @@ rem otherwise HTTPS does not work.
 rem
 rem See: https://bugs.openjdk.java.net/browse/JDK-8221674
 
-set manual_modules=jdk.crypto.ec
+set manual_modules=jdk.crypto.ec,jdk.localedata,javafx.controls
 echo manual modules: %manual_modules%
 
 rem ------ RUNTIME IMAGE ------------------------------------------------------

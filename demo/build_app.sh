@@ -65,7 +65,7 @@ echo "detected modules: ${detected_modules}"
 # This can be reduced to the actually needed locales via a jlink paramter,
 # e.g., --include-locales=en,de.
 
-manual_modules=jdk.crypto.ec,jdk.localedata
+manual_modules=jdk.crypto.ec,jdk.localedata,javafx.controls
 echo "manual modules: ${manual_modules}"
 
 # ------ RUNTIME IMAGE ------------------------------------------------------
