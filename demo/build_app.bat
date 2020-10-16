@@ -1,11 +1,11 @@
 @ECHO OFF
 
-# Replaced: "main-ui-" --> "graph-editor-demo-"
-# Replaced: "target\classes\com\dlsc\jpackagefx\App.class" --> "target\classes\de\tesis\dynaware\grapheditor\demo\GraphEditorDemo.class"
-# Replaced: "JPackageScriptFX" --> "GraphEditorDemo"
-# Replaced: "com.dlsc.jpackagefx.AppLauncher" --> "de.tesis.dynaware.grapheditor.demo.GraphEditorDemo"
-# Replaced: "src/main/logo/" --> "src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/"
-# Replaced: "JPackageScriptFX" --> "GraphEditorDemo"
+rem Replaced: "main-ui-" --> "graph-editor-demo-"
+rem Replaced: "target\classes\com\dlsc\jpackagefx\App.class" --> "target\classes\de\tesis\dynaware\grapheditor\demo\GraphEditorDemo.class"
+rem Replaced: "JPackageScriptFX" --> "GraphEditorDemo"
+rem Replaced: "com.dlsc.jpackagefx.AppLauncher" --> "de.tesis.dynaware.grapheditor.demo.GraphEditorDemo"
+rem Replaced: "src/main/logo/" --> "src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/"
+rem Replaced: "JPackageScriptFX" --> "GraphEditorDemo"
 
 rem ------ ENVIRONMENT --------------------------------------------------------
 rem The script depends on various environment variables to exist in order to
