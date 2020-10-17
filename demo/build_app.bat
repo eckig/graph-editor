@@ -80,20 +80,36 @@ call "%JAVA_HOME%\bin\jlink" ^
 rem ------ PACKAGING ----------------------------------------------------------
 rem In the end we will find the package inside the target/installer directory.
 
-call "%JAVA_HOME%\bin\jpackage" ^
-  --type %INSTALLER_TYPE% ^
-  --dest target/installer ^
-  --input target/installer/input/libs ^
-  --name GraphEditorDemo ^
-  --main-class de.tesis.dynaware.grapheditor.demo.GraphEditorDemo ^
-  --main-jar %MAIN_JAR% ^
-  --java-options -Xmx2048m ^
-  --runtime-image target/java-runtime ^
-  --icon src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/windows/duke.ico ^
-  --app-version %APP_VERSION% ^
-  --vendor "ACME Inc." ^
-  --copyright "Copyright © 2019-20 ACME Inc."
-rem  --win-dir-chooser ^
-rem  --win-shortcut ^
-rem  --win-per-user-install ^
-rem  --win-menu
+if "%INSTALLER_TYPE%" == "app-image" (
+    call "%JAVA_HOME%\bin\jpackage" ^
+      --type %INSTALLER_TYPE% ^
+      --dest target/installer ^
+      --input target/installer/input/libs ^
+      --name GraphEditorDemo ^
+      --main-class de.tesis.dynaware.grapheditor.demo.GraphEditorDemo ^
+      --main-jar %MAIN_JAR% ^
+      --java-options -Xmx2048m ^
+      --runtime-image target/java-runtime ^
+      --icon src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/windows/duke.ico ^
+      --app-version %APP_VERSION% ^
+      --vendor "ACME Inc." ^
+      --copyright "Copyright © 2019-20 ACME Inc."
+) else (
+    call "%JAVA_HOME%\bin\jpackage" ^
+       --type %INSTALLER_TYPE% ^
+       --dest target/installer ^
+       --input target/installer/input/libs ^
+       --name GraphEditorDemo ^
+       --main-class de.tesis.dynaware.grapheditor.demo.GraphEditorDemo ^
+       --main-jar %MAIN_JAR% ^
+       --java-options -Xmx2048m ^
+       --runtime-image target/java-runtime ^
+       --icon src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/windows/duke.ico ^
+       --app-version %APP_VERSION% ^
+       --vendor "ACME Inc." ^
+       --copyright "Copyright © 2019-20 ACME Inc." ^
+       --win-dir-chooser ^
+       --win-shortcut ^
+       --win-per-user-install ^
+       --win-menu
+)
