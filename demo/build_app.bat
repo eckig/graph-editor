@@ -20,7 +20,7 @@ set JAVA_VERSION=14
 set MAIN_JAR=graph-editor-demo-%PROJECT_VERSION%.jar
 
 rem Set desired installer type: "app-image" "msi" "exe".
-set INSTALLER_TYPE=msi
+set INSTALLER_TYPE=app-image
 
 rem ------ SETUP DIRECTORIES AND FILES ----------------------------------------
 rem Remove previously generated java runtime and installers. Copy all required
@@ -92,8 +92,8 @@ call "%JAVA_HOME%\bin\jpackage" ^
   --icon src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/windows/duke.ico ^
   --app-version %APP_VERSION% ^
   --vendor "ACME Inc." ^
-  --copyright "Copyright © 2019-20 ACME Inc." ^
-  --win-dir-chooser ^
-  --win-shortcut ^
-  --win-per-user-install ^
-  --win-menu
+  --copyright "Copyright © 2019-20 ACME Inc."
+rem  --win-dir-chooser ^
+rem  --win-shortcut ^
+rem  --win-per-user-install ^
+rem  --win-menu
