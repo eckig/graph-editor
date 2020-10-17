@@ -118,12 +118,11 @@ $JAVA_HOME/bin/jpackage \
 --java-options -Xmx2048m \
 --runtime-image target/java-runtime \
 --icon src/main/resources/de/tesis/dynaware/grapheditor/demo/logo/macosx/duke.icns \
---app-version "1.0"
-# ${APP_VERSION} \
-# --vendor "ACME Inc." \
-# --copyright "Copyright © 2019-20 ACME Inc." \
-# --mac-package-identifier com.acme.app \
-# --mac-package-name ACME
+--app-version ${APP_VERSION} \
+--vendor "ACME Inc." \
+--copyright "Copyright © 2019-20 ACME Inc." \
+--mac-package-identifier com.acme.app \
+--mac-package-name ACME
 
 else
     echo "Unknown OSTYPE: $OSTYPE"
