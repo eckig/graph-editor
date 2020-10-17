@@ -36,6 +36,7 @@
 
 	<build>
 		<plugins>
+			<!--  
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -52,6 +53,7 @@
 					</archive>
 				</configuration>
 			</plugin>
+			-->
 			<plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
