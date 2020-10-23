@@ -151,7 +151,7 @@ public class GraphEditorDemoController {
      * content.
      *
      * <p>
-     * Only works after the scene has been drawn, when getWidth() & getHeight()
+     * Only works after the scene has been drawn, when getWidth() and getHeight()
      * return non-zero values.
      * </p>
      */
