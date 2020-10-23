@@ -197,7 +197,7 @@ public class PanningWindow extends Region {
      *
      * <p>
      * <b>Note: </b><br>
-     * The current width & height values of the window and its content are used in
+     * The current width and height values of the window and its content are used in
      * this method. It should therefore be called <em>after</em> the scene has been
      * drawn.
      * </p>
