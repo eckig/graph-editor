@@ -242,8 +242,8 @@ class PanningWindowMinimap extends Pane
             locatorPositionListenersMuted = true;
 
             final double zoomFactor = calculateZoomFactor();
-            final double x = Math.round(-content.getLayoutX() * scaleFactor / zoomFactor);
-            final double y = Math.round(-content.getLayoutY() * scaleFactor / zoomFactor);
+            final double x = Math.max(0, Math.round(-content.getLayoutX() * scaleFactor / zoomFactor));
+            final double y = Math.max(0, Math.round(-content.getLayoutY() * scaleFactor / zoomFactor));
             final double locWidth = Math.min(maxLocWidth, Math.round(window.getWidth() * scaleFactor / zoomFactor));
             final double locHeight = Math.min(maxLocHeight, Math.round(window.getHeight() * scaleFactor / zoomFactor));
 
