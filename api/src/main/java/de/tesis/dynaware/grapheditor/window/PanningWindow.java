@@ -39,8 +39,6 @@ public class PanningWindow extends Region {
     private static final float SCALE_MIN = 0.5f;
     private static final float SCALE_MAX = 1.5f;
 
-    private final Rectangle clip = new Rectangle();
-
     private Region content;
 
     private final DoubleProperty contentX = new SimpleDoubleProperty()
@@ -88,6 +86,7 @@ public class PanningWindow extends Region {
      */
     public PanningWindow()
     {
+        final Rectangle clip = new Rectangle();
         clip.widthProperty().bind(widthProperty());
         clip.heightProperty().bind(heightProperty());
         setClip(clip);
@@ -141,9 +140,9 @@ public class PanningWindow extends Region {
      */
     public void panTo(final double x, final double y)
     {
-        final double newX = checkContentX(x);
-        final double newY = checkContentY(y);
-        if (newX != getContentX() || newY != getContentY())
+        final double newX = snapPositionX(x);
+        final double newY = snapPositionY(y);
+        if (checkContentX(newX) && (newX != getContentX() || newY != getContentY()))
         {
             contentX.set(newX);
             contentY.set(newY);
@@ -164,8 +163,8 @@ public class PanningWindow extends Region {
      */
     public void panToX(final double x)
     {
-        final double newX = checkContentX(x);
-        if (newX != getContentX())
+        final double newX = snapPositionX(x);
+        if (checkContentX(newX) && newX != getContentX())
         {
             contentX.set(newX);
         }
@@ -185,8 +184,8 @@ public class PanningWindow extends Region {
      */
     public void panToY(final double y)
     {
-        final double newY = checkContentY(y);
-        if (newY != contentY.get())
+        final double newY = snapPositionY(y);
+        if (checkContentY(newY) && newY != contentY.get())
         {
             contentY.set(newY);
         }
@@ -211,34 +210,34 @@ public class PanningWindow extends Region {
 
         switch (position.getHpos())
         {
-        case LEFT:
-            x = 0;
-            break;
-        case CENTER:
-            x = (content.getWidth() - getWidth()) / 2;
-            break;
-        case RIGHT:
-            x = content.getWidth() - getWidth();
-            break;
+            case LEFT:
+                x = 0;
+                break;
+            case CENTER:
+                x = (content.getWidth() - getWidth()) / 2;
+                break;
+            case RIGHT:
+                x = content.getWidth() - getWidth();
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
 
         switch (position.getVpos())
         {
-        case TOP:
-            y = 0;
-            break;
-        case CENTER:
-            y = (content.getHeight() - getHeight()) / 2;
-            break;
-        case BOTTOM:
-            y = content.getHeight() - getHeight();
-            break;
+            case TOP:
+                y = 0;
+                break;
+            case CENTER:
+                y = (content.getHeight() - getHeight()) / 2;
+                break;
+            case BOTTOM:
+                y = content.getHeight() - getHeight();
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
 
         contentX.set(x);
@@ -392,14 +391,14 @@ public class PanningWindow extends Region {
         return 0;
     }
 
-    private double checkContentX(final double xToCheck)
+    private boolean checkContentX(final double xToCheck)
     {
-        return snapPositionX(Math.min(getMaxX(), Math.max(xToCheck, 0)));
+        return xToCheck >= 0 && xToCheck <= getMaxX();
     }
 
-    private double checkContentY(final double yToCheck)
+    private boolean checkContentY(final double yToCheck)
     {
-        return snapPositionY(Math.min(getMaxY(), Math.max(yToCheck, 0)));
+        return yToCheck >= 0 && yToCheck <= getMaxY();
     }
 
     @Override
