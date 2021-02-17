@@ -6,7 +6,7 @@
     <name>${component.name}</name>
     <groupId>fx.graph.editor</groupId>
     <artifactId>graph-editor</artifactId>
-    <version>11.0.5</version>
+    <version>11.0.6</version>
     <packaging>pom</packaging>
 
     <description>A library for creating and editing graph-like diagrams in JavaFX</description>
@@ -50,7 +50,6 @@
 
     <properties>
         <component.name>Graph Editor</component.name>
-        <manifest.bundle.version>11.0.5-${maven.build.timestamp}</manifest.bundle.version>
         <maven.build.timestamp.format>yyyymmddhhmm</maven.build.timestamp.format>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
@@ -59,9 +58,8 @@
         <org.eclipse.emf.common.version>2.21.0</org.eclipse.emf.common.version>
         <org.eclipse.emf.ecore.xmi.version>2.16.0</org.eclipse.emf.ecore.xmi.version>
         <org.eclipse.emf.edit.version>2.16.0</org.eclipse.emf.edit.version>
-        <revision>11.0.4</revision>
         <junit.version>4.13.2</junit.version>
-        <org.slf4j.version>1.7.30</org.slf4j.version>
+        <org.slf4j.version>1.7.10</org.slf4j.version>
         <org.openjfx.version>15.0.1</org.openjfx.version>
         <openjfx-monocle.version>jdk-11+26</openjfx-monocle.version>
     </properties>
