@@ -13,6 +13,7 @@ import de.tesis.dynaware.grapheditor.SelectionManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 
 
 /**
@@ -94,6 +95,15 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     public void setConnectionFilter(final Predicate<GConnection> connectionFilter)
     {
         minimapNodeGroup.setConnectionFilter(connectionFilter);
+    }
+
+    /**
+     * @param pMinimapRenderer
+     *         {@link IMinimapRenderer}
+     */
+    public <N extends Node> void setMinimapRenderer(final IMinimapRenderer<N> pMinimapRenderer)
+    {
+        minimapNodeGroup.setMinimapRenderer(pMinimapRenderer);
     }
 
     /**

@@ -30,7 +30,6 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 
 /**
@@ -45,7 +44,6 @@ import javafx.scene.shape.Rectangle;
 class MinimapNodeGroup extends Parent
 {
 
-    private static final String STYLE_CLASS_NODE = "minimap-node"; //$NON-NLS-1$
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected"); //$NON-NLS-1$
 
     private final InvalidationListener checkSelectionListener = obs -> checkSelection();
@@ -54,8 +52,9 @@ class MinimapNodeGroup extends Parent
     private SelectionManager selectionManager;
     private GModel model;
 
-    private final Map<GNode, Rectangle> nodes = new HashMap<>();
+    private final Map<GNode, Node> nodes = new HashMap<>();
 
+    private IMinimapRenderer<?> minimapRenderer = new IMinimapRenderer.DefaultMinimapRenderer();
     private Predicate<GConnection> connectionFilter = c -> true;
 
     private double width = -1;
@@ -133,7 +132,7 @@ class MinimapNodeGroup extends Parent
 
     private void checkSelection()
     {
-        for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet())
+        for (final Map.Entry<GNode, Node> entry : nodes.entrySet())
         {
             entry.getValue().pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, isSelected(entry.getKey()));
         }
@@ -141,7 +140,7 @@ class MinimapNodeGroup extends Parent
 
     private boolean isSelected(final GNode node)
     {
-        return selectionManager == null ? false : selectionManager.isSelected(node);
+        return selectionManager != null && selectionManager.isSelected(node);
     }
 
     private static double scaleSharp(final double value, final double scale)
@@ -160,6 +159,16 @@ class MinimapNodeGroup extends Parent
     public void setConnectionFilter(final Predicate<GConnection> pConnectionFilter)
     {
         connectionFilter = pConnectionFilter;
+    }
+
+    /**
+     * @param pMinimapRenderer
+     *         {@link IMinimapRenderer}
+     */
+    public void setMinimapRenderer(final IMinimapRenderer<?> pMinimapRenderer)
+    {
+        minimapRenderer = pMinimapRenderer;
+        draw();
     }
 
     /**
@@ -246,7 +255,7 @@ class MinimapNodeGroup extends Parent
             getChildren().remove(1, getChildren().size());
         }
 
-        if (width == -1 || height == -1 || scaleFactor == -1)
+        if (width == -1 || height == -1 || scaleFactor == -1 || minimapRenderer == null)
         {
             return;
         }
@@ -256,10 +265,12 @@ class MinimapNodeGroup extends Parent
             for (int i = 0; i < model.getNodes().size(); i++)
             {
                 final GNode node = model.getNodes().get(i);
-                final Rectangle minimapNode = new Rectangle();
-                minimapNode.getStyleClass().addAll(STYLE_CLASS_NODE, node.getType());
-                getChildren().add(minimapNode);
-                nodes.put(node, minimapNode);
+                final Node minimapNode = minimapRenderer == null ? null : minimapRenderer.createMinimapNode(node);
+                if (minimapNode != null)
+                {
+                    getChildren().add(minimapNode);
+                    nodes.put(node, minimapNode);
+                }
             }
             checkSelection();
         }
@@ -270,7 +281,7 @@ class MinimapNodeGroup extends Parent
     @Override
     protected void layoutChildren()
     {
-        if (width < 1 || height < 1)
+        if (width < 1 || height < 1 || minimapRenderer == null)
         {
             return;
         }
@@ -337,15 +348,23 @@ class MinimapNodeGroup extends Parent
                 gc.stroke();
             }
 
-            for (final Map.Entry<GNode, Rectangle> entry : nodes.entrySet())
+            for (final Map.Entry<GNode, Node> entry : nodes.entrySet())
             {
-                final GNode node = entry.getKey();
-                final Rectangle minimapNode = entry.getValue();
-                minimapNode.setX(Math.round(node.getX() * scaleFactor));
-                minimapNode.setY(Math.round(node.getY() * scaleFactor));
-                minimapNode.setWidth(Math.round(node.getWidth() * scaleFactor));
-                minimapNode.setHeight(Math.round(node.getHeight() * scaleFactor));
+                resizeRelocate(entry.getKey(), entry.getValue(), minimapRenderer);
             }
+        }
+    }
+
+    private <N extends Node> void resizeRelocate(final GNode node, final Node rendered,
+            final IMinimapRenderer<N> pRenderer)
+    {
+        final double x = (Math.round(node.getX() * scaleFactor));
+        final double y = (Math.round(node.getY() * scaleFactor));
+        final double width = (Math.round(node.getWidth() * scaleFactor));
+        final double height = (Math.round(node.getHeight() * scaleFactor));
+        if (rendered != null && pRenderer.getType().isAssignableFrom(rendered.getClass()))
+        {
+            pRenderer.resizeRelocate(pRenderer.getType().cast(rendered), x, y, width, height);
         }
     }
 
