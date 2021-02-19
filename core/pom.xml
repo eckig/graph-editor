@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fx.graph.editor</groupId>
         <artifactId>graph-editor</artifactId>
-		<version>11.0.6</version>
+		<version>11.0.7</version>
 	</parent>
 	<name>${component.name}::Core</name>
 
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>fx.graph.editor</groupId>
 			<artifactId>graph-editor-api</artifactId>
-			<version>11.0.6</version>
+			<version>11.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>

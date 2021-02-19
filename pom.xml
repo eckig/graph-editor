@@ -6,7 +6,7 @@
     <name>${component.name}</name>
     <groupId>fx.graph.editor</groupId>
     <artifactId>graph-editor</artifactId>
-    <version>11.0.6</version>
+    <version>11.0.7</version>
     <packaging>pom</packaging>
 
     <description>A library for creating and editing graph-like diagrams in JavaFX</description>
