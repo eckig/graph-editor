@@ -140,13 +140,28 @@ public class PanningWindow extends Region {
      */
     public void panTo(final double x, final double y)
     {
-        final double newX = snapPositionX(x);
-        final double newY = snapPositionY(y);
-        if (checkContentX(newX) && (newX != getContentX() || newY != getContentY()))
+        if (canNotPan())
+        {
+            return;
+        }
+
+        final double newX = checkContentX(x);
+        final double newY = checkContentY(y);
+        if (newX != getContentX() || newY != getContentY())
         {
             contentX.set(newX);
             contentY.set(newY);
         }
+    }
+
+    /**
+     * If there is no content at all or the content is smaller than the outer window we do not need to pan at all
+     *
+     * @return {@code true} if the window should not be panned at all or {@code false} if the window can be panned
+     */
+    private boolean canNotPan()
+    {
+        return content == null || content.getWidth() < getWidth();
     }
 
     /**
@@ -163,8 +178,13 @@ public class PanningWindow extends Region {
      */
     public void panToX(final double x)
     {
-        final double newX = snapPositionX(x);
-        if (checkContentX(newX) && newX != getContentX())
+        if (canNotPan())
+        {
+            return;
+        }
+
+        final double newX = checkContentX(x);
+        if (newX != getContentX())
         {
             contentX.set(newX);
         }
@@ -184,8 +204,13 @@ public class PanningWindow extends Region {
      */
     public void panToY(final double y)
     {
-        final double newY = snapPositionY(y);
-        if (checkContentY(newY) && newY != contentY.get())
+        if (canNotPan())
+        {
+            return;
+        }
+
+        final double newY = checkContentY(y);
+        if (newY != contentY.get())
         {
             contentY.set(newY);
         }
@@ -391,14 +416,14 @@ public class PanningWindow extends Region {
         return 0;
     }
 
-    private boolean checkContentX(final double xToCheck)
+    private double checkContentX(final double xToCheck)
     {
-        return xToCheck >= 0 && xToCheck <= getMaxX();
+        return snapPositionX(Math.min(getMaxX(), Math.max(xToCheck, 0)));
     }
 
-    private boolean checkContentY(final double yToCheck)
+    private double checkContentY(final double yToCheck)
     {
-        return yToCheck >= 0 && yToCheck <= getMaxY();
+        return snapPositionY(Math.min(getMaxY(), Math.max(yToCheck, 0)));
     }
 
     @Override
