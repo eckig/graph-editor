@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.tesis.dynaware.grapheditor.EditorElement;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -94,13 +95,12 @@ public class ConnectorDragManager {
      *            and removed during drag events
      */
     public ConnectorDragManager(final SkinLookup skinLookup, final ConnectionEventManager connectionEventManager,
-            final GraphEditorView view) {
-
+            final GraphEditorView view)
+    {
         this.view = view;
         this.skinLookup = skinLookup;
         this.connectionEventManager = connectionEventManager;
-
-        tailManager = new TailManager(skinLookup, view);
+        this.tailManager = new TailManager(skinLookup, view);
     }
 
     /**
@@ -109,8 +109,8 @@ public class ConnectorDragManager {
      * @param model
      *            the {@link GModel} currently being edited
      */
-    public void initialize(final GModel model) {
-
+    public void initialize(final GModel model)
+    {
         this.model = model;
         clearTrackingParameters();
         setHandlers();
@@ -123,27 +123,25 @@ public class ConnectorDragManager {
      *            a {@link GConnectorValidator} implementation, or null to use
      *            the default
      */
-    public void setValidator(final GConnectorValidator validator) {
-        if (validator != null) {
-            this.validator = validator;
-        } else {
-            this.validator = new DefaultConnectorValidator();
-        }
+    public void setValidator(final GConnectorValidator validator)
+    {
+        this.validator = Objects.requireNonNullElseGet(validator, DefaultConnectorValidator::new);
     }
 
     /**
      * Clears all parameters that track things like what connector is currently
      * hovered over, and so on.
      */
-    private void clearTrackingParameters() {
-
+    private void clearTrackingParameters()
+    {
         tailManager.cleanUp();
         hoveredConnector = null;
         removalConnector = null;
         repositionAllowed = true;
     }
 
-    public void addConnector(final GConnector connector) {
+    public void addConnector(final GConnector connector)
+    {
         addMouseHandlers(connector);
     }
 
@@ -225,13 +223,14 @@ public class ConnectorDragManager {
      * @param connector
      *            the {@link GConnector} to which mouse handlers should be added
      */
-    private void addMouseHandlers(final GConnector connector) {
-
+    private void addMouseHandlers(final GConnector connector)
+    {
         final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        if (connectorSkin != null) {
-
+        if (connectorSkin != null)
+        {
             final Node root = skinLookup.lookupConnector(connector).getRoot();
-            if(root == null || mouseEnteredHandlers.containsKey(root)) {
+            if (root == null || mouseEnteredHandlers.containsKey(root))
+            {
                 return;
             }
 
@@ -240,9 +239,12 @@ public class ConnectorDragManager {
 
             final EventHandler<MouseEvent> newDragDetectedHandler = event -> handleDragDetected(event, connectorSkin);
             final EventHandler<MouseEvent> newMouseDraggedHandler = event -> handleMouseDragged(event, connector);
-            final EventHandler<MouseDragEvent> newMouseDragEnteredHandler = event -> handleDragEntered(event, connectorSkin);
-            final EventHandler<MouseDragEvent> newMouseDragExitedHandler = event -> handleDragExited(event, connectorSkin);
-            final EventHandler<MouseDragEvent> newMouseDragReleasedHandler = event -> handleDragReleased(event, connectorSkin);
+            final EventHandler<MouseDragEvent> newMouseDragEnteredHandler =
+                    event -> handleDragEntered(event, connectorSkin);
+            final EventHandler<MouseDragEvent> newMouseDragExitedHandler =
+                    event -> handleDragExited(event, connectorSkin);
+            final EventHandler<MouseDragEvent> newMouseDragReleasedHandler =
+                    event -> handleDragReleased(event, connectorSkin);
 
             root.addEventHandler(MouseEvent.MOUSE_ENTERED, newMouseEnteredHandler);
             root.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExitedHandler);
@@ -465,7 +467,8 @@ public class ConnectorDragManager {
      * @return {@code true} if a connection can be created from the given
      *         {@link GConnector}, {@code false} if not
      */
-    private boolean checkCreatable(final GConnector connector) {
+    private boolean checkCreatable(final GConnector connector)
+    {
         return connector != null && connector.eContainer() instanceof GNode && checkEditable()
                 && (connector.getConnections().isEmpty() || !connector.isConnectionDetachedOnDrag());
     }
@@ -478,7 +481,8 @@ public class ConnectorDragManager {
      * @return {@code true} if a connection can be removed from the given
      *         {@link GConnector}, {@code false} if not
      */
-    private boolean checkRemovable(final GConnector connector) {
+    private boolean checkRemovable(final GConnector connector)
+    {
         return checkEditable() && !connector.getConnections().isEmpty() && connector.isConnectionDetachedOnDrag();
     }
 
@@ -505,16 +509,16 @@ public class ConnectorDragManager {
      * @param target
      *            the target {@link GConnector} for the new connection
      */
-    private void addConnection(final GConnector source, final GConnector target) {
-
+    private void addConnection(final GConnector source, final GConnector target)
+    {
         final String connectionType = validator.createConnectionType(source, target);
         final String jointType = validator.createJointType(source, target);
         final List<Point2D> jointPositions = skinLookup.lookupTail(source).allocateJointPositions();
 
         final List<GJoint> joints = new ArrayList<>();
 
-        for (final Point2D position : jointPositions) {
-
+        for (final Point2D position : jointPositions)
+        {
             final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
             joint.setX(position.getX());
             joint.setY(position.getY());

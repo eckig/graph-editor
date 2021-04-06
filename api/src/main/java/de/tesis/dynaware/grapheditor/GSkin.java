@@ -123,7 +123,7 @@ public abstract class GSkin<T extends EObject>
      */
     public void updateSelection()
     {
-        setSelected(graphEditor == null ? false : graphEditor.getSelectionManager().isSelected(item));
+        setSelected(graphEditor != null && graphEditor.getSelectionManager().isSelected(item));
     }
 
     /**
