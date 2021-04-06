@@ -45,4 +45,4 @@ jobs:
         automatic_release_tag: "Windows-latest"
         prerelease: true
         title: "Graph Editor Demo Development Build (Windows)"
-        files: ./target/*.msi
+        files: ./demo/target/*.msi

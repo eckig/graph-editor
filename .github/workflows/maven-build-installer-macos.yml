@@ -33,4 +33,4 @@ jobs:
           automatic_release_tag: "macOS-latest"
           prerelease: true
           title: "Graph Editor Demo Development Build (macOS)"
-          files: ./target/*.dmg
+          files: ./demo/target/*.dmg

@@ -32,4 +32,4 @@ jobs:
         automatic_release_tag: "Ubuntu-latest"
         prerelease: true
         title: "Graph Editor Demo Development Build (Ubuntu)"
-        files: ./target/*.deb
+        files: ./demo/target/*.deb
