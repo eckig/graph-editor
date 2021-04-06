@@ -5,7 +5,7 @@ name: Build Unix Installer
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
