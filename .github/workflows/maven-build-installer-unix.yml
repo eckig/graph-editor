@@ -4,8 +4,8 @@
 name: Build Unix Installer
 
 on:
-  push:
-    branches: [ master ]
+  release:
+    types: [created]
 
 jobs:
   build:

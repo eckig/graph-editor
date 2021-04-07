@@ -4,8 +4,8 @@
 name: Build macOS Installer
 
 on:
-  push:
-    branches: [ master ]
+  release:
+    types: [created]
 
 jobs:
   build:
