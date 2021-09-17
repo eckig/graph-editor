@@ -6,7 +6,7 @@
     <name>${component.name}</name>
     <groupId>fx.graph.editor</groupId>
     <artifactId>graph-editor</artifactId>
-    <version>11.0.8</version>
+    <version>17.0.0</version>
     <packaging>pom</packaging>
 
     <description>A library for creating and editing graph-like diagrams in JavaFX</description>
@@ -79,7 +79,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <release>11</release>
+                        <release>17</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -123,7 +123,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

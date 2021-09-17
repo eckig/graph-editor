@@ -26,10 +26,10 @@ jobs:
     - name: Add Wix to Path
       run: echo "$HOME/target/wix" >> $GITHUB_PATH
     - uses: actions/checkout@v2
-    - name: Set up JDK 16
+    - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 16
+        java-version: 17
     - name: Cache Maven packages
       uses: actions/cache@v2
       with:

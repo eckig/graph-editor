@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fx.graph.editor</groupId>
         <artifactId>graph-editor</artifactId>
-		<version>11.0.8</version>
+		<version>17.0.0</version>
 	</parent>
 	<name>${component.name}::Model</name>
 
