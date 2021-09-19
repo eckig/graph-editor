@@ -119,10 +119,10 @@ public class DefaultModelEditingManager implements ModelEditingManager
         // pre-fill the RemoveContext with all elements to be removed:
         for (final EObject obj : pToRemove)
         {
-            if (obj instanceof GNode && editContext.canRemove(obj))
+            if (obj instanceof GNode n && editContext.canRemove(obj))
             {
                 delete.add(obj);
-                for (final GConnector connector : ((GNode) obj).getConnectors())
+                for (final GConnector connector : n.getConnectors())
                 {
                     for (final GConnection connection : connector.getConnections())
                     {

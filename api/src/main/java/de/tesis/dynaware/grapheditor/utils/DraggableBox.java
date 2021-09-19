@@ -548,9 +548,9 @@ public class DraggableBox extends StackPane
         {
             return null;
         }
-        else if (parent instanceof Region)
+        else if (parent instanceof Region r)
         {
-            return (Region) parent;
+            return r;
         }
         else
         {

@@ -383,18 +383,18 @@ public class GraphEditorSkinManager implements SkinManager
         {
             return;
         }
-        if (pMovedSkin instanceof GNodeSkin)
+        if (pMovedSkin instanceof GNodeSkin gns)
         {
             // redraw all connections attached to each connector of the GNode:
-            for (final GConnector connector : ((GNodeSkin) pMovedSkin).getItem().getConnectors())
+            for (final GConnector connector : gns.getItem().getConnectors())
             {
                 layouter.redraw(connector.getConnections());
             }
         }
-        else if (pMovedSkin instanceof GJointSkin)
+        else if (pMovedSkin instanceof GJointSkin gjs)
         {
             // redraw the GConnection of the GJoint:
-            layouter.redraw(((GJointSkin) pMovedSkin).getItem().getConnection());
+            layouter.redraw(gjs.getItem().getConnection());
         }
     }
 }

@@ -60,9 +60,8 @@ public class ColorAnimationUtils {
     public static void removeAnimation(final Node node) {
 
         // Stopping the timeline should allow object properties that depend on it to be garbage collected.
-        if (node.getProperties().get(TIMELINE_KEY) instanceof Timeline) {
-            final Timeline timeline = (Timeline) node.getProperties().get(TIMELINE_KEY);
-            timeline.stop();
+        if (node.getProperties().get(TIMELINE_KEY) instanceof Timeline tl) {
+            tl.stop();
         }
     }
 }

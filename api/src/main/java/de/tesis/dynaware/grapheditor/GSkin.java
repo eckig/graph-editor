@@ -151,9 +151,9 @@ public abstract class GSkin<T extends EObject>
     public void dispose()
     {
         final Node root = getRoot();
-        if (root instanceof DraggableBox)
+        if (root instanceof DraggableBox db)
         {
-            ((DraggableBox) root).dispose();
+            db.dispose();
         }
         onPositionMoved = null;
         graphEditor = null;

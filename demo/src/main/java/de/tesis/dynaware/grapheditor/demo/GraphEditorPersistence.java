@@ -128,9 +128,7 @@ public class GraphEditorPersistence {
             e.printStackTrace();
         }
 
-        if (!resource.getContents().isEmpty() && resource.getContents().get(0) instanceof GModel) {
-
-            final GModel model = (GModel) resource.getContents().get(0);
+        if (!resource.getContents().isEmpty() && resource.getContents().get(0) instanceof GModel model) {
             graphEditor.setModel(model);
         }
     }
@@ -213,9 +211,7 @@ public class GraphEditorPersistence {
             e.printStackTrace();
         }
 
-        if (!resource.getContents().isEmpty() && resource.getContents().get(0) instanceof GModel) {
-
-            final GModel model = (GModel) resource.getContents().get(0);
+        if (!resource.getContents().isEmpty() && resource.getContents().get(0) instanceof GModel model) {
             graphEditor.setModel(model);
         }
 

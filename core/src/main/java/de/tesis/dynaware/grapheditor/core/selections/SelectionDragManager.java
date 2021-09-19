@@ -104,15 +104,15 @@ public class SelectionDragManager {
         // (the ones we want to move alongside the master):
         for (final EObject selected : selectionManager.getSelectedItems()) {
 
-            if (selected instanceof GNode) {
+            if (selected instanceof GNode n) {
 
-                final GNodeSkin skin = skinLookup.lookupNode((GNode) selected);
+                final GNodeSkin skin = skinLookup.lookupNode(n);
                 if (skin != null) {
                     currentSelectedElements.add(skin.getRoot());
                 }
-            } else if (selected instanceof GJoint) {
+            } else if (selected instanceof GJoint j) {
 
-                final GJointSkin skin = skinLookup.lookupJoint((GJoint) selected);
+                final GJointSkin skin = skinLookup.lookupJoint(j);
                 if (skin != null) {
                     currentSelectedElements.add(skin.getRoot());
                 }

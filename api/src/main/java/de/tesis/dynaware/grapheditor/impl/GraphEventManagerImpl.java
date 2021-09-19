@@ -45,42 +45,27 @@ public class GraphEventManagerImpl implements GraphEventManager
         }
         else if (current == null)
         {
-            final boolean isTouch = pEvent instanceof TouchEvent || pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isSynthesized()
-                    || pEvent instanceof ScrollEvent && ((ScrollEvent) pEvent).getTouchCount() > 0;
+            final boolean isTouch = pEvent instanceof TouchEvent || pEvent instanceof MouseEvent me && me.isSynthesized()
+                    || pEvent instanceof ScrollEvent se && se.getTouchCount() > 0;
             if (!isTouch)
             {
-                switch (pGesture)
-                {
-                    case PAN:
-                        return pEvent instanceof ScrollEvent && !((ScrollEvent) pEvent).isControlDown()
-                                || pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isSecondaryButtonDown();
-
-                    case ZOOM:
-                        return pEvent instanceof ScrollEvent && ((ScrollEvent) pEvent).isControlDown();
-
-                    case SELECT:
-                    case CONNECT:
-                    case MOVE:
-                    case RESIZE:
-                        return pEvent instanceof MouseEvent && ((MouseEvent) pEvent).isPrimaryButtonDown();
-                }
+                return switch (pGesture)
+                        {
+                            case PAN -> pEvent instanceof ScrollEvent se && !se.isControlDown()
+                                    || pEvent instanceof MouseEvent me && me.isSecondaryButtonDown();
+                            case ZOOM -> pEvent instanceof ScrollEvent se && se.isControlDown();
+                            case SELECT, CONNECT, MOVE, RESIZE -> pEvent instanceof MouseEvent me &&
+                                    me.isPrimaryButtonDown();
+                        };
             }
             else
             {
-                switch (pGesture)
-                {
-                    case ZOOM:
-                        return pEvent instanceof ZoomEvent;
-
-                    case PAN:
-                        return pEvent instanceof TouchEvent && ((TouchEvent) pEvent).getTouchCount() > 1;
-
-                    case SELECT:
-                    case CONNECT:
-                    case MOVE:
-                    case RESIZE:
-                        return true;
-                }
+                return switch (pGesture)
+                        {
+                            case ZOOM -> pEvent instanceof ZoomEvent;
+                            case PAN -> pEvent instanceof TouchEvent && ((TouchEvent) pEvent).getTouchCount() > 1;
+                            case SELECT, CONNECT, MOVE, RESIZE -> true;
+                        };
             }
         }
         return false;
@@ -115,9 +100,9 @@ public class GraphEventManagerImpl implements GraphEventManager
     {
         if (pNode != null)
         {
-            if (pNode instanceof Node)
+            if (pNode instanceof Node n)
             {
-                return ((Node) pNode).isVisible() && ((Node) pNode).getParent() != null && ((Node) pNode).getScene() != null;
+                return n.isVisible() && n.getParent() != null && n.getScene() != null;
             }
             return true;
         }

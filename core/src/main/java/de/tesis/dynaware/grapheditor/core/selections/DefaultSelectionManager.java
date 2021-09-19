@@ -39,7 +39,6 @@ public class DefaultSelectionManager implements SelectionManager
 {
 
     private final SelectionCreator selectionCreator;
-    private final SelectionDragManager selectionDragManager;
     private final SelectionTracker selectionTracker;
 
     private GModel model;
@@ -55,7 +54,7 @@ public class DefaultSelectionManager implements SelectionManager
      */
     public DefaultSelectionManager(final SkinLookup skinLookup, final GraphEditorView view)
     {
-        selectionDragManager = new SelectionDragManager(skinLookup, view, this);
+        final SelectionDragManager selectionDragManager = new SelectionDragManager(skinLookup, view, this);
         selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager);
         selectionTracker = new SelectionTracker(skinLookup);
     }
@@ -71,7 +70,7 @@ public class DefaultSelectionManager implements SelectionManager
         this.model = model;
 
         selectionCreator.initialize(model);
-        selectionTracker.initialize(model);
+        selectionTracker.initialize();
     }
 
     public void addNode(final GNode node)

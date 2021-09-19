@@ -28,7 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 
 /**
- * Manages cut, copy, & paste actions on the current selection.
+ * Manages cut, copy and paste actions on the current selection.
  *
  * <p>
  * The rules for what is copied are as follows:

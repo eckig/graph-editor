@@ -24,7 +24,7 @@ public interface SelectionManager {
      * This list is read-only. Nodes should be selected via {@link #select(EObject)}.
      * </p>
      *
-     * @return the list of currently selected nodes
+     * @return the unmodifiable list of currently selected nodes
      */
     List<GNode> getSelectedNodes();
     
@@ -35,7 +35,7 @@ public interface SelectionManager {
      * This list is read-only. Connections should be selected via {@link #select(EObject)}.
      * </p>
      *
-     * @return the list of currently selected connections
+     * @return the unmodifiable list of currently selected connections
      */
     List<GConnection> getSelectedConnections();
 
@@ -46,7 +46,7 @@ public interface SelectionManager {
      * This list is read-only. Joints should be selected via {@link #select(EObject)}.
      * </p>
      *
-     * @return the list of currently selected joints
+     * @return the unmodifiable list of currently selected joints
      */
     List<GJoint> getSelectedJoints();
     

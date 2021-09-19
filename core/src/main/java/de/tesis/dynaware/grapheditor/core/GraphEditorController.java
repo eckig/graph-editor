@@ -169,11 +169,11 @@ public class GraphEditorController<E extends GraphEditor>
 
         registerChangeListener(GraphPackage.Literals.GNODE__CONNECTORS, e ->
         {
-            if (e.getNotifier() instanceof GNode)
+            if (e.getNotifier() instanceof GNode n)
             {
                 // if the connector is removed, the parent element is null..
                 // luckily getNotifier() still returns the GNode where the connector was removed from:
-                markConnectorsDirty((GNode) e.getNotifier());
+                markConnectorsDirty(n);
             }
         });
         registerChangeListener(GraphPackage.Literals.GMODEL__CONNECTIONS,
@@ -260,14 +260,14 @@ public class GraphEditorController<E extends GraphEditor>
             final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(pNewModel);
             editingDomain.getResourceSet().eAdapters().add(mContentAdapter);
 
-            if(pNewModel instanceof InternalEObject)
+            if(pNewModel instanceof InternalEObject ieo)
             {
                 // add existing nodes through the registered change handlers:
-                processFeatureChanged(new ENotificationImpl((InternalEObject) pNewModel, Notification.ADD_MANY,
+                processFeatureChanged(new ENotificationImpl(ieo, Notification.ADD_MANY,
                         GraphPackage.Literals.GMODEL__NODES, List.of(), List.copyOf(pNewModel.getNodes())));
 
                 // add existing connections through the registered change handlers:
-                processFeatureChanged(new ENotificationImpl((InternalEObject) pNewModel, Notification.ADD_MANY,
+                processFeatureChanged(new ENotificationImpl(ieo, Notification.ADD_MANY,
                         GraphPackage.Literals.GMODEL__CONNECTIONS, List.of(), List.copyOf(pNewModel.getConnections())));
             }
             else
@@ -513,7 +513,7 @@ public class GraphEditorController<E extends GraphEditor>
         mJointsToAdd.remove(pJoint);
 
         mSelectionManager.removeJoint(pJoint);
-        mSelectionManager.getSelectedJoints().remove(pJoint);
+        mSelectionManager.clearSelection(pJoint);
         mModelLayoutUpdater.removeJoint(pJoint);
         mSkinManager.removeJoint(pJoint);
     }
@@ -530,9 +530,9 @@ public class GraphEditorController<E extends GraphEditor>
         {
             mConnectionsDirty.add(pJoint.getConnection());
         }
-        else if(pNotifier instanceof GConnection)
+        else if(pNotifier instanceof GConnection c)
         {
-            mConnectionsDirty.add((GConnection) pNotifier);
+            mConnectionsDirty.add(c);
         }
     }
 
@@ -561,7 +561,7 @@ public class GraphEditorController<E extends GraphEditor>
         mConnectionsToAdd.remove(pConnection);
 
         mSelectionManager.removeConnection(pConnection);
-        mSelectionManager.getSelectedConnections().remove(pConnection);
+        mSelectionManager.clearSelection(pConnection);
         mSkinManager.removeConnection(pConnection);
 
         for (final GJoint joint : pConnection.getJoints())

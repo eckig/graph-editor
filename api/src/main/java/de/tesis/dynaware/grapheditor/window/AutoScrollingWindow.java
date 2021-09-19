@@ -94,9 +94,9 @@ public class AutoScrollingWindow extends PanningWindow
 
     private boolean isScrollBar(final MouseEvent pEvent)
     {
-        if (pEvent.getTarget() instanceof Node)
+        if (pEvent.getTarget() instanceof Node node)
         {
-            Node n = (Node) pEvent.getTarget();
+            Node n = node;
             while (n != null)
             {
                 if (n instanceof ScrollBar)

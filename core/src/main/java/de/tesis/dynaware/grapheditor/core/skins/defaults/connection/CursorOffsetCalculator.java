@@ -140,15 +140,13 @@ public class CursorOffsetCalculator {
      * @param offsetBound the maximum allowed offset value
      */
     private void calculateOffset(final PathElement pathElement, final double cursorSceneX, final double cursorSceneY,
-            final double offsetBound) {
-
+            final double offsetBound)
+    {
         final double currentSceneX = path.localToScene(currentX, currentY).getX();
         final double currentSceneY = path.localToScene(currentX, currentY).getY();
 
-        if (pathElement instanceof HLineTo) {
-
-            final HLineTo hLineTo = (HLineTo) pathElement;
-
+        if (pathElement instanceof HLineTo hLineTo)
+        {
             final double nextSceneX = path.localToScene(hLineTo.getX(), currentY).getX();
             final double possibleMinOffsetY = currentSceneY - cursorSceneY;
 
@@ -156,23 +154,20 @@ public class CursorOffsetCalculator {
             final boolean cursorInRangeY = Math.abs(possibleMinOffsetY) < offsetBound;
             final boolean foundCloser = Math.abs(possibleMinOffsetY) < Math.abs(minOffsetY);
 
-            if (inRangeX && cursorInRangeY && foundCloser) {
+            if (inRangeX && cursorInRangeY && foundCloser)
+            {
                 minOffsetY = possibleMinOffsetY;
             }
 
             currentX = hLineTo.getX();
-
-        } else if (pathElement instanceof ArcTo) {
-
-            final ArcTo arcTo = (ArcTo) pathElement;
-
+        }
+        else if (pathElement instanceof ArcTo arcTo)
+        {
             currentX = arcTo.getX();
             currentY = arcTo.getY();
-
-        } else if (pathElement instanceof VLineTo) {
-
-            final VLineTo vLineTo = (VLineTo) pathElement;
-
+        }
+        else if (pathElement instanceof VLineTo vLineTo)
+        {
             final double nextSceneY = path.localToScene(currentX, vLineTo.getY()).getY();
             final double possibleMinOffsetX = currentSceneX - cursorSceneX;
 
@@ -180,7 +175,8 @@ public class CursorOffsetCalculator {
             final boolean cursorInRangeX = Math.abs(possibleMinOffsetX) < offsetBound;
             final boolean foundCloser = Math.abs(possibleMinOffsetX) < Math.abs(minOffsetX);
 
-            if (cursorInRangeY && cursorInRangeX && foundCloser) {
+            if (cursorInRangeY && cursorInRangeX && foundCloser)
+            {
                 minOffsetX = possibleMinOffsetX;
             }
             currentY = vLineTo.getY();
