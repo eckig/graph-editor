@@ -37,9 +37,9 @@ jobs:
       uses: DuckSoft/extract-7z-action@v1.0
       with:
         pathSource: ${{ steps.jfxjmods.outputs.filename }}
-        pathTarget: ./demo/javafx/win
+        pathTarget: ./demo/javafx
     - name: Normalize jmod folder
-      run: for /r %i in ("demo\javafx\win\javafx-jmods-17.0.0.1\*.*") do move %i %~pi..
+      run: Rename-Item -path ./demo/javafx/javafx-jmods-17.0.0.1 -newName ./demo/javafx/win
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
