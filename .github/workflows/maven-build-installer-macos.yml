@@ -27,7 +27,7 @@ jobs:
           pathSource: ${{ steps.jfxjmods.outputs.filename }}
           pathTarget: ./demo/javafx
       - name: Normalize jmod folder
-        run: mv ./demo/javafx/javafx-jmods-17.0.0.1 .demo/javafx/mac
+        run: mv ./demo/javafx/javafx-jmods-17.0.0.1 ./demo/javafx/linux
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
