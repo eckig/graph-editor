@@ -15,6 +15,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Download JFX JMod Files
+        uses: suisei-cn/actions-download-file@v1
+        id: jfxjmods
+        with:
+          url: https://download2.gluonhq.com/openjfx/17.0.0.1/openjfx-17.0.0.1_windows-x64_bin-jmods.zip
+          target: ./tmp
+      - name: Decompress JFX JMod files
+        uses: DuckSoft/extract-7z-action@v1.0
+        with:
+          pathSource: ${{ steps.jfxjmods.outputs.filename }}
+          pathTarget: ./demo/javafx/win
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
