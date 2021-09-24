@@ -4,6 +4,7 @@
 name: Build Windows Installer
 
 on:
+  workflow_dispatch:
   release:
     types: [created]
 
@@ -38,11 +39,7 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
       run: mvn -B clean install --file pom.xml
-    - name: Update Automatic Release
-      uses: marvinpinto/action-automatic-releases@latest
+    - uses: actions/upload-artifact@v2
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN}}"
-        automatic_release_tag: "Windows-latest"
-        prerelease: true
-        title: "Graph Editor Demo Development Build (Windows)"
-        files: ./demo/target/*.msi
+        name: graph-editor-demo.msi
+        path: ./demo/target/*.msi
