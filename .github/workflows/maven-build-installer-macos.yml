@@ -20,7 +20,7 @@ jobs:
         id: jfxjmods
         with:
           url: https://download2.gluonhq.com/openjfx/17.0.0.1/openjfx-17.0.0.1_osx-x64_bin-jmods.zip
-          target: ./tmp
+          target: .
       - name: Decompress JFX JMod files
         uses: DuckSoft/extract-7z-action@v1.0
         with:
