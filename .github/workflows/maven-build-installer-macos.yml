@@ -25,7 +25,9 @@ jobs:
         uses: DuckSoft/extract-7z-action@v1.0
         with:
           pathSource: ${{ steps.jfxjmods.outputs.filename }}
-          pathTarget: ./demo/javafx/mac
+          pathTarget: ./demo/javafx
+      - name: Normalize jmod folder
+        run: mv ./demo/javafx/javafx-jmods-17.0.0.1 .demo/javafx/mac
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
