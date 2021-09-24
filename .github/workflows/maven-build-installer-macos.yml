@@ -26,11 +26,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
         run: mvn -B clean install --file pom.xml
-      - name: Update Automatic Release
-        uses: marvinpinto/action-automatic-releases@latest
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN}}"
-          automatic_release_tag: "macOS-latest"
-          prerelease: true
-          title: "Graph Editor Demo Development Build (macOS)"
+          name: graph-editor-demo.dmg
           files: ./demo/target/*.dmg
