@@ -116,7 +116,7 @@
                     this project with the JDK modules. -->
                     <execution>
                         <id>jlink</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>java-tool</goal>
                         </goals>

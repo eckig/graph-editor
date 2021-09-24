@@ -1,0 +1,1 @@
+folder will be used during build phase of the executable demo

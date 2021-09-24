@@ -24,7 +24,7 @@ jobs:
       uses: DuckSoft/extract-7z-action@v1.0
       with:
         pathSource: ${{ steps.jfxjmods.outputs.filename }}
-        pathTarget: ./demo/javafx/win
+        pathTarget: ./demo/javafx/linux
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
