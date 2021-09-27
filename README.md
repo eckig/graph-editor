@@ -32,11 +32,11 @@ Try the tutorials [here](https://github.com/eckig/graph-editor/wiki).
 
 ## Demo
 
-Download self-executable image from the [releases](https://github.com/eckig/graph-editor/releases).
+Download self-executable installer from the [releases](https://github.com/eckig/graph-editor/releases).
 
 Or compile and run it yourself:
 
- 1. Requires [Java 11](https://adoptopenjdk.net/), [Git](http://git-scm.com/) and [Maven](http://maven.apache.org/).
+ 1. Requires [Java 17](https://adoptium.net/), [Git](http://git-scm.com/) and [Maven](http://maven.apache.org/).
  2. Clone the project (`git clone https://github.com/eckig/graph-editor.git`
  3. Import into your favorite IDE
  4. Navigate to the main class `GraphEditorDemo` inside the `demo` project and launch it.
