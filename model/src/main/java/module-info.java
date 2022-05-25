@@ -9,5 +9,5 @@ module eu.eckig.grapheditor.model
     requires transitive org.eclipse.emf.ecore;
     requires org.eclipse.emf.common;
     
-    exports de.tesis.dynaware.grapheditor.model;
+    exports eu.eckig.grapheditor.model;
 }

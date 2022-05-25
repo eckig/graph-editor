@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.eckig.grapheditor</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>grapheditor-demo</artifactId>
     <packaging>jar</packaging>
     <parent>
         <groupId>eu.eckig</groupId>
@@ -13,7 +13,7 @@
     <name>${component.name}::Demo</name>
 
     <properties>
-        <main-class>de.tesis.dynaware.grapheditor.demo.GraphEditorDemo</main-class>
+        <main-class>eu.eckig.grapheditor.demo.GraphEditorDemo</main-class>
         <app.name>${project.artifactId}</app.name>
         <app.version>${project.version}</app.version>
 
@@ -30,9 +30,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>fx.graph.editor</groupId>
-            <artifactId>graph-editor-core</artifactId>
-            <version>17.0.0</version>
+            <groupId>eu.eckig.grapheditor</groupId>
+            <artifactId>grapheditor-core</artifactId>
+            <version>18.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

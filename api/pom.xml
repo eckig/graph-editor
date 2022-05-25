@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.eckig.grapheditor</groupId>
-    <artifactId>api</artifactId>
+    <artifactId>grapheditor-api</artifactId>
     <packaging>jar</packaging>
     <parent>
         <groupId>eu.eckig</groupId>
@@ -14,9 +14,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>fx.graph.editor</groupId>
-            <artifactId>graph-editor-model</artifactId>
-            <version>17.0.0</version>
+            <groupId>eu.eckig.grapheditor</groupId>
+            <artifactId>grapheditor-model</artifactId>
+            <version>18.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.emf</groupId>

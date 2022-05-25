@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.eckig.grapheditor</groupId>
-    <artifactId>model</artifactId>
+    <artifactId>grapheditor-model</artifactId>
     <packaging>jar</packaging>
     <parent>
         <groupId>eu.eckig</groupId>

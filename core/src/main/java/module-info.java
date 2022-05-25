@@ -9,13 +9,13 @@ module eu.eckig.grapheditor.core
     requires transitive org.eclipse.emf.common;
     requires org.slf4j;
 
-    exports de.tesis.dynaware.grapheditor.core;
-    exports de.tesis.dynaware.grapheditor.core.connections;
-    exports de.tesis.dynaware.grapheditor.core.connectors;
-    exports de.tesis.dynaware.grapheditor.core.skins;
-    exports de.tesis.dynaware.grapheditor.core.skins.defaults;
-    exports de.tesis.dynaware.grapheditor.core.skins.defaults.connection;
-    exports de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment;
-    exports de.tesis.dynaware.grapheditor.core.skins.defaults.tail;
-    exports de.tesis.dynaware.grapheditor.core.view;
+    exports eu.eckig.grapheditor.core;
+    exports eu.eckig.grapheditor.core.connections;
+    exports eu.eckig.grapheditor.core.connectors;
+    exports eu.eckig.grapheditor.core.skins;
+    exports eu.eckig.grapheditor.core.skins.defaults;
+    exports eu.eckig.grapheditor.core.skins.defaults.connection;
+    exports eu.eckig.grapheditor.core.skins.defaults.connection.segment;
+    exports eu.eckig.grapheditor.core.skins.defaults.tail;
+    exports eu.eckig.grapheditor.core.view;
 }
