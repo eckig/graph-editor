@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/eu.eckig.grapheditor.model/src/main/java" editDirectory="/eu.eckig.grapheditor.model.edit/src-gen"
-    editorDirectory="/eu.eckig.grapheditor.model.editor/src" modelPluginID="eu.eckig.grapheditor.model"
-    modelName="Graph" editPluginClass="eu.eckig.grapheditor.model.provider.GraphEditPlugin"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/io.github.eckig.grapheditor.model/src/main/java" editDirectory="/io.github.eckig.grapheditor.model.edit/src-gen"
+    editorDirectory="/io.github.eckig.grapheditor.model.editor/src" modelPluginID="io.github.eckig.grapheditor.model"
+    modelName="Graph" editPluginClass="io.github.eckig.grapheditor.model.provider.GraphEditPlugin"
     rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
-    bundleManifest="false" complianceLevel="7.0" copyrightFields="false" editPluginID="eu.eckig.grapheditor.model.edit"
+    bundleManifest="false" complianceLevel="7.0" copyrightFields="false" editPluginID="io.github.eckig.grapheditor.model.edit"
     operationReflection="true" importOrganizing="true">
   <foreignModel>graph.ecore</foreignModel>
-  <genPackages prefix="Graph" basePackage="eu.eckig.grapheditor" disposableProviderFactory="true"
+  <genPackages prefix="Graph" basePackage="io.github.eckig.grapheditor" disposableProviderFactory="true"
       ecorePackage="graph.ecore#/">
     <genClasses ecoreClass="graph.ecore#//GModel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graph.ecore#//GModel/nodes"/>
