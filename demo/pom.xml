@@ -1,15 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>graph-editor-demo</artifactId>
-	<packaging>jar</packaging>
-	<parent>
-		<groupId>fx.graph.editor</groupId>
-        <artifactId>graph-editor</artifactId>
-		<version>17.0.0</version>
-	</parent>
-	<name>${component.name}::Demo</name>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.eckig.grapheditor</groupId>
+    <artifactId>demo</artifactId>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>eu.eckig</groupId>
+        <artifactId>grapheditor</artifactId>
+        <version>18.0.0</version>
+    </parent>
+    <name>${component.name}::Demo</name>
 
     <properties>
         <main-class>de.tesis.dynaware.grapheditor.demo.GraphEditorDemo</main-class>
@@ -27,18 +28,18 @@
         <windows.upgrade.uuid>2618b05b-3e19-4ba3-b015-03bba41dca7d</windows.upgrade.uuid>
     </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>fx.graph.editor</groupId>
-			<artifactId>graph-editor-core</artifactId>
-			<version>17.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
+    <dependencies>
+        <dependency>
+            <groupId>fx.graph.editor</groupId>
+            <artifactId>graph-editor-core</artifactId>
+            <version>17.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${org.openjfx.version}</version>
@@ -48,9 +49,9 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${org.openjfx.version}</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
-	<build>
+    <build>
         <resources>
             <resource>
                 <!-- Here we are processing the platform-specific jpackage command files, adding in Maven
@@ -66,7 +67,7 @@
                 </includes>
             </resource>
         </resources>
-		<plugins>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -156,8 +157,8 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-	</build>
+        </plugins>
+    </build>
     <profiles>
         <!-- We use the built-in Maven profile activation system to set the platform property.
         These properties are then use to build the directory paths to the platform specific resources.

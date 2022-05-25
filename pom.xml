@@ -4,9 +4,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <name>${component.name}</name>
-    <groupId>fx.graph.editor</groupId>
-    <artifactId>graph-editor</artifactId>
-    <version>17.0.0</version>
+    <groupId>eu.eckig</groupId>
+    <artifactId>grapheditor</artifactId>
+    <version>18.0.0</version>
     <packaging>pom</packaging>
 
     <description>A library for creating and editing graph-like diagrams in JavaFX</description>
@@ -26,21 +26,6 @@
             <url>https://maven.pkg.github.com/eckig/graph-editor</url>
         </repository>
     </distributionManagement>
-
-    <developers>
-        <developer>
-            <name>Robert Fisher</name>
-            <email>rfisher@tesis.de</email>
-            <organization>TESIS Dynaware GmbH</organization>
-            <organizationUrl>http://www.tesis-dynaware.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Steffen Rachner</name>
-            <email>steffen.rachner@t-systems.com</email>
-            <organization>T-Systems Information Services GmbH</organization>
-            <organizationUrl>http://www.t-systems-ifs.com/</organizationUrl>
-        </developer>
-    </developers>
 
     <scm>
         <connection>scm:git:git@github.com:eckig/graph-editor.git</connection>

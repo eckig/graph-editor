@@ -1,39 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>graph-editor-core</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.eckig.grapheditor</groupId>
+    <artifactId>core</artifactId>
     <packaging>jar</packaging>
-	<parent>
-		<groupId>fx.graph.editor</groupId>
-        <artifactId>graph-editor</artifactId>
-		<version>17.0.0</version>
-	</parent>
-	<name>${component.name}::Core</name>
+    <parent>
+        <groupId>eu.eckig</groupId>
+        <artifactId>grapheditor</artifactId>
+        <version>18.0.0</version>
+    </parent>
+    <name>${component.name}::Core</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>fx.graph.editor</groupId>
-			<artifactId>graph-editor-api</artifactId>
-			<version>17.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.emf</groupId>
-			<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-			<version>${org.eclipse.emf.ecore.xmi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
+    <dependencies>
+        <dependency>
+            <groupId>fx.graph.editor</groupId>
+            <artifactId>graph-editor-api</artifactId>
+            <version>17.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+            <version>${org.eclipse.emf.ecore.xmi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${org.openjfx.version}</version>
@@ -44,5 +45,5 @@
             <version>${openjfx-monocle.version}</version>
             <scope>test</scope>
         </dependency>
-	</dependencies>
+    </dependencies>
 </project>

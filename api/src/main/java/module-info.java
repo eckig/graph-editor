@@ -1,4 +1,4 @@
-module fx.graph.editor.api
+module eu.eckig.grapheditor.api
 {
     requires transitive javafx.controls;
     requires transitive fx.graph.editor.model;

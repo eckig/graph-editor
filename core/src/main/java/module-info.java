@@ -1,8 +1,8 @@
-module fx.graph.editor.core
+module eu.eckig.grapheditor.core
 {
     requires transitive javafx.controls;
-    requires transitive fx.graph.editor.model;
-    requires transitive fx.graph.editor.api;
+    requires transitive eu.eckig.grapheditor.model;
+    requires transitive eu.eckig.grapheditor.api;
     requires org.eclipse.emf.ecore.xmi;
     requires org.eclipse.emf.edit;
     requires org.eclipse.emf.ecore;
