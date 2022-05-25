@@ -26,6 +26,14 @@ Example of a fully customized implementation:
 
 ## Use it
 
+Maven coordinates:
+```
+<dependency>
+  <groupId>io.github.eckig.grapheditor</groupId>
+  <artifactId>grapheditor-core</artifactId>
+  <version>18.0.0</version>
+</dependency>
+```
 Download the latest [Release](https://github.com/eckig/graph-editor/releases).
 
 Try the tutorials [here](https://github.com/eckig/graph-editor/wiki).
