@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <name>${component.name}</name>
-    <groupId>eu.eckig</groupId>
+    <groupId>io.github.eckig</groupId>
     <artifactId>grapheditor</artifactId>
     <version>18.0.0</version>
     <packaging>pom</packaging>
@@ -20,10 +20,13 @@
     </licenses>
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/eckig/graph-editor</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
@@ -121,6 +124,20 @@
                     <doclint>none</doclint>
                     <quiet>true</quiet>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
