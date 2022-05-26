@@ -41,7 +41,7 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
-      run: mvn -B clean install --file pom.xml -Dgpg.sign.skip=true
+      run: mvn -Dgpg.sign.skip=true -B clean install --file pom.xml
     - uses: actions/upload-artifact@v2
       with:
         name: graph-editor-demo.deb
