@@ -35,7 +35,7 @@ jobs:
       uses: suisei-cn/actions-download-file@v1
       id: jfxjmods
       with:
-        url: https://download2.gluonhq.com/openjfx/$VERSION_JFX/openjfx-$VERSION_JFX_windows-x64_bin-jmods.zip
+        url: "https://download2.gluonhq.com/openjfx/$env:VERSION_JFX/openjfx-$env:VERSION_JFX_windows-x64_bin-jmods.zip"
         target: .
     - name: Decompress JFX jmod files
       uses: DuckSoft/extract-7z-action@v1.0
@@ -43,7 +43,7 @@ jobs:
         pathSource: ${{ steps.jfxjmods.outputs.filename }}
         pathTarget: ./demo/javafx
     - name: Normalize jmod folder
-      run: Rename-Item -path "demo\javafx\javafx-jmods-$env:$VERSION_JFX" -newName "win"
+      run: Rename-Item -path "demo\javafx\javafx-jmods-$env:$env:VERSION_JFX" -newName "win"
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
