@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://io.github.eckig.grapheditor.model/1.0">
   <nodes id="1" type="titled-node" x="1269.0" y="889.0">
     <connectors type="titled-left-input"/>
     <connectors type="titled-right-output" connections="//@connections.0"/>

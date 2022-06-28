@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://io.github.eckig.grapheditor.model/1.0">
   <nodes type="tree-node" x="1403.0" y="923.0" width="157.0">
     <connectors type="tree-output" connections="//@connections.0 //@connections.1 //@connections.2" connectionDetachedOnDrag="false"/>
   </nodes>
