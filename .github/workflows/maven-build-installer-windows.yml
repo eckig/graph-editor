@@ -9,7 +9,7 @@ on:
     types: [created]
 
 env:
-  VERSION_JFX: 18.0.1
+  VERSION_JFX: 19
 
 jobs:
   build:
