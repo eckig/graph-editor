@@ -71,7 +71,6 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>demo</module>
         <module>model</module>
     </modules>
 

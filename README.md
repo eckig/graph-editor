@@ -1,4 +1,4 @@
-Graph Editor <a href="https://foojay.io/today/works-with-openjdk"><img align="right" src="https://github.com/foojayio/badges/raw/main/works_with_openjdk/Works-with-OpenJDK.png" width="100"></a>
+Graph Editor
 ==========
 
 A library for creating and editing graph-like diagrams in JavaFX.
@@ -36,19 +36,8 @@ Maven coordinates:
 ```
 Download the latest [Release](https://github.com/eckig/graph-editor/releases).
 
-Try the tutorials [here](https://github.com/eckig/graph-editor/wiki).
+Try the [tutorials](https://github.com/eckig/graph-editor/wiki).
 
 ## Demo
 
-Download self-executable installer from the [releases](https://github.com/eckig/graph-editor/releases).
-
-Or compile and run it yourself:
-
- 1. Requires [Java 17](https://adoptium.net/), [Git](http://git-scm.com/) and [Maven](http://maven.apache.org/).
- 2. Clone the project (`git clone https://github.com/eckig/graph-editor.git`
- 3. Import into your favorite IDE
- 4. Navigate to the main class `GraphEditorDemo` inside the `demo` project and launch it.
-
-## Thanks to
-
- - Jetbrains for the [IntelliJ IDEA](https://www.jetbrains.com/idea/) licenses
+A sample application with a self-executable installer is available with the [graph-editor-demo](https://github.com/eckig/graph-editor-demo).
