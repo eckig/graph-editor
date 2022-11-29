@@ -6,7 +6,7 @@
     <name>${component.name}</name>
     <groupId>io.github.eckig</groupId>
     <artifactId>grapheditor</artifactId>
-    <version>18.0.1</version>
+    <version>19.0.0</version>
     <packaging>pom</packaging>
 
     <description>A library for creating and editing graph-like diagrams in JavaFX</description>
@@ -65,7 +65,6 @@
         <org.slf4j.version>2.0.5</org.slf4j.version>
         <org.openjfx.version>19</org.openjfx.version>
         <openjfx-monocle.version>jdk-12.0.1+2</openjfx-monocle.version>
-        <gpg.sign.skip>false</gpg.sign.skip>
     </properties>
 
     <modules>
@@ -144,9 +143,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>3.0.1</version>
-                <configuration>
-                    <skip>${gpg.sign.skip}</skip>
-               </configuration>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
