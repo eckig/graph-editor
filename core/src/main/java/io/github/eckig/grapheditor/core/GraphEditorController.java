@@ -18,10 +18,15 @@ import io.github.eckig.grapheditor.core.model.ModelLayoutUpdater;
 import io.github.eckig.grapheditor.core.model.ModelSanityChecker;
 import io.github.eckig.grapheditor.core.selections.DefaultSelectionManager;
 import io.github.eckig.grapheditor.core.skins.SkinManager;
+import io.github.eckig.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
 import io.github.eckig.grapheditor.core.view.impl.DefaultConnectionLayouter;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
+
+import javafx.collections.MapChangeListener;
+
+import javafx.collections.WeakMapChangeListener;
 
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -120,6 +125,7 @@ public class GraphEditorController<E extends GraphEditor>
 
     private final E mEditor;
     private final ChangeListener<GModel> mModelChangeListener = (w, o, n) -> modelChanged(o, n);
+    private final MapChangeListener<String, String> mPropertiesChangeListener = this::propertiesChanged;
 
     /**
      * While processing a {@link Notification} from EMF it might trigger other
@@ -159,6 +165,8 @@ public class GraphEditorController<E extends GraphEditor>
 
         pEditor.modelProperty().addListener(new WeakChangeListener<>(mModelChangeListener));
         modelChanged(null, pEditor.getModel());
+
+        pProperties.getCustomProperties().addListener(new WeakMapChangeListener<>(mPropertiesChangeListener));
     }
 
     private void initDefaultListeners()
@@ -295,6 +303,15 @@ public class GraphEditorController<E extends GraphEditor>
             // 3) update layout values
             executeOnceWhenPropertyIsNonNull(mEditor.getView().sceneProperty(),
                     scene -> Platform.runLater(() -> updateLayoutValues(pNewModel)));
+        }
+    }
+
+    private void propertiesChanged(final MapChangeListener.Change<? extends String, ? extends String> pChange)
+    {
+        if (SimpleConnectionSkin.SHOW_DETOURS_KEY.equals(pChange.getKey()))
+        {
+            mConnectionLayouter.redrawAll();
+            mConnectionLayouter.draw();
         }
     }
 
