@@ -25,13 +25,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
-      - name: test
-        run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-              export DISPLAY=:99.0
-              sh -e /etc/init.d/xvfb start
-              mvn -B test package --file pom.xml
-          else
-              mvn -B test package --file pom.xml
-          fi
-        shell: bash
+      - name: Run headless test
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: mvn -B test package --file pom.xml
