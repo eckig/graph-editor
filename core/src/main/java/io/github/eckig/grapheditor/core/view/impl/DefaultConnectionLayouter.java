@@ -1,16 +1,10 @@
 package io.github.eckig.grapheditor.core.view.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.SkinLookup;
-import io.github.eckig.grapheditor.VirtualSkin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +24,6 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionLayouter.class);
 
-    private final Set<GConnection> mDirty = new HashSet<>();
-    private boolean mRedrawAll = false;
-    private final Map<GConnectionSkin, Point2D[]> mConnectionPoints = new HashMap<>();
     private final SkinLookup mSkinLookup;
     private GModel mModel;
 
@@ -55,24 +46,6 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
     }
 
     @Override
-    public void redraw(final Collection<GConnection> pConnections)
-    {
-        mDirty.addAll(pConnections);
-    }
-
-    @Override
-    public void redraw(final GConnection pConnection)
-    {
-        mDirty.add(pConnection);
-    }
-
-    @Override
-    public void redrawAll()
-    {
-        mRedrawAll = true;
-    }
-
-    @Override
     public void draw()
     {
         if (mModel == null || mModel.getConnections().isEmpty())
@@ -82,40 +55,10 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
 
         try
         {
-            if (mRedrawAll)
+            if (!mModel.getConnections().isEmpty())
             {
-                mConnectionPoints.clear();
-                if (!mModel.getConnections().isEmpty())
-                {
-                    redrawAllConnections();
-                }
-                mRedrawAll = false;
+                redrawAllConnections();
             }
-            else if (!mDirty.isEmpty())
-            {
-                final List<GConnectionSkin> repaint = new ArrayList<>(mDirty.size());
-                for (final GConnection conn : mDirty)
-                {
-                    final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(conn);
-                    if (connectionSkin != null && !(connectionSkin instanceof VirtualSkin))
-                    {
-                        final Point2D[] points = connectionSkin.update();
-                        if (points != null)
-                        {
-                            mConnectionPoints.put(connectionSkin, points);
-                        }
-
-                        repaint.add(connectionSkin);
-                    }
-                }
-
-                for (final GConnectionSkin skin : repaint)
-                {
-                    skin.draw(mConnectionPoints);
-                }
-                mDirty.clear();
-            }
-
         }
         catch (Exception e)
         {
@@ -125,6 +68,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
 
     private void redrawAllConnections()
     {
+        final Map<GConnectionSkin, Point2D[]> connectionPoints = new HashMap<>();
         for (final GConnection connection : mModel.getConnections())
         {
             final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
@@ -133,14 +77,14 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
                 final Point2D[] points = connectionSkin.update();
                 if (points != null)
                 {
-                    mConnectionPoints.put(connectionSkin, points);
+                    connectionPoints.put(connectionSkin, points);
                 }
             }
         }
 
-        for (final GConnectionSkin skin : mConnectionPoints.keySet())
+        for (final GConnectionSkin skin : connectionPoints.keySet())
         {
-            skin.draw(mConnectionPoints);
+            skin.draw(connectionPoints);
         }
     }
 }

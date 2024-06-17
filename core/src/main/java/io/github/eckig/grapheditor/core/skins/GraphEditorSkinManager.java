@@ -379,22 +379,9 @@ public class GraphEditorSkinManager implements SkinManager
     private void positionMoved(final GSkin<?> pMovedSkin)
     {
         final ConnectionLayouter layouter = mConnectionLayouter;
-        if (layouter == null)
+        if (layouter != null && (pMovedSkin instanceof GNodeSkin || pMovedSkin instanceof GJointSkin))
         {
-            return;
-        }
-        if (pMovedSkin instanceof GNodeSkin gns)
-        {
-            // redraw all connections attached to each connector of the GNode:
-            for (final GConnector connector : gns.getItem().getConnectors())
-            {
-                layouter.redraw(connector.getConnections());
-            }
-        }
-        else if (pMovedSkin instanceof GJointSkin gjs)
-        {
-            // redraw the GConnection of the GJoint:
-            layouter.redraw(gjs.getItem().getConnection());
+            layouter.draw();
         }
     }
 }
