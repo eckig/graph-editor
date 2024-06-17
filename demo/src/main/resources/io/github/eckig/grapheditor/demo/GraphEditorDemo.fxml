@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import io.github.eckig.grapheditor.core.view.GraphEditorContainer?>
+
+<AnchorPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="io.github.eckig.grapheditor.demo.GraphEditorDemoController">
+	<VBox fillWidth="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+		<MenuBar fx:id="menuBar">
+			<menus>
+				<Menu text="File">
+					<items>
+						<MenuItem text="Load File" onAction="#load"/>
+						<Menu text="Load Sample">
+							<items>
+								<MenuItem text="Default Skins - Small" onAction="#loadSample"/>
+								<MenuItem text="Default Skins - Large" onAction="#loadSampleLarge"/>
+								<SeparatorMenuItem/>
+								<MenuItem text="Tree Skins" onAction="#loadTree"/>
+								<MenuItem text="Titled Skins" onAction="#loadTitled"/>
+							</items>
+						</Menu>
+						<MenuItem text="Save" onAction="#save"/>
+						<MenuItem text="Clear All" onAction="#clearAll"/>
+						<SeparatorMenuItem/>
+						<MenuItem text="Exit" onAction="#exit"/>
+					</items>
+				</Menu>
+				<Menu text="Edit">
+					<items>
+						<MenuItem text="Undo" onAction="#undo" accelerator="Shortcut+Z"/>
+						<MenuItem text="Redo" onAction="#redo" accelerator="Shortcut+Y"/>
+						<SeparatorMenuItem/>
+						<MenuItem text="Copy" onAction="#copy" accelerator="Shortcut+C"/>
+						<MenuItem text="Paste" onAction="#paste" accelerator="Shortcut+V"/>
+						<SeparatorMenuItem/>
+						<!-- Added blank spaces to force menu to be wider. -->
+						<MenuItem text="Select All          " onAction="#selectAll" accelerator="Shortcut+A"/>
+						<MenuItem text="Delete" onAction="#deleteSelection" accelerator="Delete"/>
+					</items>
+				</Menu>
+				<Menu text="Actions">
+					<items>
+						<MenuItem text="Add Node" onAction="#addNode" accelerator="Shortcut+N"/>
+						<MenuItem text="Add Connector" fx:id="addConnectorButton" onAction="#addConnector" accelerator="Shortcut+E"/>
+						<MenuItem text="Clear Connectors" fx:id="clearConnectorsButton" onAction="#clearConnectors" accelerator="Shortcut+W"/>
+						<Menu fx:id="connectorTypeMenu" text="Connector Type">
+							<items>
+								<RadioMenuItem fx:id="inputConnectorTypeButton" text="Input" selected="true"/>
+								<RadioMenuItem fx:id="outputConnectorTypeButton" text="Output"/>
+							</items>
+						</Menu>
+						<Menu fx:id="connectorPositionMenu" text="Connector Position">
+							<items>
+								<RadioMenuItem fx:id="leftConnectorPositionButton" text="Left" selected="true"/>
+								<RadioMenuItem fx:id="rightConnectorPositionButton" text="Right"/>
+								<RadioMenuItem fx:id="topConnectorPositionButton" text="Top"/>
+								<RadioMenuItem fx:id="bottomConnectorPositionButton" text="Bottom"/>
+							</items>
+						</Menu>
+					</items>
+				</Menu>
+				<Menu text="Settings">
+					<items>
+						<RadioMenuItem fx:id="showGridButton" text="Show Grid" />
+						<RadioMenuItem fx:id="snapToGridButton" text="Snap to Grid" />
+						<Menu fx:id="readOnlyMenu" text="Read Only" />
+						<Menu text="Skin Type">
+							<items>
+								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>
+								<RadioMenuItem fx:id="treeSkinButton" text="Tree" onAction="#setTreeSkin"/>
+								<RadioMenuItem fx:id="titledSkinButton" text="Titled" onAction="#setTitledSkin"/>
+							</items>
+						</Menu>
+						<!-- Added blank spaces to force menu to be wider. -->
+						<Menu fx:id="intersectionStyle" text="Intersection Style  ">
+							<items>
+								<RadioMenuItem fx:id="detouredStyleButton" text="Detours" onAction="#setDetouredStyle" selected="true"/>
+								<RadioMenuItem fx:id="gappedStyleButton" text="Gaps" onAction="#setGappedStyle"/>
+							</items>
+						</Menu>
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+		<GraphEditorContainer fx:id="graphEditorContainer" minWidth="0" minHeight="0" maxWidth="+Infinity" maxHeight="+Infinity" VBox.vgrow="ALWAYS"/>
+	</VBox>
+	<ToggleButton fx:id="minimapButton" onAction="#toggleMinimap" focusTraversable="false" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="4"/>
+</AnchorPane>

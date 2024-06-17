@@ -1,0 +1,111 @@
+.tree-node-border {
+	-fx-stroke: darkslategrey;
+	-fx-stroke-type: inside;
+	-fx-stroke-width: 1;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+	-fx-fill: null;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.tree-node-background {
+	-fx-fill: rgb(249,247,250);
+	-fx-opacity: 0.9;
+	-fx-stroke: null;
+	-fx-stroke-type: inside;
+	-fx-stroke-width: 1;
+	-fx-arc-width: 6;
+	-fx-arc-height: 6;
+}
+
+.tree-node-background:selected {
+	-fx-fill: derive(rgb(249,247,250), -5%);
+}
+
+.tree-node-selection-halo {
+	-fx-stroke: deepskyblue;
+	-fx-stroke-type: inside;
+	-fx-stroke-line-cap: butt;
+	-fx-fill: null;
+}
+
+.tree-node-button {
+	-fx-padding: 0 12 9 0;
+}
+
+.tree-node-button .icon {
+	-fx-font-family: FontAwesome;
+	-fx-font-size: 24;
+	-fx-fill: deepskyblue;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.tree-node-button:hover .icon {
+	-fx-fill: derive(deepskyblue, -5%);
+}
+
+.tree-node-button:pressed .icon {
+	-fx-fill: derive(deepskyblue, 20%);
+}
+
+.tree-input-connector, .tree-output-connector {
+	-fx-stroke: darkslategrey;
+	-fx-stroke-type: inside;
+	-fx-fill: white;
+	-fx-stroke-width: 1;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.tree-input-connector:hover, .tree-input-connector:pressed, .tree-output-connector:hover, .tree-output-connector:pressed {
+	-fx-stroke-width: 2;
+}
+
+.tree-input-connector:allowed, .tree-output-connector:allowed {
+	-fx-stroke-width: 2;
+	-fx-fill: mediumseagreen;
+}
+
+.tree-input-connector:forbidden, .tree-output-connector:forbidden {
+	-fx-stroke-width: 2;
+	-fx-fill: tomato;
+}
+
+.tree-connection .arrow-line {
+	-fx-stroke: darkslategrey;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.tree-connection-background .arrow-line {
+	-fx-stroke-width: 9;
+	-fx-stroke: transparent;
+}
+
+.tree-connection .arrow-head {
+	-fx-stroke: darkslategrey;
+	-fx-fill: white;
+	-fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.tree-connection-background .arrow-head {
+	-fx-stroke-width: 3;
+	-fx-stroke: transparent;
+	-fx-fill: transparent;
+}
+
+.tree-connection-selection-halo {
+	-fx-stroke-width: 1;
+	-fx-stroke: deepskyblue;
+	-fx-stroke-dash-array: 4 4;
+}
+
+.tree-tail .arrow-line  {
+	-fx-stroke: derive(darkslategrey, 100%);
+	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+}
+
+.tree-tail .arrow-head  {
+	-fx-stroke: derive(darkslategrey, 100%);
+	-fx-stroke-type: inside;
+	-fx-fill: white;
+	-fx-effect: dropshadow(one-pass-box, lightgrey, 5, 0, 1, 1);
+}

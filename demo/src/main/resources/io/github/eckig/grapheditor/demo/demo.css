@@ -1,0 +1,15 @@
+#minimapButton {
+	-fx-background-color: null;
+	-fx-background-insets: 0;
+	-fx-padding: 0;
+}
+
+#minimapButton .icon {
+	-fx-font-family: FontAwesome;
+	-fx-font-size: 18;
+	-fx-fill: darkslategrey;
+}
+
+#minimapButton:hover .icon {
+	-fx-effect: dropshadow(gaussian, rgb(200, 200, 200), 2, 0, 0, 0);
+}

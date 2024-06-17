@@ -40,4 +40,4 @@ Try the [tutorials](https://github.com/eckig/graph-editor/wiki).
 
 ## Demo
 
-A sample application with a self-executable installer is available with the [graph-editor-demo](https://github.com/eckig/graph-editor-demo).
+Run the sample application after cloning the repository with maven inside the `demo` module with `mvn javafx:run`.
