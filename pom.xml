@@ -89,7 +89,13 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.3.0</version>
                     <configuration>
-                        <argLine>--add-opens javafx.graphics/com.sun.glass.ui=ALL-UNNAMED -Dprism.order=sw -Dglass.platform=Monocle -Dmonocle.platform=Headless</argLine>
+                        <argLine>--add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED</argLine>
+                        <argLine>--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</argLine>
+                        <argLine>--add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argLine>
+                        <argLine>--add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</argLine>
+                        <argLine>-Dprism.order=sw</argLine>
+                        <argLine>-Dglass.platform=Monocle</argLine>
+                        <argLine>-Dmonocle.platform=Headless</argLine>
                     </configuration>
                     <dependencies>
                         <dependency>
