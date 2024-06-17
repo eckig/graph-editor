@@ -25,5 +25,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
+      - name: linux-headless
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            export DISPLAY=:99
+            sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          fi
+        shell: bash
       - name: Build with Maven
         run: mvn -B test package --file pom.xml

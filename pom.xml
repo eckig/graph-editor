@@ -96,14 +96,8 @@
                         <argLine>-Dprism.order=sw</argLine>
                         <argLine>-Dglass.platform=Monocle</argLine>
                         <argLine>-Dmonocle.platform=Headless</argLine>
+                        <argLine>-Djava.awt.headless=true</argLine>
                     </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.ow2.asm</groupId>
-                            <artifactId>asm</artifactId>
-                            <version>9.7</version>
-                        </dependency>
-                    </dependencies>
                     <executions>
                         <execution>
                             <goals>
