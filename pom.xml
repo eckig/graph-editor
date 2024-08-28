@@ -87,7 +87,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <argLine>--add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED</argLine>
                         <argLine>--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</argLine>
