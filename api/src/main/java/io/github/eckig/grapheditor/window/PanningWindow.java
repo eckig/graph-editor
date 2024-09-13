@@ -163,6 +163,7 @@ public class PanningWindow extends Region {
     {
 		return content == null || content.getHeight() < getHeight();
 	}
+
     /**
      * Pans the window to the specified x coordinate.
      *
