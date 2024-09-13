@@ -141,7 +141,7 @@ public class PanningWindow extends Region {
     public void panTo(final double x, final double y)
     {
         panToX(x);
-		panToY(y)
+		panToY(y);
     }
 
     /**
