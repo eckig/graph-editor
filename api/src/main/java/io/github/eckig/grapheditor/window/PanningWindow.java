@@ -140,30 +140,29 @@ public class PanningWindow extends Region {
      */
     public void panTo(final double x, final double y)
     {
-        if (canNotPan())
-        {
-            return;
-        }
-
-        final double newX = checkContentX(x);
-        final double newY = checkContentY(y);
-        if (newX != getContentX() || newY != getContentY())
-        {
-            contentX.set(newX);
-            contentY.set(newY);
-        }
+        panToX(x);
+		panToY(y);
     }
 
     /**
-     * If there is no content at all or the content is smaller than the outer window we do not need to pan at all
+     * If there is no content at all or the content X is smaller than the outer window we do not need to pan at all
      *
      * @return {@code true} if the window should not be panned at all or {@code false} if the window can be panned
      */
-    private boolean canNotPan()
+    private boolean canNotPanX()
     {
         return content == null || content.getWidth() < getWidth();
     }
-
+    
+    /**
+     * If there is no content at all or the content Y is smaller than the outer window we do not need to pan at all
+     *
+     * @return {@code true} if the window should not be panned at all or {@code false} if the window can be panned
+     */
+    private boolean canNotPanY()
+    {
+		return content == null || content.getHeight() < getHeight();
+	}
     /**
      * Pans the window to the specified x coordinate.
      *
@@ -178,7 +177,7 @@ public class PanningWindow extends Region {
      */
     public void panToX(final double x)
     {
-        if (canNotPan())
+        if (canNotPanX())
         {
             return;
         }
@@ -204,7 +203,7 @@ public class PanningWindow extends Region {
      */
     public void panToY(final double y)
     {
-        if (canNotPan())
+        if (canNotPanY())
         {
             return;
         }
