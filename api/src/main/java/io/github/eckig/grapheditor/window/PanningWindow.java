@@ -145,16 +145,22 @@ public class PanningWindow extends Region {
     }
 
     /**
-     * If there is no content at all or the content is smaller than the outer window we do not need to pan at all
+     * If there is no content at all or the content X is smaller than the outer window we do not need to pan at all
      *
      * @return {@code true} if the window should not be panned at all or {@code false} if the window can be panned
      */
-    private boolean canNotPan()
+    private boolean canNotPanX()
     {
         return content == null || content.getWidth() < getWidth();
     }
     
-    private boolean canNotPanY() {
+    /**
+     * If there is no content at all or the content Y is smaller than the outer window we do not need to pan at all
+     *
+     * @return {@code true} if the window should not be panned at all or {@code false} if the window can be panned
+     */
+    private boolean canNotPanY()
+    {
 		return content == null || content.getHeight() < getHeight();
 	}
     /**
@@ -171,7 +177,7 @@ public class PanningWindow extends Region {
      */
     public void panToX(final double x)
     {
-        if (canNotPan())
+        if (canNotPanX())
         {
             return;
         }
