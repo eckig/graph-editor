@@ -56,7 +56,12 @@ public class CursorOffsetCalculator {
      * @param cursorSceneY the cursor y-position in the scene
      * @return an offset to the nearest connection, or {@code null} if the cursor is too far away
      */
-    public Point2D getOffset(final double cursorSceneX, final double cursorSceneY) {
+    public Point2D getOffset(final double cursorSceneX, final double cursorSceneY)
+    {
+        if (path.getElements().isEmpty())
+        {
+            return null;
+        }
 
         // Scale factor only relevant if we are zoomed in.
         final double scaleFactor = backgroundPath.getLocalToSceneTransform().getMxx();
@@ -67,21 +72,25 @@ public class CursorOffsetCalculator {
         minOffsetX = offsetBound + 1;
         minOffsetY = offsetBound + 1;
 
-        currentX = ((MoveTo) path.getElements().get(0)).getX();
-        currentY = ((MoveTo) path.getElements().get(0)).getY();
+        currentX = ((MoveTo) path.getElements().getFirst()).getX();
+        currentY = ((MoveTo) path.getElements().getFirst()).getY();
 
-        for (int i = 1; i < path.getElements().size(); i++) {
-
+        for (int i = 1; i < path.getElements().size(); i++)
+        {
             final PathElement pathElement = path.getElements().get(i);
-
             calculateOffset(pathElement, cursorSceneX, cursorSceneY, offsetBound);
         }
 
-        if (minOffsetX > offsetBound && minOffsetY > offsetBound) {
+        if (minOffsetX > offsetBound && minOffsetY > offsetBound)
+        {
             return null;
-        } else if (Math.abs(minOffsetX) <= Math.abs(minOffsetY)) {
+        }
+        else if (Math.abs(minOffsetX) <= Math.abs(minOffsetY))
+        {
             return new Point2D(minOffsetX, 0);
-        } else {
+        }
+        else
+        {
             return new Point2D(0, minOffsetY);
         }
     }
