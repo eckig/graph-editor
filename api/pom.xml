@@ -16,7 +16,7 @@
         <dependency>
             <groupId>io.github.eckig.grapheditor</groupId>
             <artifactId>grapheditor-model</artifactId>
-            <version>18.0.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.emf</groupId>
