@@ -5,10 +5,12 @@
     <groupId>io.github.eckig.grapheditor</groupId>
     <artifactId>grapheditor-api</artifactId>
     <packaging>jar</packaging>
+    <description>A library for creating and editing graph-like diagrams in JavaFX</description>
+    <url>https://github.com/eckig/graph-editor</url>
     <parent>
         <groupId>io.github.eckig</groupId>
         <artifactId>grapheditor</artifactId>
-        <version>19.0.0</version>
+        <version>21.0.0</version>
     </parent>
     <name>${component.name}::API</name>
 

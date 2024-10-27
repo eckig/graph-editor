@@ -6,8 +6,9 @@
     <name>${component.name}</name>
     <groupId>io.github.eckig</groupId>
     <artifactId>grapheditor</artifactId>
-    <version>19.0.0</version>
+    <version>21.0.0</version>
     <packaging>pom</packaging>
+    <inceptionYear>2014</inceptionYear>
 
     <description>A library for creating and editing graph-like diagrams in JavaFX</description>
     <url>https://github.com/eckig/graph-editor</url>
@@ -161,7 +162,7 @@
                                        <nexus2>
                                            <maven-central>
                                                <active>ALWAYS</active>
-                                               <url>https://s01.oss.sonatype.org/service/local</url>;
+                                               <url>https://s01.oss.sonatype.org/service/local</url>
                                                <closeRepository>false</closeRepository>
                                                <releaseRepository>false</releaseRepository>
                                                <stagingRepositories>target/staging-deploy</stagingRepositories>
@@ -170,6 +171,16 @@
                                    </maven>
                                </deploy>
                            </jreleaser>
+                       </configuration>
+                   </plugin>
+                   <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-deploy-plugin</artifactId>
+                       <version>3.1.1</version>
+                       <configuration>
+                           <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+                           <altReleaseDeploymentRepository>local::file:./target/staging-deploy</altReleaseDeploymentRepository>
+                           <altSnapshotDeploymentRepository>local::file:./target/staging-deploy</altSnapshotDeploymentRepository>
                        </configuration>
                    </plugin>
                </plugins>
