@@ -179,7 +179,7 @@
                    <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-deploy-plugin</artifactId>
-                       <version>3.1.1</version>
+                       <version>3.1.3</version>
                        <configuration>
                            <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
                            <altReleaseDeploymentRepository>local::file:./target/staging-deploy</altReleaseDeploymentRepository>
