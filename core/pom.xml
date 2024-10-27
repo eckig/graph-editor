@@ -1,14 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.eckig.grapheditor</groupId>
     <artifactId>grapheditor-core</artifactId>
     <packaging>jar</packaging>
+    <description>A library for creating and editing graph-like diagrams in JavaFX</description>
+    <url>https://github.com/eckig/graph-editor</url>
     <parent>
         <groupId>io.github.eckig</groupId>
         <artifactId>grapheditor</artifactId>
-        <version>19.0.0</version>
+        <version>21.0.0</version>
     </parent>
     <name>${component.name}::Core</name>
 
@@ -16,7 +18,7 @@
         <dependency>
             <groupId>io.github.eckig.grapheditor</groupId>
             <artifactId>grapheditor-api</artifactId>
-            <version>18.0.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.emf</groupId>
