@@ -17,12 +17,12 @@
         <dependency>
             <groupId>io.github.eckig.grapheditor</groupId>
             <artifactId>grapheditor-core</artifactId>
-            <version>23.0.1</version>
+            <version>21.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>22.0.1</version>
+            <version>23.0.1</version>
         </dependency>
     </dependencies>
 
