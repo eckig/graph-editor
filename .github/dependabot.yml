@@ -9,7 +9,7 @@ updates:
       - dependencies
     ignore:
       - dependency-name: "*"
-        versions: ["*ea*"]
+        versions: ["-ea"]
   - package-ecosystem: maven
     directory: "/demo"
     schedule:
@@ -19,7 +19,7 @@ updates:
       - dependencies
     ignore:
       - dependency-name: "*"
-        versions: ["*ea*"]
+        versions: ["-ea"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
