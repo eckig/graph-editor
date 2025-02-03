@@ -6,7 +6,7 @@ updates:
       interval: daily
     open-pull-requests-limit: 10
     labels:
-    - dependencies
+      - dependencies
     ignore:
       - dependency-name: "*"
         versions: ["*ea*"]
