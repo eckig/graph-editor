@@ -7,6 +7,9 @@ updates:
     open-pull-requests-limit: 10
     labels:
     - dependencies
+    ignore:
+    - dependency-name: "*"
+      versions: ["*ea*"]
   - package-ecosystem: maven
     directory: "/demo"
     schedule:
@@ -14,6 +17,9 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - dependencies
+    ignore:
+    - dependency-name: "*"
+      versions: ["*ea*"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
