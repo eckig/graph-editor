@@ -130,7 +130,7 @@ public class GraphEditorView extends Region
     {
         if (pConnectionSkin != null && !(pConnectionSkin instanceof VirtualSkin))
         {
-            mConnectionLayer.getChildren().add(0, pConnectionSkin.getRoot());
+            mConnectionLayer.getChildren().addFirst(pConnectionSkin.getRoot());
         }
     }
 
@@ -159,7 +159,7 @@ public class GraphEditorView extends Region
         if (pTailSkin != null && !(pTailSkin instanceof VirtualSkin))
         {
             // add to back:
-            mConnectionLayer.getChildren().add(0, pTailSkin.getRoot());
+            mConnectionLayer.getChildren().addFirst(pTailSkin.getRoot());
         }
     }
 
@@ -275,7 +275,7 @@ public class GraphEditorView extends Region
      *
      * @since 31.01.2019
      */
-    void drawConnections()
+    private void drawConnections()
     {
         if (mConnectionLayouter != null)
         {
