@@ -3,6 +3,7 @@
  */
 package io.github.eckig.grapheditor.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -85,11 +86,7 @@ public class GraphEditorTest {
     private void reloadEditor() throws InterruptedException
     {
         final CountDownLatch wait = new CountDownLatch(1);
-        Platform.runLater(() ->
-        {
-            graphEditor.reload();
-            wait.countDown();
-        });
+        Platform.runLater(wait::countDown);
         wait.await();
     }
 
@@ -166,11 +163,16 @@ public class GraphEditorTest {
     }
 
     @Test
-    public void selectAllAndDelete() {
+    public void selectAllAndDelete() throws InterruptedException
+    {
 
         graphEditor.getSelectionManager().selectAll();
         final List<EObject> selection = new ArrayList<>(graphEditor.getSelectionManager().getSelectedItems());
         graphEditor.delete(selection);
+
+        final CountDownLatch wait = new CountDownLatch(1);
+        Platform.runLater(wait::countDown);
+        wait.await();
 
         assertTrue("All nodes should have gone.", model.getNodes().isEmpty());
         assertTrue("All connections should have gone.", model.getConnections().isEmpty());
@@ -191,7 +193,8 @@ public class GraphEditorTest {
 
         final double secondJointFinalX = skinLookup.lookupJoint(secondJoint).getRoot().getLayoutX();
 
-        assertTrue("Second joint should have moved right by 17 pixels.", secondJointFinalX == secondJointInitialX + 17);
+        assertEquals("Second joint should have moved right by 17 pixels.", secondJointFinalX, secondJointInitialX + 17,
+                0.0);
     }
 
     /**

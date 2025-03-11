@@ -266,19 +266,18 @@ public class JointCreator {
         connection.getJoints().add(index, secondNewJoint);
         connection.getJoints().add(index, firstNewJoint);
 
-        graphEditor.reload();
+        graphEditor.flush();
     }
 
     /**
      * Removes the temporary joints that were created by the mouse-pressed gesture.
      */
-    private void removeTemporaryJoints() {
-
-        for (final GJoint joint : temporaryJoints) {
+    private void removeTemporaryJoints()
+    {
+        for (final GJoint joint : temporaryJoints)
+        {
             connection.getJoints().remove(joint);
         }
-
-        graphEditor.reload();
     }
 
     /**

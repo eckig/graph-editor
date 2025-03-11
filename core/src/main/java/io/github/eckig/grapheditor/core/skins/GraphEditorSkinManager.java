@@ -1,10 +1,10 @@
 package io.github.eckig.grapheditor.core.skins;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GConnectorSkin;
@@ -54,6 +54,11 @@ public class GraphEditorSkinManager implements SkinManager
 
     private ConnectionLayouter mConnectionLayouter;
     private final Consumer<GSkin<?>> mOnPositionMoved = this::positionMoved;
+
+    private Consumer<GNode> mOnNodeCreated;
+    private Consumer<GConnector> mOnConnectorCreated;
+    private Consumer<GConnection> mOnConnectionCreated;
+    private Consumer<GJoint> mOnJointCreated;
 
     /**
      * Creates a new skin manager instance. Only one instance should exist per
@@ -230,8 +235,7 @@ public class GraphEditorSkinManager implements SkinManager
         final GNodeSkin nodeSkin = mNodeSkins.get(pNode);
         if (nodeSkin != null)
         {
-            final List<GConnectorSkin> nodeConnectorSkins = pNode.getConnectors().stream().map(this::lookupConnector)
-                    .collect(Collectors.toList());
+            final var nodeConnectorSkins = pNode.getConnectors().stream().map(this::lookupConnector).filter(Objects::nonNull).toList();
             nodeSkin.setConnectorSkins(nodeConnectorSkins);
         }
     }
@@ -242,34 +246,53 @@ public class GraphEditorSkinManager implements SkinManager
         final GConnectionSkin connectionSkin = lookupConnection(pConnection);
         if (connectionSkin != null)
         {
-            final List<GJointSkin> connectionJointSkins = pConnection.getJoints().stream().map(this::lookupJoint)
-                    .collect(Collectors.toList());
+            final var connectionJointSkins = pConnection.getJoints().stream().map(this::lookupJoint).filter(Objects::nonNull).toList();
             connectionSkin.setJointSkins(connectionJointSkins);
         }
+    }
+
+    private static <K, V> V computeIfAbsent(final Map<K, V> pMap, final K pKey, final Function<K, V> pMappingFunction,
+            final Consumer<K> pNotify)
+    {
+        final var skin = pMap.get(pKey);
+        if (skin == null)
+        {
+            final var newSkin = pMappingFunction == null ? null : pMappingFunction.apply(pKey);
+            if (newSkin != null)
+            {
+                pMap.put(pKey, newSkin);
+                if (pNotify != null)
+                {
+                    pNotify.accept(pKey);
+                }
+            }
+            return newSkin;
+        }
+        return skin;
     }
 
     @Override
     public GNodeSkin lookupOrCreateNode(final GNode pNode)
     {
-        return mNodeSkins.computeIfAbsent(pNode, this::createNodeSkin);
+        return computeIfAbsent(mNodeSkins, pNode, this::createNodeSkin, mOnNodeCreated);
     }
 
     @Override
     public GConnectorSkin lookupOrCreateConnector(final GConnector pConnector)
     {
-        return mConnectorSkins.computeIfAbsent(pConnector, this::createConnectorSkin);
+        return computeIfAbsent(mConnectorSkins, pConnector, this::createConnectorSkin, mOnConnectorCreated);
     }
 
     @Override
     public GConnectionSkin lookupOrCreateConnection(final GConnection pConnection)
     {
-        return mConnectionSkins.computeIfAbsent(pConnection, this::createConnectionSkin);
+        return computeIfAbsent(mConnectionSkins, pConnection, this::createConnectionSkin, mOnConnectionCreated);
     }
 
     @Override
     public GJointSkin lookupOrCreateJoint(final GJoint pJoint)
     {
-        return mJointSkins.computeIfAbsent(pJoint, this::createJointSkin);
+        return computeIfAbsent(mJointSkins, pJoint, this::createJointSkin, mOnJointCreated);
     }
 
     @Override
@@ -383,5 +406,25 @@ public class GraphEditorSkinManager implements SkinManager
         {
             layouter.draw();
         }
+    }
+
+    public void setOnNodeCreated(final Consumer<GNode> pOnNodeCreated)
+    {
+        mOnNodeCreated = pOnNodeCreated;
+    }
+
+    public void setOnConnectorCreated(final Consumer<GConnector> pOnConnectorCreated)
+    {
+        mOnConnectorCreated = pOnConnectorCreated;
+    }
+
+    public void setOnConnectionCreated(final Consumer<GConnection> pOnConnectionCreated)
+    {
+        mOnConnectionCreated = pOnConnectionCreated;
+    }
+
+    public void setOnJointCreated(final Consumer<GJoint> pOnJointCreated)
+    {
+        mOnJointCreated = pOnJointCreated;
     }
 }

@@ -273,17 +273,13 @@ public class GraphEditorDemoController {
 
     @FXML
     public void setGappedStyle() {
-
         graphEditor.getProperties().getCustomProperties().remove(SimpleConnectionSkin.SHOW_DETOURS_KEY);
-        graphEditor.reload();
     }
 
     @FXML
     public void setDetouredStyle() {
-
         final Map<String, String> customProperties = graphEditor.getProperties().getCustomProperties();
         customProperties.put(SimpleConnectionSkin.SHOW_DETOURS_KEY, Boolean.toString(true));
-        graphEditor.reload();
     }
 
     @FXML
@@ -331,9 +327,7 @@ public class GraphEditorDemoController {
      */
     private void addActiveSkinControllerListener() {
 
-        activeSkinController.addListener((observable, oldValue, newValue) -> {
-            handleActiveSkinControllerChange();
-        });
+        activeSkinController.addListener((observable, oldValue, newValue) -> handleActiveSkinControllerChange());
     }
 
     /**
@@ -376,7 +370,7 @@ public class GraphEditorDemoController {
 
         if (!graphEditor.getModel().getNodes().isEmpty()) {
 
-            final GNode firstNode = graphEditor.getModel().getNodes().get(0);
+            final GNode firstNode = graphEditor.getModel().getNodes().getFirst();
             final String type = firstNode.getType();
 
             if (TreeSkinConstants.TREE_NODE.equals(type)) {

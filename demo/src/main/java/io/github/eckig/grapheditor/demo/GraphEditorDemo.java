@@ -3,8 +3,6 @@
  */
 package io.github.eckig.grapheditor.demo;
 
-import java.net.URL;
-
 import io.github.eckig.grapheditor.GraphEditor;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -27,9 +25,8 @@ public class GraphEditorDemo extends Application {
     @Override
     public void start(final Stage stage) throws Exception {
 
-        final URL location = getClass().getResource("GraphEditorDemo.fxml"); //$NON-NLS-1$
-        final FXMLLoader loader = new FXMLLoader();
-        final Parent root = loader.load(location.openStream());
+        final FXMLLoader loader = new FXMLLoader(getClass().getResource("GraphEditorDemo.fxml"));  //$NON-NLS-1$
+        final Parent root = loader.load();
 
         final Scene scene = new Scene(root, 830, 630);
 

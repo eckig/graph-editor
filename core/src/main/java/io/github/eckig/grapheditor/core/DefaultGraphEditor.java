@@ -8,7 +8,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import io.github.eckig.grapheditor.core.connections.ConnectionEventManager;
-import io.github.eckig.grapheditor.core.skins.GraphEditorSkinManager;
 import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
@@ -46,10 +45,9 @@ public class DefaultGraphEditor implements GraphEditor
     private final GraphEditorProperties mProperties;
     private final GraphEditorView mView;
     private final ConnectionEventManager mConnectionEventManager = new ConnectionEventManager();
-    private final GraphEditorSkinManager mSkinManager;
     private final GraphEditorController<DefaultGraphEditor> mController;
 
-    private final ObjectProperty<GModel> mModelProperty = new ObjectPropertyBase<GModel>()
+    private final ObjectProperty<GModel> mModelProperty = new ObjectPropertyBase<>()
     {
 
         @Override
@@ -81,42 +79,41 @@ public class DefaultGraphEditor implements GraphEditor
     {
         mProperties = pProperties == null ? new GraphEditorProperties() : pProperties;
         mView = new GraphEditorView(mProperties);
-        mSkinManager = new GraphEditorSkinManager(this, mView);
-        mController = new GraphEditorController<>(this, mSkinManager, mView, mConnectionEventManager, mProperties);
+        mController = new GraphEditorController<>(this, mView, mConnectionEventManager, mProperties);
 
         final ConnectionLayouter connectionLayouter = mController.getConnectionLayouter();
         mView.setConnectionLayouter(connectionLayouter);
-        mSkinManager.setConnectionLayouter(connectionLayouter);
+        mController.getSkinManager().setConnectionLayouter(connectionLayouter);
     }
 
     @Override
     public void setNodeSkinFactory(final Callback<GNode, GNodeSkin> pSkinFactory)
     {
-        mSkinManager.setNodeSkinFactory(pSkinFactory);
+        mController.getSkinManager().setNodeSkinFactory(pSkinFactory);
     }
 
     @Override
     public void setConnectorSkinFactory(final Callback<GConnector, GConnectorSkin> pConnectorSkinFactory)
     {
-        mSkinManager.setConnectorSkinFactory(pConnectorSkinFactory);
+        mController.getSkinManager().setConnectorSkinFactory(pConnectorSkinFactory);
     }
 
     @Override
     public void setConnectionSkinFactory(final Callback<GConnection, GConnectionSkin> pConnectionSkinFactory)
     {
-        mSkinManager.setConnectionSkinFactory(pConnectionSkinFactory);
+        mController.getSkinManager().setConnectionSkinFactory(pConnectionSkinFactory);
     }
 
     @Override
     public void setJointSkinFactory(final Callback<GJoint, GJointSkin> pJointSkinFactory)
     {
-        mSkinManager.setJointSkinFactory(pJointSkinFactory);
+        mController.getSkinManager().setJointSkinFactory(pJointSkinFactory);
     }
 
     @Override
     public void setTailSkinFactory(final Callback<GConnector, GTailSkin> pTailSkinFactory)
     {
-        mSkinManager.setTailSkinFactory(pTailSkinFactory);
+        mController.getSkinManager().setTailSkinFactory(pTailSkinFactory);
     }
 
     @Override
@@ -138,9 +135,9 @@ public class DefaultGraphEditor implements GraphEditor
     }
 
     @Override
-    public void reload()
+    public void flush()
     {
-        mController.process();
+        mController.flush();
     }
 
     @Override
@@ -164,7 +161,7 @@ public class DefaultGraphEditor implements GraphEditor
     @Override
     public SkinLookup getSkinLookup()
     {
-        return mSkinManager;
+        return mController.getSkinManager();
     }
 
     @Override

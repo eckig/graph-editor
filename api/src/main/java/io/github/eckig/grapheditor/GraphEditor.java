@@ -89,15 +89,14 @@ public interface GraphEditor extends GraphEditorSkins {
     GModel getModel();
 
     /**
-     * Reloads the graph model currently being edited.
+     * Flush and process everything now.
      *
      * <p>
      * <b>Note: </b><br>
-     * If the model is updated via EMF commands, as is recommended, it should rarely be necessary to call this method.
-     * The model will be reloaded automatically via a command-stack listener.
+     * This is in internal method. Usage should generally not be necessary.
      * </p>
      */
-    void reload();
+    void flush();
 
     /**
      * The property containing the graph model being edited.
