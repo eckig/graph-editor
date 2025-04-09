@@ -331,28 +331,29 @@ public class GraphEditorController<E extends GraphEditor>
 
 
     /**
-     * flush the currently queued commands and process them immediately.<br>
-     * Only has an effect if the current Thread is the
-     * {@link Platform#isFxApplicationThread() FX Application Thread}
-     *
-     * @since 09.02.2016
+     * process the currently queued commands and process them by delegating to the registered handlers
      */
     private void process()
     {
-            Notification n;
-            while ((n = mContentAdapter.getQueue().poll()) != null)
+        Notification n;
+        boolean changes = false;
+        while ((n = mContentAdapter.getQueue().poll()) != null)
+        {
+            changes = true;
+            try
             {
-                try
-                {
-                    processFeatureChanged(n);
-                }
-                catch (Exception e)
-                {
-                    LOGGER.error("Could not process update notification '{}': ", n, e); //$NON-NLS-1$
-                }
+                processFeatureChanged(n);
             }
+            catch (Exception e)
+            {
+                LOGGER.error("Could not process update notification '{}': ", n, e); //$NON-NLS-1$
+            }
+        }
 
+        if (changes)
+        {
             processingDone();
+        }
     }
 
     private void onNodeCreated(final GNode pNode)
