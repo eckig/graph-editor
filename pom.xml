@@ -6,7 +6,7 @@
     <name>${component.name}</name>
     <groupId>io.github.eckig</groupId>
     <artifactId>grapheditor</artifactId>
-    <version>21.0.0-dev</version>
+    <version>21.1.0</version>
     <packaging>pom</packaging>
     <inceptionYear>2014</inceptionYear>
 
