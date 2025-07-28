@@ -3,8 +3,6 @@
  */
 package io.github.eckig.grapheditor;
 
-import java.util.function.Consumer;
-
 import io.github.eckig.grapheditor.utils.DraggableBox;
 
 import org.eclipse.emf.ecore.EObject;
@@ -50,7 +48,6 @@ public abstract class GSkin<T extends EObject>
 
     private GraphEditor graphEditor;
     private final T item;
-    private Consumer<GSkin<?>> onPositionMoved;
 
     /**
      * Constructor
@@ -156,7 +153,6 @@ public abstract class GSkin<T extends EObject>
         {
             db.dispose();
         }
-        onPositionMoved = null;
         graphEditor = null;
     }
 
@@ -173,36 +169,5 @@ public abstract class GSkin<T extends EObject>
     public final T getItem()
     {
         return item;
-    }
-
-    /**
-     * <p>
-     * INTERNAL API
-     * </p>
-     *
-     * @param pOnPositionMoved
-     *            internal update hook to be informed when the position has been
-     *            changed
-     */
-    public final void impl_setOnPositionMoved(final Consumer<GSkin<?>> pOnPositionMoved)
-    {
-        onPositionMoved = pOnPositionMoved;
-    }
-
-    /**
-     * <p>
-     * INTERNAL API
-     * </p>
-     * will be called when the position of this skin has been moved
-     *
-     * @since 16.01.2019
-     */
-    public final void impl_positionMoved()
-    {
-        final Consumer<GSkin<?>> inform = onPositionMoved;
-        if (inform != null)
-        {
-            inform.accept(this);
-        }
     }
 }

@@ -10,7 +10,6 @@ import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GConnectorSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
-import io.github.eckig.grapheditor.GSkin;
 import io.github.eckig.grapheditor.GTailSkin;
 import io.github.eckig.grapheditor.GraphEditor;
 import io.github.eckig.grapheditor.VirtualSkin;
@@ -20,7 +19,6 @@ import io.github.eckig.grapheditor.core.skins.defaults.DefaultConnectorSkin;
 import io.github.eckig.grapheditor.core.skins.defaults.DefaultJointSkin;
 import io.github.eckig.grapheditor.core.skins.defaults.DefaultNodeSkin;
 import io.github.eckig.grapheditor.core.skins.defaults.DefaultTailSkin;
-import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GConnector;
@@ -52,9 +50,6 @@ public class GraphEditorSkinManager implements SkinManager
     private final Map<GJoint, GJointSkin> mJointSkins = new HashMap<>();
     private final Map<GConnector, GTailSkin> mTailSkins = new HashMap<>();
 
-    private ConnectionLayouter mConnectionLayouter;
-    private final Consumer<GSkin<?>> mOnPositionMoved = this::positionMoved;
-
     private Consumer<GNode> mOnNodeCreated;
     private Consumer<GConnector> mOnConnectorCreated;
     private Consumer<GConnection> mOnConnectionCreated;
@@ -73,12 +68,6 @@ public class GraphEditorSkinManager implements SkinManager
     {
         mView = pView;
         mGraphEditor = pGraphEditor;
-    }
-
-    @Override
-    public void setConnectionLayouter(final ConnectionLayouter pConnectionLayouter)
-    {
-        mConnectionLayouter = pConnectionLayouter;
     }
 
     @Override
@@ -372,7 +361,6 @@ public class GraphEditorSkinManager implements SkinManager
         }
         skin.setGraphEditor(mGraphEditor);
         skin.getRoot().setEditorProperties(mGraphEditor.getProperties());
-        skin.impl_setOnPositionMoved(mOnPositionMoved);
         skin.initialize();
         if (!(skin instanceof VirtualSkin))
         {
@@ -390,22 +378,12 @@ public class GraphEditorSkinManager implements SkinManager
         }
         skin.setGraphEditor(mGraphEditor);
         skin.getRoot().setEditorProperties(mGraphEditor.getProperties());
-        skin.impl_setOnPositionMoved(mOnPositionMoved);
         skin.initialize();
         if (!(skin instanceof VirtualSkin))
         {
             mView.add(skin);
         }
         return skin;
-    }
-
-    private void positionMoved(final GSkin<?> pMovedSkin)
-    {
-        final ConnectionLayouter layouter = mConnectionLayouter;
-        if (layouter != null && (pMovedSkin instanceof GNodeSkin || pMovedSkin instanceof GJointSkin))
-        {
-            layouter.draw();
-        }
     }
 
     public void setOnNodeCreated(final Consumer<GNode> pOnNodeCreated)

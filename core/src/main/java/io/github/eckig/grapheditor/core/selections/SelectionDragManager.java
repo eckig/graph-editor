@@ -65,7 +65,6 @@ public class SelectionDragManager {
                 if (node != master)
                 {
                     node.setLayoutX(x + elementLayoutXOffsets[i]);
-                    node.positionMoved();
                 }
             }
         }
@@ -81,7 +80,6 @@ public class SelectionDragManager {
                 if (node != master)
                 {
                     node.setLayoutY(y + elementLayoutYOffsets[i]);
-                    node.positionMoved();
                 }
             }
         }

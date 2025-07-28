@@ -115,13 +115,6 @@ public abstract class GNodeSkin extends GSkin<GNode> {
                 super.layoutChildren();
                 layoutConnectors();
             }
-
-            @Override
-            public void positionMoved()
-            {
-                super.positionMoved();
-                GNodeSkin.this.impl_positionMoved();
-            }
         };
     }
 }

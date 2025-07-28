@@ -20,16 +20,7 @@ import io.github.eckig.grapheditor.utils.DraggableBox;
  */
 public abstract class GJointSkin extends GSkin<GJoint> {
 
-    private final DraggableBox root = new DraggableBox(EditorElement.JOINT)
-    {
-
-        @Override
-        public final void positionMoved()
-        {
-            super.positionMoved();
-            GJointSkin.this.impl_positionMoved();
-        }
-    };
+    private final DraggableBox root = new DraggableBox(EditorElement.JOINT);
 
     /**
      * Creates a new {@link GJointSkin}.

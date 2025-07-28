@@ -24,13 +24,6 @@ public interface SkinManager extends SkinLookup, GraphEditorSkins
 {
 
     /**
-     * @param pConnectionLayouter
-     *            {@link ConnectionLayouter}
-     * @since 16.01.2019
-     */
-    void setConnectionLayouter(final ConnectionLayouter pConnectionLayouter);
-
-    /**
      * remove all cached skins and clear the graph editor view
      */
     void clear();
