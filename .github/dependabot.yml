@@ -7,9 +7,6 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - dependencies
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch", "version-update:semver-minor", "version-update:semver-major"]
   - package-ecosystem: maven
     directory: "/demo"
     schedule:
@@ -17,9 +14,6 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - dependencies
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch", "version-update:semver-minor", "version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
