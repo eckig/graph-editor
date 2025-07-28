@@ -59,7 +59,7 @@
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
         <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
         <org.eclipse.emf.ecore.version>2.38.0</org.eclipse.emf.ecore.version>
-        <org.eclipse.emf.common.version>2.40.0</org.eclipse.emf.common.version>
+        <org.eclipse.emf.common.version>2.42.0</org.eclipse.emf.common.version>
         <org.eclipse.emf.ecore.xmi.version>2.38.0</org.eclipse.emf.ecore.xmi.version>
         <org.eclipse.emf.edit.version>2.22.0</org.eclipse.emf.edit.version>
         <junit.version>4.13.2</junit.version>
