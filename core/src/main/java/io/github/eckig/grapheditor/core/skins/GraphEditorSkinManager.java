@@ -195,11 +195,16 @@ public class GraphEditorSkinManager implements SkinManager
     {
         if (pConnectionToRemove != null)
         {
-            final GConnectionSkin removedSkin = mConnectionSkins.remove(pConnectionToRemove);
+            final var removedSkin = mConnectionSkins.remove(pConnectionToRemove);
             if (removedSkin != null)
             {
                 mView.remove(removedSkin);
                 removedSkin.dispose();
+            }
+
+            for (final var joint : pConnectionToRemove.getJoints())
+            {
+                removeJoint(joint);
             }
         }
     }
@@ -224,7 +229,7 @@ public class GraphEditorSkinManager implements SkinManager
         final GNodeSkin nodeSkin = mNodeSkins.get(pNode);
         if (nodeSkin != null)
         {
-            final var nodeConnectorSkins = pNode.getConnectors().stream().map(this::lookupConnector).filter(Objects::nonNull).toList();
+            final var nodeConnectorSkins = pNode.getConnectors().stream().map(this::lookupOrCreateConnector).filter(Objects::nonNull).toList();
             nodeSkin.setConnectorSkins(nodeConnectorSkins);
         }
     }
@@ -235,7 +240,7 @@ public class GraphEditorSkinManager implements SkinManager
         final GConnectionSkin connectionSkin = lookupConnection(pConnection);
         if (connectionSkin != null)
         {
-            final var connectionJointSkins = pConnection.getJoints().stream().map(this::lookupJoint).filter(Objects::nonNull).toList();
+            final var connectionJointSkins = pConnection.getJoints().stream().map(this::lookupOrCreateJoint).filter(Objects::nonNull).toList();
             connectionSkin.setJointSkins(connectionJointSkins);
         }
     }
@@ -278,8 +283,7 @@ public class GraphEditorSkinManager implements SkinManager
         return computeIfAbsent(mConnectionSkins, pConnection, this::createConnectionSkin, mOnConnectionCreated);
     }
 
-    @Override
-    public GJointSkin lookupOrCreateJoint(final GJoint pJoint)
+    private GJointSkin lookupOrCreateJoint(final GJoint pJoint)
     {
         return computeIfAbsent(mJointSkins, pJoint, this::createJointSkin, mOnJointCreated);
     }

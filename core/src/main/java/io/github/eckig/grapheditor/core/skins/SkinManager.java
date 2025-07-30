@@ -4,11 +4,9 @@ import java.util.List;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GConnectorSkin;
-import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GraphEditorSkins;
 import io.github.eckig.grapheditor.SkinLookup;
-import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GConnector;
 import io.github.eckig.grapheditor.model.GJoint;
@@ -109,13 +107,4 @@ public interface SkinManager extends SkinLookup, GraphEditorSkins
      * @since 21.01.2019
      */
     GConnectionSkin lookupOrCreateConnection(final GConnection pConnection);
-
-    /**
-     * Creates (if not yet existing) and returns the skin for the given item
-     *
-     * @param pJoint
-     * @return skin
-     * @since 21.01.2019
-     */
-    GJointSkin lookupOrCreateJoint(final GJoint pJoint);
 }

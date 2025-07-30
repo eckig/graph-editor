@@ -449,14 +449,8 @@ public class GraphEditorController<E extends GraphEditor>
         }
     }
 
-    private void addJoint(final GJoint pJoint)
-    {
-        mSkinManager.lookupOrCreateJoint(pJoint); // implicit create
-    }
-
     private void addJoint(final GJoint pJoint, final Object pNotifier)
     {
-        addJoint(pJoint);
         updateConnectionAfterJointChange(pJoint, pNotifier);
     }
 
@@ -500,10 +494,6 @@ public class GraphEditorController<E extends GraphEditor>
     private void addConnection(final GConnection pConnection)
     {
         mSkinManager.lookupOrCreateConnection(pConnection); // implicit create
-        for (final GJoint joint : pConnection.getJoints())
-        {
-            addJoint(joint);
-        }
     }
 
     private void removeConnection(final GConnection pConnection)
