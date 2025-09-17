@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>24.0.2</version>
+            <version>25</version>
         </dependency>
     </dependencies>
 
@@ -42,7 +42,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <release>21</release>
+                    <release>23</release>
                 </configuration>
             </plugin>
         </plugins>
