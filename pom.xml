@@ -108,32 +108,30 @@
                     </executions>
                 </plugin>
                 <plugin>
-                   <groupId>org.jreleaser</groupId>
-                   <artifactId>jreleaser-maven-plugin</artifactId>
-                   <version>1.20.0</version>
-                   <inherited>false</inherited>
-                   <configuration>
-                       <jreleaser>
-                           <signing>
-                               <active>ALWAYS</active>
-                               <armored>true</armored>
-                           </signing>
-                           <deploy>
-                               <maven>
-                                   <nexus2>
-                                       <maven-central>
-                                           <active>ALWAYS</active>
-                                           <url>https://ossrh-staging-api.central.sonatype.com/service/local</url>
-                                           <closeRepository>true</closeRepository>
-                                           <releaseRepository>true</releaseRepository>
-                                           <stagingRepositories>target/staging-deploy</stagingRepositories>
-                                       </maven-central>
-                                   </nexus2>
-                               </maven>
-                           </deploy>
-                       </jreleaser>
-                   </configuration>
-               </plugin>
+                    <groupId>org.jreleaser</groupId>
+                    <artifactId>jreleaser-maven-plugin</artifactId>
+                    <version>1.20.0</version>
+                    <inherited>false</inherited>
+                    <configuration>
+                        <jreleaser>
+                            <signing>
+                                <active>ALWAYS</active>
+                                <armored>true</armored>
+                            </signing>
+                            <deploy>
+                                <maven>
+                                    <maven-central>
+                                        <sonatype>
+                                            <active>ALWAYS</active>
+                                            <url>https://ossrh-staging-api.central.sonatype.com/service/local</url>
+                                            <stagingRepositories>target/staging-deploy</stagingRepositories>
+                                        </sonatype>
+                                    </maven-central>
+                                </maven>
+                            </deploy>
+                        </jreleaser>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
