@@ -66,6 +66,7 @@
         <org.slf4j.version>2.0.17</org.slf4j.version>
         <org.openjfx.version>25</org.openjfx.version>
         <openjfx-monocle.version>21.0.2</openjfx-monocle.version>
+        <app.distribution.directory>${project.build.directory}/distributions/app</app.distribution.directory>
     </properties>
 
     <modules>
@@ -107,15 +108,44 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.jreleaser</groupId>
+                    <artifactId>jreleaser-maven-plugin</artifactId>
+                    <version>1.20.0</version>
+                    <inherited>false</inherited>
+                    <configuration>
+                        <jreleaser>
+                            <signing>
+                                <active>ALWAYS</active>
+                                <armored>true</armored>
+                            </signing>
+                            <deploy>
+                                <maven>
+                                    <maven-central>
+                                        <sonatype>
+                                            <active>ALWAYS</active>
+                                            <url>https://ossrh-staging-api.central.sonatype.com/service/local</url>
+                                            <stagingRepositories>target/staging-deploy</stagingRepositories>
+                                        </sonatype>
+                                    </maven-central>
+                                </maven>
+                            </deploy>
+                        </jreleaser>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>publication</id>
             <properties>
                 <skipTests>true</skipTests>
+                <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+                <altReleaseDeploymentRepository>local::file:./target/staging-deploy</altReleaseDeploymentRepository>
+                <altSnapshotDeploymentRepository>local::file:./target/staging-deploy</altSnapshotDeploymentRepository>
             </properties>
             <build>
                <plugins>
@@ -150,40 +180,10 @@
                        </executions>
                    </plugin>
                    <plugin>
-                       <groupId>org.jreleaser</groupId>
-                       <artifactId>jreleaser-maven-plugin</artifactId>
-                       <version>1.20.0</version>
-                       <inherited>false</inherited>
-                       <configuration>
-                           <jreleaser>
-                               <signing>
-                                   <active>ALWAYS</active>
-                                   <armored>true</armored>
-                               </signing>
-                               <deploy>
-                                   <maven>
-                                       <nexus2>
-                                           <maven-central>
-                                               <active>ALWAYS</active>
-                                               <url>https://ossrh-staging-api.central.sonatype.com/service/local</url>
-                                               <closeRepository>true</closeRepository>
-                                               <releaseRepository>true</releaseRepository>
-                                               <stagingRepositories>target/staging-deploy</stagingRepositories>
-                                           </maven-central>
-                                       </nexus2>
-                                   </maven>
-                               </deploy>
-                           </jreleaser>
-                       </configuration>
-                   </plugin>
-                   <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-deploy-plugin</artifactId>
                        <version>3.1.4</version>
                        <configuration>
-                           <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
-                           <altReleaseDeploymentRepository>local::file:./target/staging-deploy</altReleaseDeploymentRepository>
-                           <altSnapshotDeploymentRepository>local::file:./target/staging-deploy</altSnapshotDeploymentRepository>
                        </configuration>
                    </plugin>
                </plugins>
