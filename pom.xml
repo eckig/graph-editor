@@ -23,11 +23,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
@@ -115,15 +115,17 @@
                     <configuration>
                         <jreleaser>
                             <signing>
-                                <active>ALWAYS</active>
-                                <armored>true</armored>
+                                <pgp>
+                                    <active>ALWAYS</active>
+                                    <armored>true</armored>
+                                </pgp>
                             </signing>
                             <deploy>
                                 <maven>
                                     <maven-central>
                                         <sonatype>
-                                            <active>ALWAYS</active>
-                                            <url>https://ossrh-staging-api.central.sonatype.com/service/local</url>
+                                            <active>RELEASE</active>
+                                            <url>https://central.sonatype.com/api/v1/publisher</url>
                                             <stagingRepositories>target/staging-deploy</stagingRepositories>
                                         </sonatype>
                                     </maven-central>
