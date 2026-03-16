@@ -14,15 +14,15 @@ import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 
 
 /**
- * The alignment grid that appears in the background of the editor.
+ * <p>The alignment grid that appears in the background of the editor.</p>
+ *
+ * <p>The grid should not interfere with the layout of its parent or mouse events.</p>
  */
 public class GraphEditorGrid extends Region
 {
@@ -36,11 +36,10 @@ public class GraphEditorGrid extends Region
 
     private static final Color DEFAULT_GRID_COLOR = Color.rgb(222, 248, 255);
 
-    private double mLastWidth = -1;
-    private double mLastHeight = -1;
-    private final Path mGrid = new Path();
+    private boolean mNeedsLayout = false;
+    private final Canvas mGrid = new Canvas();
 
-    private final StyleableObjectProperty<Color> mGridColor = new StyleableObjectProperty<Color>(DEFAULT_GRID_COLOR)
+    private final StyleableObjectProperty<Color> mGridColor = new StyleableObjectProperty<>(DEFAULT_GRID_COLOR)
     {
 
         @Override
@@ -64,6 +63,7 @@ public class GraphEditorGrid extends Region
         @Override
         protected void invalidated()
         {
+            mNeedsLayout = true;
             requestLayout();
         }
     };
@@ -86,7 +86,8 @@ public class GraphEditorGrid extends Region
         @Override
         protected void invalidated()
         {
-            draw(getWidth(), getHeight());
+            mNeedsLayout = true;
+            requestLayout();
         }
 
     };
@@ -97,55 +98,55 @@ public class GraphEditorGrid extends Region
      */
     public GraphEditorGrid()
     {
-        // The grid should under NO circumstances interfere with (a) the layout
-        // of its parent, or (b) mouse events.
         setManaged(false);
         setMouseTransparent(true);
         getStyleClass().add(STYLE_CLASS);
-        mGrid.strokeProperty().bind(mGridColor);
         getChildren().add(mGrid);
     }
 
     @Override
-    public void resize(double pWidth, double pHeight)
+    protected void layoutChildren()
     {
-        super.resize(pWidth, pHeight);
+        final var top = (int) snappedTopInset();
+        final var right = (int) snappedRightInset();
+        final var bottom = (int) snappedBottomInset();
+        final var left = (int) snappedLeftInset();
+        final var width = (int) getWidth() - left - right;
+        final var height = (int) getHeight() - top - bottom;
+        final var spacing = getGridSpacing();
 
-        if (mLastHeight != pHeight || mLastWidth != pWidth)
+        mGrid.relocate(left, top);
+
+        if (width != mGrid.getWidth() || height != mGrid.getHeight() || mNeedsLayout)
         {
-            mLastHeight = pHeight;
-            mLastWidth = pWidth;
-            draw(pWidth, pHeight);
+            mGrid.setWidth(width);
+            mGrid.setHeight(height);
+
+            final var g = mGrid.getGraphicsContext2D();
+            g.clearRect(0, 0, width, height);
+            g.setStroke(mGridColor.get());
+            g.setFill(mGridColor.get());
+
+            final var hLineCount = (int) Math.floor((height + 1) / spacing);
+            final var vLineCount = (int) Math.floor((width + 1) / spacing);
+
+            for (int i = 1; i <= hLineCount; i++)
+            {
+                g.strokeLine(0, snap(i * spacing), width, snap(i * spacing));
+            }
+
+            for (int i = 1; i <= vLineCount; i++)
+            {
+                g.strokeLine(snap(i * spacing), 0, snap(i * spacing), height);
+            }
+
+            mNeedsLayout = false;
         }
     }
 
-    /**
-     * Draws the grid for the given width and height.
-     *
-     * @param pWidth
-     *            the width of the editor region
-     * @param pHeight
-     *            the height of the editor region
-     */
-    void draw(final double pWidth, final double pHeight)
+    private static double snap(double y)
     {
-        final double spacing = getGridSpacing();
-        final int hLineCount = (int) Math.floor((pHeight + 1) / spacing);
-        final int vLineCount = (int) Math.floor((pWidth + 1) / spacing);
-
-        for (int i = 0; i < hLineCount; i++)
-        {
-            final double y = (i + 1) * spacing + HALF_PIXEL_OFFSET;
-            mGrid.getElements().add(new MoveTo(0, y));
-            mGrid.getElements().add(new LineTo(pWidth, y));
-        }
-
-        for (int i = 0; i < vLineCount; i++)
-        {
-            final double x = (i + 1) * spacing + HALF_PIXEL_OFFSET;
-            mGrid.getElements().add(new MoveTo(x, 0));
-            mGrid.getElements().add(new LineTo(x, pHeight));
-        }
+        return ((int) y) + HALF_PIXEL_OFFSET;
     }
 
     /**
@@ -200,7 +201,7 @@ public class GraphEditorGrid extends Region
     private static class StyleableProperties
     {
 
-        private static final CssMetaData<GraphEditorGrid, Color> GRID_COLOR = new CssMetaData<GraphEditorGrid, Color>(GRID_COLOR_SELECTOR,
+        private static final CssMetaData<GraphEditorGrid, Color> GRID_COLOR = new CssMetaData<>(GRID_COLOR_SELECTOR,
                 StyleConverter.getColorConverter())
         {
 

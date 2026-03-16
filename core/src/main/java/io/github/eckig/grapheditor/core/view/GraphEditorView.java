@@ -12,6 +12,9 @@ import io.github.eckig.grapheditor.core.DefaultGraphEditor;
 import io.github.eckig.grapheditor.core.utils.SelectionBox;
 import io.github.eckig.grapheditor.core.view.impl.GraphEditorGrid;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
+import io.github.eckig.grapheditor.window.PanningWindow;
+import javafx.beans.InvalidationListener;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
@@ -25,8 +28,9 @@ import javafx.scene.layout.Region;
  * </p>
  *
  * <p>
- * The view currently has two layers - a <b>node</b> layer and a
- * <b>connection</b> layer. The node layer is in front. Graph nodes are added to
+ * The view currently has three layers - a <b>node</b> layer, a
+ * <b>connection</b> layer and the background grid.
+ * The node layer is in front. Graph nodes are added to
  * the node layer, while connections, joints, and tails are added to the
  * connection layer. This means nodes will always be in front of connections.
  * </p>
@@ -58,6 +62,8 @@ public class GraphEditorView extends Region
     };
 
     private final GraphEditorGrid mGrid = new GraphEditorGrid();
+    private final InvalidationListener mGridListener = _ -> resizeRelocateGrid();
+
     private ConnectionLayouter mConnectionLayouter;
 
     private final SelectionBox mSelectionBox = new SelectionBox();
@@ -83,6 +89,24 @@ public class GraphEditorView extends Region
         {
             mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
             mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
+        }
+
+        parentProperty().addListener((_, oldParent, newParent) -> parentChanged(oldParent, newParent));
+        layoutXProperty().addListener(mGridListener);
+        layoutYProperty().addListener(mGridListener);
+    }
+
+    private void parentChanged(final Parent pOldParent, final Parent pNewParent)
+    {
+        if (pOldParent instanceof PanningWindow pw)
+        {
+            pw.widthProperty().removeListener(mGridListener);
+            pw.heightProperty().removeListener(mGridListener);
+        }
+        if (pNewParent instanceof PanningWindow pw)
+        {
+            pw.widthProperty().addListener(mGridListener);
+            pw.heightProperty().addListener(mGridListener);
         }
     }
 
@@ -266,8 +290,18 @@ public class GraphEditorView extends Region
         final double height = getHeight();
         mNodeLayer.resizeRelocate(0, 0, width, height);
         mConnectionLayer.resizeRelocate(0, 0, width, height);
-        mGrid.resizeRelocate(0, 0, width, height);
         drawConnections();
+    }
+
+    private void resizeRelocateGrid()
+    {
+        final var panningWindow = getParent() instanceof PanningWindow pw ? pw : null;
+        final var s = mGrid.getGridSpacing();
+        final var width = panningWindow == null ? 0 : panningWindow.getWidth() + s;
+        final var height = panningWindow == null ? 0 : panningWindow.getHeight() + s;
+        final var x = getLayoutX();
+        final var y = getLayoutY();
+        mGrid.resizeRelocate(x % s + x * -1.0, y % s + y * -1.0, width, height);
     }
 
     /**
