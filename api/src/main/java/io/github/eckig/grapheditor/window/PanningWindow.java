@@ -395,7 +395,10 @@ public class PanningWindow extends Region {
         panTo(getContentX(), getContentY());
     }
 
-    private double getMaxX()
+    /**
+     * @return the maximum allowed x coordinate
+     */
+    protected double getMaxX()
     {
         final Region theContent = content;
         if (theContent != null)
@@ -406,7 +409,10 @@ public class PanningWindow extends Region {
         return 0;
     }
 
-    private double getMaxY()
+    /**
+     * @return the maximum allowed y coordinate
+     */
+    protected double getMaxY()
     {
         final Region theContent = content;
         if (theContent != null)
