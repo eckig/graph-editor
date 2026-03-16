@@ -48,22 +48,21 @@ public final class ConnectionCopier
     {
         final Map<GConnection, GConnection> copiedConnections = new HashMap<>();
 
-        for (final GNode node : copies.keySet())
+        for (final var node : copies.keySet())
         {
-            final GNode copy = copies.get(node);
+            final var copy = copies.get(node);
 
-            for (final GConnector connector : node.getConnectors())
+            for (final var connector : node.getConnectors())
             {
-                final int connectorIndex = node.getConnectors().indexOf(connector);
-                final GConnector copiedConnector = copy.getConnectors().get(connectorIndex);
+                final var connectorIndex = node.getConnectors().indexOf(connector);
+                final var copiedConnector = copy.getConnectors().get(connectorIndex);
 
                 copiedConnector.getConnections().clear();
 
-                for (final GConnection connection : connector.getConnections())
+                for (final var connection : connector.getConnections())
                 {
-                    final GNode opposingNode = getOpposingNode(connector, connection);
-
-                    final boolean opposingNodePresent = copies.containsKey(opposingNode);
+                    final var opposingNode = getOpposingNode(connector, connection);
+                    final var opposingNodePresent = copies.containsKey(opposingNode);
 
                     if (opposingNodePresent)
                     {

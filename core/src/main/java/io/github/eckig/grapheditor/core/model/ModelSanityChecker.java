@@ -6,11 +6,7 @@ package io.github.eckig.grapheditor.core.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.eckig.grapheditor.core.DefaultGraphEditor;
-import io.github.eckig.grapheditor.model.GConnection;
-import io.github.eckig.grapheditor.model.GConnector;
 import io.github.eckig.grapheditor.model.GModel;
-import io.github.eckig.grapheditor.model.GNode;
 
 
 /**
@@ -20,7 +16,7 @@ import io.github.eckig.grapheditor.model.GNode;
 public final class ModelSanityChecker
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultGraphEditor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelSanityChecker.class);
 
     /**
      * Static class, private constructor.
@@ -57,7 +53,7 @@ public final class ModelSanityChecker
             return false;
         }
 
-        for (final GNode node : model.getNodes())
+        for (final var node : model.getNodes())
         {
             if (node.getWidth() < 0 || node.getHeight() < 0)
             {
@@ -81,11 +77,10 @@ public final class ModelSanityChecker
     {
         boolean valid = true;
 
-        for (final GConnection connection : model.getConnections())
+        for (final var connection : model.getConnections())
         {
-
-            final GConnector source = connection.getSource();
-            final GConnector target = connection.getTarget();
+            final var source = connection.getSource();
+            final var target = connection.getTarget();
 
             if (source == null || target == null)
             {

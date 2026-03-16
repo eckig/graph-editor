@@ -54,7 +54,7 @@ public class GraphEditorContainer extends AutoScrollingWindow
     private final GraphEditorMinimap minimap = new GraphEditorMinimap();
 
     private GraphEditor graphEditor;
-    private final ChangeListener<GModel> modelChangeListener = (observable, oldValue, newValue) -> modelChanged(newValue);
+    private final ChangeListener<GModel> modelChangeListener = (_, _, newValue) -> modelChanged(newValue);
 
     /**
      * Creates a new {@link GraphEditorContainer}.

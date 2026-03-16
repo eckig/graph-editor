@@ -13,7 +13,8 @@ import javafx.scene.input.MouseEvent;
 /**
  * Responsible for creating, drawing, and removing tails.
  */
-public class TailManager {
+public class TailManager
+{
 
     private final SkinLookup skinLookup;
     private final GraphEditorView view;
@@ -26,10 +27,13 @@ public class TailManager {
     /**
      * Creates a new {@link TailManager} instance.
      *
-     * @param skinLookup the {@link SkinLookup} used to look up connector and tail skins
-     * @param view the {@link GraphEditorView} to which tail skins will be added and removed
+     * @param skinLookup
+     *         the {@link SkinLookup} used to look up connector and tail skins
+     * @param view
+     *         the {@link GraphEditorView} to which tail skins will be added and removed
      */
-    public TailManager(final SkinLookup skinLookup, final GraphEditorView view) {
+    public TailManager(final SkinLookup skinLookup, final GraphEditorView view)
+    {
         this.skinLookup = skinLookup;
         this.view = view;
     }
@@ -37,18 +41,20 @@ public class TailManager {
     /**
      * Creates a new tail and adds it to the view.
      *
-     * @param connector the connector where the tail starts from
-     * @param event the mouse event responsible for creating the tail
+     * @param connector
+     *         the connector where the tail starts from
+     * @param event
+     *         the mouse event responsible for creating the tail
      */
-    public void create(final GConnector connector, final MouseEvent event) {
-
+    public void create(final GConnector connector, final MouseEvent event)
+    {
         // Check if tailSkin already created, because this method may be called multiple times.
-        if (tailSkin == null) {
-
+        if (tailSkin == null)
+        {
             tailSkin = skinLookup.lookupTail(connector);
 
             sourcePosition = GeometryUtils.getConnectorPosition(connector, skinLookup);
-            final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
+            final var cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
 
             tailSkin.draw(sourcePosition, cursorPosition);
 
@@ -62,9 +68,10 @@ public class TailManager {
      * @param pJointPositions
      * @param pNewSource
      * @param pEvent
-     *            the mouse event responsible for creating the tail
+     *         the mouse event responsible for creating the tail
      */
-    public void updateToNewSource(final List<Point2D> pJointPositions, final GConnector pNewSource, final MouseEvent pEvent)
+    public void updateToNewSource(final List<Point2D> pJointPositions, final GConnector pNewSource,
+            final MouseEvent pEvent)
     {
         cleanUp();
         jointPositions = pJointPositions;
@@ -72,7 +79,7 @@ public class TailManager {
         tailSkin = skinLookup.lookupTail(pNewSource);
 
         sourcePosition = GeometryUtils.getConnectorPosition(pNewSource, skinLookup);
-        final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(pEvent, view));
+        final var cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(pEvent, view));
 
         tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
         view.add(tailSkin);
@@ -81,17 +88,21 @@ public class TailManager {
     /**
      * Updates the tail position based on new cursor position.
      *
-     * @param event the mouse event responsible for updating the position
+     * @param event
+     *         the mouse event responsible for updating the position
      */
-    public void updatePosition(final MouseEvent event) {
+    public void updatePosition(final MouseEvent event)
+    {
+        if (tailSkin != null && sourcePosition != null)
+        {
+            final var cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
 
-        if (tailSkin != null && sourcePosition != null) {
-
-            final Point2D cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
-
-            if (jointPositions != null) {
+            if (jointPositions != null)
+            {
                 tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
-            } else {
+            }
+            else
+            {
                 tailSkin.draw(sourcePosition, cursorPosition);
             }
         }
@@ -100,20 +111,26 @@ public class TailManager {
     /**
      * Snaps the position of the tail to show the position the connection itself would take if it would be created.
      *
-     * @param source the source connector
-     * @param target the target connector
-     * @param valid {@code true} if the connection is valid, {@code false} if invalid
+     * @param source
+     *         the source connector
+     * @param target
+     *         the target connector
+     * @param valid
+     *         {@code true} if the connection is valid, {@code false} if invalid
      */
-    public void snapPosition(final GConnector source, final GConnector target, final boolean valid) {
+    public void snapPosition(final GConnector source, final GConnector target, final boolean valid)
+    {
+        if (tailSkin != null)
+        {
+            final var sourcePosition = GeometryUtils.getConnectorPosition(source, skinLookup);
+            final var targetPosition = GeometryUtils.getConnectorPosition(target, skinLookup);
 
-        if (tailSkin != null) {
-
-            final Point2D sourcePosition = GeometryUtils.getConnectorPosition(source, skinLookup);
-            final Point2D targetPosition = GeometryUtils.getConnectorPosition(target, skinLookup);
-
-            if (jointPositions != null) {
+            if (jointPositions != null)
+            {
                 tailSkin.draw(sourcePosition, targetPosition, jointPositions, target, valid);
-            } else {
+            }
+            else
+            {
                 tailSkin.draw(sourcePosition, targetPosition, target, valid);
             }
         }
@@ -127,11 +144,12 @@ public class TailManager {
      * parameters.
      * </p>
      */
-    public void cleanUp() {
-
+    public void cleanUp()
+    {
         jointPositions = null;
 
-        if (tailSkin != null) {
+        if (tailSkin != null)
+        {
             view.remove(tailSkin);
             tailSkin = null;
         }
@@ -140,13 +158,13 @@ public class TailManager {
     /**
      * Corrects the cursor position in the case where scale transforms are applied.
      *
-     * @param cursorPosition the cursor position calculated assuming scale factor of 1
-     *
+     * @param cursorPosition
+     *         the cursor position calculated assuming scale factor of 1
      * @return the corrected cursor position
      */
-    private Point2D getScaledPosition(final Point2D cursorPosition) {
-
-        final double scale = view.getLocalToSceneTransform().getMxx();
+    private Point2D getScaledPosition(final Point2D cursorPosition)
+    {
+        final var scale = view.getLocalToSceneTransform().getMxx();
         return new Point2D(cursorPosition.getX() / scale, cursorPosition.getY() / scale);
     }
 }

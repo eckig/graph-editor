@@ -6,10 +6,6 @@ package io.github.eckig.grapheditor.core.selections;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
-
-import io.github.eckig.grapheditor.GJointSkin;
-import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.SelectionManager;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
@@ -25,14 +21,15 @@ import javafx.scene.input.MouseEvent;
 /**
  * Handles how a selection of multiple objects is dragged.
  */
-public class SelectionDragManager {
+public class SelectionDragManager
+{
 
     private final SkinLookup skinLookup;
     private final GraphEditorView view;
     private final SelectionManager selectionManager;
 
-    private final ChangeListener<Number> layoutXListener = (v, o, n) -> masterMovedX(n.doubleValue());
-    private final ChangeListener<Number> layoutYListener = (v, o, n) -> masterMovedY(n.doubleValue());
+    private final ChangeListener<Number> layoutXListener = (_, _, n) -> masterMovedX(n.doubleValue());
+    private final ChangeListener<Number> layoutYListener = (_, _, n) -> masterMovedY(n.doubleValue());
 
     private final List<DraggableBox> currentSelectedElements = new ArrayList<>();
     private double[] elementLayoutXOffsets; // array index == List index
@@ -44,12 +41,16 @@ public class SelectionDragManager {
     /**
      * Creates a new selection drag manager. Only one instance should exist per {@link DefaultGraphEditor} instance.
      *
-     * @param skinLookup the {@link SkinLookup} used to look up skins
-     * @param view the {@link GraphEditorView} instance
-     * @param selectionManager the {@link SelectionManager} instance
+     * @param skinLookup
+     *         the {@link SkinLookup} used to look up skins
+     * @param view
+     *         the {@link GraphEditorView} instance
+     * @param selectionManager
+     *         the {@link SelectionManager} instance
      */
     public SelectionDragManager(final SkinLookup skinLookup, final GraphEditorView view,
-            final SelectionManager selectionManager) {
+            final SelectionManager selectionManager)
+    {
         this.skinLookup = skinLookup;
         this.view = view;
         this.selectionManager = selectionManager;
@@ -61,7 +62,7 @@ public class SelectionDragManager {
         {
             for (int i = 0; i < currentSelectedElements.size(); i++)
             {
-                final DraggableBox node = currentSelectedElements.get(i);
+                final var node = currentSelectedElements.get(i);
                 if (node != master)
                 {
                     node.setLayoutX(x + elementLayoutXOffsets[i]);
@@ -76,7 +77,7 @@ public class SelectionDragManager {
         {
             for (int i = 0; i < currentSelectedElements.size(); i++)
             {
-                final DraggableBox node = currentSelectedElements.get(i);
+                final var node = currentSelectedElements.get(i);
                 if (node != master)
                 {
                     node.setLayoutY(y + elementLayoutYOffsets[i]);
@@ -88,30 +89,35 @@ public class SelectionDragManager {
     /**
      * Binds the positions of all selected objects to have a fixed position relative to the given draggable box.
      *
-     * @param pMaster the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
+     * @param pMaster
+     *         the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
      */
-    public void bindPositions(final DraggableBox pMaster) {
-
+    public void bindPositions(final DraggableBox pMaster)
+    {
         // clean up
         currentSelectedElements.clear();
-        if (master != null) {
+        if (master != null)
+        {
             removePositionListeners(master);
         }
 
         // store the currently selected elements of interest
         // (the ones we want to move alongside the master):
-        for (final EObject selected : selectionManager.getSelectedItems()) {
-
-            if (selected instanceof GNode n) {
-
-                final GNodeSkin skin = skinLookup.lookupNode(n);
-                if (skin != null) {
+        for (final var selected : selectionManager.getSelectedItems())
+        {
+            if (selected instanceof GNode n)
+            {
+                final var skin = skinLookup.lookupNode(n);
+                if (skin != null)
+                {
                     currentSelectedElements.add(skin.getRoot());
                 }
-            } else if (selected instanceof GJoint j) {
-
-                final GJointSkin skin = skinLookup.lookupJoint(j);
-                if (skin != null) {
+            }
+            else if (selected instanceof GJoint j)
+            {
+                final var skin = skinLookup.lookupJoint(j);
+                if (skin != null)
+                {
                     currentSelectedElements.add(skin.getRoot());
                 }
             }
@@ -120,7 +126,8 @@ public class SelectionDragManager {
         // shortcut: if no element is selected or
         // if only the master element is selected we do not need to attach any listeners
         if (currentSelectedElements.isEmpty()
-                || currentSelectedElements.size() == 1 && currentSelectedElements.get(0) == pMaster) {
+                || currentSelectedElements.size() == 1 && currentSelectedElements.getFirst() == pMaster)
+        {
             return;
         }
 
@@ -134,10 +141,11 @@ public class SelectionDragManager {
     /**
      * Unbinds the positions of all selected objects.
      *
-     * @param node the master {@link DraggableBox} that all selected objects were previously bound to
+     * @param master
+     *         the master {@link DraggableBox} that all selected objects were previously bound to
      */
-    private void unbindPositions(final DraggableBox master) {
-
+    private void unbindPositions(final DraggableBox master)
+    {
         removePositionListeners(master);
         restoreEditorProperties(master);
 
@@ -151,17 +159,19 @@ public class SelectionDragManager {
     /**
      * Stores the current offset position of all selected objects with respect to the given master region.
      *
-     * @param master the master {@link Region} that all selected objects should keep a fixed position relative to
+     * @param master
+     *         the master node that all selected objects should keep a fixed position relative to
      */
-    private void storeCurrentOffsets(final DraggableBox master) {
-
+    private void storeCurrentOffsets(final DraggableBox master)
+    {
         elementLayoutYOffsets = new double[currentSelectedElements.size()];
         elementLayoutXOffsets = new double[currentSelectedElements.size()];
 
-        for (int i = 0; i < currentSelectedElements.size(); i++) {
-
-            final DraggableBox node = currentSelectedElements.get(i);
-            if (node != master) {
+        for (int i = 0; i < currentSelectedElements.size(); i++)
+        {
+            final var node = currentSelectedElements.get(i);
+            if (node != master)
+            {
                 elementLayoutXOffsets[i] = node.getLayoutX() - master.getLayoutX();
                 elementLayoutYOffsets[i] = node.getLayoutY() - master.getLayoutY();
             }
@@ -176,15 +186,16 @@ public class SelectionDragManager {
      * possible to drag any object outside the view if multiple objects are selected.
      * </p>
      *
-     * @param master the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
+     * @param master
+     *         the master {@link DraggableBox} that all selected objects should keep a fixed position relative to
      */
-    private void setEditorBoundsForDrag(final DraggableBox master) {
+    private void setEditorBoundsForDrag(final DraggableBox master)
+    {
+        final var propertiesForDrag = new GraphEditorProperties(view.getEditorProperties());
+        final var maxOffsets = new BoundOffsets();
 
-        final GraphEditorProperties propertiesForDrag = new GraphEditorProperties(view.getEditorProperties());
-
-        final BoundOffsets maxOffsets = new BoundOffsets();
-
-        for (final DraggableBox node : currentSelectedElements) {
+        for (final var node : currentSelectedElements)
+        {
             addOffsets(master, node, maxOffsets);
         }
 
@@ -200,12 +211,15 @@ public class SelectionDragManager {
      * Calculates the offset between the given master and slave boxes and adds it to the maxOffsets instance if it is
      * larger than the current maximum value.
      *
-     * @param master the master {@link DraggableBox} being dragged
-     * @param slave the slave {@link DraggableBox} that is also selected and whose position is bound to the master
-     * @param maxOffsets the {@link BoundOffsets} instance storing the current max offsets in all 4 directions
+     * @param master
+     *         the master {@link DraggableBox} being dragged
+     * @param slave
+     *         the slave {@link DraggableBox} that is also selected and whose position is bound to the master
+     * @param maxOffsets
+     *         the {@link BoundOffsets} instance storing the current max offsets in all 4 directions
      */
-    private void addOffsets(final DraggableBox master, final DraggableBox slave, final BoundOffsets maxOffsets) {
-
+    private void addOffsets(final DraggableBox master, final DraggableBox slave, final BoundOffsets maxOffsets)
+    {
         final double masterX = master.getLayoutX();
         final double masterWidth = master.getWidth();
 
@@ -234,26 +248,31 @@ public class SelectionDragManager {
     /**
      * Resets the editor properties instance in the master draggable box to its original value.
      *
-     * @param the master {@link DraggableBox} that was just dragged
+     * @param master
+     *         the master {@link DraggableBox} that was just dragged
      */
-    private void restoreEditorProperties(final DraggableBox master) {
+    private void restoreEditorProperties(final DraggableBox master)
+    {
         master.setEditorProperties(view.getEditorProperties());
     }
 
     /**
      * Adds listeners to the master region to update all slave regions accordingly when the master's position changes.
      *
-     * @param the master {@link DraggableBox} that is about to be dragged
+     * @param master
+     *         the master {@link DraggableBox} that is about to be dragged
      */
-    private void addPositionListeners(final DraggableBox master) {
-
+    private void addPositionListeners(final DraggableBox master)
+    {
         master.layoutXProperty().addListener(layoutXListener);
         master.layoutYProperty().addListener(layoutYListener);
 
-        removeOnReleased = new EventHandler<MouseEvent>() {
+        removeOnReleased = new EventHandler<>()
+        {
 
             @Override
-            public void handle(MouseEvent event) {
+            public void handle(MouseEvent event)
+            {
                 unbindPositions(master);
                 master.removeEventHandler(MouseEvent.MOUSE_RELEASED, this);
             }
@@ -264,14 +283,16 @@ public class SelectionDragManager {
     /**
      * Removes the position listeners from the given master region.
      *
-     * @param master the master {@link DraggableBox} that was just dragged
+     * @param master
+     *         the master {@link DraggableBox} that was just dragged
      */
-    private void removePositionListeners(final DraggableBox master) {
-
+    private void removePositionListeners(final DraggableBox master)
+    {
         master.layoutXProperty().removeListener(layoutXListener);
         master.layoutYProperty().removeListener(layoutYListener);
 
-        if (removeOnReleased != null) {
+        if (removeOnReleased != null)
+        {
             master.removeEventHandler(MouseEvent.MOUSE_RELEASED, removeOnReleased);
             removeOnReleased = null;
         }
@@ -280,8 +301,8 @@ public class SelectionDragManager {
     /**
      * A class to store the bound offsets for each direction (north, south, east, west).
      */
-    private class BoundOffsets {
-
+    private static class BoundOffsets
+    {
         public double northOffset;
         public double southOffset;
         public double eastOffset;

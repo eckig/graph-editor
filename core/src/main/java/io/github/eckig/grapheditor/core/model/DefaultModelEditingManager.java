@@ -5,7 +5,6 @@ package io.github.eckig.grapheditor.core.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import io.github.eckig.grapheditor.Commands;
@@ -16,21 +15,17 @@ import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
-import org.eclipse.emf.edit.provider.ComposedAdapterFactory.Descriptor.Registry;
 
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
 import io.github.eckig.grapheditor.core.ModelEditingManager;
 import io.github.eckig.grapheditor.model.GConnection;
-import io.github.eckig.grapheditor.model.GConnector;
 import io.github.eckig.grapheditor.model.GModel;
 import io.github.eckig.grapheditor.model.GNode;
 import io.github.eckig.grapheditor.model.GraphPackage;
@@ -91,7 +86,7 @@ public class DefaultModelEditingManager implements ModelEditingManager
     @Override
     public void updateLayoutValues(final SkinLookup skinLookup)
     {
-        final CompoundCommand command = new CompoundCommand();
+        final var command = new CompoundCommand();
 
         Commands.updateLayoutValues(command, model, skinLookup);
 
@@ -113,19 +108,19 @@ public class DefaultModelEditingManager implements ModelEditingManager
             return;
         }
 
-        final CompoundCommand command = new CompoundCommand();
-        final RemoveContext editContext = new RemoveContext();
-        final List<EObject> delete = new ArrayList<>(pToRemove.size());
+        final var command = new CompoundCommand();
+        final var editContext = new RemoveContext();
+        final var delete = new ArrayList<EObject>(pToRemove.size());
 
         // pre-fill the RemoveContext with all elements to be removed:
-        for (final EObject obj : pToRemove)
+        for (final var obj : pToRemove)
         {
             if (obj instanceof GNode n && editContext.canRemove(obj))
             {
                 delete.add(obj);
-                for (final GConnector connector : n.getConnectors())
+                for (final var connector : n.getConnectors())
                 {
-                    for (final GConnection connection : connector.getConnections())
+                    for (final var connection : connector.getConnections())
                     {
                         if (connection != null && editContext.canRemove(connection))
                         {
@@ -141,21 +136,21 @@ public class DefaultModelEditingManager implements ModelEditingManager
         }
 
         // delete the elements and call business logic add-ins:
-        for (final EObject obj : delete)
+        for (final var obj : delete)
         {
-            if (obj instanceof GNode)
+            if (obj instanceof GNode n)
             {
                 command.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__NODES, obj));
 
-                final Command onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply(editContext, (GNode) obj);
+                final var onRemoved = mOnNodeRemoved == null ? null : mOnNodeRemoved.apply(editContext, n);
                 if (onRemoved != null)
                 {
                     command.append(onRemoved);
                 }
             }
-            else if (obj instanceof GConnection)
+            else if (obj instanceof GConnection c)
             {
-                remove(editContext, command, (GConnection) obj);
+                remove(editContext, command, c);
             }
         }
 
@@ -167,14 +162,14 @@ public class DefaultModelEditingManager implements ModelEditingManager
 
     private void remove(final RemoveContext pRemoveContext, final CompoundCommand pCommand, final GConnection pToDelete)
     {
-        final GConnector source = pToDelete.getSource();
-        final GConnector target = pToDelete.getTarget();
+        final var source = pToDelete.getSource();
+        final var target = pToDelete.getTarget();
 
         pCommand.append(RemoveCommand.create(editingDomain, model, GraphPackage.Literals.GMODEL__CONNECTIONS, pToDelete));
         pCommand.append(RemoveCommand.create(editingDomain, source, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
         pCommand.append(RemoveCommand.create(editingDomain, target, GraphPackage.Literals.GCONNECTOR__CONNECTIONS, pToDelete));
 
-        final Command onRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply(pRemoveContext, pToDelete);
+        final var onRemoved = mOnConnectionRemoved == null ? null : mOnConnectionRemoved.apply(pRemoveContext, pToDelete);
         if (onRemoved != null)
         {
             pCommand.append(onRemoved);
@@ -194,7 +189,7 @@ public class DefaultModelEditingManager implements ModelEditingManager
         // First remove the listener from the old model, if it exists.
         if (oldModel != null)
         {
-            final EditingDomain oldDomain = AdapterFactoryEditingDomain.getEditingDomainFor(oldModel);
+            final var oldDomain = AdapterFactoryEditingDomain.getEditingDomainFor(oldModel);
             if (oldDomain != null)
             {
                 oldDomain.getCommandStack().removeCommandStackListener(commandStackListener);
@@ -203,8 +198,8 @@ public class DefaultModelEditingManager implements ModelEditingManager
 
         if (newModel.eResource() == null)
         {
-            final XMIResourceFactoryImpl resourceFactory = new XMIResourceFactoryImpl();
-            final Resource resource = resourceFactory.createResource(DEFAULT_URI);
+            final var resourceFactory = new XMIResourceFactoryImpl();
+            final var resource = resourceFactory.createResource(DEFAULT_URI);
             resource.getContents().add(newModel);
         }
 
@@ -212,8 +207,8 @@ public class DefaultModelEditingManager implements ModelEditingManager
 
         if (editingDomain == null)
         {
-            final Registry registry = ComposedAdapterFactory.Descriptor.Registry.INSTANCE;
-            final AdapterFactory adapterFactory = new ComposedAdapterFactory(registry);
+            final var registry = ComposedAdapterFactory.Descriptor.Registry.INSTANCE;
+            final var adapterFactory = new ComposedAdapterFactory(registry);
 
             editingDomain = new AdapterFactoryEditingDomain(adapterFactory, new BasicCommandStack());
             editingDomain.getResourceSet().getResources().add(newModel.eResource());

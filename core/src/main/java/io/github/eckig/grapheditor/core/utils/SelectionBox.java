@@ -65,7 +65,7 @@ public class SelectionBox extends Rectangle
      */
     private void addWindowFocusListener()
     {
-        sceneListener = (observable, oldValue, newValue) ->
+        sceneListener = (_, oldValue, newValue) ->
         {
             if (oldValue != null)
             {
@@ -78,7 +78,7 @@ public class SelectionBox extends Rectangle
             }
         };
 
-        windowListener = (observable, oldValue, newValue) ->
+        windowListener = (_, oldValue, newValue) ->
         {
             if (oldValue != null)
             {
@@ -91,7 +91,7 @@ public class SelectionBox extends Rectangle
             }
         };
 
-        windowFocusListener = (observable, oldValue, newValue) ->
+        windowFocusListener = (_, _, newValue) ->
         {
             if (!newValue)
             {

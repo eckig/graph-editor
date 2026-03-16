@@ -4,8 +4,6 @@
 package io.github.eckig.grapheditor.core.model;
 
 import io.github.eckig.grapheditor.EditorElement;
-import io.github.eckig.grapheditor.GJointSkin;
-import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.ModelEditingManager;
 import io.github.eckig.grapheditor.model.GJoint;
@@ -13,7 +11,6 @@ import io.github.eckig.grapheditor.model.GModel;
 import io.github.eckig.grapheditor.model.GNode;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
 
@@ -27,8 +24,8 @@ public class ModelLayoutUpdater
     private final SkinLookup skinLookup;
     private final ModelEditingManager modelEditingManager;
     private final GraphEditorProperties properties;
-    private final EventHandler<MouseEvent> mouseReleasedHandlerNode = event -> elementMouseReleased(EditorElement.NODE);
-    private final EventHandler<MouseEvent> mouseReleasedHandlerJoint = event -> elementMouseReleased(EditorElement.JOINT);
+    private final EventHandler<MouseEvent> mouseReleasedHandlerNode = _ -> elementMouseReleased(EditorElement.NODE);
+    private final EventHandler<MouseEvent> mouseReleasedHandlerJoint = _ -> elementMouseReleased(EditorElement.JOINT);
 
     /**
      * Creates a new model layout updater. Only one instance should exist per
@@ -57,10 +54,10 @@ public class ModelLayoutUpdater
      */
     public void addNode(final GNode node)
     {
-        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+        final var nodeSkin = skinLookup.lookupNode(node);
         if (nodeSkin != null)
         {
-            final Node root = nodeSkin.getRoot();
+            final var root = nodeSkin.getRoot();
             if (root != null)
             {
                 root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerNode);
@@ -70,10 +67,10 @@ public class ModelLayoutUpdater
 
     public void removeNode(final GNode node)
     {
-        final GNodeSkin nodeSkin = skinLookup.lookupNode(node);
+        final var nodeSkin = skinLookup.lookupNode(node);
         if (nodeSkin != null)
         {
-            final Node root = nodeSkin.getRoot();
+            final var root = nodeSkin.getRoot();
             if (root != null)
             {
                 root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerNode);
@@ -90,10 +87,10 @@ public class ModelLayoutUpdater
      */
     public void addJoint(final GJoint joint)
     {
-        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        final var jointSkin = skinLookup.lookupJoint(joint);
         if (jointSkin != null)
         {
-            final Node root = jointSkin.getRoot();
+            final var root = jointSkin.getRoot();
             if (root != null)
             {
                 root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerJoint);
@@ -103,10 +100,10 @@ public class ModelLayoutUpdater
 
     public void removeJoint(final GJoint joint)
     {
-        final GJointSkin jointSkin = skinLookup.lookupJoint(joint);
+        final var jointSkin = skinLookup.lookupJoint(joint);
         if (jointSkin != null)
         {
-            final Node root = jointSkin.getRoot();
+            final var root = jointSkin.getRoot();
             if (root != null)
             {
                 root.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleasedHandlerJoint);
@@ -124,7 +121,7 @@ public class ModelLayoutUpdater
 
     private boolean canEdit(final EditorElement pType)
     {
-        final GraphEditorProperties props = properties;
+        final var props = properties;
         return props != null && !props.isReadOnly(pType);
     }
 }

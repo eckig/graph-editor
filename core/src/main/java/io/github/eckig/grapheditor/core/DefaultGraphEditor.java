@@ -8,7 +8,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import io.github.eckig.grapheditor.core.connections.ConnectionEventManager;
-import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 import io.github.eckig.grapheditor.utils.RemoveContext;
