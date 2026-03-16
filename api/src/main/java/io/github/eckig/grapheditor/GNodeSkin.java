@@ -26,16 +26,19 @@ import javafx.geometry.Point2D;
  * The root JavaFX node of this skin is a {@link ResizableBox}.
  * </p>
  */
-public abstract class GNodeSkin extends GSkin<GNode> {
+public abstract class GNodeSkin extends GSkin<GNode>
+{
 
     private final DraggableBox root;
 
     /**
      * Creates a new {@link GNodeSkin}.
      *
-     * @param node the {@link GNode} represented by the skin
+     * @param node
+     *         the {@link GNode} represented by the skin
      */
-    public GNodeSkin(final GNode node) {
+    public GNodeSkin(final GNode node)
+    {
         super(node);
         root = createContainer();
     }
@@ -58,8 +61,8 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      * The skin's layout values, e.g. its x and y position, are loaded from the {@link GNode} at this point.
      * </p>
      */
-    public void initialize() {
-
+    public void initialize()
+    {
         getRoot().setLayoutX(getItem().getX());
         getRoot().setLayoutY(getItem().getY());
 
@@ -74,7 +77,8 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      * should be added to the scene graph.
      * </p>
      *
-     * @param connectorSkins a list of {@link GConnectorSkin} objects for each of the node's connectors
+     * @param connectorSkins
+     *         a list of {@link GConnectorSkin} objects for each of the node's connectors
      */
     public abstract void setConnectorSkins(List<GConnectorSkin> connectorSkins);
 
@@ -90,17 +94,15 @@ public abstract class GNodeSkin extends GSkin<GNode> {
      * This will be the point where a connection will attach to.
      * </p>
      *
-     * @param connectorSkin a {@link GConnectorSkin} instance
-     *
+     * @param connectorSkin
+     *         a {@link GConnectorSkin} instance
      * @return the x and y coordinates of the connector
      */
     public abstract Point2D getConnectorPosition(GConnectorSkin connectorSkin);
 
     /**
-     * Creates and returns the {@link DraggableBox} that serves as the root for
-     * this node skin.<br>
-     * By default a {@link ResizableBox} will be created and return as most
-     * nodes will be both draggable and resizable.
+     * Creates and returns the {@link DraggableBox} that serves as the root for this node skin.<br> By default a
+     * {@link ResizableBox} will be created and return as most nodes will be both draggable and resizable.
      *
      * @return {@link DraggableBox}
      */

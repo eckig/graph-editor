@@ -15,7 +15,8 @@ import javafx.collections.ObservableSet;
 /**
  * Provides actions related to selections in the graph editor.
  */
-public interface SelectionManager {
+public interface SelectionManager
+{
 
     /**
      * Gets the list of currently selected nodes.

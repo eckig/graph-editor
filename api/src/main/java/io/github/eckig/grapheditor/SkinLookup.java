@@ -11,7 +11,8 @@ import io.github.eckig.grapheditor.model.GNode;
 /**
  * Provides lookup methods to connect each model instance to its skin instance.
  */
-public interface SkinLookup {
+public interface SkinLookup
+{
 
     /**
      * Gets the skin for the given node.

@@ -25,21 +25,23 @@ import javafx.scene.shape.Line;
  * source and target connectors.
  * </p>
  */
-public abstract class GConnectionSkin extends GSkin<GConnection> {
+public abstract class GConnectionSkin extends GSkin<GConnection>
+{
 
     /**
-     * Cache the index of this connection skin inside the list of children of the
-     * connection layer. As the graph editor grows the indexOf() lookup calls take
-     * up a considerable amount of time.
+     * Cache the index of this connection skin inside the list of children of the connection layer. As the graph editor
+     * grows the indexOf() lookup calls take up a considerable amount of time.
      */
     private int mConnectionIndex;
 
     /**
      * Creates a new {@link GConnectionSkin}.
      *
-     * @param connection the {@link GConnection} represented by the skin
+     * @param connection
+     *         the {@link GConnection} represented by the skin
      */
-    public GConnectionSkin(final GConnection connection) {
+    public GConnectionSkin(final GConnection connection)
+    {
         super(connection);
     }
 
@@ -52,24 +54,22 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
      * the x direction only.
      * </p>
      *
-     * @param jointSkins the list of all {@link GJointSkin} instances associated to the connection
+     * @param jointSkins
+     *         the list of all {@link GJointSkin} instances associated to the connection
      */
     public abstract void setJointSkins(final List<GJointSkin> jointSkins);
 
     /**
-     * Draws the connection skin. This is called every time the connection's
-     * position could change, for example if one of its connectors is moved,
-     * after {@link #update()}.
+     * Draws the connection skin. This is called every time the connection's position could change, for example if one
+     * of its connectors is moved, after {@link #update()}.
      *
      * <p>
-     * A simple connection skin may ignore the given parameter. This parameter
-     * can for example be used to display a 'rerouting' effect when the
-     * connection passes over another connection.
+     * A simple connection skin may ignore the given parameter. This parameter can for example be used to display a
+     * 'rerouting' effect when the connection passes over another connection.
      * </p>
      *
      * @param allConnections
-     *            the lists of points for all connections (can be ignored in a
-     *            simple skin)
+     *         the lists of points for all connections (can be ignored in a simple skin)
      */
     public void draw(@SuppressWarnings("unused") final Map<GConnectionSkin, Point2D[]> allConnections)
     {
@@ -84,9 +84,8 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
     }
 
     /**
-     * Update and return the points of this connection. This is called every
-     * time the connection's position could change, for example if one of its
-     * connectors is moved before {@link #draw(Map)}.
+     * Update and return the points of this connection. This is called every time the connection's position could
+     * change, for example if one of its connectors is moved before {@link #draw(Map)}.
      * <p>
      * The order of the points is as follows:
      *
@@ -153,8 +152,7 @@ public abstract class GConnectionSkin extends GSkin<GConnection> {
     }
 
     /**
-     * @return cached position (index) of this connection skin inside the
-     *         child-list of the parent connection layer.
+     * @return cached position (index) of this connection skin inside the child-list of the parent connection layer.
      */
     public int getParentIndex()
     {

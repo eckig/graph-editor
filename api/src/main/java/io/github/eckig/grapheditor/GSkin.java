@@ -159,7 +159,7 @@ public abstract class GSkin<T extends EObject>
     /**
      * Gets the root JavaFX node of the skin.
      *
-     * @return a the skin's root JavaFX {@link Node}
+     * @return the skin's root JavaFX {@link Node}
      */
     public abstract Node getRoot();
 

@@ -98,7 +98,7 @@ public class GraphEditorProperties implements GraphEventManager
 
         for (final Map.Entry<EditorElement, BooleanProperty> entry : editorProperties.readOnly.entrySet())
         {
-            readOnly.computeIfAbsent(entry.getKey(), k -> new SimpleBooleanProperty()).set(entry.getValue().get());
+            readOnly.computeIfAbsent(entry.getKey(), _ -> new SimpleBooleanProperty()).set(entry.getValue().get());
         }
 
         customProperties.putAll(editorProperties.getCustomProperties());
@@ -326,7 +326,7 @@ public class GraphEditorProperties implements GraphEventManager
     {
         if (pType != null)
         {
-            readOnly.computeIfAbsent(pType, k -> new SimpleBooleanProperty()).set(pReadOnly);
+            readOnly.computeIfAbsent(pType, _ -> new SimpleBooleanProperty()).set(pReadOnly);
         }
     }
 

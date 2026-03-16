@@ -18,16 +18,19 @@ import io.github.eckig.grapheditor.utils.DraggableBox;
  * The root JavaFX node of this skin is a {@link DraggableBox}.
  * </p>
  */
-public abstract class GJointSkin extends GSkin<GJoint> {
+public abstract class GJointSkin extends GSkin<GJoint>
+{
 
     private final DraggableBox root = new DraggableBox(EditorElement.JOINT);
 
     /**
      * Creates a new {@link GJointSkin}.
      *
-     * @param joint the {@link GJoint} represented by the skin
+     * @param joint
+     *         the {@link GJoint} represented by the skin
      */
-    public GJointSkin(final GJoint joint) {
+    public GJointSkin(final GJoint joint)
+    {
         super(joint);
     }
 
@@ -37,7 +40,8 @@ public abstract class GJointSkin extends GSkin<GJoint> {
      * @return a {@link DraggableBox} containing the skin's root JavaFX node
      */
     @Override
-    public DraggableBox getRoot() {
+    public DraggableBox getRoot()
+    {
         return root;
     }
 
@@ -48,7 +52,8 @@ public abstract class GJointSkin extends GSkin<GJoint> {
      * The skin's layout values are loaded from the {@link GJoint} at this point.
      * </p>
      */
-    public void initialize() {
+    public void initialize()
+    {
         getRoot().setLayoutX(getItem().getX() - getWidth() / 2);
         getRoot().setLayoutY(getItem().getY() - getHeight() / 2);
     }

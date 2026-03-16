@@ -61,7 +61,8 @@ import javafx.scene.layout.Region;
  * in the core module for more information.
  * </p>
  */
-public interface GraphEditor extends GraphEditorSkins {
+public interface GraphEditor extends GraphEditorSkins
+{
 
     /**
      * Sets a custom connector validator.

@@ -17,14 +17,17 @@ import io.github.eckig.grapheditor.model.GConnector;
  * The root JavaFX node must be created by the skin implementation and returned in the {@link #getRoot()} method.
  * </p>
  */
-public abstract class GConnectorSkin extends GSkin<GConnector> {
+public abstract class GConnectorSkin extends GSkin<GConnector>
+{
 
     /**
      * Creates a new {@link GConnectorSkin}.
      *
-     * @param connector the {@link GConnector} represented by the skin
+     * @param connector
+     *         the {@link GConnector} represented by the skin
      */
-    public GConnectorSkin(final GConnector connector) {
+    public GConnectorSkin(final GConnector connector)
+    {
         super(connector);
     }
 
@@ -43,14 +46,15 @@ public abstract class GConnectorSkin extends GSkin<GConnector> {
     public abstract double getHeight();
 
     /**
-     * Applys the specified style to the connector.
+     * Applies the specified style to the connector.
      *
      * <p>
      * This is called by the library during various mouse events. For example when a connector is dragged over another
      * connector in an attempt to create a new connection.
      * </p>
      *
-     * @param style the {@link GConnectorStyle} to apply
+     * @param style
+     *         the {@link GConnectorStyle} to apply
      */
     public abstract void applyStyle(GConnectorStyle style);
 }

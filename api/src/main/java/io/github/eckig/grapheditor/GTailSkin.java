@@ -21,14 +21,17 @@ import io.github.eckig.grapheditor.model.GConnector;
  * Tail skins can have similar logic to connection skins, but they do not have to worry about positionable joints.
  * </p>
  */
-public abstract class GTailSkin extends GSkin<GConnector> {
+public abstract class GTailSkin extends GSkin<GConnector>
+{
 
     /**
      * Creates a new {@link GTailSkin}.
      *
-     * @param connector the {@link GConnector} that the tail will extend from
+     * @param connector
+     *         the {@link GConnector} that the tail will extend from
      */
-    public GTailSkin(final GConnector connector) {
+    public GTailSkin(final GConnector connector)
+    {
         super(connector);
     }
 
@@ -39,8 +42,10 @@ public abstract class GTailSkin extends GSkin<GConnector> {
      * This method will be called when a 'fresh' tail is created from an unoccupied connector.
      * </p>
      *
-     * @param start a {@link Point2D} containing the start x and y values
-     * @param end a {@link Point2D} containing the end x and y values
+     * @param start
+     *         a {@link Point2D} containing the start x and y values
+     * @param end
+     *         a {@link Point2D} containing the end x and y values
      */
     public abstract void draw(Point2D start, Point2D end);
 
@@ -51,10 +56,14 @@ public abstract class GTailSkin extends GSkin<GConnector> {
      * This method will be called when a tail is snapped to the target connector that the mouse is hovering over.
      * </p>
      *
-     * @param start a {@link Point2D} containing the start x and y values
-     * @param end a {@link Point2D} containing the end x and y values
-     * @param target the target connector that the tail is snapping to
-     * @param valid {@code true} if the connection is valid, {@code false} if invalid
+     * @param start
+     *         a {@link Point2D} containing the start x and y values
+     * @param end
+     *         a {@link Point2D} containing the end x and y values
+     * @param target
+     *         the target connector that the tail is snapping to
+     * @param valid
+     *         {@code true} if the connection is valid, {@code false} if invalid
      */
     public abstract void draw(Point2D start, Point2D end, GConnector target, boolean valid);
 
@@ -66,9 +75,12 @@ public abstract class GTailSkin extends GSkin<GConnector> {
      * old connection to decide how to position itself, or it may ignore this information.
      * </p>
      *
-     * @param start a {@link Point2D} containing the start x and y values
-     * @param end a {@link Point2D} containing the end x and y values
-     * @param jointPositions the positions of the joints at the time the connection was removed
+     * @param start
+     *         a {@link Point2D} containing the start x and y values
+     * @param end
+     *         a {@link Point2D} containing the end x and y values
+     * @param jointPositions
+     *         the positions of the joints at the time the connection was removed
      */
     public abstract void draw(Point2D start, Point2D end, List<Point2D> jointPositions);
 
@@ -80,13 +92,18 @@ public abstract class GTailSkin extends GSkin<GConnector> {
      * connector.
      * </p>
      *
-     * @param start a {@link Point2D} containing the start x and y values
-     * @param end a {@link Point2D} containing the end x and y values
-     * @param jointPositions 
-     * @param target the target connector that the tail is snapping to
-     * @param valid {@code true} if the connection is valid, {@code false} if invalid
+     * @param start
+     *         a {@link Point2D} containing the start x and y values
+     * @param end
+     *         a {@link Point2D} containing the end x and y values
+     * @param jointPositions
+     * @param target
+     *         the target connector that the tail is snapping to
+     * @param valid
+     *         {@code true} if the connection is valid, {@code false} if invalid
      */
-    public abstract void draw(Point2D start, Point2D end, List<Point2D> jointPositions, GConnector target, boolean valid);
+    public abstract void draw(Point2D start, Point2D end, List<Point2D> jointPositions, GConnector target,
+            boolean valid);
 
     /**
      * Allocates a list of joint positions for a new connection.
