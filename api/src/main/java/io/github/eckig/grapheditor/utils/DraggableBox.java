@@ -29,24 +29,20 @@ public class DraggableBox extends StackPane
     private final EditorElement mType;
 
     /**
-     * stored value of {@link #getLayoutX()}, see
-     * {@link #storeClickValuesForDrag(double, double)}
+     * stored value of {@link #getLayoutX()}, see {@link #storeClickValuesForDrag(double, double)}
      */
     double lastLayoutX;
     /**
-     * stored value of {@link #getLayoutY()}, see
-     * {@link #storeClickValuesForDrag(double, double)}
+     * stored value of {@link #getLayoutY()}, see {@link #storeClickValuesForDrag(double, double)}
      */
     double lastLayoutY;
 
     /**
-     * stored mouse position, see
-     * {@link #storeClickValuesForDrag(double, double)}
+     * stored mouse position, see {@link #storeClickValuesForDrag(double, double)}
      */
     double lastMouseX;
     /**
-     * stored mouse position, see
-     * {@link #storeClickValuesForDrag(double, double)}
+     * stored mouse position, see {@link #storeClickValuesForDrag(double, double)}
      */
     double lastMouseY;
 
@@ -80,8 +76,7 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Called after the skin (using this box as root node) is removed. Can be
-     * overridden for cleanup.
+     * Called after the skin (using this box as root node) is removed. Can be overridden for cleanup.
      */
     public void dispose()
     {
@@ -94,14 +89,12 @@ public class DraggableBox extends StackPane
      * Sets the editor properties object that the drag logic should respect.
      *
      * <p>
-     * This method is called by the framework. Custom skins should <b>not</b>
-     * call it. Editor properties should instead be set via the graph editor
-     * instance.
+     * This method is called by the framework. Custom skins should <b>not</b> call it. Editor properties should instead
+     * be set via the graph editor instance.
      * </p>
      *
      * @param pEditorProperties
-     *            the {@link GraphEditorProperties} instance for the graph
-     *            editor
+     *         the {@link GraphEditorProperties} instance for the graph editor
      */
     public void setEditorProperties(final GraphEditorProperties pEditorProperties)
     {
@@ -116,7 +109,7 @@ public class DraggableBox extends StackPane
      * snap-to-grid are active, snap-to-grid will take priority.
      * </p>
      *
-     * @return a list of x values that the box will align to when dragged, or {@code null}
+     * @return array of x values that the box will align to when dragged, or {@code null}
      */
     public double[] getAlignmentTargetsX()
     {
@@ -124,11 +117,10 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Set a dependent {@link DraggableBox} that will be moved (on the X axis)
-     * when this box is moved on the X-Axis.
+     * Set a dependent {@link DraggableBox} that will be moved (on the X axis) when this box is moved on the X-Axis.
      *
      * @param pDependencyX
-     *            dependent {@link DraggableBox}
+     *         dependent {@link DraggableBox}
      */
     public void bindLayoutX(DraggableBox pDependencyX)
     {
@@ -136,11 +128,10 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Set a dependent {@link DraggableBox} that will be moved (on the Y axis)
-     * when this box is moved on the Y-Axis.
+     * Set a dependent {@link DraggableBox} that will be moved (on the Y axis) when this box is moved on the Y-Axis.
      *
      * @param pDependencyY
-     *            dependent {@link DraggableBox}
+     *         dependent {@link DraggableBox}
      */
     public void bindLayoutY(DraggableBox pDependencyY)
     {
@@ -155,7 +146,8 @@ public class DraggableBox extends StackPane
      * snap-to-grid are active, snap-to-grid will take priority.
      * </p>
      *
-     * @param pAlignmentTargetsX a list of x values that the box will align to when dragged, or {@code null}
+     * @param pAlignmentTargetsX
+     *         a list of x values that the box will align to when dragged, or {@code null}
      */
     public void setAlignmentTargetsX(final double[] pAlignmentTargetsX)
     {
@@ -170,7 +162,7 @@ public class DraggableBox extends StackPane
      * snap-to-grid are active, snap-to-grid will take priority.
      * </p>
      *
-     * @return a list of y values that the box will align to when dragged, or {@code null}
+     * @return array of y values that the box will align to when dragged, or {@code null}
      */
     public double[] getAlignmentTargetsY()
     {
@@ -185,7 +177,8 @@ public class DraggableBox extends StackPane
      * snap-to-grid are active, snap-to-grid will take priority.
      * </p>
      *
-     * @param pAlignmentTargetsY a list of y values that the box will align to when dragged, or {@code null}
+     * @param pAlignmentTargetsY
+     *         a list of y values that the box will align to when dragged, or {@code null}
      */
     public void setAlignmentTargetsY(final double[] pAlignmentTargetsY)
     {
@@ -202,7 +195,8 @@ public class DraggableBox extends StackPane
      *
      * @return the alignment threshold value
      */
-    public double getAlignmentThreshold() {
+    public double getAlignmentThreshold()
+    {
         return alignmentThreshold;
     }
 
@@ -214,9 +208,11 @@ public class DraggableBox extends StackPane
      * alignment target.
      * </p>
      *
-     * @param pAlignmentThreshold the alignment threshold value
+     * @param pAlignmentThreshold
+     *         the alignment threshold value
      */
-    public void setAlignmentThreshold(final double pAlignmentThreshold) {
+    public void setAlignmentThreshold(final double pAlignmentThreshold)
+    {
         alignmentThreshold = pAlignmentThreshold;
     }
 
@@ -225,7 +221,8 @@ public class DraggableBox extends StackPane
      *
      * @return the snap offset for snap-to-grid calculations
      */
-    public Point2D getSnapToGridOffset() {
+    public Point2D getSnapToGridOffset()
+    {
         return snapToGridOffset;
     }
 
@@ -237,9 +234,11 @@ public class DraggableBox extends StackPane
      * top-left corner of the box will snap exactly onto a grid line.
      * </p>
      *
-     * @param pSnapToGridOffset the snap offset for snap-to-grid calculations
+     * @param pSnapToGridOffset
+     *         the snap offset for snap-to-grid calculations
      */
-    public void setSnapToGridOffset(final Point2D pSnapToGridOffset) {
+    public void setSnapToGridOffset(final Point2D pSnapToGridOffset)
+    {
         snapToGridOffset = pSnapToGridOffset;
     }
 
@@ -250,11 +249,9 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Gets whether or not the current mouse position would lead to a resize
-     * operation.
+     * Gets whether or not the current mouse position would lead to a resize operation.
      *
-     * @return {@code true} if the mouse is near the edge of the rectangle so
-     *         that a resize would occur
+     * @return {@code true} if the mouse is near the edge of the rectangle so that a resize would occur
      */
     public boolean isMouseInPositionForResize()
     {
@@ -274,11 +271,7 @@ public class DraggableBox extends StackPane
      */
     boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent)
     {
-        if (editorProperties != null)
-        {
-            return editorProperties.activateGesture(pGesture, pEvent, this);
-        }
-        return true;
+        return GraphEventManager.activateGesture(editorProperties, pGesture, pEvent, this);
     }
 
     /**
@@ -286,14 +279,14 @@ public class DraggableBox extends StackPane
      */
     boolean finishGesture(final GraphInputGesture pGesture)
     {
-        return editorProperties == null || editorProperties.finishGesture(pGesture, this);
+        return GraphEventManager.finishGesture(editorProperties, pGesture, this);
     }
 
     /**
      * Handles mouse-pressed events.
      *
      * @param pEvent
-     *            a {@link MouseEvent}
+     *         a {@link MouseEvent}
      */
     protected void handleMousePressed(final MouseEvent pEvent)
     {
@@ -310,11 +303,13 @@ public class DraggableBox extends StackPane
     /**
      * Handles mouse-dragged events.
      *
-     * @param pEvent {@link MouseEvent}
+     * @param pEvent
+     *         {@link MouseEvent}
      */
     protected void handleMouseDragged(final MouseEvent pEvent)
     {
-        if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable() || !activateGesture(GraphInputGesture.MOVE, pEvent))
+        if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable() ||
+                !activateGesture(GraphInputGesture.MOVE, pEvent))
         {
             return;
         }
@@ -327,7 +322,8 @@ public class DraggableBox extends StackPane
     /**
      * Handles mouse-released events.
      *
-     * @param pEvent {@link MouseEvent}
+     * @param pEvent
+     *         {@link MouseEvent}
      */
     protected void handleMouseReleased(final MouseEvent pEvent)
     {
@@ -338,13 +334,12 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Stores relevant layout values at the time of the last mouse click
-     * (mouse-pressed event).
+     * Stores relevant layout values at the time of the last mouse click (mouse-pressed event).
      *
      * @param pX
-     *            the container-x position of the click event
+     *         the container-x position of the click event
      * @param pY
-     *            the container-y position of the click event
+     *         the container-y position of the click event
      */
     protected void storeClickValuesForDrag(final double pX, final double pY)
     {
@@ -359,10 +354,8 @@ public class DraggableBox extends StackPane
      * Rounds some value to the nearest multiple of the grid spacing.
      *
      * @param value
-     *            a double value
-     *
-     * @return the input value rounded to the nearest multiple of the grid
-     *         spacing
+     *         a double value
+     * @return the input value rounded to the nearest multiple of the grid spacing
      */
     protected double roundToGridSpacing(final double value)
     {
@@ -373,9 +366,9 @@ public class DraggableBox extends StackPane
      * Handles a drag event to the given cursor position.
      *
      * @param pX
-     *            the cursor x position relative to the container
+     *         the cursor x position relative to the container
      * @param pY
-     *            the cursor y position relative to the container
+     *         the cursor y position relative to the container
      */
     private void handleDrag(final double pX, final double pY)
     {
@@ -396,7 +389,8 @@ public class DraggableBox extends StackPane
      */
     protected double getWestBoundValue()
     {
-        return editorProperties != null ? editorProperties.getWestBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+        return editorProperties != null ? editorProperties.getWestBoundValue() :
+                GraphEditorProperties.DEFAULT_BOUND_VALUE;
     }
 
     /**
@@ -404,7 +398,8 @@ public class DraggableBox extends StackPane
      */
     protected double getNorthBoundValue()
     {
-        return editorProperties != null ? editorProperties.getNorthBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+        return editorProperties != null ? editorProperties.getNorthBoundValue() :
+                GraphEditorProperties.DEFAULT_BOUND_VALUE;
     }
 
     /**
@@ -412,7 +407,8 @@ public class DraggableBox extends StackPane
      */
     protected double getSouthBoundValue()
     {
-        return editorProperties != null ? editorProperties.getSouthBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+        return editorProperties != null ? editorProperties.getSouthBoundValue() :
+                GraphEditorProperties.DEFAULT_BOUND_VALUE;
     }
 
     /**
@@ -420,14 +416,15 @@ public class DraggableBox extends StackPane
      */
     protected double getEastBoundValue()
     {
-        return editorProperties != null ? editorProperties.getEastBoundValue() : GraphEditorProperties.DEFAULT_BOUND_VALUE;
+        return editorProperties != null ? editorProperties.getEastBoundValue() :
+                GraphEditorProperties.DEFAULT_BOUND_VALUE;
     }
 
     /**
      * Handles the x component of a drag event to the given cursor x position.
      *
      * @param pX
-     *            the cursor x position
+     *         the cursor x position
      */
     private void handleDragX(final double pX)
     {
@@ -475,7 +472,7 @@ public class DraggableBox extends StackPane
      * Handles the y component of a drag event to the given cursor y position.
      *
      * @param pY
-     *            the cursor y position
+     *         the cursor y position
      */
     private void handleDragY(final double pY)
     {
@@ -520,13 +517,11 @@ public class DraggableBox extends StackPane
     }
 
     /**
-     * Gets the closest ancestor (e.g. parent, grandparent) to a node that is a
-     * subclass of {@link Region}.
+     * Gets the closest ancestor (e.g. parent, grandparent) to a node that is a subclass of {@link Region}.
      *
      * @param node
-     *            a JavaFX {@link Node}
-     * @return the node's closest ancestor that is a subclass of {@link Region},
-     *         or {@code null} if none exists
+     *         a JavaFX {@link Node}
+     * @return the node's closest ancestor that is a subclass of {@link Region}, or {@code null} if none exists
      */
     Region getContainer(final Node node)
     {
@@ -552,8 +547,10 @@ public class DraggableBox extends StackPane
      * Returns the original position if no alignment values are nearby.
      * </p>
      *
-     * @param position the position to be aligned
-     * @param alignmentValues the list of the alignment values
+     * @param position
+     *         the position to be aligned
+     * @param alignmentValues
+     *         the list of the alignment values
      * @return the new position after alignment
      */
     private double align(final double position, final double[] alignmentValues)

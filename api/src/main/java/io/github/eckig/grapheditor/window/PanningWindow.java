@@ -4,6 +4,7 @@
 package io.github.eckig.grapheditor.window;
 
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
+import io.github.eckig.grapheditor.utils.GraphEventManager;
 import io.github.eckig.grapheditor.utils.GraphInputGesture;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -476,7 +477,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningMousePressed(final MouseEvent event)
     {
-        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
+        if (GraphEventManager.activateGesture(properties, GraphInputGesture.PAN, event, this))
         {
             startPanning(event.getScreenX(), event.getScreenY());
         }
@@ -495,7 +496,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningMouseDragged(final MouseEvent event)
     {
-        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
+        if (GraphEventManager.activateGesture(properties, GraphInputGesture.PAN, event, this))
         {
             if (!Cursor.MOVE.equals(getCursor()))
             {
@@ -514,7 +515,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningFinished(final Event event)
     {
-        if (properties != null && properties.finishGesture(GraphInputGesture.PAN, this))
+        if (GraphEventManager.finishGesture(properties, GraphInputGesture.PAN, this))
         {
             setCursor(null);
             event.consume();
@@ -523,7 +524,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningTouchPressed(final TouchEvent event)
     {
-        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
+        if (GraphEventManager.activateGesture(properties, GraphInputGesture.PAN, event, this))
         {
             startPanning(event.getTouchPoint().getScreenX(), event.getTouchPoint().getScreenY());
         }
@@ -531,7 +532,7 @@ public class PanningWindow extends Region {
 
     private void handlePanningTouchDragged(final TouchEvent event)
     {
-        if (properties != null && properties.activateGesture(GraphInputGesture.PAN, event, this))
+        if (GraphEventManager.activateGesture(properties, GraphInputGesture.PAN, event, this))
         {
             if (!Cursor.MOVE.equals(getCursor()))
             {
@@ -552,12 +553,12 @@ public class PanningWindow extends Region {
     {
         // this intended for mouse-scroll events (event direct == false)
         // the event also gets synthesized from touch events, which we want to ignore as they are handled in handleZoom()
-        if (pEvent.isDirect() || pEvent.getTouchCount() > 0 || properties == null)
+        if (pEvent.isDirect() || pEvent.getTouchCount() > 0)
         {
             return;
         }
 
-        if (properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
+        if (GraphEventManager.activateGesture(properties, GraphInputGesture.ZOOM, pEvent, this))
         {
             try
             {
@@ -567,10 +568,10 @@ public class PanningWindow extends Region {
             }
             finally
             {
-                properties.finishGesture(GraphInputGesture.ZOOM, this);
+                GraphEventManager.finishGesture(properties, GraphInputGesture.ZOOM, this);
             }
         }
-        else if (properties.activateGesture(GraphInputGesture.PAN, pEvent, this))
+        else if (GraphEventManager.activateGesture(properties, GraphInputGesture.PAN, pEvent, this))
         {
             try
             {
@@ -579,27 +580,25 @@ public class PanningWindow extends Region {
             }
             finally
             {
-                properties.finishGesture(GraphInputGesture.PAN, this);
+                GraphEventManager.finishGesture(properties, GraphInputGesture.PAN, this);
             }
         }
     }
 
     private void handleZoom(final ZoomEvent pEvent)
     {
-        if (properties == null)
-        {
-            return;
-        }
-
-        if (pEvent.getEventType() == ZoomEvent.ZOOM_STARTED && properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
+        if (pEvent.getEventType() == ZoomEvent.ZOOM_STARTED &&
+                GraphEventManager.activateGesture(properties, GraphInputGesture.ZOOM, pEvent, this))
         {
             pEvent.consume();
         }
-        else if (pEvent.getEventType() == ZoomEvent.ZOOM_FINISHED && properties.finishGesture(GraphInputGesture.ZOOM, this))
+        else if (pEvent.getEventType() == ZoomEvent.ZOOM_FINISHED &&
+                GraphEventManager.finishGesture(properties, GraphInputGesture.ZOOM, this))
         {
             pEvent.consume();
         }
-        else if (pEvent.getEventType() == ZoomEvent.ZOOM && properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
+        else if (pEvent.getEventType() == ZoomEvent.ZOOM &&
+                GraphEventManager.activateGesture(properties, GraphInputGesture.ZOOM, pEvent, this))
         {
             final double newZoomLevel = getZoom() * pEvent.getZoomFactor();
             setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());

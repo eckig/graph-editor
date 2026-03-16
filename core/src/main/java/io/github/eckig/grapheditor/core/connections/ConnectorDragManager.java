@@ -628,20 +628,11 @@ public class ConnectorDragManager {
 
     private boolean activateGesture(final Event pEvent)
     {
-        final GraphEventManager eventManager = getEditorProperties();
-        if (eventManager != null)
-        {
-            eventManager.activateGesture(GraphInputGesture.CONNECT, pEvent, this);
-        }
-        return true;
+        return GraphEventManager.activateGesture(getEditorProperties(), GraphInputGesture.CONNECT, pEvent, this);
     }
 
     private void finishGesture()
     {
-        final GraphEventManager eventManager = getEditorProperties();
-        if (eventManager != null)
-        {
-            eventManager.finishGesture(GraphInputGesture.CONNECT, this);
-        }
+        GraphEventManager.finishGesture(getEditorProperties(), GraphInputGesture.CONNECT, this);
     }
 }

@@ -565,21 +565,12 @@ public class SelectionCreator
 
     private boolean activateGesture(final Event pEvent)
     {
-        final GraphEventManager eventManager = view.getEditorProperties();
-        if (eventManager != null)
-        {
-            return eventManager.activateGesture(GraphInputGesture.SELECT, pEvent, this);
-        }
-        return true;
+        return GraphEventManager.activateGesture(view.getEditorProperties(), GraphInputGesture.SELECT, pEvent,
+                this);
     }
 
     private boolean finishGesture()
     {
-        final GraphEventManager eventManager = view.getEditorProperties();
-        if (eventManager != null)
-        {
-            return eventManager.finishGesture(GraphInputGesture.SELECT, this);
-        }
-        return true;
+        return GraphEventManager.finishGesture(view.getEditorProperties(), GraphInputGesture.SELECT, this);
     }
 }

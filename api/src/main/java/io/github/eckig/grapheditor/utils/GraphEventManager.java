@@ -49,4 +49,48 @@ public interface GraphEventManager
      *         or {@code false}
      */
     boolean finishGesture(final GraphInputGesture pExpected, final Object pOwner);
+
+    /**
+     * <p>
+     * This method is called by the framework. Custom skins should <b>not</b>
+     * call it.
+     * </p>
+     *
+     * @param pEventManager
+     *            {@link GraphEventManager}
+     * @param pGesture
+     *            {@link GraphInputGesture} to check
+     * @param pEvent
+     *            {@link Event}
+     * @param pOwner
+     *            owner
+     * @return {@code true} if the given gesture was activated otherwise
+     *         {@code false}
+     */
+    static boolean activateGesture(final GraphEventManager pEventManager, final GraphInputGesture pGesture,
+            final Event pEvent, final Object pOwner)
+    {
+        return pEventManager != null && pEventManager.activateGesture(pGesture, pEvent, pOwner);
+    }
+
+    /**
+     * <p>
+     * This method is called by the framework. Custom skins should <b>not</b>
+     * call it.
+     * </p>
+     *
+     * @param pEventManager
+     *            {@link GraphEventManager}
+     * @param pExpected
+     *            the expected gesture that should be finished
+     * @param pOwner
+     *            owner
+     * @return {@code true} if the state changed as a result of this operation
+     *         or {@code false}
+     */
+    static boolean finishGesture(final GraphEventManager pEventManager, final GraphInputGesture pExpected,
+            final Object pOwner)
+    {
+        return pEventManager != null && pEventManager.finishGesture(pExpected, pOwner);
+    }
 }

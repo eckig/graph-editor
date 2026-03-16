@@ -96,7 +96,7 @@ public class GraphEditorController<E extends GraphEditor>
     private final Map<EStructuralFeature, Consumer<Notification>> mHandlersByFeature = new HashMap<>();
     private final Map<Integer, Consumer<Notification>> mHandlersByType = new HashMap<>();
 
-    private final CommandStackListener mCommandStackListener = event -> process();
+    private final CommandStackListener mCommandStackListener = _ -> process();
 
     private final ModelEditingManager mModelEditingManager = new DefaultModelEditingManager(mCommandStackListener);
     private final ModelLayoutUpdater mModelLayoutUpdater;
@@ -106,7 +106,8 @@ public class GraphEditorController<E extends GraphEditor>
     private final GraphEditorSkinManager mSkinManager;
 
     private final E mEditor;
-    private final ChangeListener<GModel> mModelChangeListener = (w, o, n) -> modelChanged(o, n);
+    private final ChangeListener<GModel> mModelChangeListener = (_, o, n) -> modelChanged(o, n);
+    private final ChangeListener<Scene> mViewSceneChangeListener = (_, oldScene, newScene) -> sceneChanged(oldScene, newScene);
     private final Runnable mOnScenePulse = this::process;
 
     /**
@@ -134,7 +135,7 @@ public class GraphEditorController<E extends GraphEditor>
 
         pEditor.modelProperty().addListener(new WeakChangeListener<>(mModelChangeListener));
         modelChanged(null, pEditor.getModel());
-        pEditor.getView().sceneProperty().addListener((obs,oldScene,newScene)->sceneChanged(oldScene,newScene));
+        pEditor.getView().sceneProperty().addListener(new WeakChangeListener<>(mViewSceneChangeListener));
         sceneChanged(null,pEditor.getView().getScene());
 
         mSkinManager.setOnNodeCreated(this::onNodeCreated);
@@ -288,7 +289,7 @@ public class GraphEditorController<E extends GraphEditor>
             // 2) wait a little bit with Platform.runLater() so the UI has a chance to "settle down"
             // 3) update layout values
             executeOnceWhenPropertyIsNonNull(mEditor.getView().sceneProperty(),
-                    scene -> Platform.runLater(() -> updateLayoutValues(pNewModel)));
+                    _ -> Platform.runLater(() -> updateLayoutValues(pNewModel)));
         }
     }
 
