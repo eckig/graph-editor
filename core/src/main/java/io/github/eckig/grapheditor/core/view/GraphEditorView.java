@@ -19,6 +19,8 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
+import java.util.Objects;
+
 
 /**
  * The {@link Region} that all visual elements in the graph editor are added to.
@@ -342,10 +344,19 @@ public class GraphEditorView extends Region
      */
     public void setModelBounds(final Rectangle2D pModelBounds)
     {
+        final var panningWindow = getParent() instanceof PanningWindow pw ? pw : null;
+        final var width = panningWindow == null ? 0 : panningWindow.getWidth() * 1.5;
+        final var height = panningWindow == null ? 0 : panningWindow.getHeight() * 1.5;
+        final var minWidth = Math.max(width, getMinWidth());
+        final var minHeight = Math.max(height, getMinHeight());
         if (pModelBounds != null)
         {
-            resize(Math.max(getMinWidth(), Math.min(pModelBounds.getWidth() + VIEWPORT_PADDING, getMaxWidth())),
-                    Math.max(getMinHeight(), Math.min(pModelBounds.getHeight() + VIEWPORT_PADDING, getMaxHeight())));
+            resize(Math.max(minWidth, Math.min(pModelBounds.getWidth() + VIEWPORT_PADDING, getMaxWidth())),
+                    Math.max(minHeight, Math.min(pModelBounds.getHeight() + VIEWPORT_PADDING, getMaxHeight())));
+        }
+        else
+        {
+            resize(minWidth, minHeight);
         }
     }
 }
