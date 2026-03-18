@@ -444,8 +444,7 @@ public class SelectionCreator
             return;
         }
 
-        selectionBoxEnd = new Point2D(Math.min(model.getContentWidth(), Math.max(0, pEvent.getX())),
-                Math.min(model.getContentHeight(), Math.max(0, pEvent.getY())));
+        selectionBoxEnd = new Point2D(Math.max(0, pEvent.getX()), Math.max(0, pEvent.getY()));
 
         evaluateSelectionBoxParameters();
 

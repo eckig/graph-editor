@@ -77,7 +77,6 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
 	private GraphPackageImpl() {
 		super(eNS_URI, GraphFactory.eINSTANCE);
 	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -148,36 +147,6 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
 	@Override
 	public EReference getGModel_Connections() {
 		return (EReference)gModelEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getGModel_Type() {
-		return (EAttribute)gModelEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getGModel_ContentWidth() {
-		return (EAttribute)gModelEClass.getEStructuralFeatures().get(3);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getGModel_ContentHeight() {
-		return (EAttribute)gModelEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -492,9 +461,6 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
 		gModelEClass = createEClass(GMODEL);
 		createEReference(gModelEClass, GMODEL__NODES);
 		createEReference(gModelEClass, GMODEL__CONNECTIONS);
-		createEAttribute(gModelEClass, GMODEL__TYPE);
-		createEAttribute(gModelEClass, GMODEL__CONTENT_WIDTH);
-		createEAttribute(gModelEClass, GMODEL__CONTENT_HEIGHT);
 
 		gNodeEClass = createEClass(GNODE);
 		createEAttribute(gNodeEClass, GNODE__ID);
@@ -562,9 +528,6 @@ public class GraphPackageImpl extends EPackageImpl implements GraphPackage {
 		initEClass(gModelEClass, GModel.class, "GModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGModel_Nodes(), this.getGNode(), null, "nodes", null, 0, -1, GModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGModel_Connections(), this.getGConnection(), null, "connections", null, 0, -1, GModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getGModel_Type(), ecorePackage.getEString(), "type", null, 0, 1, GModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getGModel_ContentWidth(), ecorePackage.getEDouble(), "contentWidth", "3000", 1, 1, GModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getGModel_ContentHeight(), ecorePackage.getEDouble(), "contentHeight", "2250", 1, 1, GModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gNodeEClass, GNode.class, "GNode", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getGNode_Id(), ecorePackage.getEString(), "id", null, 0, 1, GNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -46,6 +46,15 @@ public class GraphEditorProperties implements GraphEventManager
      */
     public static final double DEFAULT_MAX_HEIGHT = Double.MAX_VALUE;
 
+    /**
+     * The default min width of the editor region, set on startup.
+     */
+    public static final double DEFAULT_MIN_WIDTH = 500;
+    /**
+     * The default min height of the editor region, set on startup.
+     */
+    public static final double DEFAULT_MIN_HEIGHT = 500;
+
     public static final double DEFAULT_BOUND_VALUE = 15;
     public static final double DEFAULT_GRID_SPACING = 12;
 

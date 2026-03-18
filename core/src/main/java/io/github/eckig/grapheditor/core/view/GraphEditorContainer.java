@@ -75,10 +75,6 @@ public class GraphEditorContainer extends AutoScrollingWindow
 
     private void modelChanged(final GModel newValue)
     {
-        if (newValue != null)
-        {
-            graphEditor.getView().resize(newValue.getContentWidth(), newValue.getContentHeight());
-        }
         checkWindowBounds();
         minimap.setModel(newValue);
     }
@@ -106,11 +102,6 @@ public class GraphEditorContainer extends AutoScrollingWindow
 
             final Region view = pGraphEditor.getView();
             final GModel model = pGraphEditor.getModel();
-
-            if (model != null)
-            {
-                view.resize(model.getContentWidth(), model.getContentHeight());
-            }
 
             setContent(view);
             minimap.setContent(view);

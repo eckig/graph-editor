@@ -14,6 +14,7 @@ import io.github.eckig.grapheditor.core.view.impl.GraphEditorGrid;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 import io.github.eckig.grapheditor.window.PanningWindow;
 import javafx.beans.InvalidationListener;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -47,6 +48,7 @@ public class GraphEditorView extends Region
     private static final String STYLE_CLASS = "graph-editor";
     private static final String STYLE_CLASS_NODE_LAYER = "graph-editor-node-layer";
     private static final String STYLE_CLASS_CONNECTION_LAYER = "graph-editor-connection-layer";
+    private static final double VIEWPORT_PADDING = 300;
 
     private final Pane mNodeLayer = new Pane();
 
@@ -63,12 +65,10 @@ public class GraphEditorView extends Region
 
     private final GraphEditorGrid mGrid = new GraphEditorGrid();
     private final InvalidationListener mGridListener = _ -> resizeRelocateGrid();
+    private final SelectionBox mSelectionBox = new SelectionBox();
+    private final GraphEditorProperties mEditorProperties;
 
     private ConnectionLayouter mConnectionLayouter;
-
-    private final SelectionBox mSelectionBox = new SelectionBox();
-
-    private final GraphEditorProperties mEditorProperties;
 
     /**
      * Creates a new {@link GraphEditorView} to which skin instances can be
@@ -78,8 +78,8 @@ public class GraphEditorView extends Region
     {
         getStyleClass().addAll(STYLE_CLASS);
 
-        setMaxWidth(GraphEditorProperties.DEFAULT_MAX_WIDTH);
-        setMaxHeight(GraphEditorProperties.DEFAULT_MAX_HEIGHT);
+        setMaxSize(GraphEditorProperties.DEFAULT_MAX_WIDTH, GraphEditorProperties.DEFAULT_MAX_HEIGHT);
+        setMinSize(GraphEditorProperties.DEFAULT_MIN_WIDTH, GraphEditorProperties.DEFAULT_MIN_HEIGHT);
 
         initializeLayers();
 
@@ -331,5 +331,21 @@ public class GraphEditorView extends Region
 
         // Node layer should be on top of connection layer, so we add it second.
         getChildren().addAll(mGrid, mConnectionLayer, mNodeLayer, mSelectionBox);
+    }
+
+    /**
+     * set the views size depending on the given model bounds, but
+     * respecting the minimum and maximum dimensions
+     *
+     * @param pModelBounds
+     *            the bounds of the model
+     */
+    public void setModelBounds(final Rectangle2D pModelBounds)
+    {
+        if (pModelBounds != null)
+        {
+            resize(Math.max(getMinWidth(), Math.min(pModelBounds.getWidth() + VIEWPORT_PADDING, getMaxWidth())),
+                    Math.max(getMinHeight(), Math.min(pModelBounds.getHeight() + VIEWPORT_PADDING, getMaxHeight())));
+        }
     }
 }

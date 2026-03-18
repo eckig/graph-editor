@@ -85,40 +85,13 @@ public interface GraphPackage extends EPackage {
 	int GMODEL__CONNECTIONS = 1;
 
 	/**
-	 * The feature id for the '<em><b>Type</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GMODEL__TYPE = 2;
-
-	/**
-	 * The feature id for the '<em><b>Content Width</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GMODEL__CONTENT_WIDTH = 3;
-
-	/**
-	 * The feature id for the '<em><b>Content Height</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GMODEL__CONTENT_HEIGHT = 4;
-
-	/**
 	 * The number of structural features of the '<em>GModel</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GMODEL_FEATURE_COUNT = 5;
+	int GMODEL_FEATURE_COUNT = 2;
 
 	/**
 	 * The number of operations of the '<em>GModel</em>' class.
@@ -491,39 +464,6 @@ public interface GraphPackage extends EPackage {
 	EReference getGModel_Connections();
 
 	/**
-	 * Returns the meta object for the attribute '{@link io.github.eckig.grapheditor.model.GModel#getType <em>Type</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Type</em>'.
-	 * @see io.github.eckig.grapheditor.model.GModel#getType()
-	 * @see #getGModel()
-	 * @generated
-	 */
-	EAttribute getGModel_Type();
-
-	/**
-	 * Returns the meta object for the attribute '{@link io.github.eckig.grapheditor.model.GModel#getContentWidth <em>Content Width</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Content Width</em>'.
-	 * @see io.github.eckig.grapheditor.model.GModel#getContentWidth()
-	 * @see #getGModel()
-	 * @generated
-	 */
-	EAttribute getGModel_ContentWidth();
-
-	/**
-	 * Returns the meta object for the attribute '{@link io.github.eckig.grapheditor.model.GModel#getContentHeight <em>Content Height</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Content Height</em>'.
-	 * @see io.github.eckig.grapheditor.model.GModel#getContentHeight()
-	 * @see #getGModel()
-	 * @generated
-	 */
-	EAttribute getGModel_ContentHeight();
-
-	/**
 	 * Returns the meta object for class '{@link io.github.eckig.grapheditor.model.GNode <em>GNode</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -875,30 +815,6 @@ public interface GraphPackage extends EPackage {
 		 * @generated
 		 */
 		EReference GMODEL__CONNECTIONS = eINSTANCE.getGModel_Connections();
-
-		/**
-		 * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute GMODEL__TYPE = eINSTANCE.getGModel_Type();
-
-		/**
-		 * The meta object literal for the '<em><b>Content Width</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute GMODEL__CONTENT_WIDTH = eINSTANCE.getGModel_ContentWidth();
-
-		/**
-		 * The meta object literal for the '<em><b>Content Height</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute GMODEL__CONTENT_HEIGHT = eINSTANCE.getGModel_ContentHeight();
 
 		/**
 		 * The meta object literal for the '{@link io.github.eckig.grapheditor.model.impl.GNodeImpl <em>GNode</em>}' class.

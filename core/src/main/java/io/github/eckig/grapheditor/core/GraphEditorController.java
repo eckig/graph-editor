@@ -19,8 +19,10 @@ import io.github.eckig.grapheditor.core.skins.SkinManager;
 import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
 import io.github.eckig.grapheditor.core.view.impl.DefaultConnectionLayouter;
+import io.github.eckig.grapheditor.utils.GeometryUtils;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 
 import org.eclipse.emf.common.command.CommandStackListener;
@@ -106,9 +108,12 @@ public class GraphEditorController<E extends GraphEditor>
     private final GraphEditorSkinManager mSkinManager;
 
     private final E mEditor;
+    private final GraphEditorView mGraphEditorView;
     private final ChangeListener<GModel> mModelChangeListener = (_, o, n) -> modelChanged(o, n);
     private final ChangeListener<Scene> mViewSceneChangeListener = (_, oldScene, newScene) -> sceneChanged(oldScene, newScene);
     private final Runnable mOnScenePulse = this::process;
+
+    private boolean mCalculateBounds = false;
 
     /**
      * Creates a new controller instance. Only one instance should exist per
@@ -125,11 +130,12 @@ public class GraphEditorController<E extends GraphEditor>
             final ConnectionEventManager pConnectionEventManager, final GraphEditorProperties pProperties)
     {
         mEditor = Objects.requireNonNull(pEditor, "GraphEditor instance may not be null!");
-        mSkinManager = new GraphEditorSkinManager(pEditor, pView);
+        mGraphEditorView = Objects.requireNonNull(pView, "GraphEditorView instance may not be null!");
+        mSkinManager = new GraphEditorSkinManager(pEditor, mGraphEditorView);
         mConnectionLayouter = new DefaultConnectionLayouter(mSkinManager);
         mModelLayoutUpdater = new ModelLayoutUpdater(mSkinManager, mModelEditingManager, pProperties);
-        mConnectorDragManager = new ConnectorDragManager(mSkinManager, pConnectionEventManager, pView);
-        mSelectionManager = new DefaultSelectionManager(mSkinManager, pView);
+        mConnectorDragManager = new ConnectorDragManager(mSkinManager, pConnectionEventManager, mGraphEditorView);
+        mSelectionManager = new DefaultSelectionManager(mSkinManager, mGraphEditorView);
 
         initDefaultListeners();
 
@@ -250,6 +256,7 @@ public class GraphEditorController<E extends GraphEditor>
         if (pNewModel != null)
         {
             ModelSanityChecker.validate(pNewModel);
+            calculateBounds();
 
             mModelEditingManager.initialize(pNewModel);
 
@@ -351,6 +358,12 @@ public class GraphEditorController<E extends GraphEditor>
             }
         }
 
+        if (mCalculateBounds)
+        {
+            mCalculateBounds = false;
+            calculateBounds();
+        }
+
         if (changes)
         {
             processingDone();
@@ -362,6 +375,7 @@ public class GraphEditorController<E extends GraphEditor>
         mModelLayoutUpdater.addNode(pNode);
         mSelectionManager.addNode(pNode);
         markConnectorsDirty(pNode);
+        triggerModelSizeCalculation();
     }
 
     private void onConnectorCreated(final GConnector pConnector)
@@ -422,6 +436,7 @@ public class GraphEditorController<E extends GraphEditor>
                 skin.getRoot().relocate(node.getX(), node.getY());
             }
         }
+        triggerModelSizeCalculation();
     }
 
     private void nodeSizeChanged(final Notification pChange)
@@ -435,6 +450,7 @@ public class GraphEditorController<E extends GraphEditor>
                 skin.getRoot().resize(node.getWidth(), node.getHeight());
             }
         }
+        triggerModelSizeCalculation();
     }
 
     private void jointPositionChanged(final Notification pChange)
@@ -530,6 +546,7 @@ public class GraphEditorController<E extends GraphEditor>
         mSelectionManager.clearSelection(pNode);
         mModelLayoutUpdater.removeNode(pNode);
         mSkinManager.removeNode(pNode);
+        triggerModelSizeCalculation();
     }
 
     private void addConnector(final GConnector pConnector)
@@ -647,6 +664,18 @@ public class GraphEditorController<E extends GraphEditor>
                 oldValues.forEach(pRemove);
                 break;
         }
+    }
+
+    private void triggerModelSizeCalculation()
+    {
+        mCalculateBounds = true;
+    }
+
+    private void calculateBounds()
+    {
+        final var model = getEditor().getModel();
+        final var viewport = model == null ? Rectangle2D.EMPTY : GeometryUtils.getBounds(model);
+        mGraphEditorView.setModelBounds(viewport);
     }
 
     /**

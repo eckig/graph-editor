@@ -247,11 +247,6 @@ public class TreeNodeSkin extends GNodeSkin {
         childNode.setY(getItem().getY() + getItem().getHeight() + CHILD_Y_OFFSET);
 
         final GModel model = getGraphEditor().getModel();
-        final double maxAllowedY = model.getContentHeight() - VIEW_PADDING;
-
-        if (childNode.getY() + childNode.getHeight() > maxAllowedY) {
-            childNode.setY(maxAllowedY - childNode.getHeight());
-        }
 
         final GConnector input = GraphFactory.eINSTANCE.createGConnector();
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();

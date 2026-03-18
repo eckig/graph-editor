@@ -47,12 +47,6 @@ public final class ModelSanityChecker
      */
     private static boolean validateSizes(final GModel model)
     {
-        if (model.getContentWidth() < 0 || model.getContentHeight() < 0)
-        {
-            LOGGER.error("Model contains negative width / height values.");
-            return false;
-        }
-
         for (final var node : model.getNodes())
         {
             if (node.getWidth() < 0 || node.getHeight() < 0)
