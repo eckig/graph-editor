@@ -11,7 +11,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
-          java-version: '23'
+          java-version: '25'
           distribution: 'temurin'
       - name: prepare package
         run: mvn -Ppublication deploy

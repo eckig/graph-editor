@@ -10,7 +10,7 @@
     <parent>
         <groupId>io.github.eckig</groupId>
         <artifactId>grapheditor</artifactId>
-        <version>22.0.0</version>
+        <version>24.0.0</version>
     </parent>
     <name>${component.name}::Core</name>
 
@@ -40,12 +40,6 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${org.openjfx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>openjfx-monocle</artifactId>
-            <version>${openjfx-monocle.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
