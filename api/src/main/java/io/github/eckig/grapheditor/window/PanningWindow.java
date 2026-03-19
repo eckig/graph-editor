@@ -104,6 +104,10 @@ public class PanningWindow extends Region {
         scrollY.valueProperty().bindBidirectional(contentY);
         scrollY.setOrientation(Orientation.VERTICAL);
         scrollY.getStyleClass().add("graph-editor-scroll-bar"); //$NON-NLS-1$
+
+        // if the max changed, apply the viewport rules:
+        scrollX.maxProperty().addListener(_ -> panToX(contentX.get()));
+        scrollY.maxProperty().addListener(_ -> panToY(contentY.get()));
     }
 
     /**
