@@ -31,7 +31,7 @@ Maven coordinates:
 <dependency>
   <groupId>io.github.eckig.grapheditor</groupId>
   <artifactId>grapheditor-core</artifactId>
-  <version>21.1.2</version>
+  <version>24.0.0</version>
 </dependency>
 ```
 Download the latest [Release](https://github.com/eckig/graph-editor/releases).
