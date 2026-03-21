@@ -25,5 +25,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
+      - name: Run headless test
+        if: runner.os == 'Linux'
+        run: xvfb-run mvn -B test package --file pom.xml
       - name: Run test
+        if: runner.os != 'Linux'
         run: mvn -B test package --file pom.xml
