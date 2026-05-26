@@ -12,7 +12,7 @@ import io.github.eckig.grapheditor.model.GModel;
 /**
  * Responsible for telling connection skins to draw themselves.
  */
-public interface ConnectionLayouter
+public interface ConnectionLayout
 {
 
     /**

@@ -79,9 +79,6 @@ public class DefaultGraphEditor implements GraphEditor
         mProperties = pProperties == null ? new GraphEditorProperties() : pProperties;
         mView = new GraphEditorView(mProperties);
         mController = new GraphEditorController<>(this, mView, mConnectionEventManager, mProperties);
-
-        final var connectionLayouter = mController.getConnectionLayouter();
-        mView.setConnectionLayouter(connectionLayouter);
     }
 
     @Override

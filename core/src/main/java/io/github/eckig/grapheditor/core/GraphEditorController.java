@@ -16,9 +16,9 @@ import io.github.eckig.grapheditor.core.model.ModelSanityChecker;
 import io.github.eckig.grapheditor.core.selections.DefaultSelectionManager;
 import io.github.eckig.grapheditor.core.skins.GraphEditorSkinManager;
 import io.github.eckig.grapheditor.core.skins.SkinManager;
-import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
+import io.github.eckig.grapheditor.core.view.ConnectionLayout;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
-import io.github.eckig.grapheditor.core.view.impl.DefaultConnectionLayouter;
+import io.github.eckig.grapheditor.core.view.impl.DefaultConnectionLayout;
 import io.github.eckig.grapheditor.utils.GeometryUtils;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 
@@ -102,7 +102,7 @@ public class GraphEditorController<E extends GraphEditor>
 
     private final ModelEditingManager mModelEditingManager = new DefaultModelEditingManager(mCommandStackListener);
     private final ModelLayoutUpdater mModelLayoutUpdater;
-    private final ConnectionLayouter mConnectionLayouter;
+    private ConnectionLayout mConnectionLayouter;
     private final ConnectorDragManager mConnectorDragManager;
     private final DefaultSelectionManager mSelectionManager;
     private final GraphEditorSkinManager mSkinManager;
@@ -132,7 +132,6 @@ public class GraphEditorController<E extends GraphEditor>
         mEditor = Objects.requireNonNull(pEditor, "GraphEditor instance may not be null!");
         mGraphEditorView = Objects.requireNonNull(pView, "GraphEditorView instance may not be null!");
         mSkinManager = new GraphEditorSkinManager(pEditor, mGraphEditorView);
-        mConnectionLayouter = new DefaultConnectionLayouter(mSkinManager);
         mModelLayoutUpdater = new ModelLayoutUpdater(mSkinManager, mModelEditingManager, pProperties);
         mConnectorDragManager = new ConnectorDragManager(mSkinManager, pConnectionEventManager, mGraphEditorView);
         mSelectionManager = new DefaultSelectionManager(mSkinManager, mGraphEditorView);
@@ -289,7 +288,7 @@ public class GraphEditorController<E extends GraphEditor>
             process();
 
             mSelectionManager.initialize(pNewModel);
-            mConnectionLayouter.initialize(pNewModel);
+            getConnectionLayout().initialize(pNewModel);
             mConnectorDragManager.initialize(pNewModel);
 
             // 1) wait until the graph editor is registered in a visible view (scene != null)
@@ -422,7 +421,7 @@ public class GraphEditorController<E extends GraphEditor>
      */
     protected void processingDone()
     {
-        mConnectionLayouter.draw();
+        getConnectionLayout().draw();
     }
 
     private void nodePositionChanged(final Notification pChange)
@@ -562,10 +561,23 @@ public class GraphEditorController<E extends GraphEditor>
     }
 
     /**
-     * @return {@link ConnectionLayouter}
+     * @return creates the default {@link ConnectionLayout}
      */
-    public final ConnectionLayouter getConnectionLayouter()
+    protected ConnectionLayout createConnectionLayout()
     {
+        return new DefaultConnectionLayout(mSkinManager);
+    }
+
+    /**
+     * @return {@link ConnectionLayout}
+     */
+    public final ConnectionLayout getConnectionLayout()
+    {
+        if (mConnectionLayouter == null)
+        {
+            mConnectionLayouter = createConnectionLayout();
+            mGraphEditorView.setConnectionLayout(mConnectionLayouter);
+        }
         return mConnectionLayouter;
     }
 

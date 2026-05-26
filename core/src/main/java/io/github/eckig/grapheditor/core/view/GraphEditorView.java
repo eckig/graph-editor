@@ -70,7 +70,7 @@ public class GraphEditorView extends Region
     private final SelectionBox mSelectionBox = new SelectionBox();
     private final GraphEditorProperties mEditorProperties;
 
-    private ConnectionLayouter mConnectionLayouter;
+    private ConnectionLayout mConnectionLayout;
 
     /**
      * Creates a new {@link GraphEditorView} to which skin instances can be
@@ -113,14 +113,14 @@ public class GraphEditorView extends Region
     }
 
     /**
-     * Sets the connection-layouter to be used by the view.
+     * Sets the connection-layout to be used by the view.
      *
-     * @param pConnectionLayouter
-     *            the graph editor's {@link ConnectionLayouter} instance
+     * @param pConnectionLayout
+     *            the graph editor's {@link ConnectionLayout} instance
      */
-    public void setConnectionLayouter(final ConnectionLayouter pConnectionLayouter)
+    public void setConnectionLayout(final ConnectionLayout pConnectionLayout)
     {
-        mConnectionLayouter = pConnectionLayouter;
+        mConnectionLayout = pConnectionLayout;
     }
 
     /**
@@ -307,15 +307,15 @@ public class GraphEditorView extends Region
     }
 
     /**
-     * calls {@link ConnectionLayouter#draw()}
+     * calls {@link ConnectionLayout#draw()}
      *
      * @since 31.01.2019
      */
     private void drawConnections()
     {
-        if (mConnectionLayouter != null)
+        if (mConnectionLayout != null)
         {
-            mConnectionLayouter.draw();
+            mConnectionLayout.draw();
         }
     }
 

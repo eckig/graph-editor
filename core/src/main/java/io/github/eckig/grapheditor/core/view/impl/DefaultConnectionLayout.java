@@ -6,35 +6,35 @@ import java.util.Map;
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 
+import io.github.eckig.grapheditor.core.view.ConnectionLayout;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
-import io.github.eckig.grapheditor.core.view.ConnectionLayouter;
-import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GModel;
 import javafx.geometry.Point2D;
 
 
 /**
- * Default implementation of {@link ConnectionLayouter}
+ * Default implementation of {@link ConnectionLayout}
  */
-public class DefaultConnectionLayouter implements ConnectionLayouter
+public class DefaultConnectionLayout implements ConnectionLayout
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionLayouter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionLayout.class);
 
     private final SkinLookup mSkinLookup;
     private GModel mModel;
 
     /**
-     * Creates a new {@link DefaultConnectionLayouter} instance. Only one
+     * Creates a new {@link DefaultConnectionLayout} instance. Only one
      * instance should exist per {@link DefaultGraphEditor} instance.
      *
      * @param pSkinLookup
      *            the {@link SkinLookup} used to look up skins
      */
-    public DefaultConnectionLayouter(final SkinLookup pSkinLookup)
+    public DefaultConnectionLayout(final SkinLookup pSkinLookup)
     {
         mSkinLookup = pSkinLookup;
     }
@@ -69,12 +69,12 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
     private void redrawAllConnections()
     {
         final Map<GConnectionSkin, Point2D[]> connectionPoints = new HashMap<>();
-        for (final GConnection connection : mModel.getConnections())
+        for (final var connection : mModel.getConnections())
         {
-            final GConnectionSkin connectionSkin = mSkinLookup.lookupConnection(connection);
+            final var connectionSkin = mSkinLookup.lookupConnection(connection);
             if (connectionSkin != null)
             {
-                final Point2D[] points = connectionSkin.update();
+                final var points = connectionSkin.update();
                 if (points != null)
                 {
                     connectionPoints.put(connectionSkin, points);
@@ -82,7 +82,7 @@ public class DefaultConnectionLayouter implements ConnectionLayouter
             }
         }
 
-        for (final GConnectionSkin skin : connectionPoints.keySet())
+        for (final var skin : connectionPoints.keySet())
         {
             skin.draw(connectionPoints);
         }
