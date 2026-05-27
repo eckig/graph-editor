@@ -366,13 +366,12 @@ public class PanningWindow extends Region {
         scrollX.resizeRelocate(0, snapPositionY(height - h), snapSizeX(width - w), h);
         scrollY.resizeRelocate(snapPositionX(width - w), 0, w, snapSizeY(height - h));
 
-        final double zoomFactor = theContent == null ? 1 : theContent.getLocalToSceneTransform().getMxx();
         scrollX.setMin(0);
         scrollX.setMax(getMaxX());
-        scrollX.setVisibleAmount(zoomFactor * width);
+        scrollX.setVisibleAmount(width);
         scrollY.setMin(0);
         scrollY.setMax(getMaxY());
-        scrollY.setVisibleAmount(zoomFactor * height);
+        scrollY.setVisibleAmount(height);
     }
 
     private static double constrainZoom(final double pZoom)

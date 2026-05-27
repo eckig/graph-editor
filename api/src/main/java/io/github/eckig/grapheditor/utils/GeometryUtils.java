@@ -323,37 +323,27 @@ public class GeometryUtils
      */
     public static Rectangle2D getBounds(final GModel pModel)
     {
-        double minX = 0, maxX = 0, minY = 0, maxY = 0;
+        double maxX = 0, maxY = 0;
         for (final var node : pModel.getNodes())
         {
-            final var leftSide = node.getY() - 10;
             final var rightSide = node.getX() + node.getWidth() + 10;
-            final var topSide = node.getX() - 10;
             final var bottomSide = node.getY() + node.getHeight() + 10;
-
-            minX = minX <= 0 ? topSide : Math.min(minX, topSide);
-            minY = minY <= 0 ? leftSide : Math.min(minY, leftSide);
-            maxX = maxX <= 0 ? rightSide : Math.max(maxX, rightSide);
-            maxY = maxY <= 0 ? bottomSide : Math.max(maxY, bottomSide);
+            maxX = Math.max(maxX, rightSide);
+            maxY = Math.max(maxY, bottomSide);
         }
 
         for (final var conn : pModel.getConnections())
         {
             for (final var joint : conn.getJoints())
             {
-                minX = Math.min(minX, joint.getX() - 10);
                 maxX = Math.max(maxX, joint.getX() + 10);
-                minY = Math.min(minY, joint.getY() - 10);
                 maxY = Math.max(maxY, joint.getY() + 10);
             }
         }
 
-        minX = Math.floor(Math.max(0, minX));
-        minY = Math.floor(Math.max(0, minY));
-
         maxX = Math.ceil(maxX);
         maxY = Math.ceil(maxY);
 
-        return new Rectangle2D(minX, minY, minX + maxX, minY + maxY);
+        return new Rectangle2D(0, 0, maxX, maxY);
     }
 }
