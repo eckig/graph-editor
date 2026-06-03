@@ -9,8 +9,6 @@
     <url>https://github.com/eckig/graph-editor</url>
     <parent>
         <groupId>io.github.eckig</groupId>
-        <artifactId>grapheditor</artifactId>
-        <version>24.0.4</version>
     </parent>
     <name>${component.name}::Core</name>
 
