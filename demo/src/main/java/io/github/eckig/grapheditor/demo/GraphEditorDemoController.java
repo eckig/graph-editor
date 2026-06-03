@@ -21,6 +21,7 @@ import io.github.eckig.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import io.github.eckig.grapheditor.demo.selections.SelectionCopier;
 import io.github.eckig.grapheditor.demo.utils.AwesomeIcon;
 
+import javafx.geometry.Point2D;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -35,7 +36,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
@@ -140,7 +140,7 @@ public class GraphEditorDemoController {
 
         activeSkinController.set(defaultSkinController);
 
-		graphEditor.modelProperty().addListener((w, o, n) -> selectionCopier.initialize(n));
+		graphEditor.modelProperty().addListener((_, _, n) -> selectionCopier.initialize(n));
         selectionCopier.initialize(model);
 
         initializeMenuBar();
@@ -158,7 +158,7 @@ public class GraphEditorDemoController {
      */
     public void panToCenter()
     {
-        graphEditorContainer.panTo(Pos.CENTER);
+        graphEditorContainer.scrollTo(new Point2D(0.5, 0.5));
     }
 
     @FXML
@@ -317,7 +317,7 @@ public class GraphEditorDemoController {
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 
-        final SetChangeListener<? super EObject> selectedNodesListener = change -> checkConnectorButtonsToDisable();
+        final SetChangeListener<? super EObject> selectedNodesListener = _ -> checkConnectorButtonsToDisable();
         graphEditor.getSelectionManager().getSelectedItems().addListener(selectedNodesListener);
         checkConnectorButtonsToDisable();
     }
@@ -327,7 +327,7 @@ public class GraphEditorDemoController {
      */
     private void addActiveSkinControllerListener() {
 
-        activeSkinController.addListener((observable, oldValue, newValue) -> handleActiveSkinControllerChange());
+        activeSkinController.addListener((_, _, _) -> handleActiveSkinControllerChange());
     }
 
     /**
