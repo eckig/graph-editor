@@ -5,8 +5,8 @@ package io.github.eckig.grapheditor.core.view;
 
 import io.github.eckig.grapheditor.GraphEditor;
 import io.github.eckig.grapheditor.model.GModel;
-import io.github.eckig.grapheditor.window.AutoScrollingWindow;
 import io.github.eckig.grapheditor.window.GraphEditorMinimap;
+import io.github.eckig.grapheditor.window.PanningWindow;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.layout.Region;
 
@@ -41,7 +41,7 @@ import javafx.scene.layout.Region;
  * {@link GModel} instance.
  * </p>
  */
-public class GraphEditorContainer extends AutoScrollingWindow
+public class GraphEditorContainer extends PanningWindow
 {
 
     /**
@@ -75,7 +75,6 @@ public class GraphEditorContainer extends AutoScrollingWindow
 
     private void modelChanged(final GModel newValue)
     {
-        checkWindowBounds();
         minimap.setModel(newValue);
     }
 
@@ -91,7 +90,6 @@ public class GraphEditorContainer extends AutoScrollingWindow
         if (previous != null)
         {
             previous.modelProperty().removeListener(modelChangeListener);
-            setEditorProperties(null);
         }
 
         graphEditor = pGraphEditor;
@@ -109,12 +107,9 @@ public class GraphEditorContainer extends AutoScrollingWindow
             minimap.setSelectionManager(pGraphEditor.getSelectionManager());
 
             view.toBack();
-
-            setEditorProperties(pGraphEditor.getProperties());
         }
         else
         {
-            setEditorProperties(null);
             minimap.setContent(null);
             minimap.setModel(null);
         }

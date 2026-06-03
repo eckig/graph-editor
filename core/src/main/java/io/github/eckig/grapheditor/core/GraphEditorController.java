@@ -113,8 +113,6 @@ public class GraphEditorController<E extends GraphEditor>
     private final ChangeListener<Scene> mViewSceneChangeListener = (_, oldScene, newScene) -> sceneChanged(oldScene, newScene);
     private final Runnable mOnScenePulse = this::process;
 
-    private boolean mCalculateBounds = false;
-
     /**
      * Creates a new controller instance. Only one instance should exist per
      * {@link GraphEditor} instance.
@@ -357,14 +355,9 @@ public class GraphEditorController<E extends GraphEditor>
             }
         }
 
-        if (mCalculateBounds)
-        {
-            mCalculateBounds = false;
-            calculateBounds();
-        }
-
         if (changes)
         {
+            calculateBounds();
             processingDone();
         }
     }
@@ -374,7 +367,6 @@ public class GraphEditorController<E extends GraphEditor>
         mModelLayoutUpdater.addNode(pNode);
         mSelectionManager.addNode(pNode);
         markConnectorsDirty(pNode);
-        triggerModelSizeCalculation();
     }
 
     private void onConnectorCreated(final GConnector pConnector)
@@ -435,7 +427,6 @@ public class GraphEditorController<E extends GraphEditor>
                 skin.getRoot().relocate(node.getX(), node.getY());
             }
         }
-        triggerModelSizeCalculation();
     }
 
     private void nodeSizeChanged(final Notification pChange)
@@ -449,7 +440,6 @@ public class GraphEditorController<E extends GraphEditor>
                 skin.getRoot().resize(node.getWidth(), node.getHeight());
             }
         }
-        triggerModelSizeCalculation();
     }
 
     private void jointPositionChanged(final Notification pChange)
@@ -545,7 +535,6 @@ public class GraphEditorController<E extends GraphEditor>
         mSelectionManager.clearSelection(pNode);
         mModelLayoutUpdater.removeNode(pNode);
         mSkinManager.removeNode(pNode);
-        triggerModelSizeCalculation();
     }
 
     private void addConnector(final GConnector pConnector)
@@ -676,11 +665,6 @@ public class GraphEditorController<E extends GraphEditor>
                 oldValues.forEach(pRemove);
                 break;
         }
-    }
-
-    private void triggerModelSizeCalculation()
-    {
-        mCalculateBounds = true;
     }
 
     private void calculateBounds()

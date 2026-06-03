@@ -7,7 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TouchEvent;
-import javafx.scene.input.ZoomEvent;
 
 
 /**
@@ -49,23 +48,11 @@ public class GraphEventManagerImpl implements GraphEventManager
                     || pEvent instanceof ScrollEvent se && se.getTouchCount() > 0;
             if (!isTouch)
             {
-                return switch (pGesture)
-                        {
-                            case PAN -> pEvent instanceof ScrollEvent se && !se.isControlDown()
-                                    || pEvent instanceof MouseEvent me && me.isSecondaryButtonDown();
-                            case ZOOM -> pEvent instanceof ScrollEvent se && se.isControlDown();
-                            case SELECT, CONNECT, MOVE, RESIZE -> pEvent instanceof MouseEvent me &&
-                                    me.isPrimaryButtonDown();
-                        };
+                return pEvent instanceof MouseEvent me && me.isPrimaryButtonDown();
             }
             else
             {
-                return switch (pGesture)
-                        {
-                            case ZOOM -> pEvent instanceof ZoomEvent;
-                            case PAN -> pEvent instanceof TouchEvent && ((TouchEvent) pEvent).getTouchCount() > 1;
-                            case SELECT, CONNECT, MOVE, RESIZE -> true;
-                        };
+                return true;
             }
         }
         return false;

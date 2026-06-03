@@ -7,16 +7,6 @@ public enum GraphInputGesture
 {
 
     /**
-     * Panning / moving the graph editor viewport
-     */
-    PAN,
-
-    /**
-     * Zooming the graph editor viewport
-     */
-    ZOOM,
-
-    /**
      * Resizing graph editor elements
      */
     RESIZE,

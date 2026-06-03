@@ -36,7 +36,7 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     private final MinimapNodeGroup minimapNodeGroup = new MinimapNodeGroup();
 
     private GModel model;
-    private final CommandStackListener modelChangeListener = event -> minimapNodeGroup.draw();
+    private final CommandStackListener modelChangeListener = _ -> minimapNodeGroup.draw();
 
     /**
      * Creates a new {@link GraphEditorMinimap} instance.

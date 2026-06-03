@@ -1,10 +1,9 @@
-/*
- * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
- */
 package io.github.eckig.grapheditor.window;
 
 import javafx.beans.InvalidationListener;
 import javafx.event.ActionEvent;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -38,14 +37,14 @@ class PanningWindowMinimap extends Pane
     private PanningWindow window;
     private Region content;
 
-    private final InvalidationListener drawListener = observable -> requestLayout();
+    private final InvalidationListener drawListener = _ -> requestLayout();
 
     private boolean locatorPositionListenersMuted;
     private boolean drawLocatorListenerMuted;
 
     private final Hyperlink zoomIn = new Hyperlink("++"); //$NON-NLS-1$
     private final Hyperlink zoomOut = new Hyperlink("--"); //$NON-NLS-1$
-    private final Hyperlink zoomExact = new Hyperlink("1:1"); //$NON-NLS-1$
+    private final Hyperlink zoomExact = new Hyperlink("100%"); //$NON-NLS-1$
 
     /**
      * Creates a new {@link PanningWindowMinimap} instance.
@@ -116,7 +115,7 @@ class PanningWindowMinimap extends Pane
 
         if (pContentRepresentation != null)
         {
-            getChildren().add(0, pContentRepresentation);
+            getChildren().addFirst(pContentRepresentation);
         }
     }
 
@@ -124,7 +123,7 @@ class PanningWindowMinimap extends Pane
      * Sets the {@link PanningWindow} that this minimap is representing.
      *
      * <p>
-     * This window will be visualized inside the minimap as a a rectangular
+     * This window will be visualized inside the minimap as a rectangular
      * shape, showing the user the current position of the window over its
      * content.
      * <p>
@@ -155,7 +154,7 @@ class PanningWindowMinimap extends Pane
      * Sets the content that this minimap is representing.
      *
      * <p>
-     * For sensible behaviour, this instance should be the same as the content
+     * For sensible behavior, this instance should be the same as the content
      * inside the {@link PanningWindow}.
      * </p>
      *
@@ -189,7 +188,7 @@ class PanningWindowMinimap extends Pane
     }
 
     /**
-     * @return content a {@link Region} containing some content to be visualised
+     * @return content a {@link Region} containing some content to be visualized
      *         in the minimap
      */
     public Region getContent()
@@ -209,7 +208,6 @@ class PanningWindowMinimap extends Pane
      */
     private double calculateScaleFactor()
     {
-
         final double scaleFactorX = (getWidth() - 2 * MINIMAP_PADDING) / content.getWidth();
         final double scaleFactorY = (getHeight() - 2 * MINIMAP_PADDING) / content.getHeight();
 
@@ -241,14 +239,19 @@ class PanningWindowMinimap extends Pane
         {
             locatorPositionListenersMuted = true;
 
-            final double zoomFactor = calculateZoomFactor();
-            final double x = Math.max(0, Math.round(-content.getLayoutX() * scaleFactor / zoomFactor));
-            final double y = Math.max(0, Math.round(-content.getLayoutY() * scaleFactor / zoomFactor));
-            final double locWidth = Math.min(maxLocWidth, Math.round(window.getWidth() * scaleFactor / zoomFactor));
-            final double locHeight = Math.min(maxLocHeight, Math.round(window.getHeight() * scaleFactor / zoomFactor));
+            try
+            {
+                final var zoomFactor = calculateZoomFactor();
+                final var pos = PanningWindow.denormalize(window.getScrollPosition(), getBoundingBox(true));
+                final var locWidth = Math.min(maxLocWidth, Math.round(window.getWidth() * scaleFactor / zoomFactor));
+                final var locHeight = Math.min(maxLocHeight, Math.round(window.getHeight() * scaleFactor / zoomFactor));
 
-            locator.resizeRelocate(x + MINIMAP_PADDING, y + MINIMAP_PADDING, locWidth, locHeight);
-            locatorPositionListenersMuted = false;
+                locator.resizeRelocate(pos.getX() + MINIMAP_PADDING, pos.getY() + MINIMAP_PADDING, locWidth, locHeight);
+            }
+            finally
+            {
+                locatorPositionListenersMuted = false;
+            }
         }
 
         zoomOut.relocate(MINIMAP_PADDING, height - zoomOut.getHeight());
@@ -273,29 +276,46 @@ class PanningWindowMinimap extends Pane
      */
     private void createLocatorPositionListeners()
     {
-        locator.layoutXProperty().addListener((observable, oldValue, newValue) ->
-        {
-            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists())
-            {
-                drawLocatorListenerMuted = true;
-                final double effectiveScaleFactor = calculateScaleFactor() / calculateZoomFactor();
-                final double targetX = (newValue.doubleValue() - MINIMAP_PADDING) / effectiveScaleFactor;
-                window.panToX(targetX);
-                drawLocatorListenerMuted = false;
-            }
-        });
+        locator.layoutXProperty().addListener((_, _, n) -> panTo(n, null));
+        locator.layoutYProperty().addListener((_, _, n) -> panTo(null, n));
+    }
 
-        locator.layoutYProperty().addListener((observable, oldValue, newValue) ->
+    private BoundingBox getBoundingBox(final boolean pIncludeLocator)
+    {
+        final var padding = MINIMAP_PADDING * 2;
+        final var locWidth = pIncludeLocator ? locator.getWidth() : 0;
+        final var locHeight = pIncludeLocator ? locator.getHeight() : 0;
+        return new BoundingBox(0, 0, getWidth() - locWidth - padding, getHeight() - locHeight - padding);
+    }
+
+    private void panTo(final Number pX, final Number pY)
+    {
+        if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists())
         {
-            if (!locatorPositionListenersMuted && checkContentExists() && checkWindowExists())
+            drawLocatorListenerMuted = true;
+            try
             {
-                drawLocatorListenerMuted = true;
-                final double effectiveScaleFactor = calculateScaleFactor() / calculateZoomFactor();
-                final double targetY = (newValue.doubleValue() - MINIMAP_PADDING) / effectiveScaleFactor;
-                window.panToY(targetY);
+                final var targetX = pX == null ? Double.NEGATIVE_INFINITY : pX.doubleValue() - MINIMAP_PADDING ;
+                final var targetY = pY == null ? Double.NEGATIVE_INFINITY : pY.doubleValue() - MINIMAP_PADDING ;
+                final var scroll = PanningWindow.normalize(new Point2D(targetX, targetY), getBoundingBox(true));
+                if (targetX != Double.NEGATIVE_INFINITY && targetY != Double.NEGATIVE_INFINITY)
+                {
+                    window.scrollTo(scroll);
+                }
+                else if (targetX != Double.NEGATIVE_INFINITY)
+                {
+                    window.scrollToX(scroll.getX());
+                }
+                else if (targetY != Double.NEGATIVE_INFINITY)
+                {
+                    window.scrollToY(scroll.getY());
+                }
+            }
+            finally
+            {
                 drawLocatorListenerMuted = false;
             }
-        });
+        }
     }
 
     /**
@@ -316,12 +336,9 @@ class PanningWindowMinimap extends Pane
                 return;
             }
 
-            final double x = event.getX() - MINIMAP_PADDING - locator.getWidth() / 2;
-            final double y = event.getY() - MINIMAP_PADDING - locator.getHeight() / 2;
-
-            final double zoomFactor = calculateZoomFactor();
-
-            window.panTo(x / calculateScaleFactor() * zoomFactor, y / calculateScaleFactor() * zoomFactor);
+            final double x = event.getX();
+            final double y = event.getY();
+            window.scrollTo(PanningWindow.normalize(new Point2D(x, y), getBoundingBox(false)));
         });
     }
 
