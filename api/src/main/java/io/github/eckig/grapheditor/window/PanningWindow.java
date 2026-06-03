@@ -216,7 +216,7 @@ public class PanningWindow extends Region
 
     private void handleMouseDragged(final MouseEvent event)
     {
-        if (event.isPrimaryButtonDown())
+        if (event.isPrimaryButtonDown() && event.getTarget() instanceof Node && !isScrollBar(event))
         {
             final var cursorX = event.getX();
             final var cursorY = event.getY();
@@ -251,6 +251,23 @@ public class PanningWindow extends Region
                 startScrolling();
             }
         }
+    }
+
+    private boolean isScrollBar(final MouseEvent pEvent)
+    {
+        if (pEvent.getTarget() instanceof Node node)
+        {
+            Node n = node;
+            while (n != null)
+            {
+                if (n instanceof ScrollBar)
+                {
+                    return true;
+                }
+                n = n.getParent();
+            }
+        }
+        return false;
     }
 
     private void startScrolling()

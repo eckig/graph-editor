@@ -349,12 +349,17 @@ public class GraphEditorView extends Region
         final var minH = Math.max(h, getMinHeight());
         if (pModelBounds != null)
         {
-            resize(Math.max(minW, Math.min(pModelBounds.getWidth() + VIEWPORT_PADDING, getMaxWidth())),
-                    Math.max(minH, Math.min(pModelBounds.getHeight() + VIEWPORT_PADDING, getMaxHeight())));
+            final var width = Math.max(minW, Math.min(pModelBounds.getWidth() + VIEWPORT_PADDING, getMaxWidth()));
+            final var height = Math.max(minH, Math.min(pModelBounds.getHeight() + VIEWPORT_PADDING, getMaxHeight()));
+            setMinSize(width, height);
+            setPrefSize(width, height);
+            resize(width, height);
         }
         else
         {
             resize(minW, minH);
+            setMinSize(minW, minH);
+            setPrefSize(minW, minH);
         }
         requestParentLayout();
     }
