@@ -5,9 +5,11 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.VerticalDirection;
@@ -21,8 +23,6 @@ import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
-
-import java.util.Optional;
 
 /**
  * A window over a large {@link Region} of content.
@@ -415,5 +415,23 @@ public class PanningWindow extends Region
     private void decrement(final DoubleProperty pPos, final double pUnitIncrement)
     {
         pPos.set(clampScrollValue(pPos.get() - pUnitIncrement));
+    }
+
+    /**
+     * The actual Bounds of the ScrollPane Viewport.
+     * This is the Bounds of the content node.
+     */
+    public ObjectProperty<Bounds> viewportBoundsProperty()
+    {
+        return scrollPane.viewportBoundsProperty();
+    }
+
+    /**
+     * The actual Bounds of the ScrollPane Viewport.
+     * This is the Bounds of the content node.
+     */
+    public Bounds getViewportBounds()
+    {
+        return viewportBoundsProperty().get();
     }
 }

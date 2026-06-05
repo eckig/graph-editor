@@ -15,7 +15,7 @@ import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 import io.github.eckig.grapheditor.window.PanningWindow;
 import javafx.beans.InvalidationListener;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
@@ -69,6 +69,7 @@ public class GraphEditorView extends Region
     private final GraphEditorProperties mEditorProperties;
 
     private ConnectionLayout mConnectionLayout;
+    private PanningWindow mParent;
 
     /**
      * Creates a new {@link GraphEditorView} to which skin instances can be
@@ -89,24 +90,6 @@ public class GraphEditorView extends Region
         {
             mGrid.visibleProperty().bind(mEditorProperties.gridVisibleProperty());
             mGrid.gridSpacingProperty().bind(mEditorProperties.gridSpacingProperty());
-        }
-
-        parentProperty().addListener((_, oldParent, newParent) -> parentChanged(oldParent, newParent));
-        layoutXProperty().addListener(mGridListener);
-        layoutYProperty().addListener(mGridListener);
-    }
-
-    private void parentChanged(final Parent pOldParent, final Parent pNewParent)
-    {
-        if (pOldParent instanceof PanningWindow pw)
-        {
-            pw.widthProperty().removeListener(mGridListener);
-            pw.heightProperty().removeListener(mGridListener);
-        }
-        if (pNewParent instanceof PanningWindow pw)
-        {
-            pw.widthProperty().addListener(mGridListener);
-            pw.heightProperty().addListener(mGridListener);
         }
     }
 
@@ -293,14 +276,32 @@ public class GraphEditorView extends Region
         drawConnections();
     }
 
+    private ScrollPane findParent()
+    {
+        var parent = getParent();
+        while (parent != null)
+        {
+            if (parent instanceof ScrollPane s)
+            {
+                return s;
+            }
+            parent = parent.getParent();
+        }
+        return null;
+    }
+
     private void resizeRelocateGrid()
     {
-        final var panningWindow = getParent() instanceof PanningWindow pw ? pw : null;
+        if (mParent == null)
+        {
+            return;
+        }
+        final var bounds = mParent.getViewportBounds();
         final var s = mGrid.getGridSpacing();
-        final var width = panningWindow == null ? 0 : panningWindow.getWidth() + s;
-        final var height = panningWindow == null ? 0 : panningWindow.getHeight() + s;
-        final var x = getLayoutX();
-        final var y = getLayoutY();
+        final var width = mParent.getWidth() + s;
+        final var height = mParent.getHeight() + s;
+        final var x = bounds.getMinX();
+        final var y = bounds.getMinY();
         mGrid.resizeRelocate(x % s + x * -1.0, y % s + y * -1.0, width, height);
     }
 
@@ -362,5 +363,19 @@ public class GraphEditorView extends Region
             setPrefSize(minW, minH);
         }
         requestParentLayout();
+    }
+
+    public void setPanningWindow(final PanningWindow pWindow)
+    {
+        if (mParent != null)
+        {
+            mParent.viewportBoundsProperty().removeListener(mGridListener);
+        }
+        mParent = pWindow;
+        if (mParent != null)
+        {
+            mParent.viewportBoundsProperty().addListener(mGridListener);
+            resizeRelocateGrid();
+        }
     }
 }

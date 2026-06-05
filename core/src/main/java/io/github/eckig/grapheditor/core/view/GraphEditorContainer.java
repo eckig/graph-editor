@@ -78,6 +78,16 @@ public class GraphEditorContainer extends PanningWindow
         minimap.setModel(newValue);
     }
 
+    @Override
+    protected void setContent(final Region pContent)
+    {
+        super.setContent(pContent);
+        if (pContent instanceof GraphEditorView v)
+        {
+            v.setPanningWindow(this);
+        }
+    }
+
     /**
      * Sets the graph editor to be displayed in this container.
      *
