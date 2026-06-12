@@ -1,28 +1,20 @@
 package io.github.eckig.grapheditor.window;
 
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import io.github.eckig.grapheditor.window.skin.PanningWindowScrollPaneSkin;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
-import javafx.geometry.VerticalDirection;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
-import javafx.util.Duration;
 
 /**
  * A window over a large {@link Region} of content.
@@ -35,6 +27,7 @@ import javafx.util.Duration;
  */
 public class PanningWindow extends Region
 {
+
     private final ScrollPane scrollPane = new ScrollPane();
 
     // zoom
@@ -42,17 +35,6 @@ public class PanningWindow extends Region
     private static final float SCALE_MAX = 1.5f;
     private final DoubleProperty zoom = new SimpleDoubleProperty(1);
     private final Scale scale = new Scale();
-
-    private ScrollBar hsb;
-    private ScrollBar vsb;
-
-    // auto scroll
-    private static final Duration JUMP_PERIOD = Duration.millis(25);
-    private static final double INSET_TO_BEGIN_SCROLL = 1;
-    private Timeline timeline;
-    private boolean isScrolling;
-    private HorizontalDirection scrollX;
-    private VerticalDirection scrollY;
 
     /**
      * Creates a new {@link PanningWindow}.
@@ -62,24 +44,14 @@ public class PanningWindow extends Region
         scrollPane.setPannable(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setSkin(new PanningWindowScrollPaneSkin(this, scrollPane));
 
         getChildren().add(scrollPane);
 
         scale.xProperty().bind(zoom);
         scale.yProperty().bind(zoom);
 
-        addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
-        addEventFilter(MouseEvent.MOUSE_RELEASED, _ -> endScrolling());
         addEventHandler(ZoomEvent.ZOOM, this::handleZoom);
-        addEventFilter(ScrollEvent.SCROLL, event ->
-        {
-            if (event.isControlDown())
-            {
-                final double modifier = event.getDeltaY() > 1 ? 0.06 : -0.06;
-                setZoom(getZoom() + modifier);
-                event.consume();
-            }
-        });
     }
 
     @Override
@@ -87,34 +59,6 @@ public class PanningWindow extends Region
     {
         super.layoutChildren();
         scrollPane.resizeRelocate(0, 0, snapSizeX(getWidth()), snapSizeY(getHeight()));
-    }
-
-    private ScrollBar hsb()
-    {
-        if (hsb == null)
-        {
-            //filter out "VirtualScrollBar"
-            hsb = (ScrollBar) scrollPane.lookupAll(".scroll-bar:horizontal")
-                    .stream()
-                    .filter(n -> n.getClass().equals(ScrollBar.class))
-                    .findFirst()
-                    .orElse(null);
-        }
-        return hsb;
-    }
-
-    private ScrollBar vsb()
-    {
-        if (vsb == null)
-        {
-            //filter out "VirtualScrollBar"
-            vsb = (ScrollBar) scrollPane.lookupAll(".scroll-bar:vertical")
-                    .stream()
-                    .filter(n -> n.getClass().equals(ScrollBar.class))
-                    .findFirst()
-                    .orElse(null);
-        }
-        return vsb;
     }
 
     /**
@@ -214,113 +158,6 @@ public class PanningWindow extends Region
         return scrollPane.getViewportBounds().getMinY();
     }
 
-    private void handleMouseDragged(final MouseEvent event)
-    {
-        if (event.isPrimaryButtonDown() && event.getTarget() instanceof Node && !isScrollBar(event))
-        {
-            final var cursorX = event.getX();
-            final var cursorY = event.getY();
-            if (cursorX <= INSET_TO_BEGIN_SCROLL)
-            {
-                scrollX = HorizontalDirection.LEFT;
-            }
-            else if (cursorX >= getWidth() - INSET_TO_BEGIN_SCROLL)
-            {
-                scrollX = HorizontalDirection.RIGHT;
-            }
-            else
-            {
-                scrollX = null;
-            }
-
-            if (cursorY <= INSET_TO_BEGIN_SCROLL)
-            {
-                scrollY = VerticalDirection.UP;
-            }
-            else if (cursorY >= getHeight() - INSET_TO_BEGIN_SCROLL)
-            {
-                scrollY = VerticalDirection.DOWN;
-            }
-            else
-            {
-                scrollY = null;
-            }
-
-            if (!isScrolling)
-            {
-                startScrolling();
-            }
-        }
-    }
-
-    private boolean isScrollBar(final MouseEvent pEvent)
-    {
-        if (pEvent.getTarget() instanceof Node node)
-        {
-            Node n = node;
-            while (n != null)
-            {
-                if (n instanceof ScrollBar)
-                {
-                    return true;
-                }
-                n = n.getParent();
-            }
-        }
-        return false;
-    }
-
-    private void startScrolling()
-    {
-        isScrolling = true;
-
-        final KeyFrame frame = new KeyFrame(JUMP_PERIOD, _ ->
-        {
-            if (isScrolling)
-            {
-                final var hsb = hsb();
-                final var vsb = vsb();
-                final var unitIncrementX = hsb == null ? 0.01 : hsb.getUnitIncrement();
-                final var unitIncrementY = vsb == null ? 0.01 : vsb.getUnitIncrement();
-                if (scrollX == HorizontalDirection.LEFT)
-                {
-                    decrement(scrollPane.hvalueProperty(), unitIncrementX);
-                }
-                else if (scrollX == HorizontalDirection.RIGHT)
-                {
-                    increment(scrollPane.hvalueProperty(), unitIncrementX);
-                }
-
-                if (scrollY == VerticalDirection.UP)
-                {
-                    decrement(scrollPane.vvalueProperty(), unitIncrementY);
-                }
-                else if (scrollY == VerticalDirection.DOWN)
-                {
-                    increment(scrollPane.vvalueProperty(), unitIncrementY);
-                }
-            }
-        });
-
-        timeline = new Timeline();
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.getKeyFrames().add(frame);
-        timeline.play();
-    }
-
-    /**
-     * Stops the auto-scrolling.
-     */
-    private void endScrolling()
-    {
-        isScrolling = false;
-
-        if (timeline != null)
-        {
-            timeline.stop();
-        }
-    }
-
     /**
      * Set new zoom level
      *
@@ -400,21 +237,6 @@ public class PanningWindow extends Region
         final double newZoomLevel = getZoom() * pEvent.getZoomFactor();
         setZoom(newZoomLevel);
         pEvent.consume();
-    }
-
-    private static double clampScrollValue(double value)
-    {
-        return Math.max(0.0, Math.min(value, 1.0));
-    }
-
-    private void increment(final DoubleProperty pPos, final double pUnitIncrement)
-    {
-        pPos.set(clampScrollValue(pPos.get() + pUnitIncrement));
-    }
-
-    private void decrement(final DoubleProperty pPos, final double pUnitIncrement)
-    {
-        pPos.set(clampScrollValue(pPos.get() - pUnitIncrement));
     }
 
     /**
