@@ -4,11 +4,11 @@
 package io.github.eckig.grapheditor.demo.customskins.tree;
 
 import java.util.List;
-import java.util.Map;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GraphEditor;
+import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.utils.Arrow;
 import io.github.eckig.grapheditor.utils.GeometryUtils;
@@ -72,10 +72,27 @@ public class TreeConnectionSkin extends GConnectionSkin {
         // This skin is not intended to show joints.
     }
 
-    @Override
-    public void draw(final Map<GConnectionSkin, Point2D[]> allPoints)
+    public Point2D[] update()
     {
-        final Point2D[] points = allPoints == null ? null : allPoints.get(this);
+        final GConnection item = getItem();
+        final SkinLookup skinLookup = getGraphEditor() == null ? null : getGraphEditor().getSkinLookup();
+        if (item == null || skinLookup == null)
+        {
+            return null;
+        }
+        final Point2D[] points = new Point2D[2];
+
+        // Start: Source position
+        points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+
+        // End: Target position
+        points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+
+        return points;
+    }
+
+    public void draw(final Point2D[] points)
+    {
         if (points != null && points.length == 2)
         {
             final Point2D start = points[0];

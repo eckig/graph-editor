@@ -12,6 +12,7 @@ import io.github.eckig.grapheditor.EditorElement;
 import io.github.eckig.grapheditor.GraphEditor;
 import io.github.eckig.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import io.github.eckig.grapheditor.demo.customskins.DefaultSkinController;
+import io.github.eckig.grapheditor.demo.customskins.DemoGraphEditor;
 import io.github.eckig.grapheditor.demo.customskins.SkinController;
 import io.github.eckig.grapheditor.demo.customskins.TitledSkinController;
 import io.github.eckig.grapheditor.demo.customskins.TreeSkinController;
@@ -100,7 +101,7 @@ public class GraphEditorDemoController {
     @FXML
     private GraphEditorContainer graphEditorContainer;
 
-    private final GraphEditor graphEditor = new DefaultGraphEditor();
+    private final GraphEditor graphEditor = new DemoGraphEditor();
 	private final SelectionCopier selectionCopier = new SelectionCopier(graphEditor.getSkinLookup(),
 			graphEditor.getSelectionManager());
     private final GraphEditorPersistence graphEditorPersistence = new GraphEditorPersistence();
