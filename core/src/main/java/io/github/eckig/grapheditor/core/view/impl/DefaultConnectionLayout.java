@@ -55,10 +55,7 @@ public class DefaultConnectionLayout implements ConnectionLayout
 
         try
         {
-            if (!mModel.getConnections().isEmpty())
-            {
-                redrawAllConnections();
-            }
+            redrawAllConnections(mModel);
         }
         catch (Exception e)
         {
@@ -66,12 +63,17 @@ public class DefaultConnectionLayout implements ConnectionLayout
         }
     }
 
-    private void redrawAllConnections()
+    public SkinLookup getSkinLookup()
+    {
+        return mSkinLookup;
+    }
+
+    protected void redrawAllConnections(final GModel pModel)
     {
         final Map<SimpleConnectionSkin, Point2D[]> connectionPoints = new HashMap<>();
-        for (final var connection : mModel.getConnections())
+        for (final var connection : pModel.getConnections())
         {
-            final var connectionSkin = mSkinLookup.lookupConnection(connection);
+            final var connectionSkin = getSkinLookup().lookupConnection(connection);
             if (connectionSkin instanceof SimpleConnectionSkin s)
             {
                 final var points = s.update();
