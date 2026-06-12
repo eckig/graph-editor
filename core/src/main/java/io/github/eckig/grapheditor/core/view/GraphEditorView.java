@@ -296,13 +296,13 @@ public class GraphEditorView extends Region
         {
             return;
         }
-        final var bounds = mParent.getViewportBounds();
+        final var b = mParent.getViewportBounds();
         final var s = mGrid.getGridSpacing();
-        final var width = mParent.getWidth() + s;
-        final var height = mParent.getHeight() + s;
-        final var x = bounds.getMinX();
-        final var y = bounds.getMinY();
-        mGrid.resizeRelocate(x % s + x * -1.0, y % s + y * -1.0, width, height);
+        final var w = snapSizeX((mParent.getWidth() + s) / mParent.getZoom());
+        final var h = snapSizeY((mParent.getHeight() + s) / mParent.getZoom());
+        final var x = b.getMinX() / mParent.getZoom();
+        final var y = b.getMinY() / mParent.getZoom();
+        mGrid.resizeRelocate(x % s + x * -1.0, y % s + y * -1.0, w, h);
     }
 
     /**
