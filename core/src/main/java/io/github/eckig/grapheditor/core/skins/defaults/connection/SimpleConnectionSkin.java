@@ -9,6 +9,7 @@ import java.util.Map;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GJointSkin;
+import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.connections.RectangularConnections;
 import io.github.eckig.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
 import io.github.eckig.grapheditor.core.skins.defaults.connection.segment.DetouredConnectionSegment;
@@ -30,7 +31,8 @@ import javafx.scene.shape.Path;
  * the connection intersects other connections.
  * </p>
  */
-public class SimpleConnectionSkin extends GConnectionSkin {
+public class SimpleConnectionSkin extends GConnectionSkin
+{
 
     /**
      * Property key to show detours at intersections.
@@ -56,15 +58,22 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     private static final String STYLE_CLASS = "default-connection";
     private static final String STYLE_CLASS_BACKGROUND = "default-connection-background";
 
+    /**
+     * Cache the index of this connection skin inside the list of children of the connection layer. As the graph editor
+     * grows the indexOf() lookup calls take up a considerable amount of time.
+     */
+    private int mConnectionIndex;
+
     private List<GJointSkin> jointSkins;
 
     /**
      * Creates a new simple connection skin instance.
      *
-     * @param connection the {@link GConnection} the skin is being created for
+     * @param connection
+     *         the {@link GConnection} the skin is being created for
      */
-    public SimpleConnectionSkin(final GConnection connection) {
-
+    public SimpleConnectionSkin(final GConnection connection)
+    {
         super(connection);
 
         root.setManaged(false);
@@ -80,14 +89,16 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     }
 
     @Override
-    public Node getRoot() {
+    public Node getRoot()
+    {
         return root;
     }
 
     @Override
-    public void setJointSkins(final List<GJointSkin> jointSkins) {
-
-        if (this.jointSkins != null) {
+    public void setJointSkins(final List<GJointSkin> jointSkins)
+    {
+        if (this.jointSkins != null)
+        {
             removeOldRectangularConstraints();
         }
 
@@ -96,32 +107,41 @@ public class SimpleConnectionSkin extends GConnectionSkin {
         addRectangularConstraints();
     }
 
-    @Override
+    /**
+     * Update and return the points of this connection. This is called every time the connection's position could
+     * change, for example if one of its connectors is moved before {@link #draw(Map)}.
+     * <p>
+     * The order of the points is as follows:
+     *
+     * <ol>
+     * <li>Source position.
+     * <li>Joint positions in same order the joints appear in their
+     * {@link GConnection}.
+     * <li>Target position.
+     * </ol>
+     *
+     * </p>
+     *
+     * <p>
+     * This method is called on <b>all</b> connection skins <b>before</b> the
+     * draw method is called on any connection skin. It can safely be ignored by
+     * simple skin implementations.
+     * </p>
+     *
+     * <p>
+     * Overriding this method allows the connection skin to apply constraints to
+     * its set of points, and these constraints will be taken into account
+     * during the draw methods of other connections, even if they are drawn
+     * before this connection.
+     * </p>
+     *
+     * @return points
+     */
     public Point2D[] update()
     {
-        final Point2D[] points = super.update();
+        final Point2D[] points = doUpdate();
         checkFirstAndLastJoints(points);
         return points;
-    }
-
-    @Override
-    public void draw(final Map<GConnectionSkin, Point2D[]> allPoints)
-    {
-        super.draw(allPoints);
-
-        // If we are showing detours, get all intersections with connections *behind* this one. Otherwise in front.
-        final double[][] intersections = IntersectionFinder.find(this, allPoints, checkShowDetours());
-
-        final Point2D[] points = allPoints == null ? null : allPoints.get(this);
-        if (points != null)
-        {
-            drawAllSegments(points, intersections);
-        }
-        else
-        {
-            connectionSegments.clear();
-            path.getElements().clear();
-        }
     }
 
     /**
@@ -174,7 +194,8 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     /**
      * Checks the position of the first and last joints and makes sure they are aligned with their adjacent connectors.
      *
-     * @param points all points that the connection should pass through (both connector and joint positions)
+     * @param points
+     *         all points that the connection should pass through (both connector and joint positions)
      */
     private void checkFirstAndLastJoints(final Point2D[] points)
     {
@@ -185,9 +206,12 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     /**
      * Aligns the first or last joint to have the same vertical or horizontal position as the start or end point.
      *
-     * @param points the list of points in this connection
-     * @param vertical {@code true} to align in the vertical (y) direction, {@code false} for horizontal (x)
-     * @param start {@code true} to align the first joint to the start, {@code false} for the last joint to the end
+     * @param points
+     *         the list of points in this connection
+     * @param vertical
+     *         {@code true} to align in the vertical (y) direction, {@code false} for horizontal (x)
+     * @param start
+     *         {@code true} to align the first joint to the start, {@code false} for the last joint to the end
      */
     private void alignJoint(final Point2D[] points, final boolean vertical, final boolean start)
     {
@@ -218,8 +242,10 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     /**
      * Draws all segments of the connection.
      *
-     * @param points all points that the connection should pass through (both connector and joint positions)
-     * @param intersections all intersection-points of this connection with other connections
+     * @param points
+     *         all points that the connection should pass through (both connector and joint positions)
+     * @param intersections
+     *         all intersection-points of this connection with other connections
      */
     private void drawAllSegments(final Point2D[] points, final double[][] intersections)
     {
@@ -281,5 +307,89 @@ public class SimpleConnectionSkin extends GConnectionSkin {
     protected void selectionChanged(boolean isSelected)
     {
         // Not implemented
+    }
+
+    /**
+     * Draws the connection skin. This is called every time the connection's position could change, for example if one
+     * of its connectors is moved, after {@link #update()}.
+     *
+     * <p>
+     * A simple connection skin may ignore the given parameter. This parameter can for example be used to display a
+     * 'rerouting' effect when the connection passes over another connection.
+     * </p>
+     *
+     * @param allPoints
+     *         the lists of points for all connections (can be ignored in a simple skin)
+     */
+    public void draw(final Map<SimpleConnectionSkin, Point2D[]> allPoints)
+    {
+        if (getRoot() != null && getRoot().getParent() != null)
+        {
+            mConnectionIndex = getRoot().getParent().getChildrenUnmodifiable().indexOf(getRoot());
+        }
+        else
+        {
+            mConnectionIndex = -1;
+        }
+
+        // If we are showing detours, get all intersections with connections *behind* this one. Otherwise in front.
+        final double[][] intersections = IntersectionFinder.find(this, allPoints, checkShowDetours());
+
+        final Point2D[] points = allPoints == null ? null : allPoints.get(this);
+        if (points != null)
+        {
+            drawAllSegments(points, intersections);
+        }
+        else
+        {
+            connectionSegments.clear();
+            path.getElements().clear();
+        }
+    }
+
+    private Point2D[] doUpdate()
+    {
+        final GConnection item = getItem();
+        final SkinLookup skinLookup = getGraphEditor() == null ? null : getGraphEditor().getSkinLookup();
+        if (item == null || skinLookup == null)
+        {
+            return null;
+        }
+        else if (item.getJoints().isEmpty())
+        {
+            final Point2D[] points = new Point2D[2];
+
+            // Start: Source position
+            points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+
+            // End: Target position
+            points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+
+            return points;
+        }
+        else
+        {
+            final int len = item.getJoints().size() + 2;
+            final Point2D[] points = new Point2D[len];
+
+            // Middle: joint positions
+            GeometryUtils.fillJointPositions(item, skinLookup, points);
+
+            // Start: Source position
+            points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+
+            // End: Target position
+            points[len - 1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+
+            return points;
+        }
+    }
+
+    /**
+     * @return cached position (index) of this connection skin inside the child-list of the parent connection layer.
+     */
+    public int getParentIndex()
+    {
+        return mConnectionIndex;
     }
 }

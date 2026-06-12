@@ -3,9 +3,9 @@ package io.github.eckig.grapheditor.core.view.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 
+import io.github.eckig.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import io.github.eckig.grapheditor.core.view.ConnectionLayout;
 
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import javafx.geometry.Point2D;
 
 
 /**
- * Default implementation of {@link ConnectionLayout}
+ * Default implementation of {@link ConnectionLayout} that can layout variants of {@link SimpleConnectionSkin}
  */
 public class DefaultConnectionLayout implements ConnectionLayout
 {
@@ -68,16 +68,16 @@ public class DefaultConnectionLayout implements ConnectionLayout
 
     private void redrawAllConnections()
     {
-        final Map<GConnectionSkin, Point2D[]> connectionPoints = new HashMap<>();
+        final Map<SimpleConnectionSkin, Point2D[]> connectionPoints = new HashMap<>();
         for (final var connection : mModel.getConnections())
         {
             final var connectionSkin = mSkinLookup.lookupConnection(connection);
-            if (connectionSkin != null)
+            if (connectionSkin instanceof SimpleConnectionSkin s)
             {
-                final var points = connectionSkin.update();
+                final var points = s.update();
                 if (points != null)
                 {
-                    connectionPoints.put(connectionSkin, points);
+                    connectionPoints.put(s, points);
                 }
             }
         }

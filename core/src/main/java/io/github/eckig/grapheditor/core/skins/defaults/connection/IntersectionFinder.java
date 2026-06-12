@@ -6,9 +6,7 @@ package io.github.eckig.grapheditor.core.skins.defaults.connection;
 import java.util.Arrays;
 import java.util.Map;
 
-import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.core.connections.RectangularConnections;
-import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
 
@@ -31,7 +29,7 @@ public class IntersectionFinder
      *            are behind
      * @return array of intersection points for each segment of the connection
      */
-    public static double[][] find(final GConnectionSkin pSkin, final Map<GConnectionSkin, Point2D[]> allPoints,
+    public static double[][] find(final SimpleConnectionSkin pSkin, final Map<SimpleConnectionSkin, Point2D[]> allPoints,
             final boolean behind)
     {
         final Point2D[] points = allPoints.get(pSkin);
@@ -97,26 +95,26 @@ public class IntersectionFinder
      *            {@code true} if the connection segment is horizontal
      * @return a list of positions along the segment where intersections occur
      */
-    private static double[] findSegmentIntersections(final GConnectionSkin connection, final Map<GConnectionSkin, Point2D[]> allPoints,
+    private static double[] findSegmentIntersections(final SimpleConnectionSkin connection, final Map<SimpleConnectionSkin, Point2D[]> allPoints,
             final boolean behind, final int index, final boolean isHorizontal)
     {
         double[] segmentIntersections = null;
         int resultLen = 0;
-        final Point2D[] points = allPoints.get(connection);
+        final var points = allPoints.get(connection);
 
         if (points == null)
         {
             return null;
         }
 
-        for (final Map.Entry<GConnectionSkin, Point2D[]> entry : allPoints.entrySet())
+        for (final var entry : allPoints.entrySet())
         {
             if (!filterConnection(connection, behind, entry.getKey()))
             {
                 continue;
             }
 
-            final Point2D[] otherPoints = entry.getValue();
+            final var otherPoints = entry.getValue();
             if (otherPoints == null)
             {
                 continue;
@@ -184,7 +182,7 @@ public class IntersectionFinder
      *            filter out those in front
      * @return a stream of connections with some filtered out
      */
-    private static boolean filterConnection(final GConnectionSkin connection, final boolean behind, final GConnectionSkin otherConnection)
+    private static boolean filterConnection(final SimpleConnectionSkin connection, final boolean behind, final SimpleConnectionSkin otherConnection)
     {
         if (connection.equals(otherConnection))
         {
@@ -203,11 +201,11 @@ public class IntersectionFinder
     /**
      * Checks if the given connection is behind this one.
      *
-     * @param other
-     *            another {@link GConnection} instance
+     * @param otherSkin
+     *            another {@link SimpleConnectionSkin} instance
      * @return {@code true} if the given connection is behind this one
      */
-    private static boolean checkIfBehind(final GConnectionSkin skin, final GConnectionSkin otherSkin)
+    private static boolean checkIfBehind(final SimpleConnectionSkin skin, final SimpleConnectionSkin otherSkin)
     {
         if (skin == null || skin.getParentIndex() == -1)
         {
