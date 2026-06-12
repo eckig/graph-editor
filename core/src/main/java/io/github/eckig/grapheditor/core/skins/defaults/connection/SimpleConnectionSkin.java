@@ -31,7 +31,7 @@ import javafx.scene.shape.Path;
  * the connection intersects other connections.
  * </p>
  */
-public class SimpleConnectionSkin extends GConnectionSkin
+public class SimpleConnectionSkin extends GConnectionSkin implements IntersectionFinder.IIntersectionConnection
 {
 
     /**
@@ -385,9 +385,7 @@ public class SimpleConnectionSkin extends GConnectionSkin
         }
     }
 
-    /**
-     * @return cached position (index) of this connection skin inside the child-list of the parent connection layer.
-     */
+    @Override
     public int getParentIndex()
     {
         return mConnectionIndex;

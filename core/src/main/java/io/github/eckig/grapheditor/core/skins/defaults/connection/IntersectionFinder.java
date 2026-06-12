@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import io.github.eckig.grapheditor.core.connections.RectangularConnections;
+import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
 
@@ -29,7 +30,7 @@ public class IntersectionFinder
      *            are behind
      * @return array of intersection points for each segment of the connection
      */
-    public static double[][] find(final SimpleConnectionSkin pSkin, final Map<SimpleConnectionSkin, Point2D[]> allPoints,
+    public static double[][] find(final IIntersectionConnection pSkin, final Map<? extends IIntersectionConnection, Point2D[]> allPoints,
             final boolean behind)
     {
         final Point2D[] points = allPoints.get(pSkin);
@@ -93,9 +94,9 @@ public class IntersectionFinder
      *            the index of the connection segment
      * @param isHorizontal
      *            {@code true} if the connection segment is horizontal
-     * @return a list of positions along the segment where intersections occur
+     * @return positions along the segment where intersections occur
      */
-    private static double[] findSegmentIntersections(final SimpleConnectionSkin connection, final Map<SimpleConnectionSkin, Point2D[]> allPoints,
+    private static double[] findSegmentIntersections(final IIntersectionConnection connection, final Map<? extends IIntersectionConnection, Point2D[]> allPoints,
             final boolean behind, final int index, final boolean isHorizontal)
     {
         double[] segmentIntersections = null;
@@ -182,7 +183,7 @@ public class IntersectionFinder
      *            filter out those in front
      * @return a stream of connections with some filtered out
      */
-    private static boolean filterConnection(final SimpleConnectionSkin connection, final boolean behind, final SimpleConnectionSkin otherConnection)
+    private static boolean filterConnection(final IIntersectionConnection connection, final boolean behind, final IIntersectionConnection otherConnection)
     {
         if (connection.equals(otherConnection))
         {
@@ -202,10 +203,10 @@ public class IntersectionFinder
      * Checks if the given connection is behind this one.
      *
      * @param otherSkin
-     *            another {@link SimpleConnectionSkin} instance
+     *            another {@link IIntersectionConnection} instance
      * @return {@code true} if the given connection is behind this one
      */
-    private static boolean checkIfBehind(final SimpleConnectionSkin skin, final SimpleConnectionSkin otherSkin)
+    private static boolean checkIfBehind(final IIntersectionConnection skin, final IIntersectionConnection otherSkin)
     {
         if (skin == null || skin.getParentIndex() == -1)
         {
@@ -217,4 +218,16 @@ public class IntersectionFinder
             return otherIndex < skin.getParentIndex();
         }
     }
+
+    public interface IIntersectionConnection
+    {
+
+        /**
+         * @return cached position (index) of this connection skin inside the child-list of the parent connection layer.
+         */
+        int getParentIndex();
+
+        GConnection getItem();
+    }
+
 }
