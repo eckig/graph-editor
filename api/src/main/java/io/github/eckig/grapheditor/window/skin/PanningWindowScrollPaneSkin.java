@@ -9,8 +9,6 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.WeakInvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
@@ -18,11 +16,9 @@ import javafx.event.EventDispatcher;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.HorizontalDirection;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.AccessibleAttribute;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
@@ -47,10 +43,6 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
 
     private static final Duration JUMP_PERIOD = Duration.millis(25);
     private static final double INSET_TO_BEGIN_SCROLL = 1;
-
-    private static final double DEFAULT_PREF_SIZE = 100.0;
-
-    private static final double DEFAULT_MIN_SIZE = 36.0;
 
     private static final double PAN_THRESHOLD = 0.5;
 
@@ -83,7 +75,6 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     private double pressY;
     private double ohvalue;
     private double ovvalue;
-    private Cursor saveCursor = null;
     private boolean dragDetected = false;
 
     // auto scroll
@@ -218,14 +209,17 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
                 viewContent.resize(getWidth(), getHeight());
             }
         };
-        // prevent requestLayout requests from within scrollNode from percolating up
-        viewRect.setManaged(false);
         viewRect.setCache(true);
         viewRect.getStyleClass().add("viewport");
 
         viewRect.setClip(clipRect);
 
+        vsb.setMin(control.getVmin());
+        vsb.setMax(control.getVmax());
         vsb.setOrientation(Orientation.VERTICAL);
+
+        hsb.setMin(control.getHmin());
+        hsb.setMax(control.getHmax());
 
         corner.getStyleClass().setAll("corner");
 
@@ -248,10 +242,6 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
                 if (nodeSizeInvalid)
                 {
                     computeScrollNodeSize();
-                }
-                if (scrollNode != null && scrollNode.isResizable())
-                {
-                    scrollNode.resize(snapSizeX(nodeWidth), snapSizeY(nodeHeight));
                 }
                 if (scrollNode != null)
                 {
@@ -283,37 +273,15 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
             ovvalue = vsb.getValue();
         });
 
-        viewRect.setOnDragDetected(_ ->
-        {
-            dragDetected = true;
-            if (saveCursor == null)
-            {
-                saveCursor = getSkinnable().getCursor();
-                if (saveCursor == null)
-                {
-                    saveCursor = Cursor.DEFAULT;
-                }
-                getSkinnable().setCursor(Cursor.MOVE);
-                getSkinnable().requestLayout();
-            }
-        });
+        viewRect.setOnDragDetected(_ -> dragDetected = true);
 
         viewRect.addEventFilter(MouseEvent.MOUSE_RELEASED, _ ->
         {
             endScrolling();
-            if (dragDetected)
-            {
-                if (saveCursor != null)
-                {
-                    getSkinnable().setCursor(saveCursor);
-                    saveCursor = null;
-                    getSkinnable().requestLayout();
-                }
-                dragDetected = false;
-            }
+            dragDetected = false;
 
-            if ((posY > getSkinnable().getVmax() || posY < getSkinnable().getVmin() ||
-                    posX > getSkinnable().getHmax() || posX < getSkinnable().getHmin()))
+            if (posY > getSkinnable().getVmax() || posY < getSkinnable().getVmin() ||
+                    posX > getSkinnable().getHmax() || posX < getSkinnable().getHmin())
             {
                 startContentsToViewport();
             }
@@ -437,8 +405,7 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
                 scrollNode = getSkinnable().getContent();
                 if (scrollNode != null)
                 {
-                    nodeWidth = snapSizeX(scrollNode.getLayoutBounds().getWidth());
-                    nodeHeight = snapSizeY(scrollNode.getLayoutBounds().getHeight());
+                    doComputeScrollNodeSize();
                     viewContent.getChildren().setAll(scrollNode);
                     scrollNode.layoutBoundsProperty().addListener(weakNodeListener);
                     scrollNode.layoutBoundsProperty().addListener(weakBoundsChangeListener);
@@ -448,190 +415,30 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         });
 
         registerChangeListener(control.hvalueProperty(), _ -> hsb.setValue(getSkinnable().getHvalue()));
-        registerChangeListener(control.hmaxProperty(), _ -> hsb.setMax(getSkinnable().getHmax()));
-        registerChangeListener(control.hminProperty(), _ -> hsb.setMin(getSkinnable().getHmin()));
         registerChangeListener(control.vvalueProperty(), _ -> vsb.setValue(getSkinnable().getVvalue()));
-        registerChangeListener(control.vmaxProperty(), _ -> vsb.setMax(getSkinnable().getVmax()));
-        registerChangeListener(control.vminProperty(), _ -> vsb.setMin(getSkinnable().getVmin()));
-
-        registerChangeListener(control.prefViewportWidthProperty(), _ -> getSkinnable().requestLayout());
-        registerChangeListener(control.prefViewportHeightProperty(), _ -> getSkinnable().requestLayout());
-        registerChangeListener(control.minViewportWidthProperty(), _ -> getSkinnable().requestLayout());
-        registerChangeListener(control.minViewportHeightProperty(), _ -> getSkinnable().requestLayout());
     }
 
-    private final DoubleProperty contentPosX = new DoublePropertyBase()
+    private void setContentPosX(final double pValue)
     {
-        @Override
-        protected void invalidated()
-        {
-            hsb.setValue(getContentPosX());
-            getSkinnable().requestLayout();
-        }
-
-        @Override
-        public Object getBean()
-        {
-            return PanningWindowScrollPaneSkin.this;
-        }
-
-        @Override
-        public String getName()
-        {
-            return "contentPosX";
-        }
-    };
-
-    private void setContentPosX(double value)
-    {
-        contentPosXProperty().set(value);
+        hsb.setValue(pValue);
+        getSkinnable().requestLayout();
     }
 
-    private double getContentPosX()
+    private void setContentPosY(final double pValue)
     {
-        return contentPosX.get();
-    }
-
-    private DoubleProperty contentPosXProperty()
-    {
-        return contentPosX;
-    }
-
-    private final DoubleProperty contentPosY = new DoublePropertyBase()
-    {
-        @Override
-        protected void invalidated()
-        {
-            vsb.setValue(getContentPosY());
-            getSkinnable().requestLayout();
-        }
-
-        @Override
-        public Object getBean()
-        {
-            return PanningWindowScrollPaneSkin.this;
-        }
-
-        @Override
-        public String getName()
-        {
-            return "contentPosY";
-        }
-    };
-
-    private void setContentPosY(double value)
-    {
-        contentPosYProperty().set(value);
-    }
-
-    private double getContentPosY()
-    {
-        return contentPosY.get();
-    }
-
-    private DoubleProperty contentPosYProperty()
-    {
-        return contentPosY;
-    }
-
-    @Override
-    protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset)
-    {
-        final ScrollPane sp = getSkinnable();
-
-        double vsbWidth = computeVsbSizeHint();
-        double minWidth = vsbWidth + snappedLeftInset() + snappedRightInset();
-
-        if (sp.getPrefViewportWidth() > 0)
-        {
-            return snapSpaceX(sp.getPrefViewportWidth() + minWidth);
-        }
-        else if (sp.getContent() != null)
-        {
-            return snapSpaceX(sp.getContent().prefWidth(height) + minWidth);
-        }
-        else
-        {
-            return Math.max(minWidth, DEFAULT_PREF_SIZE);
-        }
-    }
-
-    @Override
-    protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset)
-    {
-        final ScrollPane sp = getSkinnable();
-
-        double hsbHeight = computeHsbSizeHint();
-        double minHeight = hsbHeight + snappedTopInset() + snappedBottomInset();
-
-        if (sp.getPrefViewportHeight() > 0)
-        {
-            return snapSpaceY(sp.getPrefViewportHeight() + minHeight);
-        }
-        else if (sp.getContent() != null)
-        {
-            return snapSpaceY(sp.getContent().prefHeight(width) + minHeight);
-        }
-        else
-        {
-            return Math.max(minHeight, DEFAULT_PREF_SIZE);
-        }
-    }
-
-    @Override
-    protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset)
-    {
-        final ScrollPane sp = getSkinnable();
-
-        double vsbWidth = computeVsbSizeHint();
-        double minWidth = vsbWidth + snappedLeftInset() + snappedRightInset();
-
-        if (sp.getMinViewportWidth() > 0)
-        {
-            return snapSpaceX(sp.getMinViewportWidth() + minWidth);
-        }
-        else
-        {
-            double w = corner.minWidth(-1);
-            return (w > 0) ? (3 * w) : (DEFAULT_MIN_SIZE);
-        }
-
-    }
-
-    @Override
-    protected double computeMinHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset)
-    {
-        final ScrollPane sp = getSkinnable();
-
-        double hsbHeight = computeHsbSizeHint();
-        double minHeight = hsbHeight + snappedTopInset() + snappedBottomInset();
-
-        if (sp.getMinViewportHeight() > 0)
-        {
-            return snapSpaceY(sp.getMinViewportHeight() + minHeight);
-        }
-        else
-        {
-            double h = corner.minHeight(-1);
-            return (h > 0) ? (3 * h) : (DEFAULT_MIN_SIZE);
-        }
+        vsb.setValue(pValue);
+        getSkinnable().requestLayout();
     }
 
     @Override
     protected void layoutChildren(final double x, final double y, final double w, final double h)
     {
-        final ScrollPane control = getSkinnable();
-        final Insets padding = control.getPadding();
-        final double rightPadding = snapSizeX(padding.getRight());
-        final double leftPadding = snapSizeX(padding.getLeft());
-        final double topPadding = snapSizeY(padding.getTop());
-        final double bottomPadding = snapSizeY(padding.getBottom());
-
-        vsb.setMin(control.getVmin());
-        vsb.setMax(control.getVmax());
-
-        hsb.setMin(control.getHmin());
-        hsb.setMax(control.getHmax());
+        final var control = getSkinnable();
+        final var padding = control.getPadding();
+        final var rightPadding = snapSizeX(padding.getRight());
+        final var leftPadding = snapSizeX(padding.getLeft());
+        final var topPadding = snapSizeY(padding.getTop());
+        final var bottomPadding = snapSizeY(padding.getBottom());
 
         contentWidth = w;
         contentHeight = h;
@@ -677,35 +484,27 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     @Override
     protected Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters)
     {
-        switch (attribute)
+        return switch (attribute)
         {
-            case VERTICAL_SCROLLBAR:
-                return vsb;
-            case HORIZONTAL_SCROLLBAR:
-                return hsb;
-            default:
-                return super.queryAccessibleAttribute(attribute, parameters);
-        }
-    }
-
-    private double computeHsbSizeHint()
-    {
-        return hsb.prefHeight(ScrollBar.USE_COMPUTED_SIZE);
-    }
-
-    private double computeVsbSizeHint()
-    {
-        return vsb.prefWidth(ScrollBar.USE_COMPUTED_SIZE);
+            case VERTICAL_SCROLLBAR-> vsb;
+            case HORIZONTAL_SCROLLBAR-> hsb;
+            default-> super.queryAccessibleAttribute(attribute, parameters);
+        };
     }
 
     private void computeScrollNodeSize()
     {
         if (scrollNode != null)
         {
-            nodeWidth = snapSizeX(scrollNode.getLayoutBounds().getWidth());
-            nodeHeight = snapSizeY(scrollNode.getLayoutBounds().getHeight());
+            doComputeScrollNodeSize();
             nodeSizeInvalid = false;
         }
+    }
+
+    private void doComputeScrollNodeSize()
+    {
+        nodeWidth = snapSizeX(scrollNode.getLayoutBounds().getWidth() * panningWindow.getZoom());
+        nodeHeight = snapSizeY(scrollNode.getLayoutBounds().getHeight() * panningWindow.getZoom());
     }
 
     private void computeScrollBarSize()
@@ -754,10 +553,10 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
 
     private void updatePosX()
     {
-        final ScrollPane sp = getSkinnable();
-        double x = posX;
-        double hsbRange = hsb.getMax() - hsb.getMin();
-        double minX = hsbRange > 0 ? -x / hsbRange * (nodeWidth - contentWidth) : 0;
+        final var sp = getSkinnable();
+        var x = posX;
+        var hsbRange = hsb.getMax() - hsb.getMin();
+        var minX = hsbRange > 0 ? -x / hsbRange * (nodeWidth - contentWidth) : 0;
         minX = Math.min(minX, 0);
         viewContent.setLayoutX(snapPositionX(minX));
         if (!sp.hvalueProperty().isBound())
@@ -768,9 +567,9 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
 
     private void updatePosY()
     {
-        final ScrollPane sp = getSkinnable();
-        double vsbRange = vsb.getMax() - vsb.getMin();
-        double minY = vsbRange > 0 ? -posY / vsbRange * (nodeHeight - contentHeight) : 0;
+        final var sp = getSkinnable();
+        var vsbRange = vsb.getMax() - vsb.getMin();
+        var minY = vsbRange > 0 ? -posY / vsbRange * (nodeHeight - contentHeight) : 0;
         minY = Math.min(minY, 0);
         viewContent.setLayoutY(snapPositionY(minY));
         if (!sp.vvalueProperty().isBound())
@@ -790,9 +589,6 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         double newPosX = posX;
         double newPosY = posY;
 
-        setContentPosX(posX);
-        setContentPosY(posY);
-
         if (posY > getSkinnable().getVmax())
         {
             newPosY = getSkinnable().getVmax();
@@ -802,7 +598,6 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
             newPosY = getSkinnable().getVmin();
         }
 
-
         if (posX > getSkinnable().getHmax())
         {
             newPosX = getSkinnable().getHmax();
@@ -811,8 +606,8 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         {
             newPosX = getSkinnable().getHmin();
         }
-        contentPosX.set(newPosX);
-        contentPosY.set(newPosY);
+        setContentPosX(newPosX);
+        setContentPosY(newPosY);
     }
 
     private void handleKeyEvent(KeyEvent e)

@@ -224,7 +224,7 @@ public class PanningWindow extends Region
         if (pContent != null)
         {
             pContent.getTransforms().add(scale);
-            scrollPane.setContent((new Group(pContent)));
+            scrollPane.setContent(pContent);
         }
         else
         {
