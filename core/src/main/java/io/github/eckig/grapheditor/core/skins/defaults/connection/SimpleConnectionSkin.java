@@ -9,6 +9,7 @@ import java.util.Map;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GJointSkin;
+import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.connections.RectangularConnections;
 import io.github.eckig.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
@@ -360,10 +361,10 @@ public class SimpleConnectionSkin extends GConnectionSkin implements Intersectio
             final Point2D[] points = new Point2D[2];
 
             // Start: Source position
-            points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+            points[0] = GNodeSkin.calculateGlobalConnectorPosition(item.getSource(), skinLookup);
 
             // End: Target position
-            points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+            points[1] = GNodeSkin.calculateGlobalConnectorPosition(item.getTarget(), skinLookup);
 
             return points;
         }
@@ -376,10 +377,10 @@ public class SimpleConnectionSkin extends GConnectionSkin implements Intersectio
             GeometryUtils.fillJointPositions(item, skinLookup, points);
 
             // Start: Source position
-            points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+            points[0] = GNodeSkin.calculateGlobalConnectorPosition(item.getSource(), skinLookup);
 
             // End: Target position
-            points[len - 1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+            points[len - 1] = GNodeSkin.calculateGlobalConnectorPosition(item.getTarget(), skinLookup);
 
             return points;
         }

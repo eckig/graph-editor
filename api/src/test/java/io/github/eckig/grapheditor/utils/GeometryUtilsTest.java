@@ -58,7 +58,7 @@ public class GeometryUtilsTest {
     public void testGetConnectorPosition() {
         // Should return the absolute position of the center of the connector.
         final Point2D target = new Point2D(NODE_X + CONNECTOR_CENTER_X, NODE_Y + CONNECTOR_CENTER_Y);
-        assertEquals(GeometryUtils.getConnectorPosition(connector, skinLookup), target);
+        assertEquals(GNodeSkin.calculateGlobalConnectorPosition(connector, skinLookup), target);
     }
 
     private static class MockSkinLoop implements SkinLookup

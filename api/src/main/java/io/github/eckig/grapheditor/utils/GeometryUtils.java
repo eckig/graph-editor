@@ -8,7 +8,6 @@ import java.util.List;
 
 import io.github.eckig.grapheditor.GConnectorSkin;
 import io.github.eckig.grapheditor.GJointSkin;
-import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GConnector;
@@ -28,43 +27,6 @@ public class GeometryUtils
 {
 
     private static final double HALF_A_PIXEL = 0.5;
-
-    /**
-     * Gets the position of the <b>center</b> of a connector in the coordinate system of the view.
-     *
-     * <p>
-     * Only works for connectors that are attached to nodes.
-     * <p>
-     *
-     * @param connector
-     *         the {@link GConnector} whose position is desired
-     * @param skinLookup
-     *         the {@link SkinLookup} instance for this graph editor
-     * @return the x and y coordinates of the connector, or {@code null} if the connector isn't attached to a node
-     */
-    public static Point2D getConnectorPosition(final GConnector connector, final SkinLookup skinLookup)
-    {
-        final GConnectorSkin connectorSkin = skinLookup.lookupConnector(connector);
-        final GNode parent = connector.getParent();
-
-        final GNodeSkin nodeSkin = skinLookup.lookupNode(parent);
-        if (nodeSkin == null)
-        {
-            return Point2D.ZERO;
-        }
-
-        nodeSkin.layoutConnectors();
-
-        final double nodeX = nodeSkin.getRoot().getLayoutX();
-        final double nodeY = nodeSkin.getRoot().getLayoutY();
-
-        final Point2D connectorPosition = nodeSkin.getConnectorPosition(connectorSkin);
-
-        final double connectorX = connectorPosition.getX();
-        final double connectorY = connectorPosition.getY();
-
-        return new Point2D(moveOnPixel(nodeX + connectorX), moveOnPixel(nodeY + connectorY));
-    }
 
     /**
      * Gets the position of the cursor relative to some node.

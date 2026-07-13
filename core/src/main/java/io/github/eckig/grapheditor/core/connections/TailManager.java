@@ -2,6 +2,7 @@ package io.github.eckig.grapheditor.core.connections;
 
 import java.util.List;
 
+import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GTailSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
@@ -53,7 +54,7 @@ public class TailManager
         {
             tailSkin = skinLookup.lookupTail(connector);
 
-            sourcePosition = GeometryUtils.getConnectorPosition(connector, skinLookup);
+            sourcePosition = GNodeSkin.calculateGlobalConnectorPosition(connector, skinLookup);
             final var cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(event, view));
 
             tailSkin.draw(sourcePosition, cursorPosition);
@@ -78,7 +79,7 @@ public class TailManager
 
         tailSkin = skinLookup.lookupTail(pNewSource);
 
-        sourcePosition = GeometryUtils.getConnectorPosition(pNewSource, skinLookup);
+        sourcePosition = GNodeSkin.calculateGlobalConnectorPosition(pNewSource, skinLookup);
         final var cursorPosition = getScaledPosition(GeometryUtils.getCursorPosition(pEvent, view));
 
         tailSkin.draw(sourcePosition, cursorPosition, jointPositions);
@@ -122,8 +123,8 @@ public class TailManager
     {
         if (tailSkin != null)
         {
-            final var sourcePosition = GeometryUtils.getConnectorPosition(source, skinLookup);
-            final var targetPosition = GeometryUtils.getConnectorPosition(target, skinLookup);
+            final var sourcePosition = GNodeSkin.calculateGlobalConnectorPosition(source, skinLookup);
+            final var targetPosition = GNodeSkin.calculateGlobalConnectorPosition(target, skinLookup);
 
             if (jointPositions != null)
             {

@@ -5,6 +5,7 @@ package io.github.eckig.grapheditor.demo.customskins.tree;
 
 import java.util.List;
 
+import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GraphEditor;
@@ -83,10 +84,13 @@ public class TreeConnectionSkin extends GConnectionSkin {
         final Point2D[] points = new Point2D[2];
 
         // Start: Source position
-        points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
+        points[0] = GNodeSkin.calculateGlobalConnectorPosition(item.getSource(), skinLookup);
 
         // End: Target position
-        points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
+        points[1] = GNodeSkin.calculateGlobalConnectorPosition(item.getTarget(), skinLookup);
+
+        // CORREÇÃO: Força o redesenho mantendo o nome do método original esperado pela demo
+        draw(points);
 
         return points;
     }
@@ -115,7 +119,6 @@ public class TreeConnectionSkin extends GConnectionSkin {
             drawSelectionHalo();
         }
     }
-
     /**
      * Handles mouse-pressed events on the connection skin to select / de-select the connection.
      *
