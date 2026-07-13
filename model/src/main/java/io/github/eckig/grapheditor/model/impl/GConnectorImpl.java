@@ -346,51 +346,54 @@ public class GConnectorImpl extends MinimalEObjectImpl.Container implements GCon
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case GraphPackage.GCONNECTOR__PARENT:
-				if (eInternalContainer() != null)
-					msgs = eBasicRemoveFromContainer(msgs);
-				return basicSetParent((GNode)otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
+        switch (featureID) {
+            case GraphPackage.GCONNECTOR__PARENT:
+                if (eInternalContainer() != null)
+                    msgs = eBasicRemoveFromContainer(msgs);
+                return basicSetParent((GNode)otherEnd, msgs);
+            default:
+                return super.eInverseAdd(otherEnd, featureID, msgs);
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case GraphPackage.GCONNECTOR__PARENT:
-				return basicSetParent(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
+        switch (featureID) {
+            case GraphPackage.GCONNECTOR__PARENT:
+                return basicSetParent(null, msgs);
+            default:
+                return super.eInverseRemove(otherEnd, featureID, msgs);
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
-		switch (eContainerFeatureID()) {
-			case GraphPackage.GCONNECTOR__PARENT:
-				return eInternalContainer().eInverseRemove(this, GraphPackage.GNODE__CONNECTORS, GNode.class, msgs);
-		}
-		return super.eBasicRemoveFromContainerFeature(msgs);
+        switch (eContainerFeatureID()) {
+            case GraphPackage.GCONNECTOR__PARENT:
+                return eInternalContainer().eInverseRemove(this, GraphPackage.GNODE__CONNECTORS, GNode.class, msgs);
+            default:
+                return super.eBasicRemoveFromContainerFeature(msgs);
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
@@ -409,14 +412,15 @@ public class GConnectorImpl extends MinimalEObjectImpl.Container implements GCon
 				return getY();
 			case GraphPackage.GCONNECTOR__CONNECTION_DETACHED_ON_DRAG:
 				return isConnectionDetachedOnDrag();
+            default:
+                return super.eGet(featureID, resolve, coreType);
 		}
-		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -444,14 +448,16 @@ public class GConnectorImpl extends MinimalEObjectImpl.Container implements GCon
 			case GraphPackage.GCONNECTOR__CONNECTION_DETACHED_ON_DRAG:
 				setConnectionDetachedOnDrag((Boolean)newValue);
 				return;
+            default:
+                super.eSet(featureID, newValue);
+                return;
 		}
-		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public void eUnset(int featureID) {
@@ -477,14 +483,16 @@ public class GConnectorImpl extends MinimalEObjectImpl.Container implements GCon
 			case GraphPackage.GCONNECTOR__CONNECTION_DETACHED_ON_DRAG:
 				setConnectionDetachedOnDrag(CONNECTION_DETACHED_ON_DRAG_EDEFAULT);
 				return;
+            default:
+                super.eUnset(featureID);
+                return;
 		}
-		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
@@ -503,8 +511,9 @@ public class GConnectorImpl extends MinimalEObjectImpl.Container implements GCon
 				return y != Y_EDEFAULT;
 			case GraphPackage.GCONNECTOR__CONNECTION_DETACHED_ON_DRAG:
 				return connectionDetachedOnDrag != CONNECTION_DETACHED_ON_DRAG_EDEFAULT;
-		}
-		return super.eIsSet(featureID);
+            default:
+                return super.eIsSet(featureID);
+        }
 	}
 
 	/**

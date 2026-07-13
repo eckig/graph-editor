@@ -272,132 +272,140 @@ public class GConnectionImpl extends MinimalEObjectImpl.Container implements GCo
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case GraphPackage.GCONNECTION__JOINTS:
-				return ((InternalEList<InternalEObject>)(InternalEList<?>)getJoints()).basicAdd(otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
+        switch (featureID) {
+            case GraphPackage.GCONNECTION__JOINTS:
+                return ((InternalEList<InternalEObject>)(InternalEList<?>)getJoints()).basicAdd(otherEnd, msgs);
+            default:
+                return super.eInverseAdd(otherEnd, featureID, msgs);
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case GraphPackage.GCONNECTION__JOINTS:
-				return ((InternalEList<?>)getJoints()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
+        switch (featureID) {
+            case GraphPackage.GCONNECTION__JOINTS:
+                return ((InternalEList<?>)getJoints()).basicRemove(otherEnd, msgs);
+            default:
+                return super.eInverseRemove(otherEnd, featureID, msgs);
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case GraphPackage.GCONNECTION__ID:
-				return getId();
-			case GraphPackage.GCONNECTION__TYPE:
-				return getType();
-			case GraphPackage.GCONNECTION__SOURCE:
-				if (resolve) return getSource();
-				return basicGetSource();
-			case GraphPackage.GCONNECTION__TARGET:
-				if (resolve) return getTarget();
-				return basicGetTarget();
-			case GraphPackage.GCONNECTION__JOINTS:
-				return getJoints();
-		}
-		return super.eGet(featureID, resolve, coreType);
+            case GraphPackage.GCONNECTION__ID:
+                return getId();
+            case GraphPackage.GCONNECTION__TYPE:
+                return getType();
+            case GraphPackage.GCONNECTION__SOURCE:
+                if (resolve) return getSource();
+                return basicGetSource();
+            case GraphPackage.GCONNECTION__TARGET:
+                if (resolve) return getTarget();
+                return basicGetTarget();
+            case GraphPackage.GCONNECTION__JOINTS:
+                return getJoints();
+            default:
+                return super.eGet(featureID, resolve, coreType);
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case GraphPackage.GCONNECTION__ID:
-				setId((String)newValue);
-				return;
-			case GraphPackage.GCONNECTION__TYPE:
-				setType((String)newValue);
-				return;
-			case GraphPackage.GCONNECTION__SOURCE:
-				setSource((GConnector)newValue);
-				return;
-			case GraphPackage.GCONNECTION__TARGET:
-				setTarget((GConnector)newValue);
-				return;
-			case GraphPackage.GCONNECTION__JOINTS:
-				getJoints().clear();
-				getJoints().addAll((Collection<? extends GJoint>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
+            case GraphPackage.GCONNECTION__ID:
+                setId((String) newValue);
+                return;
+            case GraphPackage.GCONNECTION__TYPE:
+                setType((String) newValue);
+                return;
+            case GraphPackage.GCONNECTION__SOURCE:
+                setSource((GConnector) newValue);
+                return;
+            case GraphPackage.GCONNECTION__TARGET:
+                setTarget((GConnector) newValue);
+                return;
+            case GraphPackage.GCONNECTION__JOINTS:
+                getJoints().clear();
+                getJoints().addAll((Collection<? extends GJoint>) newValue);
+                return;
+            default:
+                super.eSet(featureID, newValue);
+                return;
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case GraphPackage.GCONNECTION__ID:
-				setId(ID_EDEFAULT);
-				return;
-			case GraphPackage.GCONNECTION__TYPE:
-				setType(TYPE_EDEFAULT);
-				return;
-			case GraphPackage.GCONNECTION__SOURCE:
-				setSource((GConnector)null);
-				return;
-			case GraphPackage.GCONNECTION__TARGET:
-				setTarget((GConnector)null);
-				return;
-			case GraphPackage.GCONNECTION__JOINTS:
-				getJoints().clear();
-				return;
-		}
-		super.eUnset(featureID);
+            case GraphPackage.GCONNECTION__ID:
+                setId(ID_EDEFAULT);
+                return;
+            case GraphPackage.GCONNECTION__TYPE:
+                setType(TYPE_EDEFAULT);
+                return;
+            case GraphPackage.GCONNECTION__SOURCE:
+                setSource((GConnector) null);
+                return;
+            case GraphPackage.GCONNECTION__TARGET:
+                setTarget((GConnector) null);
+                return;
+            case GraphPackage.GCONNECTION__JOINTS:
+                getJoints().clear();
+                return;
+            default:
+                super.eUnset(featureID);
+                return;
+        }
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated NOT
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case GraphPackage.GCONNECTION__ID:
-				return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
-			case GraphPackage.GCONNECTION__TYPE:
-				return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
-			case GraphPackage.GCONNECTION__SOURCE:
-				return source != null;
-			case GraphPackage.GCONNECTION__TARGET:
-				return target != null;
-			case GraphPackage.GCONNECTION__JOINTS:
-				return joints != null && !joints.isEmpty();
-		}
-		return super.eIsSet(featureID);
+            case GraphPackage.GCONNECTION__ID:
+                return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
+            case GraphPackage.GCONNECTION__TYPE:
+                return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
+            case GraphPackage.GCONNECTION__SOURCE:
+                return source != null;
+            case GraphPackage.GCONNECTION__TARGET:
+                return target != null;
+            case GraphPackage.GCONNECTION__JOINTS:
+                return joints != null && !joints.isEmpty();
+            default:
+                return super.eIsSet(featureID);
+        }
 	}
 
 	/**

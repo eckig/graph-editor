@@ -94,23 +94,26 @@ public class DefaultConnectorSkin extends GConnectorSkin {
 
         switch (style) {
 
-        case DEFAULT:
-            ColorAnimationUtils.removeAnimation(polygon);
-            polygon.pseudoClassStateChanged(PSEUDO_CLASS_FORBIDDEN, false);
-            polygon.pseudoClassStateChanged(PSEUDO_CLASS_ALLOWED, false);
-            break;
+            case DEFAULT:
+                ColorAnimationUtils.removeAnimation(polygon);
+                polygon.pseudoClassStateChanged(PSEUDO_CLASS_FORBIDDEN, false);
+                polygon.pseudoClassStateChanged(PSEUDO_CLASS_ALLOWED, false);
+                break;
 
-        case DRAG_OVER_ALLOWED:
-            ColorAnimationUtils.animateColor(polygon, animatedColorAllowed);
-            polygon.pseudoClassStateChanged(PSEUDO_CLASS_FORBIDDEN, false);
-            polygon.pseudoClassStateChanged(PSEUDO_CLASS_ALLOWED, true);
-            break;
+            case DRAG_OVER_ALLOWED:
+                ColorAnimationUtils.animateColor(polygon, animatedColorAllowed);
+                polygon.pseudoClassStateChanged(PSEUDO_CLASS_FORBIDDEN, false);
+                polygon.pseudoClassStateChanged(PSEUDO_CLASS_ALLOWED, true);
+                break;
 
-        case DRAG_OVER_FORBIDDEN:
-            ColorAnimationUtils.animateColor(polygon, animatedColorForbidden);
-            polygon.pseudoClassStateChanged(PSEUDO_CLASS_FORBIDDEN, true);
-            polygon.pseudoClassStateChanged(PSEUDO_CLASS_ALLOWED, false);
-            break;
+            case DRAG_OVER_FORBIDDEN:
+                ColorAnimationUtils.animateColor(polygon, animatedColorForbidden);
+                polygon.pseudoClassStateChanged(PSEUDO_CLASS_FORBIDDEN, true);
+                polygon.pseudoClassStateChanged(PSEUDO_CLASS_ALLOWED, false);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Estilo de conector desconhecido ou nao suportado: " + style);
         }
     }
 
