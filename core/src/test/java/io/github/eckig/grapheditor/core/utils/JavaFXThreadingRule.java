@@ -77,7 +77,13 @@ public class JavaFXThreadingRule implements TestRule {
 
         protected void setupJavaFX() throws InterruptedException {
             final CountDownLatch latch = new CountDownLatch(1);
-            Platform.startup(latch::countDown);
+            try {
+                Platform.startup(latch::countDown);
+            } catch (final IllegalStateException e) {
+                // another test class has already started the toolkit (test execution
+                // order differs between machines), which is all we need here
+                latch.countDown();
+            }
             latch.await();
         }
     }
