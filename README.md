@@ -24,6 +24,35 @@ A library for creating and editing graph-like diagrams in JavaFX.
 Example of a fully customized implementation:
 ![Demo of a fully customized application.](demo.gif)
 
+## Input gestures
+
+| Gesture | Action |
+| --- | --- |
+| Middle-drag | Pan the view |
+| `SPACE` + primary-drag | Pan the view |
+| Primary-drag on empty canvas | Rubber-band selection |
+| Primary-drag on a node / joint | Move the selection |
+| Primary-drag on a node border | Resize the node |
+| Primary-drag from a connector | Create a connection |
+| `Ctrl` + scroll | Zoom, anchored at the mouse pointer |
+| Arrow keys / `Page Up` / `Page Down` / `Home` / `End` | Pan with the keyboard |
+
+The secondary (right) mouse button is intentionally left unhandled, so that
+applications using this library are free to attach their own context menus.
+Only unmodified navigation keys are consumed, so application shortcuts keep working.
+
+### Localization
+
+Strings used by the graph editor (currently only the ones read out by screen
+readers) come from a `ResourceBundle` and can be replaced per editor:
+
+```java
+graphEditor.getProperties().setResourceBundle(ResourceBundle.getBundle("com.example.Messages"));
+```
+
+Keys that a custom bundle does not define fall back to the shipped English
+defaults, so upgrading never breaks an application with incomplete translations.
+
 ## Use it
 
 Maven coordinates:

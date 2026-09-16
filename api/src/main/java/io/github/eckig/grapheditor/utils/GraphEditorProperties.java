@@ -3,9 +3,12 @@
  */
 package io.github.eckig.grapheditor.utils;
 
+import java.text.MessageFormat;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import io.github.eckig.grapheditor.EditorElement;
 import io.github.eckig.grapheditor.impl.GraphEventManagerImpl;
@@ -57,6 +60,13 @@ public class GraphEditorProperties implements GraphEventManager
 
     public static final double DEFAULT_BOUND_VALUE = 15;
     public static final double DEFAULT_GRID_SPACING = 12;
+
+    private static final String DEFAULT_BUNDLE = "io.github.eckig.grapheditor.messages"; //$NON-NLS-1$
+
+    /** immutable, shared fallback for every key an application does not translate */
+    private static final ResourceBundle DEFAULT_RESOURCES = loadDefaultResources();
+
+    private ResourceBundle resources;
 
     // The distance from the editor edge at which the objects should stop when dragged / resized.
     private double northBoundValue = DEFAULT_BOUND_VALUE;
@@ -111,6 +121,7 @@ public class GraphEditorProperties implements GraphEventManager
         }
 
         customProperties.putAll(editorProperties.getCustomProperties());
+        resources = editorProperties.resources;
     }
 
     /**
@@ -348,6 +359,97 @@ public class GraphEditorProperties implements GraphEventManager
     public ObservableMap<String, String> getCustomProperties()
     {
         return customProperties;
+    }
+
+    /**
+     * Replaces the strings used by the graph editor, for example the descriptions
+     * read out by screen readers.
+     *
+     * <p>
+     * A custom bundle does not have to be complete: every key it does not contain
+     * falls back to the English defaults shipped with the library, so adding a new
+     * string in a future release cannot break an application with an incomplete
+     * translation.
+     * </p>
+     *
+     * @param pResources
+     *         the {@link ResourceBundle} to use, or {@code null} to use the bundle
+     *         shipped with the library
+     */
+    public void setResourceBundle(final ResourceBundle pResources)
+    {
+        resources = pResources;
+    }
+
+    /**
+     * @return the {@link ResourceBundle} set via {@link #setResourceBundle(ResourceBundle)},
+     *         or {@code null} if the library defaults are used
+     */
+    public ResourceBundle getResourceBundle()
+    {
+        return resources;
+    }
+
+    /**
+     * Looks up and formats a localized message.
+     *
+     * @param pKey
+     *         the message key
+     * @param pArguments
+     *         the {@link MessageFormat} arguments
+     * @return the formatted message, or the key itself if it cannot be resolved
+     */
+    public String getString(final String pKey, final Object... pArguments)
+    {
+        final String pattern = lookup(Objects.requireNonNull(pKey));
+        if (pattern == null)
+        {
+            // a missing translation must never break the UI
+            return pKey;
+        }
+        return pArguments == null || pArguments.length == 0 ? pattern : MessageFormat.format(pattern, pArguments);
+    }
+
+    private String lookup(final String pKey)
+    {
+        final ResourceBundle custom = resources;
+        if (custom != null)
+        {
+            try
+            {
+                return custom.getString(pKey);
+            }
+            catch (final MissingResourceException e)
+            {
+                // fall through to the shipped defaults
+            }
+        }
+        if (DEFAULT_RESOURCES != null)
+        {
+            try
+            {
+                return DEFAULT_RESOURCES.getString(pKey);
+            }
+            catch (final MissingResourceException e)
+            {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private static ResourceBundle loadDefaultResources()
+    {
+        try
+        {
+            return ResourceBundle.getBundle(DEFAULT_BUNDLE);
+        }
+        catch (final MissingResourceException e)
+        {
+            // a repackaged / shaded jar may have dropped the resource - degrade to
+            // returning the keys instead of failing class initialization
+            return null;
+        }
     }
 
     @Override
