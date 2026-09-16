@@ -89,12 +89,14 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.6.0</version>
                     <configuration>
-                        <argLine>--add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED</argLine>
-                        <argLine>--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED</argLine>
-                        <argLine>--add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argLine>
-                        <argLine>--add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</argLine>
-                        <argLine>-Dglass.platform=Headless</argLine>
-                        <argLine>-Djava.awt.headless=true</argLine>
+                        <argLine>
+                            --add-opens=javafx.base/com.sun.javafx.logging=ALL-UNNAMED
+                            --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+                            --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+                            --add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED
+                            -Dglass.platform=Headless
+                            -Djava.awt.headless=true
+                        </argLine>
                     </configuration>
                     <executions>
                         <execution>

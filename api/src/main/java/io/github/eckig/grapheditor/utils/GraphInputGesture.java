@@ -24,5 +24,15 @@ public enum GraphInputGesture
     /**
      * Selecting graph editor elements
      */
-    SELECT;
+    SELECT,
+
+    /**
+     * Panning the view port.
+     *
+     * <p>
+     * Unlike all other gestures, this one is also activated by the
+     * {@link javafx.scene.input.MouseButton#MIDDLE middle} mouse button.
+     * </p>
+     */
+    PAN;
 }

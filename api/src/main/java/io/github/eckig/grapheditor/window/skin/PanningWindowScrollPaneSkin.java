@@ -1,5 +1,7 @@
 package io.github.eckig.grapheditor.window.skin;
 
+import io.github.eckig.grapheditor.utils.GraphEventManager;
+import io.github.eckig.grapheditor.utils.GraphInputGesture;
 import io.github.eckig.grapheditor.window.PanningWindow;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -13,22 +15,26 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.event.EventDispatcher;
+import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Orientation;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.AccessibleAttribute;
+import javafx.scene.Cursor;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import java.util.function.DoubleUnaryOperator;
 import javafx.util.Duration;
 
 
@@ -45,6 +51,18 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     private static final double INSET_TO_BEGIN_SCROLL = 1;
 
     private static final double PAN_THRESHOLD = 0.5;
+
+    /**
+     * Zoom is multiplied by this per notch instead of being incremented.
+     *
+     * <p>
+     * Perceived zoom is logarithmic, so a fixed summand feels far too coarse when
+     * zoomed out and far too fine when zoomed in. A fixed factor gives every notch
+     * the same perceived size and makes zooming in and out again land exactly back
+     * on the original level.
+     * </p>
+     */
+    private static final double ZOOM_STEP = 1.1;
 
     private final PanningWindow panningWindow;
 
@@ -76,6 +94,16 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     private double ohvalue;
     private double ovvalue;
     private boolean dragDetected = false;
+
+    /** {@code true} while this skin owns the active {@link GraphInputGesture#PAN} gesture */
+    private boolean panning = false;
+
+    /** kept so that {@link #dispose()} can unregister it again */
+    private final EventHandler<KeyEvent> keyEventHandler = this::handleKeyEvent;
+
+    /** kept so that {@link #dispose()} can restore the original scrollbar dispatchers */
+    private EventDispatcher originalHsbEventDispatcher;
+    private EventDispatcher originalVsbEventDispatcher;
 
     // auto scroll
     private Timeline timeline;
@@ -131,24 +159,8 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
             double newHeight = newBounds.getHeight();
             if (oldHeight > 0 && oldHeight != newHeight)
             {
-                double oldPositionY = (snapPositionY(
-                        snappedTopInset() - posY / (vsb.getMax() - vsb.getMin()) * (oldHeight - contentHeight)));
-                double newPositionY = (snapPositionY(
-                        snappedTopInset() - posY / (vsb.getMax() - vsb.getMin()) * (newHeight - contentHeight)));
-
-                double newValueY = (oldPositionY / newPositionY) * vsb.getValue();
-                if (newValueY < 0.0)
-                {
-                    vsb.setValue(0.0);
-                }
-                else if (newValueY < 1.0)
-                {
-                    vsb.setValue(newValueY);
-                }
-                else if (newValueY > 1.0)
-                {
-                    vsb.setValue(1.0);
-                }
+                adjustScrollBarForResize(vsb, posY, snappedTopInset(), oldHeight, newHeight, contentHeight,
+                        PanningWindowScrollPaneSkin.this::snapPositionY);
             }
 
             /*
@@ -159,24 +171,8 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
             double newWidth = newBounds.getWidth();
             if (oldWidth > 0 && oldWidth != newWidth)
             {
-                double oldPositionX = (snapPositionX(
-                        snappedLeftInset() - posX / (hsb.getMax() - hsb.getMin()) * (oldWidth - contentWidth)));
-                double newPositionX = (snapPositionX(
-                        snappedLeftInset() - posX / (hsb.getMax() - hsb.getMin()) * (newWidth - contentWidth)));
-
-                double newValueX = (oldPositionX / newPositionX) * hsb.getValue();
-                if (newValueX < 0.0)
-                {
-                    hsb.setValue(0.0);
-                }
-                else if (newValueX < 1.0)
-                {
-                    hsb.setValue(newValueX);
-                }
-                else if (newValueX > 1.0)
-                {
-                    hsb.setValue(1.0);
-                }
+                adjustScrollBarForResize(hsb, posX, snappedLeftInset(), oldWidth, newWidth, contentWidth,
+                        PanningWindowScrollPaneSkin.this::snapPositionX);
             }
         }
     };
@@ -197,7 +193,10 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         panningWindow = window;
 
         // install default input map for the ScrollPane control
-        control.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyEvent);
+        // NOTE: the handler has to sit on the PanningWindow, not on the ScrollPane.
+        // The window is the focusable element, so the ScrollPane is never on the
+        // event dispatch path and would never see a key event.
+        window.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
 
         scrollNode = control.getContent();
 
@@ -209,7 +208,6 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
                 viewContent.resize(getWidth(), getHeight());
             }
         };
-        viewRect.setCache(true);
         viewRect.getStyleClass().add("viewport");
 
         viewRect.setClip(clipRect);
@@ -265,20 +263,33 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
             updatePosX();
         });
 
-        viewRect.setOnMousePressed(e ->
+        viewRect.addEventFilter(MouseEvent.MOUSE_PRESSED, e ->
         {
             pressX = e.getX();
             pressY = e.getY();
             ohvalue = hsb.getValue();
             ovvalue = vsb.getValue();
+
+            if (isPanTrigger(e) && activatePanGesture(e))
+            {
+                panningWindow.setGestureCursor(Cursor.CLOSED_HAND);
+                // consume so that no other gesture (e.g. rubber band selection) is started
+                e.consume();
+            }
         });
 
         viewRect.setOnDragDetected(_ -> dragDetected = true);
 
-        viewRect.addEventFilter(MouseEvent.MOUSE_RELEASED, _ ->
+        viewRect.addEventFilter(MouseEvent.MOUSE_RELEASED, e ->
         {
             endScrolling();
             dragDetected = false;
+
+            if (finishPanGesture())
+            {
+                panningWindow.setGestureCursor(panningWindow.isPanModeArmed() ? Cursor.OPEN_HAND : null);
+                e.consume();
+            }
 
             if (posY > getSkinnable().getVmax() || posY < getSkinnable().getVmin() ||
                     posX > getSkinnable().getHmax() || posX < getSkinnable().getHmin())
@@ -287,8 +298,8 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
             }
         });
 
+        viewRect.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDraggedForPanning);
         viewRect.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDraggedForAutoScroll);
-        viewRect.setOnMouseDragged(this::handleMouseDraggedForPanning);
 
         /*
          ** don't allow the ScrollBar to handle the ScrollEvent,
@@ -299,6 +310,7 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         final EventDispatcher blockEventDispatcher = (event, _) -> event;
         // block ScrollEvent from being passed down to scrollbar's skin
         final EventDispatcher oldHsbEventDispatcher = hsb.getEventDispatcher();
+        originalHsbEventDispatcher = oldHsbEventDispatcher;
         hsb.setEventDispatcher((event, tail) ->
         {
             if (event.getEventType() == ScrollEvent.SCROLL &&
@@ -312,6 +324,7 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         });
         // block ScrollEvent from being passed down to scrollbar's skin
         final EventDispatcher oldVsbEventDispatcher = vsb.getEventDispatcher();
+        originalVsbEventDispatcher = oldVsbEventDispatcher;
         vsb.setEventDispatcher((event, tail) ->
         {
             if (event.getEventType() == ScrollEvent.SCROLL &&
@@ -328,8 +341,10 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         {
             if (event.isControlDown())
             {
-                final double modifier = event.getDeltaY() > 1 ? 0.06 : -0.06;
-                panningWindow.setZoom(panningWindow.getZoom() + modifier);
+                // note: trackpads and hi-res wheels report fractional deltas, so this
+                // has to test against 0 and not against 1
+                final double factor = event.getDeltaY() > 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
+                zoomAt(factor, event.getSceneX(), event.getSceneY());
                 event.consume();
                 return;
             }
@@ -434,6 +449,11 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     protected void layoutChildren(final double x, final double y, final double w, final double h)
     {
         final var control = getSkinnable();
+        if (control == null)
+        {
+            // already disposed, but a layout pulse was still queued
+            return;
+        }
         final var padding = control.getPadding();
         final var rightPadding = snapSizeX(padding.getRight());
         final var leftPadding = snapSizeX(padding.getLeft());
@@ -610,16 +630,54 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         setContentPosY(newPosY);
     }
 
-    private void handleKeyEvent(KeyEvent e)
+    /**
+     * Scrolls the viewport with the keyboard.
+     *
+     * <p>
+     * Only unmodified navigation keys are handled, and only those are consumed.
+     * Every other key press is left untouched so that the application (and third
+     * party code) can use the keyboard for its own shortcuts.
+     * </p>
+     *
+     * @param e
+     *         a {@code KEY_PRESSED} {@link KeyEvent}
+     */
+    private void handleKeyEvent(final KeyEvent e)
     {
+        if (e.isShortcutDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown() || e.isShiftDown())
+        {
+            // modified key strokes belong to the application
+            return;
+        }
+
+        // under RIGHT_TO_LEFT the horizontal axis is mirrored, so the arrow keys
+        // have to be swapped to keep moving the viewport in the direction the
+        // user actually points at
+        final boolean rightToLeft =
+                panningWindow.getEffectiveNodeOrientation() == NodeOrientation.RIGHT_TO_LEFT;
+
         switch (e.getCode())
         {
             case LEFT:
-                hsb.decrement();
+                if (rightToLeft)
+                {
+                    hsb.increment();
+                }
+                else
+                {
+                    hsb.decrement();
+                }
                 break;
 
             case RIGHT:
-                hsb.increment();
+                if (rightToLeft)
+                {
+                    hsb.decrement();
+                }
+                else
+                {
+                    hsb.increment();
+                }
                 break;
 
             case UP, PAGE_UP:
@@ -639,8 +697,116 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
                 getSkinnable().setHvalue(getSkinnable().getHmax());
                 getSkinnable().setVvalue(getSkinnable().getVmax());
                 break;
+
+            default:
+                // not ours - do NOT consume it
+                return;
         }
         e.consume();
+    }
+
+    /**
+     * Keeps the content position as stable as possible while the content is resized.
+     *
+     * <p>
+     * Every division in here can degenerate: the scrollbar range can be {@code 0},
+     * and the projected new position can be {@code 0} - for example while the
+     * viewport sits at the very start, or when the content ends up exactly as large
+     * as the viewport. Unguarded this produced {@code NaN} (silently swallowed by
+     * the comparisons) or {@code Infinity}, which made the viewport jump to the very
+     * end. In those cases the current value is simply kept.
+     * </p>
+     *
+     * @param pBar
+     *         the {@link ScrollBar} of the axis being adjusted
+     * @param pPos
+     *         the current position of that axis
+     * @param pInset
+     *         the snapped inset of that axis
+     * @param pOldExtent
+     *         the content size of that axis before the resize
+     * @param pNewExtent
+     *         the content size of that axis after the resize
+     * @param pViewportExtent
+     *         the viewport size of that axis
+     * @param pSnap
+     *         the snapping function of that axis
+     */
+    private void adjustScrollBarForResize(final ScrollBar pBar, final double pPos, final double pInset,
+            final double pOldExtent, final double pNewExtent, final double pViewportExtent,
+            final DoubleUnaryOperator pSnap)
+    {
+        final double range = pBar.getMax() - pBar.getMin();
+        if (range <= 0.0)
+        {
+            return;
+        }
+
+        final double oldPosition = pSnap.applyAsDouble(pInset - pPos / range * (pOldExtent - pViewportExtent));
+        final double newPosition = pSnap.applyAsDouble(pInset - pPos / range * (pNewExtent - pViewportExtent));
+        if (newPosition == 0.0)
+        {
+            return;
+        }
+
+        final double newValue = oldPosition / newPosition * pBar.getValue();
+        if (Double.isFinite(newValue))
+        {
+            pBar.setValue(clampScrollValue(newValue));
+        }
+    }
+
+    /**
+     * Changes the zoom level while keeping the point under the cursor in place.
+     *
+     * <p>
+     * Without this the viewport zooms towards the content origin, which makes the
+     * area the user is actually looking at drift away.
+     * </p>
+     *
+     * @param pFactor
+     *         the factor to multiply the current zoom with
+     * @param pSceneX
+     *         the scene x coordinate to keep fixed
+     * @param pSceneY
+     *         the scene y coordinate to keep fixed
+     */
+    private void zoomAt(final double pFactor, final double pSceneX, final double pSceneY)
+    {
+        final double oldZoom = panningWindow.getZoom();
+        if (scrollNode == null)
+        {
+            panningWindow.setZoom(oldZoom * pFactor);
+            return;
+        }
+
+        // remember which point of the content sits under the cursor
+        final Point2D anchor = scrollNode.sceneToLocal(pSceneX, pSceneY);
+
+        panningWindow.setZoom(oldZoom * pFactor);
+        if (panningWindow.getZoom() == oldZoom)
+        {
+            // clamped, nothing moved
+            return;
+        }
+
+        // the scaled content size feeds into the layout, so it has to be redone
+        // before we can measure where the anchor ended up
+        nodeSizeInvalid = true;
+        getSkinnable().requestLayout();
+        getSkinnable().layout();
+
+        final Point2D moved = scrollNode.localToScene(anchor);
+        scrollBackBy(hsb, moved.getX() - pSceneX, nodeWidth - contentWidth);
+        scrollBackBy(vsb, moved.getY() - pSceneY, nodeHeight - contentHeight);
+    }
+
+    private static void scrollBackBy(final ScrollBar pBar, final double pDrift, final double pOverflow)
+    {
+        if (pOverflow > 0.0 && Double.isFinite(pDrift))
+        {
+            pBar.setValue(clampScrollValue(pBar.getValue() + pDrift / pOverflow * (pBar.getMax() - pBar.getMin())));
+        }
     }
 
     private static double clampScrollValue(double value)
@@ -648,26 +814,120 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         return Math.max(0.0, Math.min(value, 1.0));
     }
 
+    /**
+     * Determines whether the given event should start a panning gesture.
+     *
+     * <p>
+     * Panning is triggered by the middle mouse button (the universal convention)
+     * or by the primary mouse button while {@code SPACE} is held down. The
+     * secondary mouse button deliberately does <b>not</b> pan so that it stays
+     * available for third party context menus.
+     * </p>
+     *
+     * @param e
+     *         a {@link MouseEvent}
+     * @return {@code true} if the event should pan the view
+     */
+    private boolean isPanTrigger(final MouseEvent e)
+    {
+        if (e.isMiddleButtonDown())
+        {
+            return true;
+        }
+        if (e.isPrimaryButtonDown())
+        {
+            // Note: IS_TOUCH_SUPPORTED alone is not sufficient, it is also true for plain
+            // mice on touch capable hardware - which would break rubber band selection there.
+            return panningWindow.isPanModeArmed() || IS_TOUCH_SUPPORTED && e.isSynthesized();
+        }
+        return false;
+    }
+
+    private boolean activatePanGesture(final MouseEvent e)
+    {
+        final GraphEventManager manager = panningWindow.getEventManager();
+        if (manager == null)
+        {
+            // no arbitration available (plain PanningWindow usage): pan unconditionally
+            panning = true;
+            return true;
+        }
+        panning = manager.activateGesture(GraphInputGesture.PAN, e, this);
+        return panning;
+    }
+
+    private boolean finishPanGesture()
+    {
+        if (!panning)
+        {
+            return false;
+        }
+        panning = false;
+        final GraphEventManager manager = panningWindow.getEventManager();
+        return manager == null || manager.finishGesture(GraphInputGesture.PAN, this);
+    }
+
+    @Override
+    public void dispose()
+    {
+        // never leave a dangling PAN gesture behind, it would block every other gesture
+        finishPanGesture();
+
+        // an INDEFINITE Timeline keeps this skin alive and keeps firing forever
+        endScrolling();
+        timeline = null;
+
+        panningWindow.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        if (originalHsbEventDispatcher != null)
+        {
+            hsb.setEventDispatcher(originalHsbEventDispatcher);
+            originalHsbEventDispatcher = null;
+        }
+        if (originalVsbEventDispatcher != null)
+        {
+            vsb.setEventDispatcher(originalVsbEventDispatcher);
+            originalVsbEventDispatcher = null;
+        }
+
+        super.dispose();
+    }
+
     private void handleMouseDraggedForPanning(final MouseEvent e)
     {
-        if (e.getButton() != MouseButton.PRIMARY || IS_TOUCH_SUPPORTED)
+        if (!panning)
         {
-            final var deltaX = pressX - e.getX();
-            final var deltaY = pressY - e.getY();
-            handleMousePressedForPanning(hsb, deltaX, ohvalue);
-            handleMousePressedForPanning(vsb, deltaY, ovvalue);
+            // not our gesture - leave the event alone so that e.g. rubber band
+            // selection and third party handlers still receive it
+            return;
         }
-        // we need to consume drag events, as we don't want the scrollpane itself to be dragged on every mouse click
+
+        final var deltaX = pressX - e.getX();
+        final var deltaY = pressY - e.getY();
+        // each axis has to be scaled by its OWN overflow, otherwise panning is
+        // too fast or too slow as soon as the content is not square
+        handleMousePressedForPanning(hsb, deltaX, ohvalue, nodeWidth - viewRect.getWidth());
+        handleMousePressedForPanning(vsb, deltaY, ovvalue, nodeHeight - viewRect.getHeight());
+
         e.consume();
     }
 
-    private void handleMousePressedForPanning(final ScrollBar pBar, final double pDelta, final double pOValue)
+    /**
+     * @param pBar
+     *         the {@link ScrollBar} of the axis being panned
+     * @param pDelta
+     *         the cursor movement along that axis
+     * @param pOValue
+     *         the scrollbar value when the gesture started
+     * @param pOverflow
+     *         the amount of content of that axis that does not fit into the viewport
+     */
+    private void handleMousePressedForPanning(final ScrollBar pBar, final double pDelta, final double pOValue,
+            final double pOverflow)
     {
-        if (pBar.getVisibleAmount() > 0.0 && pBar.getVisibleAmount() < pBar.getMax() &&
+        if (pOverflow > 0.0 && pBar.getVisibleAmount() > 0.0 && pBar.getVisibleAmount() < pBar.getMax() &&
                 Math.abs(pDelta) > PAN_THRESHOLD)
         {
-            var newHVal =
-                    (pOValue + pDelta / (nodeWidth - viewRect.getWidth()) * (pBar.getMax() - pBar.getMin()));
+            var newHVal = (pOValue + pDelta / pOverflow * (pBar.getMax() - pBar.getMin()));
             if (!IS_TOUCH_SUPPORTED)
             {
                 if (newHVal > pBar.getMax())
@@ -689,7 +949,7 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
 
     private void handleMouseDraggedForAutoScroll(final MouseEvent e)
     {
-        if (e.isPrimaryButtonDown())
+        if (e.isPrimaryButtonDown() && !panning)
         {
             final var cursorX = e.getX();
             final var cursorY = e.getY();

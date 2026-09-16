@@ -48,7 +48,13 @@ public class GraphEventManagerImpl implements GraphEventManager
                     || pEvent instanceof ScrollEvent se && se.getTouchCount() > 0;
             if (!isTouch)
             {
-                return pEvent instanceof MouseEvent me && me.isPrimaryButtonDown();
+                if (!(pEvent instanceof MouseEvent me))
+                {
+                    return false;
+                }
+                // Panning is the only gesture that may also be driven by the middle mouse button
+                // (the universal convention). All other gestures remain primary-button only.
+                return me.isPrimaryButtonDown() || pGesture == GraphInputGesture.PAN && me.isMiddleButtonDown();
             }
             else
             {

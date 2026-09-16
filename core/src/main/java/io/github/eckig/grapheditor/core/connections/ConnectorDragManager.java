@@ -57,9 +57,17 @@ public class ConnectorDragManager
 
     private final EventHandler<MouseEvent> mouseExitedHandler = this::handleMouseExited;
     /**
-     * Consume the Event so the parent container (ResizableBox/DraggableBox) does not move on connection detach
+     * Consume the Event so the parent container (ResizableBox/DraggableBox) does not move on connection detach.
+     * Only primary button presses are consumed, so that the secondary button stays available for
+     * third party handlers (e.g. context menus).
      */
-    private final EventHandler<MouseEvent> mousePressedHandler = Event::consume;
+    private final EventHandler<MouseEvent> mousePressedHandler = event ->
+    {
+        if (MouseButton.PRIMARY.equals(event.getButton()))
+        {
+            event.consume();
+        }
+    };
 
     private final Map<Node, EventHandler<MouseEvent>> mouseEnteredHandlers = new HashMap<>();
     private final Map<Node, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
@@ -309,7 +317,10 @@ public class ConnectorDragManager
         tailManager.cleanUp();
         finishGesture();
 
-        event.consume();
+        if (MouseButton.PRIMARY.equals(event.getButton()))
+        {
+            event.consume();
+        }
     }
 
     /**

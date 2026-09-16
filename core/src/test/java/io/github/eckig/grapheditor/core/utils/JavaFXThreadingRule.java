@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005 - 2014 by TESIS DYNAware GmbH
  */
-package io.github.eckig.grapheditor.utils;
+package io.github.eckig.grapheditor.core.utils;
 
 import java.util.concurrent.CountDownLatch;
 
