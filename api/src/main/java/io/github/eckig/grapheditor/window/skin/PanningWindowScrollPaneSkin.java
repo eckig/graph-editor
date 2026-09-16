@@ -449,6 +449,11 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     protected void layoutChildren(final double x, final double y, final double w, final double h)
     {
         final var control = getSkinnable();
+        if (control == null)
+        {
+            // already disposed, but a layout pulse was still queued
+            return;
+        }
         final var padding = control.getPadding();
         final var rightPadding = snapSizeX(padding.getRight());
         final var leftPadding = snapSizeX(padding.getLeft());
