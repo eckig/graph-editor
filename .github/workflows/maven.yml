@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: [24, 25, 26]
+        java: [25, 26, 27]
       fail-fast: false
       max-parallel: 4
     name: Test JDK ${{ matrix.java }}, ${{ matrix.os }}

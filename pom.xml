@@ -6,7 +6,7 @@
     <name>${component.name}</name>
     <groupId>io.github.eckig</groupId>
     <artifactId>grapheditor</artifactId>
-    <version>24.0.11</version>
+    <version>25.0.0</version>
     <packaging>pom</packaging>
     <inceptionYear>2014</inceptionYear>
 
@@ -81,7 +81,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.16.0</version>
                     <configuration>
-                        <release>24</release>
+                        <release>25</release>
                     </configuration>
                 </plugin>
                 <plugin>
