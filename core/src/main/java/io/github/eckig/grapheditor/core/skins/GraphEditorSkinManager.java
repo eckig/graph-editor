@@ -147,6 +147,7 @@ public class GraphEditorSkinManager implements SkinManager
                 mView.remove(tail);
                 tail.dispose();
             }
+            mTailSkins.clear();
         }
 
         // remove any remainders that might have been left over:
@@ -185,6 +186,7 @@ public class GraphEditorSkinManager implements SkinManager
             final GTailSkin removedTailSkin = mTailSkins.remove(pConnectorToRemove);
             if (removedTailSkin != null)
             {
+                mView.remove(removedTailSkin);
                 removedTailSkin.dispose();
             }
         }

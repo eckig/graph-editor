@@ -92,12 +92,19 @@ public class DefaultModelEditingManager implements ModelEditingManager
 
         editingDomain.getCommandStack().removeCommandStackListener(commandStackListener);
 
-        if (command.canExecute())
+        try
         {
-            editingDomain.getCommandStack().execute(command);
+            if (command.canExecute())
+            {
+                editingDomain.getCommandStack().execute(command);
+            }
         }
-
-        editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+        finally
+        {
+            // the listener must be restored even if the command fails, otherwise the editor
+            //   would permanently stop reacting to any further command stack changes.
+            editingDomain.getCommandStack().addCommandStackListener(commandStackListener);
+        }
     }
 
     @Override

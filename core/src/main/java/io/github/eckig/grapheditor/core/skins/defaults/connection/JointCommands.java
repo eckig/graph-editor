@@ -3,6 +3,7 @@
  */
 package io.github.eckig.grapheditor.core.skins.defaults.connection;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
@@ -47,7 +48,10 @@ public class JointCommands {
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(connection);
         final CompoundCommand command = new CompoundCommand();
 
-        command.append(RemoveCommand.create(editingDomain, connection, JOINTS, connection.getJoints()));
+        // pass a defensive copy: RemoveCommand keeps a reference to the given collection and uses it
+        //   to restore the previous state on undo. Handing it the live EList would leave it empty
+        //   after execution, so undo would restore nothing.
+        command.append(RemoveCommand.create(editingDomain, connection, JOINTS, new ArrayList<>(connection.getJoints())));
 
         for (final Point2D position : positions) {
 
