@@ -54,7 +54,6 @@ public class TreeSkinController implements SkinController {
         graphEditor.setConnectorSkinFactory(this::createSkin);
         graphEditor.setConnectionSkinFactory(this::createSkin);
         graphEditor.setTailSkinFactory(this::createTailSkin);
-        graphEditorContainer.getMinimap().setConnectionFilter(c -> false);
     }
 
     private GNodeSkin createSkin(final GNode node) {

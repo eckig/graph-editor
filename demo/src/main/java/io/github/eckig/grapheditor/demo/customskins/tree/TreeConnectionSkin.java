@@ -39,6 +39,8 @@ public class TreeConnectionSkin extends GConnectionSkin {
     private final Group selectionHalo = new Group(haloFirstSide, haloSecondSide);
     private final Group root = new Group(background, selectionHalo, arrow);
 
+    private List<Point2D> routePoints = List.of();
+
     /**
      * Creates a new {@link TreeConnectionSkin} instance.
      *
@@ -72,6 +74,11 @@ public class TreeConnectionSkin extends GConnectionSkin {
         // This skin is not intended to show joints.
     }
 
+    @Override
+    public List<Point2D> getRoutePoints() {
+        return routePoints;
+    }
+
     public Point2D[] update()
     {
         final GConnection item = getItem();
@@ -93,6 +100,7 @@ public class TreeConnectionSkin extends GConnectionSkin {
 
     public void draw(final Point2D[] points)
     {
+        routePoints = points == null ? List.of() : List.of(points);
         if (points != null && points.length == 2)
         {
             final Point2D start = points[0];

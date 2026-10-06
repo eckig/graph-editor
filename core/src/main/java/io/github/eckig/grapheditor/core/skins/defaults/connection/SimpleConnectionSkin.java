@@ -66,6 +66,8 @@ public class SimpleConnectionSkin extends GConnectionSkin implements Intersectio
 
     private List<GJointSkin> jointSkins;
 
+    private List<Point2D> routePoints = List.of();
+
     /**
      * Creates a new simple connection skin instance.
      *
@@ -92,6 +94,12 @@ public class SimpleConnectionSkin extends GConnectionSkin implements Intersectio
     public Node getRoot()
     {
         return root;
+    }
+
+    @Override
+    public List<Point2D> getRoutePoints()
+    {
+        return routePoints;
     }
 
     @Override
@@ -338,10 +346,12 @@ public class SimpleConnectionSkin extends GConnectionSkin implements Intersectio
         final Point2D[] points = allPoints == null ? null : allPoints.get(this);
         if (points != null)
         {
+            routePoints = List.of(points);
             drawAllSegments(points, intersections);
         }
         else
         {
+            routePoints = List.of();
             connectionSegments.clear();
             path.getElements().clear();
         }
