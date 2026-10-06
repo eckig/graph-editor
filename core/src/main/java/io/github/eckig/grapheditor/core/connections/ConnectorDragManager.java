@@ -14,7 +14,7 @@ import io.github.eckig.grapheditor.GConnectorSkin;
 import io.github.eckig.grapheditor.GConnectorStyle;
 import io.github.eckig.grapheditor.GConnectorValidator;
 import io.github.eckig.grapheditor.SkinLookup;
-import io.github.eckig.grapheditor.VirtualSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
 import io.github.eckig.grapheditor.core.skins.defaults.utils.ConnectionCommands;
 import io.github.eckig.grapheditor.core.utils.EventUtils;
@@ -559,9 +559,10 @@ public class ConnectorDragManager
         final var connections = connector.getConnections().toArray(new GConnection[0]);
         for (final var connection : connections)
         {
-            if (skinLookup.lookupConnection(connection) instanceof VirtualSkin)
+            final var connectionSkin = skinLookup.lookupConnection(connection);
+            if (connectionSkin != null && !(connectionSkin instanceof GVisualConnectionSkin))
             {
-                // do not touch virtual connections
+                // do not touch non-visual connections
                 continue;
             }
             final var opposingConnector = getOpposingConnector(connection, connector);

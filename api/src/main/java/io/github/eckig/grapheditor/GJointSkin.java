@@ -39,10 +39,23 @@ public abstract class GJointSkin extends GSkin<GJoint>
      *
      * @return a {@link DraggableBox} containing the skin's root JavaFX node
      */
-    @Override
     public DraggableBox getRoot()
     {
         return root;
+    }
+
+    /**
+     * Disposes the {@link DraggableBox} root of this skin. Subclasses overriding this method must call
+     * {@code super.dispose()}.
+     */
+    @Override
+    public void dispose()
+    {
+        if (root != null)
+        {
+            root.dispose();
+        }
+        super.dispose();
     }
 
     /**

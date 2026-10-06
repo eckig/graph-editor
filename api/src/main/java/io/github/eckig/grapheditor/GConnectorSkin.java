@@ -4,6 +4,7 @@
 package io.github.eckig.grapheditor;
 
 import io.github.eckig.grapheditor.model.GConnector;
+import javafx.scene.Node;
 
 /**
  * The skin class for a {@link GConnector}. Responsible for visualizing connectors in the graph editor.
@@ -19,6 +20,13 @@ import io.github.eckig.grapheditor.model.GConnector;
  */
 public abstract class GConnectorSkin extends GSkin<GConnector>
 {
+
+    /**
+     * Gets the root JavaFX node of the skin.
+     *
+     * @return the skin's root JavaFX {@link Node}
+     */
+    public abstract Node getRoot();
 
     /**
      * Creates a new {@link GConnectorSkin}.

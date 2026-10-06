@@ -48,10 +48,19 @@ public abstract class GNodeSkin extends GSkin<GNode>
      *
      * @return a {@link ResizableBox} containing the skin's root JavaFX node
      */
-    @Override
     public DraggableBox getRoot()
     {
         return root;
+    }
+
+    @Override
+    public void dispose()
+    {
+        if (root != null)
+        {
+            root.dispose();
+        }
+        super.dispose();
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GConnectorSkin;
+import io.github.eckig.grapheditor.GJointConnectionSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GraphEditorSkins;
 import io.github.eckig.grapheditor.SkinLookup;
@@ -72,8 +73,9 @@ public interface SkinManager extends SkinLookup, GraphEditorSkins
     void updateConnectors(final GNode pNode);
 
     /**
-     * Calls {@link GConnectionSkin#setJointSkins(List)} to update a connections
-     * list of joints.
+     * Calls {@link GJointConnectionSkin#setJointSkins(List)} to update a connections
+     * list of joints. Connections whose skin is no {@link GJointConnectionSkin}
+     * get no joint skins.
      *
      * @param pConnection
      *            connection to update

@@ -55,6 +55,15 @@ public class GeometryUtilsTest {
     }
 
     @Test
+    public void jointPositionFallsBackToModelWithoutSkin() {
+        final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
+        joint.setX(17);
+        joint.setY(42);
+
+        assertEquals(new Point2D(17, 42), GeometryUtils.getJointPosition(joint, skinLookup));
+    }
+
+    @Test
     public void testGetConnectorPosition() {
         // Should return the absolute position of the center of the connector.
         final Point2D target = new Point2D(NODE_X + CONNECTOR_CENTER_X, NODE_Y + CONNECTOR_CENTER_Y);
@@ -151,7 +160,8 @@ public class GeometryUtilsTest {
         @Override
         public GJointSkin lookupJoint(GJoint pJoint)
         {
-            throw new UnsupportedOperationException();
+            // joint of a connection skin not using joints
+            return null;
         }
 
         @Override

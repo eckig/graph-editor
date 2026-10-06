@@ -8,6 +8,8 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 
 import io.github.eckig.grapheditor.SelectionManager;
+import io.github.eckig.grapheditor.GConnectionSkin;
+import io.github.eckig.grapheditor.GJointConnectionSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
@@ -41,6 +43,7 @@ public class DefaultSelectionManager implements SelectionManager
     private final SelectionCreator selectionCreator;
     private final SelectionTracker selectionTracker;
 
+    private final SkinLookup skinLookup;
     private GModel model;
 
     /**
@@ -54,6 +57,7 @@ public class DefaultSelectionManager implements SelectionManager
      */
     public DefaultSelectionManager(final SkinLookup skinLookup, final GraphEditorView view)
     {
+        this.skinLookup = skinLookup;
         final SelectionDragManager selectionDragManager = new SelectionDragManager(skinLookup, view, this);
         selectionCreator = new SelectionCreator(skinLookup, view, this, selectionDragManager);
         selectionTracker = new SelectionTracker(skinLookup);
@@ -122,6 +126,14 @@ public class DefaultSelectionManager implements SelectionManager
     @Override
     public void select(final EObject object)
     {
+        // joints of connections whose skin does not use joints are invisible and therefore not selectable.
+        // Decided by the connection skin, as the joint skin may not be created yet (e.g. right after a paste).
+        if (object instanceof GJoint joint && joint.getConnection() != null
+                && skinLookup.lookupConnection(joint.getConnection()) instanceof GConnectionSkin connectionSkin
+                && !(connectionSkin instanceof GJointConnectionSkin))
+        {
+            return;
+        }
         getSelectedItems().add(object);
     }
 
@@ -182,7 +194,7 @@ public class DefaultSelectionManager implements SelectionManager
 
                 for (final GJoint joint : connection.getJoints())
                 {
-                    getSelectedItems().add(joint);
+                    select(joint);
                 }
             }
         }

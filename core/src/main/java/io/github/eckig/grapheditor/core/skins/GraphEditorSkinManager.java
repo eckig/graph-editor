@@ -7,12 +7,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
+import io.github.eckig.grapheditor.GJointConnectionSkin;
 import io.github.eckig.grapheditor.GConnectorSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GTailSkin;
 import io.github.eckig.grapheditor.GraphEditor;
-import io.github.eckig.grapheditor.VirtualSkin;
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
 import io.github.eckig.grapheditor.core.skins.defaults.DefaultConnectionSkin;
 import io.github.eckig.grapheditor.core.skins.defaults.DefaultConnectorSkin;
@@ -240,10 +240,10 @@ public class GraphEditorSkinManager implements SkinManager
     public void updateJoints(final GConnection pConnection)
     {
         final GConnectionSkin connectionSkin = lookupConnection(pConnection);
-        if (connectionSkin != null)
+        if (connectionSkin instanceof GJointConnectionSkin jointConnectionSkin)
         {
             final var connectionJointSkins = pConnection.getJoints().stream().map(this::lookupOrCreateJoint).filter(Objects::nonNull).toList();
-            connectionSkin.setJointSkins(connectionJointSkins);
+            jointConnectionSkin.setJointSkins(connectionJointSkins);
         }
     }
 
@@ -351,10 +351,7 @@ public class GraphEditorSkinManager implements SkinManager
             skin = new DefaultConnectionSkin(pConnection);
         }
         skin.setGraphEditor(mGraphEditor);
-        if (!(skin instanceof VirtualSkin))
-        {
-            mView.add(skin);
-        }
+        mView.add(skin);
         return skin;
     }
 
@@ -368,10 +365,7 @@ public class GraphEditorSkinManager implements SkinManager
         skin.setGraphEditor(mGraphEditor);
         skin.getRoot().setEditorProperties(mGraphEditor.getProperties());
         skin.initialize();
-        if (!(skin instanceof VirtualSkin))
-        {
-            mView.add(skin);
-        }
+        mView.add(skin);
         return skin;
     }
 
@@ -385,10 +379,7 @@ public class GraphEditorSkinManager implements SkinManager
         skin.setGraphEditor(mGraphEditor);
         skin.getRoot().setEditorProperties(mGraphEditor.getProperties());
         skin.initialize();
-        if (!(skin instanceof VirtualSkin))
-        {
-            mView.add(skin);
-        }
+        mView.add(skin);
         return skin;
     }
 
