@@ -7,7 +7,7 @@ import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GTailSkin;
-import io.github.eckig.grapheditor.VirtualSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
 import io.github.eckig.grapheditor.core.utils.SelectionBox;
 import io.github.eckig.grapheditor.core.view.impl.GraphEditorGrid;
@@ -133,7 +133,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GNodeSkin pNodeSkin)
     {
-        if (pNodeSkin != null && !(pNodeSkin instanceof VirtualSkin))
+        if (pNodeSkin != null)
         {
             mNodeLayer.getChildren().add(pNodeSkin.getRoot());
         }
@@ -147,9 +147,10 @@ public class GraphEditorView extends Region
      */
     public void add(final GConnectionSkin pConnectionSkin)
     {
-        if (pConnectionSkin != null && !(pConnectionSkin instanceof VirtualSkin))
+        // non-visual connection skins have no representation in the view
+        if (pConnectionSkin instanceof GVisualConnectionSkin visual)
         {
-            mConnectionLayer.getChildren().addFirst(pConnectionSkin.getRoot());
+            mConnectionLayer.getChildren().addFirst(visual.getRoot());
         }
     }
 
@@ -161,7 +162,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GJointSkin pJointSkin)
     {
-        if (pJointSkin != null && !(pJointSkin instanceof VirtualSkin))
+        if (pJointSkin != null)
         {
             mConnectionLayer.getChildren().add(pJointSkin.getRoot());
         }
@@ -175,7 +176,7 @@ public class GraphEditorView extends Region
      */
     public void add(final GTailSkin pTailSkin)
     {
-        if (pTailSkin != null && !(pTailSkin instanceof VirtualSkin))
+        if (pTailSkin != null)
         {
             // add to back:
             mConnectionLayer.getChildren().addFirst(pTailSkin.getRoot());
@@ -191,7 +192,7 @@ public class GraphEditorView extends Region
      */
     public void remove(final GNodeSkin pNodeSkin)
     {
-        if (pNodeSkin != null && !(pNodeSkin instanceof VirtualSkin))
+        if (pNodeSkin != null)
         {
             mNodeLayer.getChildren().remove(pNodeSkin.getRoot());
         }
@@ -206,9 +207,9 @@ public class GraphEditorView extends Region
      */
     public void remove(final GConnectionSkin pConnectionSkin)
     {
-        if (pConnectionSkin != null && !(pConnectionSkin instanceof VirtualSkin))
+        if (pConnectionSkin instanceof GVisualConnectionSkin visual)
         {
-            mConnectionLayer.getChildren().remove(pConnectionSkin.getRoot());
+            mConnectionLayer.getChildren().remove(visual.getRoot());
         }
     }
 
@@ -221,7 +222,7 @@ public class GraphEditorView extends Region
      */
     public void remove(final GJointSkin pJointSkin)
     {
-        if (pJointSkin != null && !(pJointSkin instanceof VirtualSkin))
+        if (pJointSkin != null)
         {
             mConnectionLayer.getChildren().remove(pJointSkin.getRoot());
         }
@@ -236,7 +237,7 @@ public class GraphEditorView extends Region
      */
     public void remove(final GTailSkin pTailSkin)
     {
-        if (pTailSkin != null && !(pTailSkin instanceof VirtualSkin))
+        if (pTailSkin != null)
         {
             mConnectionLayer.getChildren().remove(pTailSkin.getRoot());
         }

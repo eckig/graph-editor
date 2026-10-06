@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import io.github.eckig.grapheditor.GConnectionSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.SelectionManager;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
@@ -58,7 +60,7 @@ class MinimapNodeGroup extends Parent
     private IMinimapRenderer<?> minimapRenderer = new IMinimapRenderer.DefaultMinimapRenderer();
     private Predicate<GConnection> connectionFilter = c -> true;
     private IMinimapConnectionRouter connectionRouter;
-    private IMinimapConnectionRouter skinRouter = IMinimapConnectionRouter.fromSkins(null);
+    private SkinLookup skinLookup;
 
     private double width = -1;
     private double height = -1;
@@ -194,13 +196,14 @@ class MinimapNodeGroup extends Parent
      */
     public void setSkinLookup(final SkinLookup pSkinLookup)
     {
-        skinRouter = IMinimapConnectionRouter.fromSkins(pSkinLookup);
+        skinLookup = pSkinLookup;
         requestLayout();
     }
 
     /**
-     * Resolves the route of the given connection: the custom router if set, otherwise the route of the connection
-     * skin, falling back to {@link IMinimapConnectionRouter#MODEL}.
+     * Resolves the route of the given connection: the custom router if set, otherwise the route of the
+     * {@link GVisualConnectionSkin}, falling back to {@link IMinimapConnectionRouter#MODEL} if the skin has no route
+     * (yet) or there is no skin. Connections with a non-visual skin are not drawn.
      *
      * @param pConnection
      *         {@link GConnection}
@@ -208,17 +211,27 @@ class MinimapNodeGroup extends Parent
      */
     List<Point2D> getRoute(final GConnection pConnection)
     {
-        final List<Point2D> route;
         if (connectionRouter != null)
         {
-            route = connectionRouter.getRoute(pConnection);
+            final List<Point2D> route = connectionRouter.getRoute(pConnection);
+            return route == null ? List.of() : route;
         }
-        else
+
+        final GConnectionSkin skin = skinLookup == null ? null : skinLookup.lookupConnection(pConnection);
+        if (skin instanceof GVisualConnectionSkin visual)
         {
-            final List<Point2D> skinRoute = skinRouter.getRoute(pConnection);
-            route = skinRoute.size() >= 2 ? skinRoute : IMinimapConnectionRouter.MODEL.getRoute(pConnection);
+            final List<Point2D> route = visual.getRoutePoints();
+            if (route != null && route.size() >= 2)
+            {
+                return route;
+            }
         }
-        return route == null ? List.of() : route;
+        else if (skin != null)
+        {
+            // not visual: invisible in the editor, so invisible in the minimap
+            return List.of();
+        }
+        return IMinimapConnectionRouter.MODEL.getRoute(pConnection);
     }
 
     /**

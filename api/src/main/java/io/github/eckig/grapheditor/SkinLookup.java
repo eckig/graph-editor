@@ -46,7 +46,8 @@ public interface SkinLookup
      *
      * @param joint a {@link GJoint} instance
      *
-     * @return the associated {@link GJointSkin} instance
+     * @return the associated {@link GJointSkin} instance, or {@code null} if the skin of the joint's connection is no
+     *         {@link GJointConnectionSkin} or the skins were not yet created
      */
     GJointSkin lookupJoint(final GJoint joint);
 

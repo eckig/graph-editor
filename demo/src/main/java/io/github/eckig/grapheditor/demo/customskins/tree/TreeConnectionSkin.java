@@ -5,8 +5,7 @@ package io.github.eckig.grapheditor.demo.customskins.tree;
 
 import java.util.List;
 
-import io.github.eckig.grapheditor.GConnectionSkin;
-import io.github.eckig.grapheditor.GJointSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.GraphEditor;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
@@ -21,7 +20,7 @@ import javafx.scene.shape.Line;
 /**
  * Connection skin for the 'tree-like' graph. Pretty much just an arrow.
  */
-public class TreeConnectionSkin extends GConnectionSkin {
+public class TreeConnectionSkin extends GVisualConnectionSkin {
 
     private static final String STYLE_CLASS = "tree-connection"; //$NON-NLS-1$
     private static final String STYLE_CLASS_BACKGROUND = "tree-connection-background"; //$NON-NLS-1$
@@ -67,11 +66,6 @@ public class TreeConnectionSkin extends GConnectionSkin {
     @Override
     public Node getRoot() {
         return root;
-    }
-
-    @Override
-    public void setJointSkins(final List<GJointSkin> jointSkins) {
-        // This skin is not intended to show joints.
     }
 
     @Override
@@ -158,7 +152,6 @@ public class TreeConnectionSkin extends GConnectionSkin {
     private void handleMouseDragged(final MouseEvent event) {
         event.consume();
     }
-
 
     @Override
     protected void selectionChanged(final boolean selected) {

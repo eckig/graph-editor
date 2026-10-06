@@ -15,6 +15,7 @@ import io.github.eckig.grapheditor.GConnectorSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GTailSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GConnector;
@@ -136,6 +137,38 @@ public class MinimapConnectionRoutingTest
         group.setSkinLookup(lookupReturning(new RoutedSkin(connection, List.of())));
 
         assertEquals(IMinimapConnectionRouter.MODEL.getRoute(connection), group.getRoute(connection));
+    }
+
+    @Test
+    public void nonVisualSkinIsNotDrawn()
+    {
+        group.setSkinLookup(lookupReturning(new GConnectionSkin(connection)
+        {
+
+            @Override
+            protected void selectionChanged(final boolean isSelected)
+            {
+                // not needed
+            }
+        }));
+
+        assertTrue(group.getRoute(connection).isEmpty());
+    }
+
+    @Test
+    public void fromSkinsReturnsNoRouteForNonVisualSkin()
+    {
+        final SkinLookup lookup = lookupReturning(new GConnectionSkin(connection)
+        {
+
+            @Override
+            protected void selectionChanged(final boolean isSelected)
+            {
+                // not needed
+            }
+        });
+
+        assertTrue(IMinimapConnectionRouter.fromSkins(lookup).getRoute(connection).isEmpty());
     }
 
     @Test
@@ -298,7 +331,7 @@ public class MinimapConnectionRoutingTest
         };
     }
 
-    private static class RoutedSkin extends GConnectionSkin
+    private static class RoutedSkin extends GVisualConnectionSkin
     {
 
         private final List<Point2D> route;
@@ -313,12 +346,6 @@ public class MinimapConnectionRoutingTest
         public List<Point2D> getRoutePoints()
         {
             return route;
-        }
-
-        @Override
-        public void setJointSkins(final List<GJointSkin> jointSkins)
-        {
-            // not needed
         }
 
         @Override

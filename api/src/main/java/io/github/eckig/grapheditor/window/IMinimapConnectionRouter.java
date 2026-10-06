@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.eckig.grapheditor.GConnectionSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GConnector;
@@ -42,19 +43,20 @@ public interface IMinimapConnectionRouter
     List<Point2D> getRoute(GConnection pConnection);
 
     /**
-     * Creates a router that uses the route last drawn by the {@link GConnectionSkin} of each connection (see
-     * {@link GConnectionSkin#getRoutePoints()}).
+     * Creates a router that uses the route last drawn by the {@link GVisualConnectionSkin} of each connection (see
+     * {@link GVisualConnectionSkin#getRoutePoints()}).
      *
      * @param pSkinLookup
      *         {@link SkinLookup}
-     * @return router returning the route of the connection skin, or an empty list if not available
+     * @return router returning the route of the connection skin, or an empty list if not available or the connection
+     *         skin is not visual
      */
     static IMinimapConnectionRouter fromSkins(final SkinLookup pSkinLookup)
     {
         return c ->
         {
             final GConnectionSkin skin = pSkinLookup == null ? null : pSkinLookup.lookupConnection(c);
-            final List<Point2D> route = skin == null ? null : skin.getRoutePoints();
+            final List<Point2D> route = skin instanceof GVisualConnectionSkin v ? v.getRoutePoints() : null;
             return route == null ? List.of() : route;
         };
     }

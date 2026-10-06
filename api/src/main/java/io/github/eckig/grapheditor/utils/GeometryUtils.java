@@ -162,7 +162,8 @@ public class GeometryUtils
      *
      * <p>
      * Uses the JavaFX properties of the skins, not the model values. Is therefore always up-to-date, even during a drag
-     * gesture where the model is not necessarily updated.
+     * gesture where the model is not necessarily updated. Falls back to the model values if the joint has no skin (see
+     * {@link io.github.eckig.grapheditor.GJointConnectionSkin}).
      * <p>
      *
      * @param joint
@@ -174,15 +175,10 @@ public class GeometryUtils
     public static Point2D getJointPosition(final GJoint joint, final SkinLookup skinLookup)
     {
         final var jointSkin = skinLookup.lookupJoint(joint);
-        if (jointSkin == null)
-        {
-            return Point2D.ZERO;
-        }
-
-        final var region = jointSkin.getRoot();
+        final var region = jointSkin == null ? null : jointSkin.getRoot();
         if (region == null)
         {
-            return Point2D.ZERO;
+            return new Point2D(joint.getX(), joint.getY());
         }
 
         final var x = region.getLayoutX() + jointSkin.getWidth() / 2;

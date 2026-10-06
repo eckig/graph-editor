@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.github.eckig.grapheditor.GConnectionSkin;
+import io.github.eckig.grapheditor.GJointConnectionSkin;
 import io.github.eckig.grapheditor.GJointSkin;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.connections.RectangularConnections;
@@ -31,7 +31,7 @@ import javafx.scene.shape.Path;
  * the connection intersects other connections.
  * </p>
  */
-public class SimpleConnectionSkin extends GConnectionSkin implements IntersectionFinder.IIntersectionConnection
+public class SimpleConnectionSkin extends GJointConnectionSkin implements IntersectionFinder.IIntersectionConnection
 {
 
     /**

@@ -3,14 +3,11 @@
  */
 package io.github.eckig.grapheditor;
 
-import io.github.eckig.grapheditor.utils.DraggableBox;
-
 import org.eclipse.emf.ecore.EObject;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.scene.Node;
 
 
 /**
@@ -148,20 +145,8 @@ public abstract class GSkin<T extends EObject>
      */
     public void dispose()
     {
-        final Node root = getRoot();
-        if (root instanceof DraggableBox db)
-        {
-            db.dispose();
-        }
         graphEditor = null;
     }
-
-    /**
-     * Gets the root JavaFX node of the skin.
-     *
-     * @return the skin's root JavaFX {@link Node}
-     */
-    public abstract Node getRoot();
 
     /**
      * @return item represented by this skin

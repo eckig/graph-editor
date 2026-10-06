@@ -6,6 +6,7 @@ package io.github.eckig.grapheditor;
 import java.util.List;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import io.github.eckig.grapheditor.model.GConnector;
 
 /**
@@ -23,6 +24,13 @@ import io.github.eckig.grapheditor.model.GConnector;
  */
 public abstract class GTailSkin extends GSkin<GConnector>
 {
+
+    /**
+     * Gets the root JavaFX node of the skin.
+     *
+     * @return the skin's root JavaFX {@link Node}
+     */
+    public abstract Node getRoot();
 
     /**
      * Creates a new {@link GTailSkin}.

@@ -75,6 +75,10 @@ public interface SelectionManager
     /**
      * This method will attempt to select the given object.
      *
+     * <p>
+     * Joints of connections whose skin is no {@link GJointConnectionSkin} are invisible and therefore ignored.
+     * </p>
+     *
      * @param object The object to attempt to select in the underlying data model.
      */
     void select(EObject object);

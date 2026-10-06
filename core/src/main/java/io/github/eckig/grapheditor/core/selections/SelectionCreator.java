@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import io.github.eckig.grapheditor.GConnectionSkin;
 import io.github.eckig.grapheditor.GConnectorSkin;
 import io.github.eckig.grapheditor.GJointSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.GNodeSkin;
 import io.github.eckig.grapheditor.GSkin;
 import io.github.eckig.grapheditor.SelectionManager;
@@ -235,10 +236,9 @@ public class SelectionCreator
 
     public void addConnection(final GConnection connection)
     {
-        final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
-        if (connSkin != null)
+        // non-visual connection skins cannot be clicked
+        if (skinLookup.lookupConnection(connection) instanceof GVisualConnectionSkin connSkin)
         {
-
             final Node skinRoot = connSkin.getRoot();
             if (!mousePressedHandlers.containsKey(skinRoot))
             {
@@ -256,10 +256,8 @@ public class SelectionCreator
 
     public void removeConnection(final GConnection connection)
     {
-        final GConnectionSkin connSkin = skinLookup.lookupConnection(connection);
-        if (connSkin != null)
+        if (skinLookup.lookupConnection(connection) instanceof GVisualConnectionSkin connSkin)
         {
-
             final EventHandler<MouseEvent> connectionPressedHandler = mousePressedHandlers.remove(connSkin.getRoot());
             if (connectionPressedHandler != null)
             {

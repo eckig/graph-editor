@@ -132,8 +132,9 @@ public class GraphEditorMinimap extends PanningWindowMinimap
      *
      * <p>
      * If {@code null} (default), the route displayed by the connection skin ({@link
-     * io.github.eckig.grapheditor.GConnectionSkin#getRoutePoints()}) is used if a {@link SkinLookup} is set, falling
-     * back to {@link IMinimapConnectionRouter#MODEL}.
+     * io.github.eckig.grapheditor.GVisualConnectionSkin#getRoutePoints()}) is used if a {@link SkinLookup} is set, falling
+     * back to {@link IMinimapConnectionRouter#MODEL}. Connections with a non-visual skin (plain
+     * {@link io.github.eckig.grapheditor.GConnectionSkin}) are not drawn.
      * </p>
      *
      * <p>

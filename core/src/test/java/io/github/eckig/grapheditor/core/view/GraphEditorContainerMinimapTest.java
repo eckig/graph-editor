@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import io.github.eckig.grapheditor.GConnectionSkin;
+import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.GraphEditor;
 import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.core.DefaultGraphEditor;
@@ -91,7 +91,7 @@ public class GraphEditorContainerMinimapTest
 
         for (final GConnection connection : model.getConnections())
         {
-            final GConnectionSkin skin = skinLookup.lookupConnection(connection);
+            final GVisualConnectionSkin skin = (GVisualConnectionSkin) skinLookup.lookupConnection(connection);
             final List<Point2D> route = skin.getRoutePoints();
 
             assertEquals("route = source + joints + target", connection.getJoints().size() + 2, route.size());
