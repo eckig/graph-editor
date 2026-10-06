@@ -10,6 +10,7 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
 import io.github.eckig.grapheditor.SelectionManager;
+import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GModel;
 import javafx.geometry.Orientation;
@@ -36,7 +37,12 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     private final MinimapNodeGroup minimapNodeGroup = new MinimapNodeGroup();
 
     private GModel model;
-    private final CommandStackListener modelChangeListener = _ -> minimapNodeGroup.draw();
+    private final CommandStackListener modelChangeListener = _ -> modelChanged();
+
+    /**
+     * Set when the model changed, so the connection routes must be re-read after the next connection layout pass.
+     */
+    private boolean routesOutdated = true;
 
     /**
      * Creates a new {@link GraphEditorMinimap} instance.
@@ -44,6 +50,25 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     public GraphEditorMinimap()
     {
         setContentRepresentation(minimapNodeGroup);
+        // updates are skipped while hidden, so rebuild as soon as the minimap is shown again
+        visibleProperty().addListener((_, _, visible) ->
+        {
+            if (visible)
+            {
+                // the skins already drew their final routes while hidden, the rebuild reads them
+                routesOutdated = false;
+                minimapNodeGroup.draw();
+            }
+        });
+    }
+
+    private void modelChanged()
+    {
+        routesOutdated = true;
+        if (isVisible())
+        {
+            minimapNodeGroup.draw();
+        }
     }
 
     @Override
@@ -89,12 +114,77 @@ public class GraphEditorMinimap extends PanningWindowMinimap
      * Set a filter {@link Predicate} to only draw the desired connections onto
      * the minimap. The default is to show all connections.
      *
+     * <p>
+     * The filter is applied before the route of a connection is resolved. A connection whose route (see
+     * {@link #setConnectionRouter(IMinimapConnectionRouter)}) is empty or {@code null} is skipped as well.
+     * </p>
+     *
      * @param connectionFilter
      *            connection filter {@link Predicate}
      */
     public void setConnectionFilter(final Predicate<GConnection> connectionFilter)
     {
         minimapNodeGroup.setConnectionFilter(connectionFilter);
+    }
+
+    /**
+     * Sets a custom {@link IMinimapConnectionRouter} supplying the route of each connection drawn onto the minimap.
+     *
+     * <p>
+     * If {@code null} (default), the route displayed by the connection skin ({@link
+     * io.github.eckig.grapheditor.GConnectionSkin#getRoutePoints()}) is used if a {@link SkinLookup} is set, falling
+     * back to {@link IMinimapConnectionRouter#MODEL}.
+     * </p>
+     *
+     * <p>
+     * Use {@link IMinimapConnectionRouter#MODEL} to restore the routing of previous versions.
+     * </p>
+     *
+     * @param pConnectionRouter
+     *         {@link IMinimapConnectionRouter} or {@code null}
+     */
+    public void setConnectionRouter(final IMinimapConnectionRouter pConnectionRouter)
+    {
+        minimapNodeGroup.setConnectionRouter(pConnectionRouter);
+    }
+
+    /**
+     * Sets the {@link SkinLookup} used to query the routes of the connection skins.
+     *
+     * @param pSkinLookup
+     *         {@link SkinLookup} or {@code null}
+     */
+    public void setSkinLookup(final SkinLookup pSkinLookup)
+    {
+        minimapNodeGroup.setSkinLookup(pSkinLookup);
+    }
+
+    /**
+     * Notifies the minimap that the connections of the graph editor were laid out (drawn) again.
+     *
+     * <p>
+     * For performance reasons this only refreshes the minimap connections if the model changed since the last refresh
+     * (e.g. when a drag gesture is committed), not on every intermediate layout pass while dragging. Called by the
+     * graph editor container; use {@link #redrawConnections()} to force a refresh.
+     * </p>
+     */
+    public void onConnectionsLaidOut()
+    {
+        if (routesOutdated && isVisible())
+        {
+            routesOutdated = false;
+            minimapNodeGroup.requestLayout();
+        }
+    }
+
+    /**
+     * Requests a redraw of the minimap connections, e.g. after connections were re-routed outside of a model change.
+     * Cheap to call repeatedly: requests are coalesced into the next layout pass, and the connections are only
+     * repainted if their routes actually changed.
+     */
+    public void redrawConnections()
+    {
+        minimapNodeGroup.requestLayout();
     }
 
     /**
@@ -141,6 +231,7 @@ public class GraphEditorMinimap extends PanningWindowMinimap
         }
 
         model = pModel;
+        routesOutdated = true;
         minimapNodeGroup.setModel(pModel);
         minimapNodeGroup.draw();
 

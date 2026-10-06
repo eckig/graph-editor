@@ -69,6 +69,7 @@ public class GraphEditorView extends Region
     private final GraphEditorProperties mEditorProperties;
 
     private ConnectionLayout mConnectionLayout;
+    private Runnable mOnConnectionsDrawn;
     private PanningWindow mParent;
 
     /**
@@ -102,6 +103,17 @@ public class GraphEditorView extends Region
     public void setConnectionLayout(final ConnectionLayout pConnectionLayout)
     {
         mConnectionLayout = pConnectionLayout;
+    }
+
+    /**
+     * Sets a callback invoked every time after the connections were (re-)drawn by the {@link ConnectionLayout}.
+     *
+     * @param pOnConnectionsDrawn
+     *            callback or {@code null}
+     */
+    public void setOnConnectionsDrawn(final Runnable pOnConnectionsDrawn)
+    {
+        mOnConnectionsDrawn = pOnConnectionsDrawn;
     }
 
     /**
@@ -315,6 +327,10 @@ public class GraphEditorView extends Region
         if (mConnectionLayout != null)
         {
             mConnectionLayout.draw();
+            if (mOnConnectionsDrawn != null)
+            {
+                mOnConnectionsDrawn.run();
+            }
         }
     }
 

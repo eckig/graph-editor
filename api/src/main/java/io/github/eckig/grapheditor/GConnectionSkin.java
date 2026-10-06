@@ -6,6 +6,7 @@ package io.github.eckig.grapheditor;
 import java.util.List;
 
 import io.github.eckig.grapheditor.model.GConnection;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
 
 /**
@@ -49,4 +50,26 @@ public abstract class GConnectionSkin extends GSkin<GConnection>
      *         the list of all {@link GJointSkin} instances associated to the connection
      */
     public abstract void setJointSkins(final List<GJointSkin> jointSkins);
+
+    /**
+     * Returns the route this skin currently displays, e.g. for the minimap.
+     *
+     * <p>
+     * The points are in the coordinate system of the graph editor view and ordered from source to target (inclusive).
+     * Skins computing their own routing should override this and return the points they last drew. The default
+     * returns an empty list, meaning "unknown".
+     * </p>
+     *
+     * <p>
+     * The minimap picks up the routes drawn in the first layout pass of the graph editor view after a model change
+     * (command stack). Intermediate routes, e.g. while dragging, are not shown. If routes change at any other time
+     * (e.g. asynchronous routing), the application should call {@code GraphEditorMinimap.redrawConnections()}.
+     * </p>
+     *
+     * @return unmodifiable list of route points, never {@code null}
+     */
+    public List<Point2D> getRoutePoints()
+    {
+        return List.of();
+    }
 }

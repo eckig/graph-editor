@@ -8,12 +8,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import io.github.eckig.grapheditor.SelectionManager;
+import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
-import io.github.eckig.grapheditor.model.GConnector;
-import io.github.eckig.grapheditor.model.GJoint;
 import io.github.eckig.grapheditor.model.GModel;
 import io.github.eckig.grapheditor.model.GNode;
 import javafx.beans.InvalidationListener;
@@ -25,6 +25,7 @@ import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
@@ -56,14 +57,30 @@ class MinimapNodeGroup extends Parent
 
     private IMinimapRenderer<?> minimapRenderer = new IMinimapRenderer.DefaultMinimapRenderer();
     private Predicate<GConnection> connectionFilter = c -> true;
+    private IMinimapConnectionRouter connectionRouter;
+    private IMinimapConnectionRouter skinRouter = IMinimapConnectionRouter.fromSkins(null);
 
     private double width = -1;
     private double height = -1;
     private double scaleFactor = -1;
     private final Canvas canvas = new Canvas();
 
+    // state of the last canvas paint, used to skip repainting unchanged connections:
+    private List<List<Point2D>> paintedRoutes;
+    private double paintedWidth = -1;
+    private double paintedHeight = -1;
+    private double paintedScaleFactor = -1;
+    private Color paintedColor;
+    private long paintCount;
+
     private final StyleableObjectProperty<Color> connectionColor = new StyleableObjectProperty<>(Color.GRAY)
     {
+
+        @Override
+        protected void invalidated()
+        {
+            requestLayout();
+        }
 
         @Override
         public String getName()
@@ -159,6 +176,49 @@ class MinimapNodeGroup extends Parent
     public void setConnectionFilter(final Predicate<GConnection> pConnectionFilter)
     {
         connectionFilter = pConnectionFilter;
+    }
+
+    /**
+     * @param pConnectionRouter
+     *         custom {@link IMinimapConnectionRouter} or {@code null} to use the default routing
+     */
+    public void setConnectionRouter(final IMinimapConnectionRouter pConnectionRouter)
+    {
+        connectionRouter = pConnectionRouter;
+        requestLayout();
+    }
+
+    /**
+     * @param pSkinLookup
+     *         {@link SkinLookup} used by the default routing to query the connection skins
+     */
+    public void setSkinLookup(final SkinLookup pSkinLookup)
+    {
+        skinRouter = IMinimapConnectionRouter.fromSkins(pSkinLookup);
+        requestLayout();
+    }
+
+    /**
+     * Resolves the route of the given connection: the custom router if set, otherwise the route of the connection
+     * skin, falling back to {@link IMinimapConnectionRouter#MODEL}.
+     *
+     * @param pConnection
+     *         {@link GConnection}
+     * @return route in content coordinates, never {@code null}
+     */
+    List<Point2D> getRoute(final GConnection pConnection)
+    {
+        final List<Point2D> route;
+        if (connectionRouter != null)
+        {
+            route = connectionRouter.getRoute(pConnection);
+        }
+        else
+        {
+            final List<Point2D> skinRoute = skinRouter.getRoute(pConnection);
+            route = skinRoute.size() >= 2 ? skinRoute : IMinimapConnectionRouter.MODEL.getRoute(pConnection);
+        }
+        return route == null ? List.of() : route;
     }
 
     /**
@@ -286,16 +346,33 @@ class MinimapNodeGroup extends Parent
             return;
         }
 
-        final GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawConnections();
 
-        canvas.setWidth(width);
-        canvas.setHeight(height);
+        if (model != null)
+        {
+            for (final Map.Entry<GNode, Node> entry : nodes.entrySet())
+            {
+                resizeRelocate(entry.getKey(), entry.getValue(), minimapRenderer);
+            }
+        }
+    }
 
-        gc.beginPath();
-        gc.setStroke(connectionColor.get());
-        gc.setLineWidth(1);
+    /**
+     * @return number of times the connections were painted onto the canvas (for tests)
+     */
+    long getPaintCount()
+    {
+        return paintCount;
+    }
 
+    /**
+     * Paints all connection routes onto the canvas. The canvas is only repainted if anything affecting the result
+     * (routes, size, scale or color) changed since the last paint, as this is called on every layout pass of the graph
+     * editor view.
+     */
+    private void drawConnections()
+    {
+        final List<List<Point2D>> routes = new ArrayList<>();
         if (model != null)
         {
             for (int i = 0; i < model.getConnections().size(); i++)
@@ -306,52 +383,47 @@ class MinimapNodeGroup extends Parent
                     continue;
                 }
 
-                final GConnector source = conn.getSource();
-                final GNode parentSource = source.getParent();
-
-                double x = scaleSharp(source.getX() + parentSource.getX() - 10, scaleFactor),
-                        y = scaleSharp(source.getY() + parentSource.getY(), scaleFactor);
-                gc.moveTo(x, y);
-
-                for (int j = 0; j <= conn.getJoints().size(); j++)
+                final List<Point2D> route = getRoute(conn);
+                if (route.size() >= 2)
                 {
-                    final double newX;
-                    final double newY;
-                    if (j < conn.getJoints().size())
-                    {
-                        final GJoint joint = conn.getJoints().get(j);
-                        newX = scaleSharp(joint.getX(), scaleFactor);
-                        newY = scaleSharp(joint.getY(), scaleFactor);
-                    }
-                    else
-                    {
-                        final GConnector target = conn.getTarget();
-                        final GNode parentTarget = target.getParent();
-                        newX = scaleSharp(target.getX() + parentTarget.getX(), scaleFactor);
-                        newY = scaleSharp(target.getY() + parentTarget.getY(), scaleFactor);
-                    }
-
-                    // only draw direct rectangular and sharp lines:
-                    if (Math.abs(newX - x) < Math.abs(newY - y))
-                    {
-                        gc.lineTo(x, newY);
-                    }
-                    else
-                    {
-                        gc.lineTo(newX, y);
-                    }
-
-                    x = newX;
-                    y = newY;
+                    // copy: a mutable route changed in place must not compare equal to the painted one
+                    routes.add(List.copyOf(route));
                 }
-
-                gc.stroke();
             }
+        }
 
-            for (final Map.Entry<GNode, Node> entry : nodes.entrySet())
+        final Color color = connectionColor.get();
+        if (routes.equals(paintedRoutes) && width == paintedWidth && height == paintedHeight
+                && scaleFactor == paintedScaleFactor && Objects.equals(color, paintedColor))
+        {
+            return;
+        }
+        paintedRoutes = routes;
+        paintedWidth = width;
+        paintedHeight = height;
+        paintedScaleFactor = scaleFactor;
+        paintedColor = color;
+        paintCount++;
+
+        final GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        canvas.setWidth(width);
+        canvas.setHeight(height);
+
+        gc.setStroke(color);
+        gc.setLineWidth(1);
+
+        for (final List<Point2D> route : routes)
+        {
+            gc.beginPath();
+            gc.moveTo(scaleSharp(route.get(0).getX(), scaleFactor), scaleSharp(route.get(0).getY(), scaleFactor));
+            for (int j = 1; j < route.size(); j++)
             {
-                resizeRelocate(entry.getKey(), entry.getValue(), minimapRenderer);
+                final Point2D p = route.get(j);
+                gc.lineTo(scaleSharp(p.getX(), scaleFactor), scaleSharp(p.getY(), scaleFactor));
             }
+            gc.stroke();
         }
     }
 

@@ -61,6 +61,7 @@ public class GraphEditorContainer extends PanningWindow
     private final GraphEditorMinimap minimap = new GraphEditorMinimap();
 
     private GraphEditor graphEditor;
+    private GraphEditorView editorView;
     private final ChangeListener<GModel> modelChangeListener = (_, _, newValue) -> modelChanged(newValue);
 
     /**
@@ -88,10 +89,18 @@ public class GraphEditorContainer extends PanningWindow
     @Override
     protected void setContent(final Region pContent)
     {
+        if (editorView != null)
+        {
+            editorView.setOnConnectionsDrawn(null);
+            editorView = null;
+        }
         super.setContent(pContent);
         if (pContent instanceof GraphEditorView v)
         {
+            editorView = v;
             v.setPanningWindow(this);
+            // keep the minimap in sync with the routes drawn after a model change
+            v.setOnConnectionsDrawn(minimap::onConnectionsLaidOut);
             // share the gesture arbitration so panning cannot start while another
             // gesture (move, resize, connect, select) is in progress
             setEventManager(v.getEditorProperties());
@@ -129,6 +138,7 @@ public class GraphEditorContainer extends PanningWindow
             minimap.setContent(view);
             minimap.setModel(model);
             minimap.setSelectionManager(pGraphEditor.getSelectionManager());
+            minimap.setSkinLookup(pGraphEditor.getSkinLookup());
 
             view.toBack();
         }
@@ -136,6 +146,7 @@ public class GraphEditorContainer extends PanningWindow
         {
             minimap.setContent(null);
             minimap.setModel(null);
+            minimap.setSkinLookup(null);
         }
     }
 
