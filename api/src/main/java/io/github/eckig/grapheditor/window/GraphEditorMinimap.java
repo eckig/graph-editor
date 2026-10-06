@@ -40,15 +40,9 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     private final CommandStackListener modelChangeListener = _ -> modelChanged();
 
     /**
-     * Set when the model changed, so the connection routes must be re-read after the next connection layout pass. Kept
-     * while the minimap is hidden.
+     * Set when the model changed, so the connection routes must be re-read after the next connection layout pass.
      */
     private boolean routesOutdated = true;
-
-    /**
-     * Set when the model changed while the minimap was hidden: the minimap is rebuilt once it is shown again.
-     */
-    private boolean drawOutdated;
 
     /**
      * Creates a new {@link GraphEditorMinimap} instance.
@@ -56,19 +50,14 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     public GraphEditorMinimap()
     {
         setContentRepresentation(minimapNodeGroup);
-        // updates are skipped while hidden, so catch up as soon as the minimap is shown again
+        // updates are skipped while hidden, so rebuild as soon as the minimap is shown again
         visibleProperty().addListener((_, _, visible) ->
         {
-            if (visible && drawOutdated)
+            if (visible)
             {
-                drawOutdated = false;
-                // the skins already drew their final routes while hidden, the catch-up reads them
+                // the skins already drew their final routes while hidden, the rebuild reads them
                 routesOutdated = false;
                 minimapNodeGroup.draw();
-            }
-            else if (visible)
-            {
-                minimapNodeGroup.requestLayout();
             }
         });
     }
@@ -79,10 +68,6 @@ public class GraphEditorMinimap extends PanningWindowMinimap
         if (isVisible())
         {
             minimapNodeGroup.draw();
-        }
-        else
-        {
-            drawOutdated = true;
         }
     }
 
