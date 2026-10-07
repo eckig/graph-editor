@@ -52,16 +52,9 @@ public class GraphEditorView extends Region
 
     private final Pane mNodeLayer = new Pane();
 
-    private final Pane mConnectionLayer = new Pane()
-    {
-
-        @Override
-        protected void layoutChildren()
-        {
-            super.layoutChildren();
-            drawConnections();
-        }
-    };
+    // connections are drawn once per layout pass in layoutChildren() of the view: a layout request of this layer
+    // always propagates to the view
+    private final Pane mConnectionLayer = new Pane();
 
     private final GraphEditorGrid mGrid = new GraphEditorGrid();
     private final InvalidationListener mGridListener = _ -> resizeRelocateGrid();
@@ -69,7 +62,7 @@ public class GraphEditorView extends Region
     private final GraphEditorProperties mEditorProperties;
 
     private ConnectionLayout mConnectionLayout;
-    private Runnable mOnConnectionsDrawn;
+    private Runnable mOnRoutesChanged;
     private PanningWindow mParent;
 
     /**
@@ -106,14 +99,15 @@ public class GraphEditorView extends Region
     }
 
     /**
-     * Sets a callback invoked every time after the connections were (re-)drawn by the {@link ConnectionLayout}.
+     * Sets a callback invoked after the final routes of the connections changed, i.e. after a model change but not
+     * during intermediate layout passes while the user drags elements.
      *
-     * @param pOnConnectionsDrawn
+     * @param pOnRoutesChanged
      *            callback or {@code null}
      */
-    public void setOnConnectionsDrawn(final Runnable pOnConnectionsDrawn)
+    public void setOnRoutesChanged(final Runnable pOnRoutesChanged)
     {
-        mOnConnectionsDrawn = pOnConnectionsDrawn;
+        mOnRoutesChanged = pOnRoutesChanged;
     }
 
     /**
@@ -327,10 +321,9 @@ public class GraphEditorView extends Region
     {
         if (mConnectionLayout != null)
         {
-            mConnectionLayout.draw();
-            if (mOnConnectionsDrawn != null)
+            if (mConnectionLayout.draw() && mOnRoutesChanged != null)
             {
-                mOnConnectionsDrawn.run();
+                mOnRoutesChanged.run();
             }
         }
     }

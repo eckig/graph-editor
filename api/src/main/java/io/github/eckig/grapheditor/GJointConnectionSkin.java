@@ -43,4 +43,13 @@ public abstract class GJointConnectionSkin extends GVisualConnectionSkin
      *         the list of all {@link GJointSkin} instances associated to the connection
      */
     public abstract void setJointSkins(final List<GJointSkin> pJointSkins);
+
+    /**
+     * Called on every layout pass before the connections are routed. Can be used to constrain the joint skins, e.g.
+     * to align the first and last joint with the connectors. The default does nothing.
+     */
+    public void prepareRoute()
+    {
+        // no constraints by default
+    }
 }

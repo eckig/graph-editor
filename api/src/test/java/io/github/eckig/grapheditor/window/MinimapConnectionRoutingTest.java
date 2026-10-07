@@ -23,6 +23,7 @@ import io.github.eckig.grapheditor.model.GJoint;
 import io.github.eckig.grapheditor.model.GModel;
 import io.github.eckig.grapheditor.model.GNode;
 import io.github.eckig.grapheditor.model.GraphFactory;
+import io.github.eckig.grapheditor.routing.RouteContext;
 import io.github.eckig.grapheditor.utils.JavaFXThreadingRule;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -334,18 +335,16 @@ public class MinimapConnectionRoutingTest
     private static class RoutedSkin extends GVisualConnectionSkin
     {
 
-        private final List<Point2D> route;
-
         RoutedSkin(final GConnection connection, final List<Point2D> route)
         {
             super(connection);
-            this.route = new ArrayList<>(route);
+            applyRoute(route, null);
         }
 
         @Override
-        public List<Point2D> getRoutePoints()
+        protected void drawRoute(final List<Point2D> pRoute, final RouteContext pContext)
         {
-            return route;
+            // not needed
         }
 
         @Override

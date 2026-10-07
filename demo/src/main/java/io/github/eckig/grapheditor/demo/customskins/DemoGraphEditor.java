@@ -78,7 +78,7 @@ public class DemoGraphEditor implements GraphEditor
     {
         mProperties = pProperties == null ? new GraphEditorProperties() : pProperties;
         mView = new GraphEditorView(mProperties);
-        mController = new DemoGraphEditorController(this, mView, mConnectionEventManager, mProperties);
+        mController = new GraphEditorController<>(this, mView, mConnectionEventManager, mProperties);
     }
 
     @Override
