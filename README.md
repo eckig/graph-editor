@@ -17,6 +17,7 @@ A library for creating and editing graph-like diagrams in JavaFX.
 + Selection API with cut, copy, paste
 + Alignment (optionally with snap-to-grid)
 + Editing of large graphs via a panning mechanism & minimap
++ Localizable texts (currently those read by screen readers), see the [wiki](https://github.com/eckig/graph-editor/wiki/2.-Feature-Overview#25-localization)
 + Additional skin examples provided:
 
 ![Examples of skins provided with the graph editor demo.](skinExamples.png)
@@ -40,18 +41,6 @@ Example of a fully customized implementation:
 The secondary (right) mouse button is intentionally left unhandled, so that
 applications using this library are free to attach their own context menus.
 Only unmodified navigation keys are consumed, so application shortcuts keep working.
-
-### Localization
-
-Strings used by the graph editor (currently only the ones read out by screen
-readers) come from a `ResourceBundle` and can be replaced per editor:
-
-```java
-graphEditor.getProperties().setResourceBundle(ResourceBundle.getBundle("com.example.Messages"));
-```
-
-Keys that a custom bundle does not define fall back to the shipped English
-defaults, so upgrading never breaks an application with incomplete translations.
 
 ## Use it
 
