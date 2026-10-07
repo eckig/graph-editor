@@ -29,10 +29,12 @@ import io.github.eckig.grapheditor.model.GConnector;
 import io.github.eckig.grapheditor.model.GJoint;
 import io.github.eckig.grapheditor.model.GModel;
 import io.github.eckig.grapheditor.model.GNode;
+import io.github.eckig.grapheditor.routing.ConnectionRouter;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
+import javafx.geometry.Side;
 
 
 /**
@@ -109,6 +111,40 @@ public class DefaultGraphEditor implements GraphEditor
     public void setTailSkinFactory(final Callback<GConnector, GTailSkin> pTailSkinFactory)
     {
         mController.getSkinManager().setTailSkinFactory(pTailSkinFactory);
+    }
+
+    /**
+     * Sets the {@link ConnectionRouter} per connection, see {@link GraphEditorController#setConnectionRouter(Function)}.
+     *
+     * @param pRouterFunction
+     *            returns the router for a connection, or {@code null} for the default
+     */
+    public void setConnectionRouter(final Function<GConnection, ConnectionRouter> pRouterFunction)
+    {
+        mController.setConnectionRouter(pRouterFunction);
+    }
+
+    /**
+     * Sets the router used while dragging, see {@link GraphEditorController#setPreviewRouter(ConnectionRouter)}.
+     *
+     * @param pPreviewRouter
+     *            preview router or {@code null} for no preview
+     */
+    public void setPreviewRouter(final ConnectionRouter pPreviewRouter)
+    {
+        mController.setPreviewRouter(pPreviewRouter);
+    }
+
+    /**
+     * Sets the function returning the side of a connector, see
+     * {@link GraphEditorController#setConnectorSideFunction(Function)}.
+     *
+     * @param pSideFunction
+     *            side function or {@code null} for the default
+     */
+    public void setConnectorSideFunction(final Function<GConnector, Side> pSideFunction)
+    {
+        mController.setConnectorSideFunction(pSideFunction);
     }
 
     @Override

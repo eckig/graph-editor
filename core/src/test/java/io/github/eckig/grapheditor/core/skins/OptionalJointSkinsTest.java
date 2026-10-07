@@ -20,6 +20,8 @@ import io.github.eckig.grapheditor.model.GConnection;
 import io.github.eckig.grapheditor.model.GJoint;
 import io.github.eckig.grapheditor.model.GModel;
 import io.github.eckig.grapheditor.model.GraphFactory;
+import io.github.eckig.grapheditor.routing.RouteContext;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 
@@ -57,6 +59,12 @@ public class OptionalJointSkinsTest
         public Node getRoot()
         {
             return root;
+        }
+
+        @Override
+        protected void drawRoute(final List<Point2D> pRoute, final RouteContext pContext)
+        {
+            // not needed
         }
     }
 

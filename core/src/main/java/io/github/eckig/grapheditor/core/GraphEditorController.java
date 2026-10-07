@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import io.github.eckig.grapheditor.core.connections.ConnectionEventManager;
 import io.github.eckig.grapheditor.core.connections.ConnectorDragManager;
@@ -20,9 +21,11 @@ import io.github.eckig.grapheditor.core.view.ConnectionLayout;
 import io.github.eckig.grapheditor.core.view.GraphEditorView;
 import io.github.eckig.grapheditor.core.view.impl.DefaultConnectionLayout;
 import io.github.eckig.grapheditor.utils.GeometryUtils;
+import io.github.eckig.grapheditor.routing.ConnectionRouter;
 import io.github.eckig.grapheditor.utils.GraphEditorProperties;
 
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 
 import org.eclipse.emf.common.command.CommandStackListener;
@@ -413,7 +416,8 @@ public class GraphEditorController<E extends GraphEditor>
      */
     protected void processingDone()
     {
-        getConnectionLayout().draw();
+        getConnectionLayout().requestRouting();
+        mGraphEditorView.requestLayout();
     }
 
     private void nodePositionChanged(final Notification pChange)
@@ -504,6 +508,7 @@ public class GraphEditorController<E extends GraphEditor>
 
     private void removeConnection(final GConnection pConnection)
     {
+        getConnectionLayout().connectionRemoved(pConnection);
         mSelectionManager.removeConnection(pConnection);
         mSelectionManager.clearSelection(pConnection);
         mSkinManager.removeConnection(pConnection);
@@ -535,6 +540,7 @@ public class GraphEditorController<E extends GraphEditor>
         mSelectionManager.clearSelection(pNode);
         mModelLayoutUpdater.removeNode(pNode);
         mSkinManager.removeNode(pNode);
+        getConnectionLayout().nodeRemoved(pNode);
     }
 
     private void addConnector(final GConnector pConnector)
@@ -554,7 +560,54 @@ public class GraphEditorController<E extends GraphEditor>
      */
     protected ConnectionLayout createConnectionLayout()
     {
-        return new DefaultConnectionLayout(mSkinManager);
+        return new DefaultConnectionLayout(mSkinManager, mGraphEditorView);
+    }
+
+    /**
+     * Sets the {@link ConnectionRouter} per connection, see
+     * {@link DefaultConnectionLayout#setConnectionRouter(Function)}. Only effective for the default
+     * {@link ConnectionLayout}.
+     *
+     * @param pRouterFunction
+     *            returns the router for a connection, or {@code null} for the default
+     */
+    public void setConnectionRouter(final Function<GConnection, ConnectionRouter> pRouterFunction)
+    {
+        if (getConnectionLayout() instanceof DefaultConnectionLayout layout)
+        {
+            layout.setConnectionRouter(pRouterFunction);
+        }
+    }
+
+    /**
+     * Sets the router used while dragging, see {@link DefaultConnectionLayout#setPreviewRouter(ConnectionRouter)}.
+     * Only effective for the default {@link ConnectionLayout}.
+     *
+     * @param pPreviewRouter
+     *            preview router or {@code null} for no preview
+     */
+    public void setPreviewRouter(final ConnectionRouter pPreviewRouter)
+    {
+        if (getConnectionLayout() instanceof DefaultConnectionLayout layout)
+        {
+            layout.setPreviewRouter(pPreviewRouter);
+        }
+    }
+
+    /**
+     * Sets the function returning the side of a connector, see
+     * {@link DefaultConnectionLayout#setConnectorSideFunction(Function)}. Only effective for the default
+     * {@link ConnectionLayout}.
+     *
+     * @param pSideFunction
+     *            side function or {@code null} for the default
+     */
+    public void setConnectorSideFunction(final Function<GConnector, Side> pSideFunction)
+    {
+        if (getConnectionLayout() instanceof DefaultConnectionLayout layout)
+        {
+            layout.setConnectorSideFunction(pSideFunction);
+        }
     }
 
     /**

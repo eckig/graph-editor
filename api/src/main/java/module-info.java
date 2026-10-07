@@ -7,6 +7,7 @@ module io.github.eckig.grapheditor.api
     requires org.slf4j;
 
     exports io.github.eckig.grapheditor;
+    exports io.github.eckig.grapheditor.routing;
     exports io.github.eckig.grapheditor.utils;
     exports io.github.eckig.grapheditor.window;
 }

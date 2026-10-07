@@ -7,8 +7,8 @@ import java.util.List;
 
 import io.github.eckig.grapheditor.GVisualConnectionSkin;
 import io.github.eckig.grapheditor.GraphEditor;
-import io.github.eckig.grapheditor.SkinLookup;
 import io.github.eckig.grapheditor.model.GConnection;
+import io.github.eckig.grapheditor.routing.RouteContext;
 import io.github.eckig.grapheditor.utils.Arrow;
 import io.github.eckig.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
@@ -38,7 +38,6 @@ public class TreeConnectionSkin extends GVisualConnectionSkin {
     private final Group selectionHalo = new Group(haloFirstSide, haloSecondSide);
     private final Group root = new Group(background, selectionHalo, arrow);
 
-    private List<Point2D> routePoints = List.of();
 
     /**
      * Creates a new {@link TreeConnectionSkin} instance.
@@ -69,36 +68,12 @@ public class TreeConnectionSkin extends GVisualConnectionSkin {
     }
 
     @Override
-    public List<Point2D> getRoutePoints() {
-        return routePoints;
-    }
-
-    public Point2D[] update()
+    protected void drawRoute(final List<Point2D> pRoute, final RouteContext pContext)
     {
-        final GConnection item = getItem();
-        final SkinLookup skinLookup = getGraphEditor() == null ? null : getGraphEditor().getSkinLookup();
-        if (item == null || skinLookup == null)
+        if (pRoute.size() >= 2)
         {
-            return null;
-        }
-        final Point2D[] points = new Point2D[2];
-
-        // Start: Source position
-        points[0] = GeometryUtils.getConnectorPosition(item.getSource(), skinLookup);
-
-        // End: Target position
-        points[1] = GeometryUtils.getConnectorPosition(item.getTarget(), skinLookup);
-
-        return points;
-    }
-
-    public void draw(final Point2D[] points)
-    {
-        routePoints = points == null ? List.of() : List.of(points);
-        if (points != null && points.length == 2)
-        {
-            final Point2D start = points[0];
-            final Point2D end = points[1];
+            final Point2D start = pRoute.getFirst();
+            final Point2D end = pRoute.getLast();
 
             if (getItem().getSource().getType().equals(TreeSkinConstants.TREE_OUTPUT_CONNECTOR))
             {

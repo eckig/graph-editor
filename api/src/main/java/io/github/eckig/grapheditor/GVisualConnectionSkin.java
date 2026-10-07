@@ -3,6 +3,7 @@ package io.github.eckig.grapheditor;
 import java.util.List;
 
 import io.github.eckig.grapheditor.model.GConnection;
+import io.github.eckig.grapheditor.routing.RouteContext;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.shape.Line;
@@ -17,6 +18,11 @@ import javafx.scene.shape.Line;
  * </p>
  *
  * <p>
+ * The route is computed by a {@link io.github.eckig.grapheditor.routing.ConnectionRouter} and handed to the skin via
+ * {@link #applyRoute(List, RouteContext)}, the skin only draws it in {@link #drawRoute(List, RouteContext)}.
+ * </p>
+ *
+ * <p>
  * Skins of this type do not use joints, no joint skins are created for their connection. Skins displaying or
  * constraining joints must extend {@link GJointConnectionSkin} instead.
  * </p>
@@ -25,6 +31,8 @@ import javafx.scene.shape.Line;
  */
 public abstract class GVisualConnectionSkin extends GConnectionSkin
 {
+
+    private List<Point2D> routePoints = List.of();
 
     /**
      * Creates a new {@link GVisualConnectionSkin}.
@@ -45,24 +53,41 @@ public abstract class GVisualConnectionSkin extends GConnectionSkin
     public abstract Node getRoot();
 
     /**
+     * Sets the route of this skin and draws it. Called by the graph editor's connection layout.
+     *
+     * @param pRoute
+     *         route from source to target (inclusive) in the coordinate system of the graph editor view, an empty
+     *         list or {@code null} if the connection cannot be routed
+     * @param pContext
+     *         {@link RouteContext} of the current layout pass
+     */
+    public final void applyRoute(final List<Point2D> pRoute, final RouteContext pContext)
+    {
+        routePoints = pRoute == null ? List.of() : List.copyOf(pRoute);
+        drawRoute(routePoints, pContext);
+    }
+
+    /**
+     * Draws the given route.
+     *
+     * @param pRoute
+     *         route from source to target (inclusive), may be empty
+     * @param pContext
+     *         {@link RouteContext} of the current layout pass, e.g. to draw crossings with other connections
+     */
+    protected abstract void drawRoute(List<Point2D> pRoute, RouteContext pContext);
+
+    /**
      * Returns the route this skin currently displays, e.g. for the minimap.
      *
      * <p>
      * The points are in the coordinate system of the graph editor view and ordered from source to target (inclusive).
-     * Skins computing their own routing should override this and return the points they last drew. The default
-     * returns an empty list, meaning "unknown".
      * </p>
      *
-     * <p>
-     * The minimap picks up the routes drawn in the first layout pass of the graph editor view after a model change
-     * (command stack). Intermediate routes, e.g. while dragging, are not shown. If routes change at any other time
-     * (e.g. asynchronous routing), the application should call {@code GraphEditorMinimap.redrawConnections()}.
-     * </p>
-     *
-     * @return unmodifiable list of route points, never {@code null}
+     * @return unmodifiable list of route points, empty if not routed yet, never {@code null}
      */
-    public List<Point2D> getRoutePoints()
+    public final List<Point2D> getRoutePoints()
     {
-        return List.of();
+        return routePoints;
     }
 }

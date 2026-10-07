@@ -81,6 +81,15 @@ public class GraphEditorContainer extends PanningWindow
         return STYLESHEET_VIEW;
     }
 
+    private void routesChanged()
+    {
+        // a hidden minimap is rebuilt when shown again
+        if (minimap.isVisible())
+        {
+            minimap.redrawConnections();
+        }
+    }
+
     private void modelChanged(final GModel newValue)
     {
         minimap.setModel(newValue);
@@ -91,7 +100,7 @@ public class GraphEditorContainer extends PanningWindow
     {
         if (editorView != null)
         {
-            editorView.setOnConnectionsDrawn(null);
+            editorView.setOnRoutesChanged(null);
             editorView = null;
         }
         super.setContent(pContent);
@@ -99,8 +108,8 @@ public class GraphEditorContainer extends PanningWindow
         {
             editorView = v;
             v.setPanningWindow(this);
-            // keep the minimap in sync with the routes drawn after a model change
-            v.setOnConnectionsDrawn(minimap::onConnectionsLaidOut);
+            // keep the minimap in sync with the final routes (not the intermediate ones while dragging)
+            v.setOnRoutesChanged(this::routesChanged);
             // share the gesture arbitration so panning cannot start while another
             // gesture (move, resize, connect, select) is in progress
             setEventManager(v.getEditorProperties());

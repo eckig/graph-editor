@@ -40,11 +40,6 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     private final CommandStackListener modelChangeListener = _ -> modelChanged();
 
     /**
-     * Set when the model changed, so the connection routes must be re-read after the next connection layout pass.
-     */
-    private boolean routesOutdated = true;
-
-    /**
      * Creates a new {@link GraphEditorMinimap} instance.
      */
     public GraphEditorMinimap()
@@ -55,8 +50,6 @@ public class GraphEditorMinimap extends PanningWindowMinimap
         {
             if (visible)
             {
-                // the skins already drew their final routes while hidden, the rebuild reads them
-                routesOutdated = false;
                 minimapNodeGroup.draw();
             }
         });
@@ -64,7 +57,6 @@ public class GraphEditorMinimap extends PanningWindowMinimap
 
     private void modelChanged()
     {
-        routesOutdated = true;
         if (isVisible())
         {
             minimapNodeGroup.draw();
@@ -161,27 +153,9 @@ public class GraphEditorMinimap extends PanningWindowMinimap
     }
 
     /**
-     * Notifies the minimap that the connections of the graph editor were laid out (drawn) again.
-     *
-     * <p>
-     * For performance reasons this only refreshes the minimap connections if the model changed since the last refresh
-     * (e.g. when a drag gesture is committed), not on every intermediate layout pass while dragging. Called by the
-     * graph editor container; use {@link #redrawConnections()} to force a refresh.
-     * </p>
-     */
-    public void onConnectionsLaidOut()
-    {
-        if (routesOutdated && isVisible())
-        {
-            routesOutdated = false;
-            minimapNodeGroup.requestLayout();
-        }
-    }
-
-    /**
-     * Requests a redraw of the minimap connections, e.g. after connections were re-routed outside of a model change.
-     * Cheap to call repeatedly: requests are coalesced into the next layout pass, and the connections are only
-     * repainted if their routes actually changed.
+     * Requests a redraw of the minimap connections, e.g. after the final routes of the connections changed. Called by
+     * the graph editor container. Cheap to call repeatedly: requests are coalesced into the next layout pass, and the
+     * connections are only repainted if their routes actually changed.
      */
     public void redrawConnections()
     {
@@ -232,7 +206,6 @@ public class GraphEditorMinimap extends PanningWindowMinimap
         }
 
         model = pModel;
-        routesOutdated = true;
         minimapNodeGroup.setModel(pModel);
         minimapNodeGroup.draw();
 

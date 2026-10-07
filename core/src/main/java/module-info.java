@@ -12,6 +12,7 @@ module io.github.eckig.grapheditor.core
     exports io.github.eckig.grapheditor.core;
     exports io.github.eckig.grapheditor.core.connections;
     exports io.github.eckig.grapheditor.core.connectors;
+    exports io.github.eckig.grapheditor.core.routing;
     exports io.github.eckig.grapheditor.core.skins;
     exports io.github.eckig.grapheditor.core.skins.defaults;
     exports io.github.eckig.grapheditor.core.skins.defaults.connection;
