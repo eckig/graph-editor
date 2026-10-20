@@ -297,6 +297,79 @@ public class PanningWindowScrollPaneSkinTest {
                 reachesParent(key(KeyCode.DOWN, false)));
     }
 
+    // ------------------------------- 5) application key handlers take precedence
+
+    private double hvalueAfterRight() {
+        scrollPane().setHvalue(0);
+        Event.fireEvent(window, key(KeyCode.RIGHT, false));
+        return scrollPane().getHvalue();
+    }
+
+    @Test
+    public void consumingOnKeyPressedHandlerPreventsScrolling() {
+
+        window.setOnKeyPressed(e -> { if (e.getCode() == KeyCode.RIGHT) { e.consume(); } });
+
+        assertEquals("an application consuming RIGHT must not scroll the viewport", 0.0, hvalueAfterRight(), 1e-9);
+    }
+
+    @Test
+    public void consumingHandlerAddedAfterTheSkinPreventsScrolling() {
+
+        window.addEventHandler(KeyEvent.KEY_PRESSED, e -> { if (e.getCode() == KeyCode.RIGHT) { e.consume(); } });
+
+        assertEquals("a consuming handler added after the skin must win", 0.0, hvalueAfterRight(), 1e-9);
+    }
+
+    @Test
+    public void consumingHandlerAddedBeforeTheSkinPreventsScrolling() {
+
+        // fresh window: register the handler first, then let the skin be created
+        window = new TestPanningWindow();
+        window.addEventHandler(KeyEvent.KEY_PRESSED, e -> { if (e.getCode() == KeyCode.RIGHT) { e.consume(); } });
+        window.setMinSize(VIEWPORT, VIEWPORT);
+        window.setPrefSize(VIEWPORT, VIEWPORT);
+        window.setMaxSize(VIEWPORT, VIEWPORT);
+        content = new Pane();
+        content.setPrefSize(CONTENT_WIDTH, CONTENT_HEIGHT);
+        content.setMinSize(CONTENT_WIDTH, CONTENT_HEIGHT);
+        window.setTestContent(content);
+        stage.setScene(new Scene(new Pane(window), VIEWPORT, VIEWPORT));
+        window.resize(VIEWPORT, VIEWPORT);
+        stage.getScene().getRoot().applyCss();
+        stage.getScene().getRoot().layout();
+
+        assertEquals("a consuming handler added before the skin must win", 0.0, hvalueAfterRight(), 1e-9);
+    }
+
+    @Test
+    public void rightScrollsWithoutApplicationHandler() {
+        assertTrue("RIGHT must still scroll the viewport", hvalueAfterRight() > 0);
+    }
+
+    @Test
+    public void observingApplicationHandlerDoesNotPreventScrolling() {
+
+        final boolean[] seen = new boolean[2];
+        window.addEventHandler(KeyEvent.KEY_PRESSED, _ -> seen[0] = true);
+        window.setOnKeyPressed(_ -> seen[1] = true);
+
+        assertTrue("a non-consuming handler must not prevent scrolling", hvalueAfterRight() > 0);
+        assertTrue("the application handlers must still see the key", seen[0] && seen[1]);
+    }
+
+    @Test
+    public void disposeRestoresTheOriginalEventDispatcher() {
+
+        final ScrollPane sp = scrollPane();
+        final javafx.event.EventDispatcher wrapped = window.getEventDispatcher();
+
+        sp.getSkin().dispose();
+
+        assertTrue("dispose must replace the skin's dispatcher", window.getEventDispatcher() != wrapped);
+        assertEquals("a disposed skin must not scroll any more", 0.0, hvalueAfterRight(), 1e-9);
+    }
+
     // ------------------------------------------------- cursor anchored zoom
 
     private static ScrollEvent ctrlScroll(final double sceneX, final double sceneY, final double deltaY) {

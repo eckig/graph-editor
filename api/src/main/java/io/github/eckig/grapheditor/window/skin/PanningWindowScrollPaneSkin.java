@@ -15,7 +15,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.event.EventDispatcher;
-import javafx.event.EventHandler;
+import javafx.event.Event;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.HorizontalDirection;
@@ -98,8 +98,17 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
     /** {@code true} while this skin owns the active {@link GraphInputGesture#PAN} gesture */
     private boolean panning = false;
 
-    /** kept so that {@link #dispose()} can unregister it again */
-    private final EventHandler<KeyEvent> keyEventHandler = this::handleKeyEvent;
+    /**
+     * The dispatcher of the {@link PanningWindow} before this skin wrapped it, kept so
+     * that {@link #dispose()} can restore it.
+     */
+    private EventDispatcher originalWindowEventDispatcher;
+
+    /** the wrapping dispatcher installed on the {@link PanningWindow} */
+    private EventDispatcher keyScrollEventDispatcher;
+
+    /** {@code false} once disposed, turns {@link #keyScrollEventDispatcher} into a pass-through */
+    private boolean keyScrollingActive = true;
 
     /** kept so that {@link #dispose()} can restore the original scrollbar dispatchers */
     private EventDispatcher originalHsbEventDispatcher;
@@ -192,11 +201,18 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         super(control);
         panningWindow = window;
 
-        // install default input map for the ScrollPane control
-        // NOTE: the handler has to sit on the PanningWindow, not on the ScrollPane.
-        // The window is the focusable element, so the ScrollPane is never on the
-        // event dispatch path and would never see a key event.
-        window.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        // Keyboard scrolling is a DEFAULT ACTION of the PanningWindow:
+        // NOTE: it has to sit on the PanningWindow, not on the ScrollPane. The window
+        // is the focusable element, so the ScrollPane is never on the event dispatch
+        // path and would never see a key event.
+        // It must NOT be a plain event handler: JavaFX runs every handler of a node
+        // even if a previous one consumed the event, and handlers added via
+        // addEventHandler run before the onKeyPressed property handler - so an
+        // application moving selected nodes with the arrow keys would also scroll.
+        // Wrapping the dispatcher lets the complete regular dispatch (capturing,
+        // children, all handlers of the window) run first; only a KEY_PRESSED that
+        // nobody consumed is turned into a scroll.
+        installKeyScrollDispatcher(window);
 
         scrollNode = control.getContent();
 
@@ -642,12 +658,12 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
      * @param e
      *         a {@code KEY_PRESSED} {@link KeyEvent}
      */
-    private void handleKeyEvent(final KeyEvent e)
+    private boolean handleKeyEvent(final KeyEvent e)
     {
         if (e.isShortcutDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown() || e.isShiftDown())
         {
             // modified key strokes belong to the application
-            return;
+            return false;
         }
 
         // under RIGHT_TO_LEFT the horizontal axis is mirrored, so the arrow keys
@@ -700,9 +716,35 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
 
             default:
                 // not ours - do NOT consume it
-                return;
+                return false;
         }
-        e.consume();
+        return true;
+    }
+
+    /**
+     * Wraps the {@link EventDispatcher} of the given window so that keyboard scrolling
+     * runs as a default action <b>after</b> the regular dispatch, and only for a
+     * {@code KEY_PRESSED} event that no handler on the window (or below it) consumed.
+     *
+     * @param window
+     *         the {@link PanningWindow}
+     */
+    private void installKeyScrollDispatcher(final PanningWindow window)
+    {
+        final EventDispatcher original = window.getEventDispatcher();
+        originalWindowEventDispatcher = original;
+        keyScrollEventDispatcher = (event, tail) ->
+        {
+            final Event result = original.dispatchEvent(event, tail);
+            if (keyScrollingActive && result instanceof KeyEvent keyEvent
+                    && keyEvent.getEventType() == KeyEvent.KEY_PRESSED && handleKeyEvent(keyEvent))
+            {
+                // handled: consume, i.e. stop bubbling to the parents
+                return null;
+            }
+            return result;
+        };
+        window.setEventDispatcher(keyScrollEventDispatcher);
     }
 
     /**
@@ -877,7 +919,18 @@ public class PanningWindowScrollPaneSkin extends SkinBase<ScrollPane>
         endScrolling();
         timeline = null;
 
-        panningWindow.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        keyScrollingActive = false;
+        if (originalWindowEventDispatcher != null)
+        {
+            // only restore if nobody wrapped our dispatcher in the meantime, otherwise
+            // their wrapper would be dropped - the inactive flag makes ours a pass-through
+            if (panningWindow.getEventDispatcher() == keyScrollEventDispatcher)
+            {
+                panningWindow.setEventDispatcher(originalWindowEventDispatcher);
+            }
+            originalWindowEventDispatcher = null;
+            keyScrollEventDispatcher = null;
+        }
         if (originalHsbEventDispatcher != null)
         {
             hsb.setEventDispatcher(originalHsbEventDispatcher);
