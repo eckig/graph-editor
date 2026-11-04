@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -76,6 +77,11 @@ public class GraphEditorContainerGestureTest {
         stage.getScene().getRoot().layout();
         view.applyCss();
         view.layout();
+    }
+
+    @After
+    public void tearDown() {
+        stage.hide();
     }
 
     // ---------------------------------------------------------------- helpers

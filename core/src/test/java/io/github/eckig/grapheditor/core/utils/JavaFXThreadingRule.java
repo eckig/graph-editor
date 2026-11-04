@@ -4,6 +4,7 @@
 package io.github.eckig.grapheditor.core.utils;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -36,14 +37,16 @@ public class JavaFXThreadingRule implements TestRule {
 
     @Override
     public Statement apply(final Statement statement, final Description description) {
-        return new OnJFXThreadStatement(statement);
+        return new OnJFXThreadStatement(statement, description);
     }
 
     private static class OnJFXThreadStatement extends Statement {
         private final Statement statement;
+        private final Description description;
 
-        public OnJFXThreadStatement(final Statement aStatement) {
+        public OnJFXThreadStatement(final Statement aStatement, final Description aDescription) {
             statement = aStatement;
+            description = aDescription;
         }
 
         private Throwable rethrownException = null;
@@ -66,7 +69,10 @@ public class JavaFXThreadingRule implements TestRule {
                     countDownLatch.countDown();
                 }
             });
-            countDownLatch.await();
+            // fail instead of hanging the build if the FX thread is gone or blocked
+            if (!countDownLatch.await(30, TimeUnit.SECONDS)) {
+                throw new AssertionError("JavaFX thread did not run " + description + " within 30s");
+            }
 
             // if an exception was thrown by the statement during evaluation,
             // then re-throw it to fail the test
@@ -85,6 +91,8 @@ public class JavaFXThreadingRule implements TestRule {
                 latch.countDown();
             }
             latch.await();
+            // test classes close their stages; without this the toolkit exits and later tests hang
+            Platform.setImplicitExit(false);
         }
     }
 }
